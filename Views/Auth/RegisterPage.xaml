@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="CapstoneProjectPUSH.Views.Auth.RegisterPage"
+             Title="">
+
+    <ScrollView>
+        
+        <Grid
+            Padding="30,0,30,30"
+            VerticalOptions="Center">
+            
+            <Border
+                Padding="30"
+                StrokeShape="RoundRectangle 12">
+
+                <VerticalStackLayout
+                    Spacing="15">
+
+                    <!-- Branding -->
+                    <HorizontalStackLayout
+                        HorizontalOptions="Center"
+                        Spacing="10">
+
+                        <!-- Placeholder logo -->
+                        <Border
+                            HeightRequest="50"
+                            StrokeShape="RoundRectangle 12"
+                            WidthRequest="50">
+
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="10"
+                                HorizontalOptions="Center"
+                                Text="Logo"
+                                VerticalOptions="Center"/>
+
+                        </Border>
+
+                        <Label
+                            FontSize="26"
+                            FontAttributes="Bold"
+                            Text="PUSH"
+                            VerticalOptions="Center"/>
+
+                    </HorizontalStackLayout>
+
+                    <Label
+                        FontSize="14"
+                        HorizontalOptions="Center"
+                        Text="Create your PUSH account"/>
+
+                    <Entry
+                        Placeholder="Enter your display name here"
+                        Text="{Binding DisplayName}"/>
+
+                    <Entry
+                        Keyboard="Email"
+                        Placeholder="Enter your email address here"
+                        Text="{Binding Email}"/>
+
+                    <Entry
+                        IsPassword="True"
+                        Placeholder="Enter your password here"
+                        Text="{Binding Password}"/>
+
+                    <Entry
+                        IsPassword="True"
+                        Placeholder="Confirm your password here"
+                        Text="{Binding ConfirmPassword}"/>
+
+                    <Label
+                        FontAttributes="Italic"
+                        FontSize="12"
+                        Text="{Binding PasswordRequirements}"/>
+
+                    <HorizontalStackLayout
+                        Spacing="-5">
+
+                        <Label
+                            Text="Privacy Consent"
+                            VerticalOptions="Center"/>
+
+                        <CheckBox
+                            IsChecked="False"/>
+
+                    </HorizontalStackLayout>
+
+                    <!-- Privacy link -->
+                    <Label
+                        FontAttributes="Bold"
+                        Text="View Privacy Statement">
+
+                        <Label.GestureRecognizers>
+
+                            <TapGestureRecognizer
+                            Tapped="PrivacyPageButton"/>
+
+                        </Label.GestureRecognizers>
+
+                    </Label>
+
+                    <!-- Needs helper is toggle visiblity -->
+                    <Label
+                        Text="{Binding StatusMessage}"
+                        TextColor="Red"/>
+
+                    <Button 
+                        Command="{Binding RegisterCommand}"
+                        FontAttributes="Bold"
+                        IsEnabled="{Binding IsNotBusy}"
+                        Text="Register"/>
+
+                    <ActivityIndicator
+                        IsRunning="{Binding IsBusy}"
+                        IsVisible="{Binding IsBusy}"/>
+
+                    <Label
+                        FontAttributes="Bold"
+                        Text="Already have an account? Tap here to log in">
+
+                        <Label.GestureRecognizers>
+
+                            <TapGestureRecognizer
+                                Command="{Binding GoToLoginCommand}"/>
+
+                        </Label.GestureRecognizers>
+
+                    </Label>
+
+                </VerticalStackLayout>
+                
+            </Border>
+            
+        </Grid>
+        
+    </ScrollView>
+
+</ContentPage>

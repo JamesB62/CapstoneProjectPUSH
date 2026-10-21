@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="CapstoneProjectPUSH.Views.Auth.LoginPage"
+             Title="">
+
+    <ScrollView>
+        
+        <Grid
+            Padding="30,0,30,30"
+            VerticalOptions="Center">
+
+            <Border
+                Padding="30"
+                StrokeShape="RoundRectangle 12">
+
+                <VerticalStackLayout
+                    Spacing="15">
+
+                    <!-- Branding -->
+                    <HorizontalStackLayout
+                    HorizontalOptions="Center"
+                    Spacing="10">
+
+                        <!-- Placeholder logo -->
+                        <Border
+                        HeightRequest="50"
+                        StrokeShape="RoundRectangle 12"
+                        WidthRequest="50">
+
+                            <Label
+                            FontAttributes="Bold"
+                            FontSize="10"
+                            HorizontalOptions="Center"
+                            Text="Logo"
+                            VerticalOptions="Center"/>
+
+                        </Border>
+
+                        <Label
+                        FontSize="26"
+                        FontAttributes="Bold"
+                        Text="PUSH"
+                        VerticalOptions="Center"/>
+
+                    </HorizontalStackLayout>
+
+                    <Label
+                        FontSize="14"
+                        HorizontalOptions="Center"
+                        Text="Log in to your PUSH account"/>
+
+                    <Entry
+                        Keyboard="Email"
+                        Placeholder="Enter your email address here"
+                        Text="{Binding Email}"/>
+
+                    <Entry
+                        IsPassword="True"
+                        Placeholder="Password"
+                        Text="{Binding Password}"/>
+
+                    <!-- Needs helper is toggle visiblity -->
+                    <Label
+                        Text="{Binding StatusMessage}"
+                        TextColor="Red"/>
+
+                    <Button
+                        Command="{Binding LoginCommand}"
+                        FontAttributes="Bold"
+                        IsEnabled="{Binding IsNotBusy}"
+                        Text="Log In"/>
+
+                    <ActivityIndicator
+                        IsRunning="{Binding IsBusy}"
+                        IsVisible="{Binding IsBusy}"/>
+
+                    <Label
+                        FontAttributes="Bold"
+                        Text="Don't have an account? Tap here to register">
+
+                        <Label.GestureRecognizers>
+
+                            <TapGestureRecognizer
+                                Command="{Binding GoToRegisterCommand}"/>
+
+                        </Label.GestureRecognizers>
+
+                    </Label>
+
+                </VerticalStackLayout>
+                
+            </Border>
+            
+        </Grid>
+        
+    </ScrollView>
+
+</ContentPage>
