@@ -5,13 +5,13 @@
              Title=""
              NavigationPage.HasNavigationBar="False">
     
-    <Grid
-        Padding="30,0,30,30"
-        VerticalOptions="Fill">
+    <VerticalStackLayout
+        Padding="20,0,20,20"
+        VerticalOptions="Center">
 
         <Border
             Padding="30"
-            StrokeShape="RoundRectangle 12"
+            StrokeShape="RoundRectangle 10"
             VerticalOptions="Center">
 
             <VerticalStackLayout
@@ -25,7 +25,7 @@
                     <!-- Placeholder logo -->
                     <Border
                         HeightRequest="50"
-                        StrokeShape="RoundRectangle 12"
+                        StrokeShape="RoundRectangle 10"
                         WidthRequest="50">
 
                         <Label
@@ -47,24 +47,23 @@
 
                 <!-- Buttons -->
                 <Button
-                    Clicked="LoginButtonClicked"
+                    Command="{Binding GoToLoginCommand}"
                     FontAttributes="Bold"
                     Text="Login"/>
 
                 <Button
-                    Clicked="RegisterButtonClicked"
+                    Command="{Binding GoToRegisterCommand}"
                     FontAttributes="Bold"
                     Text="Register"/>
 
                 <!-- Privacy link -->
                 <Label
-                    FontAttributes="Bold"
                     Text="View Privacy Statement">
 
                     <Label.GestureRecognizers>
 
                         <TapGestureRecognizer
-                            Tapped="PrivacyPageButton"/>
+                            Command="{Binding GoToPrivacyCommand}"/>
 
                     </Label.GestureRecognizers>
 
@@ -74,6 +73,6 @@
             
         </Border>
         
-    </Grid>
+    </VerticalStackLayout>
     
 </ContentPage>

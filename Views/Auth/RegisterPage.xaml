@@ -7,12 +7,12 @@
     <ScrollView>
         
         <Grid
-            Padding="30,0,30,30"
+            Padding="20,0,20,20"
             VerticalOptions="Center">
             
             <Border
                 Padding="30"
-                StrokeShape="RoundRectangle 12">
+                StrokeShape="RoundRectangle 10">
 
                 <VerticalStackLayout
                     Spacing="15">
@@ -46,65 +46,68 @@
                     </HorizontalStackLayout>
 
                     <Label
-                        FontSize="14"
                         HorizontalOptions="Center"
                         Text="Create your PUSH account"/>
 
-                    <Entry
-                        Placeholder="Enter your display name here"
-                        Text="{Binding DisplayName}"/>
+                    <VerticalStackLayout
+                        Spacing="10">
 
-                    <Entry
-                        Keyboard="Email"
-                        Placeholder="Enter your email address here"
-                        Text="{Binding Email}"/>
+                        <Entry
+                            Placeholder="Enter your display name here"
+                            Text="{Binding DisplayName}"/>
 
-                    <Entry
-                        IsPassword="True"
-                        Placeholder="Enter your password here"
-                        Text="{Binding Password}"/>
+                        <Entry
+                            Keyboard="Email"
+                            Placeholder="Enter your email address here"
+                            Text="{Binding Email}"/>
 
-                    <Entry
-                        IsPassword="True"
-                        Placeholder="Confirm your password here"
-                        Text="{Binding ConfirmPassword}"/>
+                        <Entry
+                            IsPassword="True"
+                            Placeholder="Enter your password here"
+                            Text="{Binding Password}"/>
 
-                    <Label
-                        FontAttributes="Italic"
-                        FontSize="12"
-                        Text="{Binding PasswordRequirements}"/>
-
-                    <HorizontalStackLayout
-                        Spacing="-5">
+                        <Entry
+                            IsPassword="True"
+                            Placeholder="Confirm your password here"
+                            Text="{Binding ConfirmPassword}"/>
 
                         <Label
-                            Text="Privacy Consent"
-                            VerticalOptions="Center"/>
+                            FontAttributes="Italic"
+                            FontSize="14"
+                            Text="{Binding PasswordRequirements}"/>
 
-                        <CheckBox
-                            IsChecked="False"/>
+                        <!-- Not implemented yet -->
+                        <HorizontalStackLayout>
 
-                    </HorizontalStackLayout>
+                            <CheckBox
+                                IsChecked="False"/>
 
-                    <!-- Privacy link -->
-                    <Label
-                        FontAttributes="Bold"
-                        Text="View Privacy Statement">
+                            <Label
+                                Text="Privacy Consent"
+                                VerticalOptions="Center"/>
 
-                        <Label.GestureRecognizers>
+                        </HorizontalStackLayout>
 
-                            <TapGestureRecognizer
-                            Tapped="PrivacyPageButton"/>
+                        <!-- Privacy link -->
+                        <Label
+                            Text="View Privacy Statement">
 
-                        </Label.GestureRecognizers>
+                            <Label.GestureRecognizers>
 
-                    </Label>
+                                <TapGestureRecognizer
+                                    Command="{Binding GoToPrivacyCommand}"/>
 
-                    <!-- Needs helper is toggle visiblity -->
-                    <Label
-                        Text="{Binding StatusMessage}"
-                        TextColor="Red"/>
+                            </Label.GestureRecognizers>
 
+                        </Label>
+
+                        <Label
+                            IsVisible="{Binding HasErrorMessage}"
+                            Text="{Binding ErrorMessage}"
+                            TextColor="Red"/>
+
+                    </VerticalStackLayout>
+                    
                     <Button 
                         Command="{Binding RegisterCommand}"
                         FontAttributes="Bold"
@@ -116,7 +119,6 @@
                         IsVisible="{Binding IsBusy}"/>
 
                     <Label
-                        FontAttributes="Bold"
                         Text="Already have an account? Tap here to log in">
 
                         <Label.GestureRecognizers>

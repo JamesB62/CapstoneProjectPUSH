@@ -3,6 +3,7 @@ global using CommunityToolkit.Mvvm.ComponentModel;
 global using CommunityToolkit.Mvvm.Input;
 global using Microsoft.Extensions.Logging;
 global using SQLite;
+global using System.Globalization;
 global using System.Net.Mail;
 global using System.Security.Cryptography;
 
