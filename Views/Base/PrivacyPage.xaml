@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="CapstoneProjectPUSH.Views.Base.PrivacyPage"
+             Title="">
+
+    <ScrollView>
+        
+        <Grid
+            Padding="30"
+            VerticalOptions="Start">
+
+            <Border
+                Padding="30"
+                StrokeShape="RoundRectangle 12">
+                
+                <VerticalStackLayout
+                    Spacing="15">
+
+                    <!-- All statements need to be updated -->
+                    <Label
+                        FontAttributes="Bold"
+                        FontSize="24"
+                        Text="Privacy Statement"/>
+
+                    <Label
+                        FontAttributes="Bold"
+                        Text="What We Store"/>
+                    
+                    <Label
+                        Text="When you register, PUSH stores your display name, your email address and a securely hashed version of your password. Your password is never saved in plain text."/>
+
+                    <Label
+                        FontAttributes="Bold"             
+                        Text="Where Your Data Is Stored"/>
+                    
+                    <Label
+                        Text="Your account details are kept in a local database on this device and are not sent to any other server."/>
+
+                    <Label
+                        FontAttributes="Bold"
+                        Text="How Your Data Is Used"/>
+                    
+                    <Label
+                        Text="Your details are only used to create your account and log you in. They are not shared with any third parties."/>
+
+                    <Label
+                        FontAttributes="Bold"
+                        Text="Your Choices"/>
+                    
+                    <Label
+                        Text="You can stop using the app at any time. Uninstalling the app removes the local database and your account details with it."/>
+
+                </VerticalStackLayout>
+                
+            </Border>
+            
+        </Grid>
+        
+    </ScrollView>
+    
+</ContentPage>

@@ -1,3 +1,5 @@
 <Solution>
-  <Project Path="CapstoneProjectPUSH.csproj" />
+  <Project Path="CapstoneProjectPUSH.csproj">
+    <Deploy Solution="Debug|*" />
+  </Project>
 </Solution>
