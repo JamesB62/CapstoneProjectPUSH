@@ -7,9 +7,4 @@ public partial class RegisterPage : ContentPage
 		InitializeComponent();
 		BindingContext = viewModel;
 	}
-
-    private void PrivacyPageButton(object? sender, EventArgs e)
-    {
-        Navigation.PushAsync(new PrivacyPage());
-    }
 }

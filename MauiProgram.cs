@@ -15,18 +15,18 @@
 
             // Services
             builder.Services.AddSingleton<DatabaseService>();
-            builder.Services.AddSingleton<INavigationService, NavigationService>();
             builder.Services.AddSingleton<UserService>();
 
             // ViewModels
-            builder.Services.AddSingleton<LoginViewModel>();
-            builder.Services.AddSingleton<RegisterViewModel>();
+            builder.Services.AddTransient<LandingViewModel>();
+            builder.Services.AddTransient<LoginViewModel>();
+            builder.Services.AddTransient<RegisterViewModel>();
 
             // Views
-            builder.Services.AddSingleton<LoginPage>();
-            builder.Services.AddSingleton<RegisterPage>();
-            builder.Services.AddSingleton<LandingPage>();
-            builder.Services.AddSingleton<PrivacyPage>();
+            builder.Services.AddTransient<LoginPage>();
+            builder.Services.AddTransient<RegisterPage>();
+            builder.Services.AddTransient<LandingPage>();
+            builder.Services.AddTransient<PrivacyPage>();
 
 
 

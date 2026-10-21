@@ -3,7 +3,6 @@
     public partial class LoginViewModel : BaseViewModel
     {
         private readonly UserService _userService;
-        private readonly INavigationService _navigation;
 
         [ObservableProperty]
         public partial string Email { get; set; }
@@ -11,10 +10,15 @@
         [ObservableProperty]
         public partial string Password { get; set; }
 
-        public LoginViewModel(UserService userService, INavigationService navigation)
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(HasErrorMessage))]
+        private string? errorMessage;
+
+        public bool HasErrorMessage => !string.IsNullOrEmpty(ErrorMessage);
+
+        public LoginViewModel(UserService userService)
         {
             _userService = userService;
-            _navigation = navigation;
             Email = string.Empty;
             Password = string.Empty;
         }
@@ -23,29 +27,34 @@
         [RelayCommand]
         private async Task LoginAsync()
         {
-            if (IsBusy) return;
+            if (IsBusy)
+            {
+                return;
+            }
 
             try
             {
                 IsBusy = true;
-                StatusMessage = string.Empty;
+                ErrorMessage = string.Empty;
 
                 var result = await _userService.LoginAsync(Email, Password);
 
                 if (!result.Success)
                 {
-                    StatusMessage = result.Message;
+                    ErrorMessage = result.Message;
                     return;
                 }
 
                 Password = string.Empty;
+                
+                await Shell.Current.DisplayAlertAsync("Login Successful", "You have been logged in successfully.", "OK");
 
                 // Replace with navigation to dashboard page
-                await _navigation.ShowAlertAsync("Logged in", result.Message);
+                //await Shell.Current.GoToAsync("//DashboardPage");
             }
             catch (Exception ex)
             {
-                StatusMessage = "Something went wrong. Please try again.";
+                ErrorMessage = "Something went wrong. Please try again.";
                 System.Diagnostics.Debug.WriteLine(ex);
             }
             finally
@@ -56,6 +65,9 @@
 
         // Generates GoToRegisterCommand
         [RelayCommand]
-        private Task GoToRegisterAsync() => _navigation.GoToAsync<RegisterPage>();
+        private async Task GoToRegisterAsync()
+        {
+            await Shell.Current.GoToAsync($"../{nameof(RegisterPage)}");
+        }
     }
 }
