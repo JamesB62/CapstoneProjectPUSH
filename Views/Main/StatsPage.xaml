@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:CapstoneProjectPUSH.Views.Controls"
+             x:Class="CapstoneProjectPUSH.Views.Main.StatsPage"
+             Title=""
+             Shell.NavBarIsVisible="False">
+
+    <Grid
+        RowDefinitions="*,Auto">
+
+        <ScrollView
+            Grid.Row="0">
+
+            <VerticalStackLayout
+                Padding="20"
+                Spacing="15">
+
+                <controls:PushHeader/>
+
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="18"
+                    Text="My Stats"/>
+
+                <!-- Time filters -->
+                <Grid
+                    ColumnDefinitions="*,*,*"
+                    ColumnSpacing="10">
+
+                    <Button
+                        Grid.Column="0"
+                        Command="{Binding SelectFilterCommand}"
+                        CommandParameter="Week"
+                        FontSize="12"
+                        Text="Week"/>
+
+                    <Button
+                        Grid.Column="1"
+                        Command="{Binding SelectFilterCommand}"
+                        CommandParameter="Month"
+                        FontSize="12"
+                        Text="Month"/>
+
+                    <Button
+                        Grid.Column="2"
+                        Command="{Binding SelectFilterCommand}"
+                        CommandParameter="Year"
+                        FontSize="12"
+                        Text="Year"/>
+
+                </Grid>
+
+                <!-- Top stats -->
+                <Border
+                            Padding="15"
+                            BackgroundColor="{AppThemeBinding Light=#E5E7EB, Dark=#2C2C31}"
+                            StrokeShape="RoundRectangle 10"
+                            StrokeThickness="0"
+                    HeightRequest="200">
+
+                    <VerticalStackLayout
+                        Spacing="4"
+                        VerticalOptions="Center">
+
+                        <Label
+                            FontAttributes="Bold"
+                            HorizontalTextAlignment="Center"
+                            Text="Top Stats"/>
+
+                        <Label
+                            FontSize="12"
+                            HorizontalTextAlignment="Center"
+                            Text="{Binding SelectedFilter, StringFormat='Showing: {0}'}"/>
+
+                    </VerticalStackLayout>
+
+                </Border>
+
+                <!-- Line graph placeholder -->
+                <Border
+                            Padding="15"
+                            BackgroundColor="{AppThemeBinding Light=#E5E7EB, Dark=#2C2C31}"
+                            StrokeShape="RoundRectangle 10"
+                            StrokeThickness="0"
+                    HeightRequest="300">
+
+                    <VerticalStackLayout
+                        Spacing="4"
+                        VerticalOptions="Center">
+
+                        <Label
+                            FontAttributes="Bold"
+                            HorizontalTextAlignment="Center"
+                            Text="Line Graph"/>
+
+                        <Label
+                            FontSize="12"
+                            HorizontalTextAlignment="Center"
+                            Text="Chart goes here"/>
+
+                    </VerticalStackLayout>
+
+                </Border>
+
+            </VerticalStackLayout>
+
+        </ScrollView>
+
+        <controls:MainNavBar
+            Grid.Row="1"
+            ActiveTab="Stats"/>
+
+    </Grid>
+
+</ContentPage>

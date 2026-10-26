@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:CapstoneProjectPUSH.Views.Controls"
+             xmlns:models="clr-namespace:CapstoneProjectPUSH.Models"
+             x:Class="CapstoneProjectPUSH.Views.Main.HomePage"
+             Title=""
+             Shell.NavBarIsVisible="False">
+
+    <Grid
+        RowDefinitions="*,Auto">
+
+        <ScrollView
+            Grid.Row="0">
+
+            <VerticalStackLayout
+                Padding="20"
+                Spacing="15">
+
+                <controls:PushHeader/>
+
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="18"
+                    Text="Featured Workout Plans"/>
+
+                <!-- Category filters -->
+                <Grid
+                    ColumnDefinitions="*,*,*"
+                    ColumnSpacing="10">
+
+                    <Button
+                        Grid.Column="0"
+                        Command="{Binding SelectCategoryCommand}"
+                        CommandParameter="Strength"
+                        FontSize="12"
+                        Text="Strength"/>
+
+                    <Button
+                        Grid.Column="1"
+                        Command="{Binding SelectCategoryCommand}"
+                        CommandParameter="Cardio"
+                        FontSize="12"
+                        Text="Cardio"/>
+
+                    <Button
+                        Grid.Column="2"
+                        Command="{Binding SelectCategoryCommand}"
+                        CommandParameter="Flexibility"
+                        FontSize="12"
+                        Text="Flexibility"/>
+
+                </Grid>
+
+                <!-- Featured plans (horizontal) -->
+                <CollectionView
+                    HeightRequest="170"
+                    ItemsSource="{Binding FeaturedPlans}">
+
+                    <CollectionView.ItemsLayout>
+                        <LinearItemsLayout
+                            ItemSpacing="10"
+                            Orientation="Horizontal"/>
+                    </CollectionView.ItemsLayout>
+
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:CardItem">
+
+                            <Border
+                            Padding="15"
+                            BackgroundColor="{AppThemeBinding Light=#E5E7EB, Dark=#2C2C31}"
+                            StrokeShape="RoundRectangle 10"
+                            StrokeThickness="0"
+                                WidthRequest="160">
+
+                                <VerticalStackLayout
+                                    Spacing="4"
+                                    VerticalOptions="Center">
+
+                                    <Label
+                                        FontAttributes="Bold"
+                                        HorizontalTextAlignment="Center"
+                                        Text="{Binding Title}"/>
+
+                                    <Label
+                                        FontSize="12"
+                                        HorizontalTextAlignment="Center"
+                                        Text="{Binding Subtitle}"/>
+
+                                </VerticalStackLayout>
+
+                            </Border>
+
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+
+                </CollectionView>
+
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="18"
+                    Text="Featured Articles"/>
+
+                <!-- Featured articles (vertical) -->
+                <VerticalStackLayout
+                    BindableLayout.ItemsSource="{Binding FeaturedArticles}"
+                    Spacing="10">
+
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="models:CardItem">
+
+                            <Border
+                            Padding="15"
+                            BackgroundColor="{AppThemeBinding Light=#E5E7EB, Dark=#2C2C31}"
+                            StrokeShape="RoundRectangle 10"
+                            StrokeThickness="0"
+                                HeightRequest="140">
+
+                                <VerticalStackLayout
+                                    Spacing="4"
+                                    VerticalOptions="Center">
+
+                                    <Label
+                                        FontAttributes="Bold"
+                                        HorizontalTextAlignment="Center"
+                                        Text="{Binding Title}"/>
+
+                                    <Label
+                                        FontSize="12"
+                                        HorizontalTextAlignment="Center"
+                                        Text="{Binding Subtitle}"/>
+
+                                </VerticalStackLayout>
+
+                            </Border>
+
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+
+                </VerticalStackLayout>
+
+            </VerticalStackLayout>
+
+        </ScrollView>
+
+        <controls:MainNavBar
+            Grid.Row="1"
+            ActiveTab="Home"/>
+
+    </Grid>
+
+</ContentPage>

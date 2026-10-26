@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:CapstoneProjectPUSH.Views.Controls"
+             xmlns:models="clr-namespace:CapstoneProjectPUSH.Models"
+             x:Class="CapstoneProjectPUSH.Views.Main.WorkoutsPage"
+             Title=""
+             Shell.NavBarIsVisible="False">
+
+    <Grid
+        RowDefinitions="*,Auto">
+
+        <Grid
+            Grid.Row="0"
+            Padding="20,20,20,0"
+            RowDefinitions="Auto,Auto,Auto,*"
+            RowSpacing="15">
+
+            <controls:PushHeader
+                Grid.Row="0"/>
+
+            <!-- Title + add button -->
+            <Grid
+                Grid.Row="1"
+                ColumnDefinitions="*,Auto">
+
+                <Label
+                    Grid.Column="0"
+                    FontAttributes="Bold"
+                    FontSize="18"
+                    Text="My Workout Plans"
+                    VerticalOptions="Center"/>
+
+                <Button
+                    Grid.Column="1"
+                    Command="{Binding AddWorkoutCommand}"
+                    FontAttributes="Bold"
+                    HeightRequest="40"
+                    Text="+"
+                    WidthRequest="50"/>
+
+            </Grid>
+
+            <SearchBar
+                Grid.Row="2"
+                Placeholder="Search workouts"
+                Text="{Binding SearchText}"/>
+
+            <CollectionView
+                Grid.Row="3"
+                ItemsSource="{Binding Workouts}">
+
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout
+                        ItemSpacing="10"
+                        Orientation="Vertical"/>
+                </CollectionView.ItemsLayout>
+
+                <CollectionView.EmptyView>
+                    <Label
+                        HorizontalOptions="Center"
+                        Text="No workouts found."
+                        VerticalOptions="Center"/>
+                </CollectionView.EmptyView>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:CardItem">
+
+                        <Border
+                            Padding="15"
+                            BackgroundColor="{AppThemeBinding Light=#E5E7EB, Dark=#2C2C31}"
+                            StrokeShape="RoundRectangle 10"
+                            StrokeThickness="0"
+                            HeightRequest="100">
+
+                            <VerticalStackLayout
+                                Spacing="4"
+                                VerticalOptions="Center">
+
+                                <Label
+                                    FontAttributes="Bold"
+                                    HorizontalTextAlignment="Center"
+                                    Text="{Binding Title}"/>
+
+                                <Label
+                                    FontSize="12"
+                                    HorizontalTextAlignment="Center"
+                                    Text="{Binding Subtitle}"/>
+
+                            </VerticalStackLayout>
+
+                        </Border>
+
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+
+            </CollectionView>
+
+        </Grid>
+
+        <controls:MainNavBar
+            Grid.Row="1"
+            ActiveTab="Workouts"/>
+
+    </Grid>
+
+</ContentPage>
