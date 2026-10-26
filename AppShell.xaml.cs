@@ -21,6 +21,7 @@ namespace CapstoneProjectPUSH
 
             // Base
             Routing.RegisterRoute(nameof(PrivacyPage), typeof(PrivacyPage));
+            Routing.RegisterRoute(nameof(LandingPage), typeof(LandingPage));
 
 
             Routing.RegisterRoute(nameof(WorkoutsPage), typeof(WorkoutsPage));

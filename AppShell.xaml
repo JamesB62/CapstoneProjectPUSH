@@ -10,6 +10,7 @@
     xmlns:stats="clr-namespace:CapstoneProjectPUSH.Views.Stats"
     xmlns:Trainers="clr-namespace:CapstoneProjectPUSH.Views.Trainers"
     xmlns:Profile="clr-namespace:CapstoneProjectPUSH.Views.Profile"
+    xmlns:auth="clr-namespace:CapstoneProjectPUSH.Views.Auth"
     Title="CapstoneProjectPUSH"
     Shell.FlyoutBehavior="Disabled">
     
@@ -59,6 +60,17 @@
             <ShellContent
                 ContentTemplate="{DataTemplate Profile:ProfilePage}"
                 Route="ProfilePage"/>
+
+        </Tab>
+
+        <Tab
+            
+            Route="LoginPage"
+            Title="Login">
+
+            <ShellContent
+                ContentTemplate="{DataTemplate auth:LoginPage}"
+                Route="LoginPage"/>
 
         </Tab>
 

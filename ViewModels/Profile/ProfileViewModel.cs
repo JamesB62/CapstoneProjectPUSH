@@ -56,7 +56,7 @@ namespace CapstoneProjectPUSH.ViewModels.Profile
         private async Task LogoutAsync()
         {
             _userService.Logout();
-            await Shell.Current.Navigation.PopToRootAsync();
+            await Shell.Current.GoToAsync("//MainTabs/Base/LandingPage");
         }
 
         // Generates GoToPrivacyCommand
