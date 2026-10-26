@@ -69,4 +69,5 @@ namespace CapstoneProjectPUSH.ViewModels.Auth
             await Shell.Current.GoToAsync($"../{nameof(RegisterPage)}");
         }
     }
+
 }

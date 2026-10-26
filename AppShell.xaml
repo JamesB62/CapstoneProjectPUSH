@@ -9,7 +9,7 @@
 
     <ShellContent
         Title="Landing"
-        ContentTemplate="{DataTemplate base:LandingPage}"
-        Route="LandingPage"/>
+        ContentTemplate="{DataTemplate base:FirstLoadingPage}"
+        Route="FirstLoadingPage"/>
 
 </Shell>

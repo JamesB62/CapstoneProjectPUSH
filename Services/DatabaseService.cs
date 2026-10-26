@@ -1,4 +1,6 @@
-﻿namespace CapstoneProjectPUSH.Services
+﻿using static Android.Provider.SyncStateContract;
+
+namespace CapstoneProjectPUSH.Services
 {
     public class DatabaseService
     {
@@ -37,5 +39,7 @@
 
             return _connection;
         }
+
+
     }
 }

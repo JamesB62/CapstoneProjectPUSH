@@ -73,6 +73,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Compile Update="Views\Base\FirstLoadingPage.xaml.cs">
+	    <DependentUpon>FirstLoadingPage.xaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Views\Controls\MainNavBar.xaml.cs">
 	    <DependentUpon>MainNavBar.xaml</DependentUpon>
 	  </Compile>
@@ -104,6 +107,9 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\Base\LandingPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\Base\FirstLoadingPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\Base\PrivacyPage.xaml">
