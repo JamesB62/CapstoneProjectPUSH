@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:controls="clr-namespace:CapstoneProjectPUSH.Views.Controls"
              xmlns:models="clr-namespace:CapstoneProjectPUSH.Models"
-             x:Class="CapstoneProjectPUSH.Views.Main.TrainersPage"
+             x:Class="CapstoneProjectPUSH.Views.Workouts.WorkoutsPage"
              Title=""
              Shell.NavBarIsVisible="False">
 
@@ -16,24 +15,37 @@
             RowDefinitions="Auto,Auto,Auto,*"
             RowSpacing="15">
 
-            <controls:PushHeader
-                Grid.Row="0"/>
 
-            <Label
+            <!-- Title + add button -->
+            <Grid
                 Grid.Row="1"
-                FontAttributes="Bold"
-                FontSize="18"
-                Text="PUSH Trainers"/>
+                ColumnDefinitions="*,Auto">
 
-            <Picker
+                <Label
+                    Grid.Column="0"
+                    FontAttributes="Bold"
+                    FontSize="18"
+                    Text="My Workout Plans"
+                    VerticalOptions="Center"/>
+
+                <Button
+                    Grid.Column="1"
+                    Command="{Binding AddWorkoutCommand}"
+                    FontAttributes="Bold"
+                    HeightRequest="40"
+                    Text="+"
+                    WidthRequest="50"/>
+
+            </Grid>
+
+            <SearchBar
                 Grid.Row="2"
-                ItemsSource="{Binding Specialties}"
-                SelectedItem="{Binding SelectedSpecialty}"
-                Title="Specialty"/>
+                Placeholder="Search workouts"
+                Text="{Binding SearchText}"/>
 
             <CollectionView
                 Grid.Row="3"
-                ItemsSource="{Binding Trainers}">
+                ItemsSource="{Binding Workouts}">
 
                 <CollectionView.ItemsLayout>
                     <LinearItemsLayout
@@ -44,7 +56,7 @@
                 <CollectionView.EmptyView>
                     <Label
                         HorizontalOptions="Center"
-                        Text="No trainers found."
+                        Text="No workouts found."
                         VerticalOptions="Center"/>
                 </CollectionView.EmptyView>
 
@@ -83,9 +95,6 @@
 
         </Grid>
 
-        <controls:MainNavBar
-            Grid.Row="1"
-            ActiveTab="Trainers"/>
 
     </Grid>
 

@@ -1,4 +1,5 @@
 using CapstoneProjectPUSH.Views.Main;
+using CapstoneProjectPUSH.Views.Home;
 
 namespace CapstoneProjectPUSH.ViewModels.Auth
 {

@@ -1,6 +1,6 @@
 using CapstoneProjectPUSH.Models;
 
-namespace CapstoneProjectPUSH.ViewModels.Base
+namespace CapstoneProjectPUSH.ViewModels.Workouts
 {
     public partial class WorkoutsViewModel : BaseViewModel
     {

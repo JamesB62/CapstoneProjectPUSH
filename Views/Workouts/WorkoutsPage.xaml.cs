@@ -1,5 +1,5 @@
-namespace CapstoneProjectPUSH.Views.Main;
-
+namespace CapstoneProjectPUSH.Views.Workouts;
+using CapstoneProjectPUSH.ViewModels.Workouts;
 public partial class WorkoutsPage : ContentPage
 {
 	public WorkoutsPage()

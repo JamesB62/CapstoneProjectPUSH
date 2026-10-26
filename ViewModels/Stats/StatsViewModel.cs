@@ -1,4 +1,4 @@
-namespace CapstoneProjectPUSH.ViewModels.Base
+namespace CapstoneProjectPUSH.ViewModels.Stats
 {
     public partial class StatsViewModel : BaseViewModel
     {

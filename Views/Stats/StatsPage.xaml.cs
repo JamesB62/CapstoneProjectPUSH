@@ -1,5 +1,5 @@
-namespace CapstoneProjectPUSH.Views.Main;
-
+namespace CapstoneProjectPUSH.Views.Stats;
+using CapstoneProjectPUSH.ViewModels.Stats;
 public partial class StatsPage : ContentPage
 {
 	public StatsPage()

@@ -1,4 +1,5 @@
-namespace CapstoneProjectPUSH.Views.Main;
+namespace CapstoneProjectPUSH.Views.Profile;
+using CapstoneProjectPUSH.ViewModels.Profile;
 
 public partial class ProfilePage : ContentPage
 {

@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:controls="clr-namespace:CapstoneProjectPUSH.Views.Controls"
-             x:Class="CapstoneProjectPUSH.Views.Main.ProfilePage"
+             x:Class="CapstoneProjectPUSH.Views.Profile.ProfilePage"
              Title=""
              Shell.NavBarIsVisible="False">
 
@@ -16,7 +15,7 @@
                 Padding="20"
                 Spacing="15">
 
-                <controls:PushHeader/>
+
 
                 <Label
                     FontAttributes="Bold"
@@ -84,10 +83,6 @@
             </VerticalStackLayout>
 
         </ScrollView>
-
-        <controls:MainNavBar
-            Grid.Row="1"
-            ActiveTab="Profile"/>
 
     </Grid>
 

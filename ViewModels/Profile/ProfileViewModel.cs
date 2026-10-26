@@ -1,6 +1,6 @@
 using CapstoneProjectPUSH.Views.Base;
 
-namespace CapstoneProjectPUSH.ViewModels.Base
+namespace CapstoneProjectPUSH.ViewModels.Profile
 {
     public partial class ProfileViewModel : BaseViewModel
     {
