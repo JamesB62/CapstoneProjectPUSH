@@ -8,8 +8,9 @@ namespace CapstoneProjectPUSH.Models
 {
     public class Workout
     {
-        public string Name { get; set; } = string.Empty;
-        public string Description { get; set; } = string.Empty;
+        public string Title { get; set; } = string.Empty;
+        public string Subtitle { get; set; } = string.Empty;
+        public string Category { get; set; } = string.Empty;
         public List<Exercise> Exercises { get; set; } = new List<Exercise>();
     }
 }

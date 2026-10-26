@@ -4,7 +4,7 @@
              xmlns:models="clr-namespace:CapstoneProjectPUSH.Models"
              x:Class="CapstoneProjectPUSH.Views.Home.HomePage"
              Title=""
-             Shell.NavBarIsVisible="False">
+             Shell.TabBarIsVisible="True">
 
     <Grid
         RowDefinitions="*,Auto">
@@ -62,7 +62,7 @@
                     </CollectionView.ItemsLayout>
 
                     <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="models:CardItem">
+                        <DataTemplate x:DataType="models:Workout">
 
                             <Border
                             Padding="15"
@@ -105,7 +105,7 @@
                     Spacing="10">
 
                     <BindableLayout.ItemTemplate>
-                        <DataTemplate x:DataType="models:CardItem">
+                        <DataTemplate x:DataType="models:Articles">
 
                             <Border
                             Padding="15"

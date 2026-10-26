@@ -5,11 +5,63 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:CapstoneProjectPUSH"
     xmlns:base="clr-namespace:CapstoneProjectPUSH.Views.Base"
-    Title="CapstoneProjectPUSH">
+    xmlns:home="clr-namespace:CapstoneProjectPUSH.Views.Home"
+    xmlns:workouts="clr-namespace:CapstoneProjectPUSH.Views.Workouts"
+    xmlns:stats="clr-namespace:CapstoneProjectPUSH.Views.Stats"
+    xmlns:Trainers="clr-namespace:CapstoneProjectPUSH.Views.Trainers"
+    xmlns:Profile="clr-namespace:CapstoneProjectPUSH.Views.Profile"
+    Title="CapstoneProjectPUSH"
+    Shell.FlyoutBehavior="Disabled">
+    
 
     <ShellContent
         Title="Landing"
         ContentTemplate="{DataTemplate base:FirstLoadingPage}"
         Route="FirstLoadingPage"/>
+    <TabBar
+        Route="MainTabs">
+
+        <Tab
+            Route="Home"
+            Title="Posts">
+
+            <ShellContent
+                ContentTemplate="{DataTemplate home:HomePage}"
+                Route="HomePage"/>
+
+        </Tab>
+
+        <Tab
+            Route="Workouts"
+            Title="Workouts">
+
+            <ShellContent
+                ContentTemplate="{DataTemplate workouts:WorkoutsPage}"
+                Route="WorkoutsPage"/>
+
+        </Tab>
+
+        <Tab
+
+            Route="StatsPage"
+            Title="Stats">
+
+            <ShellContent
+                ContentTemplate="{DataTemplate stats:StatsPage}"
+                Route="StatsPage"/>
+
+        </Tab>
+
+        <Tab
+            Route="ProfilePage"
+            Title="Profile">
+
+            <ShellContent
+                ContentTemplate="{DataTemplate Profile:ProfilePage}"
+                Route="ProfilePage"/>
+
+        </Tab>
+
+    </TabBar>
 
 </Shell>

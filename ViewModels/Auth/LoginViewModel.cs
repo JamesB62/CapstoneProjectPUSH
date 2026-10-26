@@ -1,4 +1,4 @@
-using CapstoneProjectPUSH.Views.Main;
+using CapstoneProjectPUSH.Views.Base;
 using CapstoneProjectPUSH.Views.Home;
 
 namespace CapstoneProjectPUSH.ViewModels.Auth
@@ -50,7 +50,7 @@ namespace CapstoneProjectPUSH.ViewModels.Auth
 
                 Password = string.Empty;
 
-                await Shell.Current.Navigation.PushAsync(new HomePage());
+                await Shell.Current.GoToAsync("//MainTabs/Home/HomePage");
             }
             catch (Exception ex)
             {
