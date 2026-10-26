@@ -13,23 +13,37 @@
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
 
-            // Services
+            // ========================= Services =========================
+
             builder.Services.AddSingleton<DatabaseService>();
+            builder.Services.AddSingleton<GymService>();
+            builder.Services.AddSingleton<TrainerService>();
             builder.Services.AddSingleton<UserService>();
 
-            // ViewModels
-            builder.Services.AddTransient<LandingViewModel>();
+            // ======================== ViewModels ========================
+
+            // Auth
             builder.Services.AddTransient<LoginViewModel>();
             builder.Services.AddTransient<RegisterViewModel>();
 
-            // Views
+            // Base
+            builder.Services.AddTransient<LandingViewModel>();
+
+            // Trainer
+            builder.Services.AddTransient<TrainerViewModel>();
+
+            // ========================== Views ===========================
+
+            // Auth
             builder.Services.AddTransient<LoginPage>();
             builder.Services.AddTransient<RegisterPage>();
+
+            // Base
             builder.Services.AddTransient<LandingPage>();
             builder.Services.AddTransient<PrivacyPage>();
 
-
-
+            // Trainer
+            builder.Services.AddTransient<TrainerPage>();
 
 #if DEBUG
             builder.Logging.AddDebug();

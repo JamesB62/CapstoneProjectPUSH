@@ -4,12 +4,14 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:CapstoneProjectPUSH"
-    xmlns:base="clr-namespace:CapstoneProjectPUSH.Views.Base"
+    xmlns:trainers="clr-namespace:CapstoneProjectPUSH.Views.Trainers"
     Title="CapstoneProjectPUSH">
 
     <ShellContent
-        Title="Landing"
-        ContentTemplate="{DataTemplate base:LandingPage}"
-        Route="LandingPage"/>
+        Title="Trainers"
+        ContentTemplate="{DataTemplate trainers:TrainerPage}"
+        Route="TrainerPage"/>
+
+    <!-- ADD NAVBAR WITH ENOUGH PAGES ARE REGISTERED -->
 
 </Shell>
