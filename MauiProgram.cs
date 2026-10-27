@@ -1,4 +1,6 @@
-﻿using CapstoneProjectPUSH.ViewModels.Profile;
+﻿using CapstoneProjectPUSH.ViewModels.Home;
+using CapstoneProjectPUSH.ViewModels.Profile;
+using CapstoneProjectPUSH.Views.Home;
 using CapstoneProjectPUSH.Views.Profile;
 
 namespace CapstoneProjectPUSH
@@ -36,6 +38,9 @@ namespace CapstoneProjectPUSH
             // Base
             builder.Services.AddTransient<LandingViewModel>();
 
+            // Home
+            builder.Services.AddTransient<HomeViewModel>();
+
             // Profile
             builder.Services.AddTransient<ProfileViewModel>();
 
@@ -51,6 +56,9 @@ namespace CapstoneProjectPUSH
             // Base
             builder.Services.AddTransient<LandingPage>();
             builder.Services.AddTransient<PrivacyPage>();
+
+            // Home
+            builder.Services.AddTransient<HomePage>();
 
             // Profile
             builder.Services.AddTransient<ProfilePage>();
