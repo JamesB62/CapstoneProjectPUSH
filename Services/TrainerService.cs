@@ -3,10 +3,12 @@
     public class TrainerService
     {
         private readonly DatabaseService _databaseService;
+        private readonly CategoryService _categoryService;
 
-        public TrainerService(DatabaseService databaseService)
+        public TrainerService(DatabaseService databaseService, CategoryService categoryService)
         {
             _databaseService = databaseService;
+            _categoryService = categoryService;
         }
 
         public async Task<List<Trainer>> GetTrainersAsync()
@@ -21,9 +23,12 @@
             var gyms = await db.Table<Gym>().ToListAsync();
             var gymNames = gyms.ToDictionary(g => g.Id, g => g.Name);
 
+            var categoryNames = await _categoryService.GetCategoryNamesAsync();
+
             foreach (var trainer in trainers)
             {
                 trainer.GymName = gymNames.GetValueOrDefault(trainer.GymId, "Unknown Gym");
+                trainer.CategoryName = categoryNames.GetValueOrDefault(trainer.CategoryId, "Uncategorised");
             }
 
             return trainers;
@@ -54,6 +59,9 @@
             {
                 trainer.GymName = gym.Name;
             }
+
+            var categoryNames = await _categoryService.GetCategoryNamesAsync();
+            trainer.CategoryName = categoryNames.GetValueOrDefault(trainer.CategoryId, "Uncategorised");
 
             return trainer;
         }

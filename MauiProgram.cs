@@ -1,4 +1,7 @@
-﻿namespace CapstoneProjectPUSH
+﻿using CapstoneProjectPUSH.ViewModels.Profile;
+using CapstoneProjectPUSH.Views.Profile;
+
+namespace CapstoneProjectPUSH
 {
     public static class MauiProgram
     {
@@ -15,10 +18,14 @@
 
             // ========================= Services =========================
 
+            builder.Services.AddSingleton<ArticleService>();
+            builder.Services.AddSingleton<CategoryService>();
             builder.Services.AddSingleton<DatabaseService>();
+            builder.Services.AddSingleton<ExerciseService>();
             builder.Services.AddSingleton<GymService>();
             builder.Services.AddSingleton<TrainerService>();
             builder.Services.AddSingleton<UserService>();
+            builder.Services.AddSingleton<WorkoutService>();
 
             // ======================== ViewModels ========================
 
@@ -28,6 +35,9 @@
 
             // Base
             builder.Services.AddTransient<LandingViewModel>();
+
+            // Profile
+            builder.Services.AddTransient<ProfileViewModel>();
 
             // Trainer
             builder.Services.AddTransient<TrainerViewModel>();
@@ -41,6 +51,9 @@
             // Base
             builder.Services.AddTransient<LandingPage>();
             builder.Services.AddTransient<PrivacyPage>();
+
+            // Profile
+            builder.Services.AddTransient<ProfilePage>();
 
             // Trainer
             builder.Services.AddTransient<TrainerPage>();

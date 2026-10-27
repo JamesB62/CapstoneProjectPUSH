@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="CapstoneProjectPUSH.Views.Profile.ProfilePage"
+             Title=""
+             Shell.NavBarIsVisible="False">
+
+    <Grid
+        RowDefinitions="*,Auto">
+
+        <ScrollView
+            Grid.Row="0">
+
+            <VerticalStackLayout
+                Padding="20"
+                Spacing="15">
+
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="18"
+                    Text="My Profile"/>
+
+                <!-- Profile picture placeholder -->
+                <Border
+                    BackgroundColor="{AppThemeBinding Light=#E5E7EB, Dark=#2C2C31}"
+                    HeightRequest="120"
+                    HorizontalOptions="Center"
+                    StrokeShape="RoundRectangle 60"
+                    StrokeThickness="0"
+                    WidthRequest="120">
+
+                    <Label
+                        FontAttributes="Bold"
+                        HorizontalOptions="Center"
+                        Text="PFP"
+                        VerticalOptions="Center"/>
+
+                </Border>
+
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="22"
+                    HorizontalOptions="Center"
+                    Text="{Binding DisplayName}"/>
+
+                <Button
+                    Command="{Binding UpdateDetailsCommand}"
+                    Text="Update Details"/>
+
+                <Button
+                    Command="{Binding MyWorkoutsCommand}"
+                    Text="My Workouts"/>
+
+                <Button
+                    Command="{Binding MyNotesCommand}"
+                    Text="My Notes"/>
+
+                <Button
+                    Command="{Binding AdminCommand}"
+                    Text="Admin"/>
+
+                <Button
+                    Command="{Binding LogoutCommand}"
+                    FontAttributes="Bold"
+                    Text="Logout"/>
+
+                <!-- Privacy link -->
+                <Label
+                    FontSize="12"
+                    Text="Privacy statement">
+
+                    <Label.GestureRecognizers>
+
+                        <TapGestureRecognizer
+                            Command="{Binding GoToPrivacyCommand}"/>
+
+                    </Label.GestureRecognizers>
+
+                </Label>
+
+            </VerticalStackLayout>
+
+        </ScrollView>
+
+    </Grid>
+
+</ContentPage>

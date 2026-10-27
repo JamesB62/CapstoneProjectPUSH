@@ -25,10 +25,13 @@
             <Label
                 Text="Get into contact with personal trainers that can support you along your physical wellbeing journey."/>
 
-            <!-- SETUP SEARCH BAR -->
-            
             <Picker
-                Title="Filter by city..."/>
+                ItemDisplayBinding="{Binding Name, x:DataType=models:Category}"
+                ItemsSource="{Binding Categories}"
+                SelectedItem="{Binding SelectedCategory}"
+                Title="Filter by category"/>
+
+            <!-- SETUP SEARCH BAR? -->
 
             <!-- AVAILABILITY TOGGLE? -->
             
@@ -82,26 +85,38 @@
 
                         <Border
                             Padding="15"
+                            BackgroundColor="{AppThemeBinding Light=#E5E7EB, Dark=#2C2C31}"
                             StrokeShape="RoundRectangle 10">
 
-                            <VerticalStackLayout
-                                Spacing="5">
+                            <Grid
+                                ColumnDefinitions="*,Auto"
+                                ColumnSpacing="5"
+                                RowDefinitions="Auto,Auto,Auto"
+                                RowSpacing="5">
 
                                 <Label
+                                    Grid.Column="0"
+                                    Grid.Row="0"
                                     FontAttributes="Bold"
                                     FontSize="16"
                                     Text="{Binding FullName}"/>
 
                                 <Label
+                                    Grid.Column="1"
+                                    Grid.Row="0"
+                                    Text="{Binding CategoryName}"/>
+
+                                <Label
+                                    Grid.Column="0"
+                                    Grid.Row="1"
                                     Text="{Binding GymName}"/>
 
                                 <Label
-                                    Text="{Binding Specialty}"/>
-
-                                <Label
+                                    Grid.Column="0"
+                                    Grid.Row="2"
                                     Text="{Binding AvailableText}"/>
 
-                            </VerticalStackLayout>
+                            </Grid>
 
                         </Border>
 

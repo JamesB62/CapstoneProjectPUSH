@@ -4,14 +4,21 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:CapstoneProjectPUSH"
+    
+    xmlns:auth="clr-namespace:CapstoneProjectPUSH.Views.Auth"
+    xmlns:base="clr-namespace:CapstoneProjectPUSH.Views.Base"
+    
+    xmlns:profile="clr-namespace:CapstoneProjectPUSH.Views.Profile"
     xmlns:trainers="clr-namespace:CapstoneProjectPUSH.Views.Trainers"
-    Title="CapstoneProjectPUSH">
+
+    Title="CapstoneProjectPUSH"
+    Shell.FlyoutBehavior="Disabled">
 
     <ShellContent
-        Title="Trainers"
-        ContentTemplate="{DataTemplate trainers:TrainerPage}"
-        Route="TrainerPage"/>
+        Title="ProfilePage"
+        ContentTemplate="{DataTemplate profile:ProfilePage}"
+        Route="ProfilePage"/>
 
-    <!-- ADD NAVBAR WITH ENOUGH PAGES ARE REGISTERED -->
+    <!-- ADD NAVBAR WHEN ENOUGH PAGES ARE REGISTERED -->
 
 </Shell>
