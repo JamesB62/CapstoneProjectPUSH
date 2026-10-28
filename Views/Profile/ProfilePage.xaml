@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="CapstoneProjectPUSH.Views.Profile.ProfilePage"
              Title=""
-             Shell.TabBarIsVisible="True">
+             Shell.NavBarIsVisible="False">
 
     <Grid
         RowDefinitions="*,Auto">
@@ -14,8 +14,6 @@
             <VerticalStackLayout
                 Padding="20"
                 Spacing="15">
-
-
 
                 <Label
                     FontAttributes="Bold"

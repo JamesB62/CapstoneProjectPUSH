@@ -2,85 +2,168 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:models="clr-namespace:CapstoneProjectPUSH.Models"
+             xmlns:vm="clr-namespace:CapstoneProjectPUSH.ViewModels.Trainers"
              x:Class="CapstoneProjectPUSH.Views.Trainers.TrainersPage"
-             Title=""
-             Shell.NavBarIsVisible="False">
+             x:DataType="vm:TrainersViewModel"
+             Title="">
 
     <Grid
-        RowDefinitions="*,Auto">
+        Padding="20"
+        RowDefinitions="Auto,*"
+        RowSpacing="15">
 
-        <Grid
+        <VerticalStackLayout
             Grid.Row="0"
-            Padding="20,20,20,0"
-            RowDefinitions="Auto,Auto,Auto,*"
-            RowSpacing="15">
-
+            Spacing="10">
 
             <Label
-                Grid.Row="1"
                 FontAttributes="Bold"
                 FontSize="18"
                 Text="PUSH Trainers"/>
 
             <Picker
-                Grid.Row="2"
-                ItemsSource="{Binding Specialties}"
-                SelectedItem="{Binding SelectedSpecialty}"
-                Title="Specialty"/>
+                ItemDisplayBinding="{Binding Name, x:DataType=models:Category}"
+                ItemsSource="{Binding Categories}"
+                SelectedItem="{Binding SelectedCategory}"
+                Title="Filter by category"/>
 
+            <!-- ADD AVAILABILITY TOGGLE? -->
+            
+            <Label
+                FontAttributes="Italic"
+                FontSize="12"
+                Text="{Binding StatusMessage}"/>
+
+        </VerticalStackLayout>
+
+        <RefreshView
+            Command="{Binding LoadTrainersCommand}"
+            Grid.Row="1"
+            IsRefreshing="{Binding IsBusy, Mode=OneWay}">
+            
             <CollectionView
-                Grid.Row="3"
-                ItemsSource="{Binding Trainers}">
+                ItemsSource="{Binding Trainers}"
+                SelectionMode="Single"
+                SelectedItem="{Binding SelectedTrainer, Mode=TwoWay}">
+
+                <CollectionView.EmptyView>
+
+                    <VerticalStackLayout
+                        HorizontalOptions="Center"
+                        VerticalOptions="Center">
+
+                        <Label
+                            FontAttributes="Italic"
+                            HorizontalTextAlignment="Center"
+                            Text="No trainers found"/>
+
+                        <Label
+                            FontAttributes="Italic"
+                            HorizontalTextAlignment="Center"
+                            Text="Pull down to try again"/>
+
+                    </VerticalStackLayout>
+
+                </CollectionView.EmptyView>
 
                 <CollectionView.ItemsLayout>
+
                     <LinearItemsLayout
                         ItemSpacing="10"
                         Orientation="Vertical"/>
+
                 </CollectionView.ItemsLayout>
 
-                <CollectionView.EmptyView>
-                    <Label
-                        HorizontalOptions="Center"
-                        Text="No trainers found."
-                        VerticalOptions="Center"/>
-                </CollectionView.EmptyView>
-
                 <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="models:CardItem">
+
+                    <DataTemplate
+                        x:DataType="models:Trainer">
 
                         <Border
                             Padding="15"
-                            BackgroundColor="{AppThemeBinding Light=#E5E7EB, Dark=#2C2C31}"
-                            StrokeShape="RoundRectangle 10"
-                            StrokeThickness="0"
-                            HeightRequest="100">
+                            StrokeShape="RoundRectangle 10">
 
-                            <VerticalStackLayout
-                                Spacing="4"
-                                VerticalOptions="Center">
+                            <Grid
+                                ColumnDefinitions="*,Auto"
+                                ColumnSpacing="10"
+                                RowDefinitions="Auto,Auto"
+                                RowSpacing="10">
 
                                 <Label
+                                    Grid.Column="0"
+                                    Grid.Row="0"
                                     FontAttributes="Bold"
-                                    HorizontalTextAlignment="Center"
-                                    Text="{Binding Title}"/>
+                                    FontSize="16"
+                                    LineBreakMode="TailTruncation"
+                                    Text="{Binding FullName}"
+                                    VerticalOptions="Center"/>
 
-                                <Label
-                                    FontSize="12"
-                                    HorizontalTextAlignment="Center"
-                                    Text="{Binding Subtitle}"/>
+                                <Border
+                                    Grid.Column="1"
+                                    Grid.Row="0"
+                                    Padding="10,5"
+                                    StrokeShape="RoundRectangle 10">
 
-                            </VerticalStackLayout>
+                                    <Label
+                                        FontSize="12"
+                                        Text="{Binding AvailableText}"/>
+
+                                </Border>
+
+                                <VerticalStackLayout
+                                    Grid.Column="0"
+                                    Grid.Row="1"
+                                    Spacing="3">
+
+                                    <HorizontalStackLayout>
+
+                                        <Label
+                                            Text="• Specialty: "/>
+
+                                        <Label
+                                            Text="{Binding CategoryName}"/>
+
+                                    </HorizontalStackLayout>
+
+                                    <HorizontalStackLayout>
+
+                                        <Label
+                                            Text="• Gym: "/>
+
+                                        <Label>
+
+                                            <Label.Text>
+
+                                                <MultiBinding
+                                                StringFormat="{}{0}, {1}">
+
+                                                    <Binding
+                                                    Path="GymName"/>
+
+                                                    <Binding
+                                                    Path="GymCity"/>
+
+                                                </MultiBinding>
+
+                                            </Label.Text>
+
+                                        </Label>
+
+                                    </HorizontalStackLayout>
+
+                                </VerticalStackLayout>
+
+                            </Grid>
 
                         </Border>
 
                     </DataTemplate>
+
                 </CollectionView.ItemTemplate>
 
             </CollectionView>
 
-        </Grid>
-
-
+        </RefreshView>
 
     </Grid>
 

@@ -1,45 +1,121 @@
-using CapstoneProjectPUSH.Models;
-
-namespace CapstoneProjectPUSH.ViewModels.Home
+﻿namespace CapstoneProjectPUSH.ViewModels.Home
 {
     public partial class HomeViewModel : BaseViewModel
     {
-        private List<Workout> allPlans = new List<Workout>();
-        private string currentCategory = string.Empty;
+        private readonly ArticleService _articleService;
+        private readonly CategoryService _categoryService;
+        private readonly UserService _userService;
+        private readonly WorkoutService _workoutService;
 
-        public List<Article> FeaturedArticles { get; set; } = new List<Article>();
-
-        [ObservableProperty]
-        public partial List<Workout> FeaturedPlans { get; set; }
-
-        public HomeViewModel()
+        public HomeViewModel(
+            ArticleService articleService,
+            CategoryService categoryService,
+            UserService userService,
+            WorkoutService workoutService)
         {
-            allPlans.Add(new Workout { Name = "Push Day Basics", Subtitle = "Chest, shoulders, triceps", CategoryName = "Strength" });
-            allPlans.Add(new Workout { Name = "Full Body Starter", Subtitle = "3 days a week", CategoryName = "Strength" });
-            allPlans.Add(new Workout { Name = "Couch to 5K", Subtitle = "8 week running plan", CategoryName = "Cardio" });
-            allPlans.Add(new Workout { Name = "HIIT Burner", Subtitle = "20 minute intervals", CategoryName = "Cardio" });
-            allPlans.Add(new Workout { Name = "Morning Stretch", Subtitle = "10 minute routine", CategoryName = "Flexibility" });
+            _articleService = articleService;
+            _categoryService = categoryService;
+            _userService = userService;
+            _workoutService = workoutService;
+        }
 
-            FeaturedArticles.Add(new Article { Title = "How Much Protein Do You Need?", Subtitle = "5 min read" });
-            FeaturedArticles.Add(new Article { Title = "Progressive Overload Explained", Subtitle = "4 min read" });
-            FeaturedArticles.Add(new Article { Title = "Sleep and Muscle Recovery", Subtitle = "6 min read" });
+        private List<Category> _categories = new();
+        private List<Workout> AllWorkouts = new();
+        private int currentCategoryId = 0;
 
-            FeaturedPlans = allPlans;
+        public ObservableCollection<Article> FeaturedArticles { get; } = new();
+
+        public ObservableCollection<Workout> Workouts { get; } = new();
+
+        [RelayCommand]
+        private async Task LoadHomeAsync()
+        {
+            if (IsBusy)
+            {
+                return;
+            }
+
+            IsBusy = true;
+
+            try
+            {
+                _categories = await _categoryService.GetCategoriesAsync();
+
+                var articles = await _articleService.GetArticlesAsync();
+
+                FeaturedArticles.Clear();
+
+                // Currently grabs the first 3 articles, change?
+                foreach (var article in articles.Take(3))
+                {
+                    FeaturedArticles.Add(article);
+                }
+
+                // Only shows logged in user's workouts
+                var user = _userService.CurrentUser;
+
+                if (user is null)
+                {
+                    AllWorkouts = new List<Workout>();
+                }
+                else
+                {
+                    AllWorkouts = await _workoutService.GetWorkoutsForUserAsync(user.Id);
+                }
+
+                ApplyFilter();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex);
+            }
+            finally
+            {
+                IsBusy = false;
+            }
         }
 
         // Generates SelectCategoryCommand
         [RelayCommand]
-        private void SelectCategory(string category)
+        private void SelectCategory(string categoryName)
         {
-            if (currentCategory == category)
+            var category = _categories.FirstOrDefault(c => c.Name == categoryName);
+
+            if (category is null)
             {
-                currentCategory = string.Empty;
-                FeaturedPlans = allPlans;
+                return;
+            }
+
+            if (currentCategoryId == category.Id)
+            {
+                currentCategoryId = 0;
             }
             else
             {
-                currentCategory = category;
-                FeaturedPlans = allPlans.Where(p => p.CategoryName == category).ToList();
+                currentCategoryId = category.Id;
+            }
+
+            ApplyFilter();
+        }
+
+        private void ApplyFilter()
+        {
+            List<Workout> filtered;
+
+            if (currentCategoryId == 0)
+            {
+                filtered = AllWorkouts;
+            }
+            else
+            {
+                filtered = AllWorkouts.Where(w => w.CategoryId == currentCategoryId).ToList();
+            }
+
+            Workouts.Clear();
+
+            foreach (var workout in filtered)
+            {
+                Workouts.Add(workout);
             }
         }
     }

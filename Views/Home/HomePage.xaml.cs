@@ -1,18 +1,19 @@
 namespace CapstoneProjectPUSH.Views.Home;
-using CapstoneProjectPUSH.ViewModels.Home;
-using CapstoneProjectPUSH.Models;
-using CapstoneProjectPUSH.Services;
 
 public partial class HomePage : ContentPage
 {
-	public HomePage()
+	private readonly HomeViewModel _homeViewModel;
+
+	public HomePage(HomeViewModel homeViewModel)
 	{
 		InitializeComponent();
-		BindingContext = new HomeViewModel();
+		_homeViewModel = homeViewModel;
+		BindingContext = _homeViewModel;
 	}
 
-	protected override bool OnBackButtonPressed()
-	{
-		return true;
-	}
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+        await _homeViewModel.LoadHomeCommand.ExecuteAsync(null);
+    }
 }

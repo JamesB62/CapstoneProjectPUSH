@@ -1,15 +1,18 @@
 namespace CapstoneProjectPUSH.Views.Workouts;
-using CapstoneProjectPUSH.ViewModels.Workouts;
+
 public partial class WorkoutsPage : ContentPage
 {
-	public WorkoutsPage()
+	private readonly WorkoutsViewModel _workoutsViewModel;
+
+	public WorkoutsPage(WorkoutsViewModel workoutsViewModel)
 	{
 		InitializeComponent();
-		BindingContext = new WorkoutsViewModel();
+		_workoutsViewModel = workoutsViewModel;
+		BindingContext = workoutsViewModel;
 	}
-
-	protected override bool OnBackButtonPressed()
+	protected override async void OnAppearing()
 	{
-		return true;
+		base.OnAppearing();
+		await _workoutsViewModel.LoadWorkoutsCommand.ExecuteAsync(null);
 	}
 }

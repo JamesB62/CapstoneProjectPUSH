@@ -1,39 +1,38 @@
-using CapstoneProjectPUSH.Models;
-
 namespace CapstoneProjectPUSH.ViewModels.Workouts
 {
     public partial class WorkoutsViewModel : BaseViewModel
     {
-        private List<CardItem> allWorkouts = new List<CardItem>();
+        private readonly WorkoutService _workoutService;
+        private List<Workout> _allWorkouts = new();
+        public ObservableCollection<Workout> Workouts { get; } = new();
 
         [ObservableProperty]
-        public partial string SearchText { get; set; }
+        private string searchText = string.Empty;
 
-        [ObservableProperty]
-        public partial List<CardItem> Workouts { get; set; }
-
-        public WorkoutsViewModel()
+        public WorkoutsViewModel(WorkoutService workoutService)
         {
-            allWorkouts.Add(new CardItem { Title = "Push Day", Subtitle = "5 exercises" });
-            allWorkouts.Add(new CardItem { Title = "Pull Day", Subtitle = "6 exercises" });
-            allWorkouts.Add(new CardItem { Title = "Leg Day", Subtitle = "5 exercises" });
-            allWorkouts.Add(new CardItem { Title = "Upper Body", Subtitle = "8 exercises" });
-            allWorkouts.Add(new CardItem { Title = "Core Finisher", Subtitle = "4 exercises" });
-
-            SearchText = string.Empty;
-            Workouts = allWorkouts;
+            _workoutService = workoutService;
         }
 
-        partial void OnSearchTextChanged(string value)
+        partial void OnSearchTextChanged(string value) => ApplyFilter();
+
+        [RelayCommand]
+        private async Task LoadWorkoutsAsync()
         {
-            if (string.IsNullOrWhiteSpace(value))
-            {
-                Workouts = allWorkouts;
-            }
-            else
-            {
-                Workouts = allWorkouts.Where(w => w.Title.ToLower().Contains(value.ToLower())).ToList();
-            }
+            int userId = /* Test user 1 */ 1;
+            _allWorkouts = await _workoutService.GetWorkoutsForUserAsync(userId);
+            ApplyFilter();
+        }
+
+        private void ApplyFilter()
+        {
+            var q = SearchText?.Trim() ?? string.Empty;
+            var filtered = string.IsNullOrEmpty(q)
+                ? _allWorkouts
+                : _allWorkouts.Where(w => w.Name.Contains(q, StringComparison.OrdinalIgnoreCase)).ToList();
+
+            Workouts.Clear();
+            foreach (var w in filtered) Workouts.Add(w);
         }
 
         // Generates AddWorkoutCommand

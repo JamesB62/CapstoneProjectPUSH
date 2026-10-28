@@ -1,16 +1,19 @@
 namespace CapstoneProjectPUSH.Views.Profile;
-using CapstoneProjectPUSH.ViewModels.Profile;
 
 public partial class ProfilePage : ContentPage
 {
-	public ProfilePage(UserService userService)
-	{
-		InitializeComponent();
-		BindingContext = new ProfileViewModel(userService);
-	}
+    private readonly ProfileViewModel _profileViewModel;
 
-	protected override bool OnBackButtonPressed()
-	{
-		return true;
-	}
+    public ProfilePage(ProfileViewModel profileViewModel)
+    {
+        InitializeComponent();
+        _profileViewModel = profileViewModel;
+        BindingContext = _profileViewModel;
+    }
+
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+        _profileViewModel.LoadProfile();
+    }
 }

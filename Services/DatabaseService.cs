@@ -42,6 +42,7 @@
                     await SeedGymsAsync();
                     await SeedTrainersAsync();
                     await SeedExercisesAsync();
+                    await SeedWorkoutsAsync();
                     await SeedArticlesAsync();
                 }
             }
@@ -187,6 +188,21 @@
             };
 
             await db.InsertAllAsync(exercises);
+        }
+
+        //seed data for workout plan
+        private async Task SeedWorkoutsAsync()
+        {
+            var db = await GetConnectionAsync();
+            if (await db.Table<Workout>().CountAsync() > 0) return;
+
+            await db.InsertAllAsync(new[]
+            {
+                new Workout { Name = "Push Day", UserId = 1, CategoryId = 1 },
+                new Workout { Name = "Morning HIIT", UserId = 1, CategoryId = 3 },
+                new Workout { Name = "Yoga Flow", UserId = 1, CategoryId = 4 },
+
+            });
         }
 
         private async Task SeedArticlesAsync()

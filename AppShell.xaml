@@ -4,19 +4,20 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:CapstoneProjectPUSH"
+    
+    xmlns:auth="clr-namespace:CapstoneProjectPUSH.Views.Auth"
     xmlns:base="clr-namespace:CapstoneProjectPUSH.Views.Base"
     xmlns:home="clr-namespace:CapstoneProjectPUSH.Views.Home"
-    xmlns:workouts="clr-namespace:CapstoneProjectPUSH.Views.Workouts"
+    xmlns:profile="clr-namespace:CapstoneProjectPUSH.Views.Profile"
     xmlns:stats="clr-namespace:CapstoneProjectPUSH.Views.Stats"
-    xmlns:Trainers="clr-namespace:CapstoneProjectPUSH.Views.Trainers"
-    xmlns:Profile="clr-namespace:CapstoneProjectPUSH.Views.Profile"
-    xmlns:auth="clr-namespace:CapstoneProjectPUSH.Views.Auth"
+    xmlns:trainers="clr-namespace:CapstoneProjectPUSH.Views.Trainers"
+    xmlns:workouts="clr-namespace:CapstoneProjectPUSH.Views.Workouts"
+
     Title="CapstoneProjectPUSH"
     Shell.FlyoutBehavior="Disabled">
-    
 
     <ShellContent
-        Title="Landing"
+        Title="FirstLoadingPage"
         ContentTemplate="{DataTemplate base:FirstLoadingPage}"
         Route="FirstLoadingPage"/>
     
@@ -24,8 +25,8 @@
         Route="MainTabs">
 
         <Tab
-            Route="Home"
-            Title="Posts">
+            Route="HomePage"
+            Title="Home">
 
             <ShellContent
                 ContentTemplate="{DataTemplate home:HomePage}"
@@ -34,7 +35,7 @@
         </Tab>
 
         <Tab
-            Route="Workouts"
+            Route="WorkoutsPage"
             Title="Workouts">
 
             <ShellContent
@@ -55,23 +56,23 @@
         </Tab>
 
         <Tab
+
+            Route="TrainersPage"
+            Title="Trainers">
+
+            <ShellContent
+                ContentTemplate="{DataTemplate trainers:TrainersPage}"
+                Route="TrainersPage"/>
+
+        </Tab>
+      
+        <Tab
             Route="ProfilePage"
             Title="Profile">
 
             <ShellContent
-                ContentTemplate="{DataTemplate Profile:ProfilePage}"
+                ContentTemplate="{DataTemplate profile:ProfilePage}"
                 Route="ProfilePage"/>
-
-        </Tab>
-
-        <Tab
-            
-            Route="LoginPage"
-            Title="Login">
-
-            <ShellContent
-                ContentTemplate="{DataTemplate auth:LoginPage}"
-                Route="LoginPage"/>
 
         </Tab>
 

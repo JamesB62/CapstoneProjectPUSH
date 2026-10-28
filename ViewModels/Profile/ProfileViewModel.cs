@@ -1,27 +1,31 @@
-using CapstoneProjectPUSH.Views.Base;
-
-namespace CapstoneProjectPUSH.ViewModels.Profile
+﻿namespace CapstoneProjectPUSH.ViewModels.Profile
 {
     public partial class ProfileViewModel : BaseViewModel
     {
         private readonly UserService _userService;
 
-        [ObservableProperty]
-        public partial string DisplayName { get; set; }
-
         public ProfileViewModel(UserService userService)
         {
             _userService = userService;
+            LoadProfile();
+        }
 
-            if (_userService.CurrentUser != null)
-            {
-                DisplayName = _userService.CurrentUser.DisplayName;
-            }
-            else
+        public void LoadProfile()
+        {
+            var user = _userService.CurrentUser;
+
+            if (user is null)
             {
                 DisplayName = "Username";
             }
+            else
+            {
+                DisplayName = user.DisplayName;
+            }
         }
+
+        [ObservableProperty]
+        public partial string DisplayName { get; set; }
 
         // Generates UpdateDetailsCommand
         [RelayCommand]
@@ -56,7 +60,8 @@ namespace CapstoneProjectPUSH.ViewModels.Profile
         private async Task LogoutAsync()
         {
             _userService.Logout();
-            await Shell.Current.GoToAsync("//MainTabs/Base/LandingPage");
+            DisplayName = "Username";
+            await Shell.Current.GoToAsync("//LoginPage");
         }
 
         // Generates GoToPrivacyCommand

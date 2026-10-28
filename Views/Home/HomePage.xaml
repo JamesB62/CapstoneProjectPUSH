@@ -2,7 +2,9 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:models="clr-namespace:CapstoneProjectPUSH.Models"
+             xmlns:vm="clr-namespace:CapstoneProjectPUSH.ViewModels.Home"
              x:Class="CapstoneProjectPUSH.Views.Home.HomePage"
+             x:DataType="vm:HomeViewModel"
              Title=""
              Shell.TabBarIsVisible="True">
 
@@ -20,9 +22,8 @@
                 <Label
                     FontAttributes="Bold"
                     FontSize="18"
-                    Text="Featured Workout Plans"/>
+                    Text="Your Workouts"/>
 
-                <!-- Category filters -->
                 <Grid
                     ColumnDefinitions="*,*,*"
                     ColumnSpacing="10">
@@ -30,7 +31,7 @@
                     <Button
                         Grid.Column="0"
                         Command="{Binding SelectCategoryCommand}"
-                        CommandParameter="Strength"
+                        CommandParameter="Strength Training"
                         FontSize="12"
                         Text="Strength"/>
 
@@ -44,16 +45,22 @@
                     <Button
                         Grid.Column="2"
                         Command="{Binding SelectCategoryCommand}"
-                        CommandParameter="Flexibility"
+                        CommandParameter="Flexibility &amp; Mobility"
                         FontSize="12"
                         Text="Flexibility"/>
 
                 </Grid>
 
-                <!-- Featured plans (horizontal) -->
                 <CollectionView
                     HeightRequest="170"
-                    ItemsSource="{Binding FeaturedPlans}">
+                    ItemsSource="{Binding Workouts}">
+
+                    <CollectionView.EmptyView>
+                        <Label
+                            FontAttributes="Italic"
+                            HorizontalTextAlignment="Center"
+                            Text="No workouts yet."/>
+                    </CollectionView.EmptyView>
 
                     <CollectionView.ItemsLayout>
                         <LinearItemsLayout
@@ -65,10 +72,10 @@
                         <DataTemplate x:DataType="models:Workout">
 
                             <Border
-                            Padding="15"
-                            BackgroundColor="{AppThemeBinding Light=#E5E7EB, Dark=#2C2C31}"
-                            StrokeShape="RoundRectangle 10"
-                            StrokeThickness="0"
+                                Padding="15"
+                                BackgroundColor="{AppThemeBinding Light=#E5E7EB, Dark=#2C2C31}"
+                                StrokeShape="RoundRectangle 10"
+                                StrokeThickness="0"
                                 WidthRequest="160">
 
                                 <VerticalStackLayout
@@ -78,12 +85,12 @@
                                     <Label
                                         FontAttributes="Bold"
                                         HorizontalTextAlignment="Center"
-                                        Text="{Binding Title}"/>
+                                        Text="{Binding Name}"/>
 
                                     <Label
                                         FontSize="12"
                                         HorizontalTextAlignment="Center"
-                                        Text="{Binding Subtitle}"/>
+                                        Text="{Binding CategoryName}"/>
 
                                 </VerticalStackLayout>
 
@@ -99,7 +106,6 @@
                     FontSize="18"
                     Text="Featured Articles"/>
 
-                <!-- Featured articles (vertical) -->
                 <VerticalStackLayout
                     BindableLayout.ItemsSource="{Binding FeaturedArticles}"
                     Spacing="10">
@@ -108,10 +114,10 @@
                         <DataTemplate x:DataType="models:Article">
 
                             <Border
-                            Padding="15"
-                            BackgroundColor="{AppThemeBinding Light=#E5E7EB, Dark=#2C2C31}"
-                            StrokeShape="RoundRectangle 10"
-                            StrokeThickness="0"
+                                Padding="15"
+                                BackgroundColor="{AppThemeBinding Light=#E5E7EB, Dark=#2C2C31}"
+                                StrokeShape="RoundRectangle 10"
+                                StrokeThickness="0"
                                 HeightRequest="140">
 
                                 <VerticalStackLayout
@@ -126,7 +132,7 @@
                                     <Label
                                         FontSize="12"
                                         HorizontalTextAlignment="Center"
-                                        Text="{Binding Subtitle}"/>
+                                        Text="{Binding ReadingTime, StringFormat='{0} min read'}"/>
 
                                 </VerticalStackLayout>
 

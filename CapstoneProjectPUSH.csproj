@@ -92,12 +92,15 @@
 	    <DependentUpon>ProfilePage.xaml</DependentUpon>
 	  </Compile>
 	</ItemGroup>
-
+   
 	<ItemGroup>
 	  <MauiXaml Update="Views\Auth\LoginPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\Auth\RegisterPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\Base\FirstLoadingPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\Base\LandingPage.xaml">
@@ -118,6 +121,9 @@
 	  <MauiXaml Update="Views\Trainers\TrainersPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+   	<MauiXaml Update="Views\Trainers\TrainerDetailsPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Views\Stats\StatsPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
@@ -125,7 +131,7 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	</ItemGroup>
-
+   
 	<ItemGroup>
 	  <Folder Include="ViewModels\Admin\" />
 	</ItemGroup>

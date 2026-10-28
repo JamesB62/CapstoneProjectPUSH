@@ -5,40 +5,38 @@
              Title="">
 
     <Grid
-            Padding="20,0,20,20"
-            VerticalOptions="Center">
+        Padding="20,0,20,20"
+        VerticalOptions="Center">
 
         <Border
-                Padding="30"
-                StrokeShape="RoundRectangle 10">
-            
-            <VerticalStackLayout>
-                
-                
-                <Label 
-            Text="Welcome to PUSH!"
-            FontSize="Title"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center"
-            Grid.Column="2"
-            Grid.Row="1"/>
+            Padding="30"
+            StrokeShape="RoundRectangle 10">
 
+            <VerticalStackLayout>
+
+                <Label 
+                    Text="Welcome to PUSH!"
+                    FontSize="Title"
+                    VerticalOptions="Center" 
+                    HorizontalOptions="Center"
+                    Grid.Column="2"
+                    Grid.Row="1"/>
 
                 <Label
-            Text="Preparing your exercise journey"
-            FontSize="Caption"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
+                    Text="Preparing your exercise journey"
+                    FontSize="Caption"
+                    VerticalOptions="Center" 
+                    HorizontalOptions="Center"/>
 
-                <ProgressBar x:Name="MyProgressBar">
+                <ProgressBar
+                    x:Name="MyProgressBar">
 
                 </ProgressBar>
-
-
 
             </VerticalStackLayout>
 
         </Border>
 
     </Grid>
+    
 </ContentPage>
