@@ -1,5 +1,3 @@
-using CapstoneProjectPUSH.ViewModels.Profile;
-
 namespace CapstoneProjectPUSH.Views.Profile;
 
 public partial class ProfilePage : ContentPage

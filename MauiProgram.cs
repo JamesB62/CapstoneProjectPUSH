@@ -1,8 +1,3 @@
-﻿using CapstoneProjectPUSH.ViewModels.Home;
-using CapstoneProjectPUSH.ViewModels.Profile;
-using CapstoneProjectPUSH.Views.Home;
-using CapstoneProjectPUSH.Views.Profile;
-
 namespace CapstoneProjectPUSH
 {
     public static class MauiProgram
@@ -23,11 +18,13 @@ namespace CapstoneProjectPUSH
             builder.Services.AddSingleton<ArticleService>();
             builder.Services.AddSingleton<CategoryService>();
             builder.Services.AddSingleton<DatabaseService>();
-            builder.Services.AddSingleton<ExerciseService>();
+            builder.Services.AddSingleton<ExerciseService>(); 
             builder.Services.AddSingleton<GymService>();
+            builder.Services.AddSingleton<StatsService>();
             builder.Services.AddSingleton<TrainerService>();
             builder.Services.AddSingleton<UserService>();
             builder.Services.AddSingleton<WorkoutService>();
+            builder.Services.AddSingleton<WorkoutLogService>();
 
             // ======================== ViewModels ========================
 
@@ -43,6 +40,9 @@ namespace CapstoneProjectPUSH
 
             // Profile
             builder.Services.AddTransient<ProfileViewModel>();
+
+            // Stats
+            builder.Services.AddTransient<StatsViewModel>();
 
             // Trainer
             builder.Services.AddTransient<TrainerDetailsViewModel>();
@@ -66,12 +66,15 @@ namespace CapstoneProjectPUSH
 
             // Profile
             builder.Services.AddTransient<ProfilePage>();
-
+          
+            // Stats
+            builder.Services.AddTransient<StatsPage>();
+          
             // Trainer
             builder.Services.AddTransient<TrainerDetailsPage>();
             builder.Services.AddTransient<TrainersPage>();
-
-            // Workouts
+          
+            // Workout
             builder.Services.AddTransient<WorkoutsPage>();
 
 #if DEBUG

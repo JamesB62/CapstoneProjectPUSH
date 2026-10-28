@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFrameworks>net10.0-android</TargetFrameworks>
@@ -73,14 +73,26 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Compile Update="Views\Trainers\TrainersPage.xaml.cs">
-	    <DependentUpon>TrainersPage.xaml</DependentUpon>
+	  <Compile Update="Views\Base\FirstLoadingPage.xaml.cs">
+	    <DependentUpon>FirstLoadingPage.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Home\HomePage.xaml.cs">
+	    <DependentUpon>HomePage.xaml</DependentUpon>
 	  </Compile>
 	  <Compile Update="Views\Workouts\WorkoutsPage.xaml.cs">
 	    <DependentUpon>WorkoutsPage.xaml</DependentUpon>
 	  </Compile>
+	  <Compile Update="Views\Trainers\TrainersPage.xaml.cs">
+	    <DependentUpon>TrainersPage.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Stats\StatsPage.xaml.cs">
+	    <DependentUpon>StatsPage.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Profile\ProfilePage.xaml.cs">
+	    <DependentUpon>ProfilePage.xaml</DependentUpon>
+	  </Compile>
 	</ItemGroup>
-
+   
 	<ItemGroup>
 	  <MauiXaml Update="Views\Auth\LoginPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
@@ -94,21 +106,34 @@
 	  <MauiXaml Update="Views\Base\LandingPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="Views\Base\FirstLoadingPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Views\Base\PrivacyPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\Home\HomePage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\Profile\ProfilePage.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
-	  <MauiXaml Update="Views\Trainers\TrainerDetailsPage.xaml">
+	  <MauiXaml Update="Views\Workouts\WorkoutsPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\Trainers\TrainersPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+   	<MauiXaml Update="Views\Trainers\TrainerDetailsPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\Stats\StatsPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\Profile\ProfilePage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	</ItemGroup>
+   
+	<ItemGroup>
+	  <Folder Include="ViewModels\Admin\" />
 	</ItemGroup>
 
 </Project>

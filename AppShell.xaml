@@ -7,25 +7,75 @@
     
     xmlns:auth="clr-namespace:CapstoneProjectPUSH.Views.Auth"
     xmlns:base="clr-namespace:CapstoneProjectPUSH.Views.Base"
-    
+    xmlns:home="clr-namespace:CapstoneProjectPUSH.Views.Home"
     xmlns:profile="clr-namespace:CapstoneProjectPUSH.Views.Profile"
+    xmlns:stats="clr-namespace:CapstoneProjectPUSH.Views.Stats"
     xmlns:trainers="clr-namespace:CapstoneProjectPUSH.Views.Trainers"
     xmlns:workouts="clr-namespace:CapstoneProjectPUSH.Views.Workouts"
-
 
     Title="CapstoneProjectPUSH"
     Shell.FlyoutBehavior="Disabled">
 
     <ShellContent
-        Title="WorkoutsPage"
-        ContentTemplate="{DataTemplate  workouts:WorkoutsPage}"
-        Route="WorkoutsPage"/>
+        Title="FirstLoadingPage"
+        ContentTemplate="{DataTemplate base:FirstLoadingPage}"
+        Route="FirstLoadingPage"/>
+    
+    <TabBar
+        Route="MainTabs">
 
-    <!-- ADD NAVBAR WHEN ENOUGH PAGES ARE REGISTERED -->
-    
-    <ShellContent
-        Title="LandingPage"
-        ContentTemplate="{DataTemplate base:LandingPage}"
-        Route="LandingPage"/>
-    
+        <Tab
+            Route="HomePage"
+            Title="Home">
+
+            <ShellContent
+                ContentTemplate="{DataTemplate home:HomePage}"
+                Route="HomePage"/>
+
+        </Tab>
+
+        <Tab
+            Route="WorkoutsPage"
+            Title="Workouts">
+
+            <ShellContent
+                ContentTemplate="{DataTemplate workouts:WorkoutsPage}"
+                Route="WorkoutsPage"/>
+
+        </Tab>
+
+        <Tab
+
+            Route="StatsPage"
+            Title="Stats">
+
+            <ShellContent
+                ContentTemplate="{DataTemplate stats:StatsPage}"
+                Route="StatsPage"/>
+
+        </Tab>
+
+        <Tab
+
+            Route="TrainersPage"
+            Title="Trainers">
+
+            <ShellContent
+                ContentTemplate="{DataTemplate trainers:TrainersPage}"
+                Route="TrainersPage"/>
+
+        </Tab>
+      
+        <Tab
+            Route="ProfilePage"
+            Title="Profile">
+
+            <ShellContent
+                ContentTemplate="{DataTemplate profile:ProfilePage}"
+                Route="ProfilePage"/>
+
+        </Tab>
+
+    </TabBar>
+
 </Shell>

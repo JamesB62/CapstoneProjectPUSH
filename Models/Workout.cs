@@ -9,6 +9,9 @@
         [NotNull, MaxLength(100)]
         public string Name { get; set; } = string.Empty;
 
+        [NotNull, MaxLength(1000)]
+        public string Subtitle { get; set; } = string.Empty;
+
         [Indexed]
         public int UserId { get; set; }
 
