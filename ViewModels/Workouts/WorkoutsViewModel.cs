@@ -1,6 +1,6 @@
 namespace CapstoneProjectPUSH.ViewModels.Workouts
 {
-    public partial class WorkoutViewModel : BaseViewModel
+    public partial class WorkoutsViewModel : BaseViewModel
     {
         private readonly WorkoutService _workoutService;
         private List<Workout> _allWorkouts = new();
@@ -9,11 +9,11 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
         [ObservableProperty]
         private string searchText = string.Empty;
 
-
-        public WorkoutViewModel(WorkoutService workoutService)
+        public WorkoutsViewModel(WorkoutService workoutService)
         {
             _workoutService = workoutService;
         }
+
         partial void OnSearchTextChanged(string value) => ApplyFilter();
 
         [RelayCommand]

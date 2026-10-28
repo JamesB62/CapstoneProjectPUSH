@@ -17,8 +17,8 @@
             // Trainers
             Routing.RegisterRoute(nameof(TrainerDetailsPage), typeof(TrainerDetailsPage));
             
-            //workout
-            Routing.RegisterRoute(nameof(WorkoutPage), typeof(WorkoutPage));
+            // Workouts
+            Routing.RegisterRoute(nameof(WorkoutsPage), typeof(WorkoutsPage));
 
         }
     }

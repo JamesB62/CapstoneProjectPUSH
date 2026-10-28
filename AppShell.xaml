@@ -17,13 +17,12 @@
     Shell.FlyoutBehavior="Disabled">
 
     <ShellContent
-        Title="WorkoutPage"
-        ContentTemplate="{DataTemplate  workouts:WorkoutPage}"
-        Route="WorkoutPage"/>
+        Title="WorkoutsPage"
+        ContentTemplate="{DataTemplate  workouts:WorkoutsPage}"
+        Route="WorkoutsPage"/>
 
     <!-- ADD NAVBAR WHEN ENOUGH PAGES ARE REGISTERED -->
     
-
     <ShellContent
         Title="LandingPage"
         ContentTemplate="{DataTemplate base:LandingPage}"
