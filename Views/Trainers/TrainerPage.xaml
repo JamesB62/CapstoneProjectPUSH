@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:CapstoneProjectPUSH.Models"
+             xmlns:vm="clr-namespace:CapstoneProjectPUSH.ViewModels.Trainers"
+             x:Class="CapstoneProjectPUSH.Views.Trainers.TrainerPage"
+             x:DataType="vm:TrainerViewModel"
+             Title="">
+
+    <Grid
+        Padding="20,0,20,20"
+        RowDefinitions="Auto,*"
+        RowSpacing="15"
+        VerticalOptions="Center">
+
+        <VerticalStackLayout
+            Grid.Row="0"
+            Spacing="15">
+
+            <Label
+                FontAttributes="Bold"
+                FontSize="26"
+                Text="PUSH Trainers"/>
+
+            <Label
+                Text="Get into contact with personal trainers that can support you along your physical wellbeing journey."/>
+
+            <Picker
+                ItemDisplayBinding="{Binding Name, x:DataType=models:Category}"
+                ItemsSource="{Binding Categories}"
+                SelectedItem="{Binding SelectedCategory}"
+                Title="Filter by category"/>
+
+            <!-- SETUP SEARCH BAR? -->
+
+            <!-- AVAILABILITY TOGGLE? -->
+            
+            <Label
+                FontAttributes="Italic"
+                FontSize="14"
+                Text="{Binding StatusMessage}"/>
+
+        </VerticalStackLayout>
+
+        <RefreshView
+            Command="{Binding LoadTrainersCommand}"
+            Grid.Row="1"
+            IsRefreshing="{Binding IsBusy, Mode=OneWay}">
+            
+            <CollectionView
+                ItemsSource="{Binding Trainers}">
+
+                <CollectionView.EmptyView>
+
+                    <VerticalStackLayout
+                        HorizontalOptions="Center"
+                        VerticalOptions="Center">
+
+                        <Label
+                            FontAttributes="Italic"
+                            HorizontalTextAlignment="Center"
+                            Text="No trainers found."/>
+
+                        <Label
+                            FontAttributes="Italic"
+                            HorizontalTextAlignment="Center"
+                            Text="Pull down to try again."/>
+
+                    </VerticalStackLayout>
+
+                </CollectionView.EmptyView>
+
+                <CollectionView.ItemsLayout>
+
+                    <LinearItemsLayout
+                        ItemSpacing="15"
+                        Orientation="Vertical"/>
+
+                </CollectionView.ItemsLayout>
+
+                <CollectionView.ItemTemplate>
+
+                    <DataTemplate
+                        x:DataType="models:Trainer">
+
+                        <Border
+                            Padding="15"
+                            BackgroundColor="{AppThemeBinding Light=#E5E7EB, Dark=#2C2C31}"
+                            StrokeShape="RoundRectangle 10">
+
+                            <Grid
+                                ColumnDefinitions="*,Auto"
+                                ColumnSpacing="5"
+                                RowDefinitions="Auto,Auto,Auto"
+                                RowSpacing="5">
+
+                                <Label
+                                    Grid.Column="0"
+                                    Grid.Row="0"
+                                    FontAttributes="Bold"
+                                    FontSize="16"
+                                    Text="{Binding FullName}"/>
+
+                                <Label
+                                    Grid.Column="1"
+                                    Grid.Row="0"
+                                    Text="{Binding CategoryName}"/>
+
+                                <Label
+                                    Grid.Column="0"
+                                    Grid.Row="1"
+                                    Text="{Binding GymName}"/>
+
+                                <Label
+                                    Grid.Column="0"
+                                    Grid.Row="2"
+                                    Text="{Binding AvailableText}"/>
+
+                            </Grid>
+
+                        </Border>
+
+                    </DataTemplate>
+
+                </CollectionView.ItemTemplate>
+
+            </CollectionView>
+
+        </RefreshView>
+
+    </Grid>
+
+</ContentPage>

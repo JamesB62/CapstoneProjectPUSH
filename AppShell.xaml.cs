@@ -5,7 +5,18 @@
         public AppShell()
         {
             InitializeComponent();
+
+            // Auth
+            Routing.RegisterRoute(nameof(LoginPage), typeof(LoginPage));
+            Routing.RegisterRoute(nameof(RegisterPage), typeof(RegisterPage));
+
+            // Base
             Routing.RegisterRoute(nameof(LandingPage), typeof(LandingPage));
+            Routing.RegisterRoute(nameof(PrivacyPage), typeof(PrivacyPage));
+
+            //workout
+            Routing.RegisterRoute(nameof(WorkoutPage), typeof(WorkoutPage));
+
         }
     }
 }

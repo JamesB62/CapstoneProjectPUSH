@@ -6,10 +6,11 @@
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
 
-        [Unique, NotNull, MaxLength(254)]
+        [Unique, NotNull, MaxLength(250)]
         public string Email { get; set; } = string.Empty;
 
-        [NotNull, MaxLength(50)]
+        // Added unique constraint, needs check on UserService
+        [Unique, NotNull, MaxLength(60)]
         public string DisplayName { get; set; } = string.Empty;
 
         [NotNull]

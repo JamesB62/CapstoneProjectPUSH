@@ -7,12 +7,12 @@
     <ScrollView>
         
         <Grid
-            Padding="30"
+            Padding="20"
             VerticalOptions="Start">
 
             <Border
                 Padding="30"
-                StrokeShape="RoundRectangle 12">
+                StrokeShape="RoundRectangle 10">
                 
                 <VerticalStackLayout
                     Spacing="15">
@@ -23,33 +23,137 @@
                         FontSize="24"
                         Text="Privacy Statement"/>
 
-                    <Label
-                        FontAttributes="Bold"
-                        Text="What We Store"/>
-                    
-                    <Label
-                        Text="When you register, PUSH stores your display name, your email address and a securely hashed version of your password. Your password is never saved in plain text."/>
+                    <Border
+                        StrokeThickness="0"
+                        BackgroundColor="#EEF2FF"
+                        StrokeShape="RoundRectangle 10"
+                        Padding="10">
 
-                    <Label
-                        FontAttributes="Bold"             
-                        Text="Where Your Data Is Stored"/>
-                    
-                    <Label
-                        Text="Your account details are kept in a local database on this device and are not sent to any other server."/>
+                        <Grid
+                            ColumnDefinitions="Auto,*"
+                            ColumnSpacing="10">
 
-                    <Label
-                        FontAttributes="Bold"
-                        Text="How Your Data Is Used"/>
-                    
-                    <Label
-                        Text="Your details are only used to create your account and log you in. They are not shared with any third parties."/>
+                            <Label
+                                Grid.Column="0"
+                                Text="&#128274;"
+                                FontSize="18"
+                                VerticalOptions="Center"/>
 
-                    <Label
-                        FontAttributes="Bold"
-                        Text="Your Choices"/>
-                    
-                    <Label
-                        Text="You can stop using the app at any time. Uninstalling the app removes the local database and your account details with it."/>
+                            <Label
+                                Grid.Column="1"
+                                Text="This is a prototype app. Your data is stored securely in a remote database, accessed through a .NET Web API."
+                                TextColor="#4F46E5"
+                                LineBreakMode="WordWrap"
+                                VerticalOptions="Center"/>
+
+                        </Grid>
+
+                    </Border>
+
+                    <VerticalStackLayout
+                        Spacing="10">
+
+                        <Label
+                            Text="What Information Is Collected"
+                            FontSize="16"
+                            FontAttributes="Bold"/>
+
+                        <Label
+                            FontSize="14"
+                            LineBreakMode="WordWrap"
+                            Text="When you create a PUSH account, we collect your display name, email address, and password. We also store the workouts you create and application usage data for statistical purposes."/>
+
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout
+                        Spacing="10">
+
+                        <Label
+                            Text="Why Your Information Is Collected"
+                            FontSize="16"
+                            FontAttributes="Bold"/>
+
+                        <Label
+                            FontSize="14"
+                            LineBreakMode="WordWrap"
+                            Text="The information collected so the application can sign you in, attribute content to your account, track your progress, and save shared workouts."/>
+
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout
+                        Spacing="10">
+
+                        <Label
+                            Text="How Your Information Is Used"
+                            FontSize="16"
+                            FontAttributes="Bold"/>
+
+                        <Label
+                            FontSize="14"
+                            LineBreakMode="WordWrap"
+                            Text="Your information is only used to power app features. It is not shared with any third parties or used for any other purpose outside the app."/>
+
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout
+                        Spacing="10">
+
+                        <Label
+                            Text="Where Your Information Is Stored"
+                            FontSize="16"
+                            FontAttributes="Bold"/>
+
+                        <Label
+                            FontSize="14"
+                            LineBreakMode="WordWrap"
+                            Text="Your information is stored securely in a remote database. Passwords are never stored in plain text – they're hashed, so your password cannot be exposed."/>
+
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout
+                        Spacing="10">
+
+                        <Label
+                            Text="How You Can Correct Your Information"
+                            FontSize="16"
+                            FontAttributes="Bold"/>
+
+                        <Label
+                            FontSize="14"
+                            LineBreakMode="WordWrap"
+                            Text="You can update your account details or edit any workout or note at any time – just open the item, make changes, and save."/>
+
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout
+                        Spacing="10">
+
+                        <Label
+                            Text="How You Can Delete Your Information"
+                            FontSize="16"
+                            FontAttributes="Bold"/>
+
+                        <Label
+                            FontSize="14"
+                            LineBreakMode="WordWrap"
+                            Text="You can delete any workout or note you've created at any time. Once confirmed, it's permanently removed and cannot be recovered."/>
+
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout
+                        Spacing="10">
+
+                        <Label
+                            Text="What Administrators Can See"
+                            FontSize="16"
+                            FontAttributes="Bold"/>
+
+                        <Label
+                            FontSize="14"
+                            LineBreakMode="WordWrap"
+                            Text="Administrators can view reported workouts as part of the moderation process, and can view basic account information to manage users. Administrators do not have access to your password or personal notes."/>
+
+                    </VerticalStackLayout>
 
                 </VerticalStackLayout>
                 

@@ -1,4 +1,7 @@
-﻿namespace CapstoneProjectPUSH
+﻿using CapstoneProjectPUSH.ViewModels.Profile;
+using CapstoneProjectPUSH.Views.Profile;
+
+namespace CapstoneProjectPUSH
 {
     public static class MauiProgram
     {
@@ -13,23 +16,53 @@
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
 
-            // Services
+            // ========================= Services =========================
+
+            builder.Services.AddSingleton<ArticleService>();
+            builder.Services.AddSingleton<CategoryService>();
             builder.Services.AddSingleton<DatabaseService>();
-            builder.Services.AddSingleton<INavigationService, NavigationService>();
+            builder.Services.AddSingleton<ExerciseService>();
+            builder.Services.AddSingleton<GymService>();
+            builder.Services.AddSingleton<TrainerService>();
             builder.Services.AddSingleton<UserService>();
+            builder.Services.AddSingleton<WorkoutService>();
 
-            // ViewModels
-            builder.Services.AddSingleton<LoginViewModel>();
-            builder.Services.AddSingleton<RegisterViewModel>();
+            // ======================== ViewModels ========================
 
-            // Views
-            builder.Services.AddSingleton<LoginPage>();
-            builder.Services.AddSingleton<RegisterPage>();
-            builder.Services.AddSingleton<LandingPage>();
-            builder.Services.AddSingleton<PrivacyPage>();
+            // Auth
+            builder.Services.AddTransient<LoginViewModel>();
+            builder.Services.AddTransient<RegisterViewModel>();
 
+            // Base
+            builder.Services.AddTransient<LandingViewModel>();
 
+            // Profile
+            builder.Services.AddTransient<ProfileViewModel>();
 
+            // Trainer
+            builder.Services.AddTransient<TrainerViewModel>();
+
+            //Workout plan
+            builder.Services.AddTransient<WorkoutViewModel>();
+
+            // ========================== Views ===========================
+
+            // Auth
+            builder.Services.AddTransient<LoginPage>();
+            builder.Services.AddTransient<RegisterPage>();
+
+            // Base
+            builder.Services.AddTransient<LandingPage>();
+            builder.Services.AddTransient<PrivacyPage>();
+
+            // Profile
+            builder.Services.AddTransient<ProfilePage>();
+
+            // Trainer
+            builder.Services.AddTransient<TrainerPage>();
+
+            //workout plan
+            builder.Services.AddTransient<WorkoutPage>();
 
 #if DEBUG
             builder.Logging.AddDebug();
