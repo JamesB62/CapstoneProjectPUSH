@@ -14,3 +14,6 @@ global using CapstoneProjectPUSH.ViewModels.Auth;
 global using CapstoneProjectPUSH.ViewModels.Base;
 global using CapstoneProjectPUSH.Views.Auth;
 global using CapstoneProjectPUSH.Views.Base;
+global using CapstoneProjectPUSH.Views.Home;
+global using CapstoneProjectPUSH.Views.Profile;
+global using CapstoneProjectPUSH.Views.Stats;

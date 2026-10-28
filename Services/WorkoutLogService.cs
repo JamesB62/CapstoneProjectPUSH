@@ -8,13 +8,13 @@ namespace CapstoneProjectPUSH.Services
     public class WorkoutLogService
     {
         private readonly DatabaseService _databaseService;
-        private readonly Stats _statsService;
+        private readonly Stats _stats;
 
 
         public WorkoutLogService(DatabaseService databaseService, Stats statsService)
         {
             _databaseService = databaseService;
-            _statsService = statsService;
+            _stats = statsService;
         }
 
         public async Task<List<WorkoutLog>> GetWorkoutLogsAsync(int userId)
@@ -33,8 +33,5 @@ namespace CapstoneProjectPUSH.Services
                 .Where(wl => wl.Id == workoutLogId && wl.UserId == userId)
                 .FirstOrDefaultAsync();
         }
-
-
-
     }
 }
