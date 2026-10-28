@@ -1,6 +1,4 @@
-﻿using Android.App.Admin;
-
-namespace CapstoneProjectPUSH.Services
+﻿namespace CapstoneProjectPUSH.Services
 {
     public record AuthResult(bool Success, string Message, User? User = null);
 
@@ -62,9 +60,6 @@ namespace CapstoneProjectPUSH.Services
                 PasswordHash = await Task.Run(() => HashPassword(password)),
                 DateTimeCreated = DateTime.Now
             };
-
-            
-
 
             try
             {
@@ -168,5 +163,9 @@ namespace CapstoneProjectPUSH.Services
                 return false;
             }
         }
+
+
     }
+
+
 }

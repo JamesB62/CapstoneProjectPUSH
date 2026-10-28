@@ -1,16 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace CapstoneProjectPUSH.Models
+﻿namespace CapstoneProjectPUSH.Models
 {
+    [Table("Exercises")]
     public class Exercise
     {
+        [PrimaryKey, AutoIncrement]
+        public int Id { get; set; }
+
+        [NotNull, MaxLength(100)]
         public string Title { get; set; } = string.Empty;
-        public string Subtitle { get; set; } = string.Empty;
-        public string Category { get; set; } = string.Empty;
-        public int Sets { get; set; }
-        public int Reps { get; set; }
-        public double Weight { get; set; }
+
+        // May need to increase MaxLength value
+        [NotNull, MaxLength(1000)]
+        public string Description { get; set; } = string.Empty;
+
+        [Indexed]
+        public int CategoryId { get; set; }
+
+        [Ignore]
+        public string CategoryName { get; set; } = string.Empty;
     }
 }

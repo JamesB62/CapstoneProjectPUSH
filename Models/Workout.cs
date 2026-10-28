@@ -1,16 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace CapstoneProjectPUSH.Models
+﻿namespace CapstoneProjectPUSH.Models
 {
+    [Table("Workouts")]
     public class Workout
     {
-        public string Title { get; set; } = string.Empty;
+        [PrimaryKey, AutoIncrement]
+        public int Id { get; set; }
+
+        [NotNull, MaxLength(100)]
+        public string Name { get; set; } = string.Empty;
+
+        [NotNull, MaxLength(1000)]
         public string Subtitle { get; set; } = string.Empty;
-        public string Category { get; set; } = string.Empty;
-        public List<Exercise> Exercises { get; set; } = new List<Exercise>();
+
+        [Indexed]
+        public int UserId { get; set; }
+
+        // Display name property needed?
+
+        [Indexed]
+        public int CategoryId { get; set; }
+
+        [Ignore]
+        public string CategoryName { get; set; } = string.Empty;
+
+        public DateTime DateTimeCreated { get; set; } = DateTime.Now;
     }
 }

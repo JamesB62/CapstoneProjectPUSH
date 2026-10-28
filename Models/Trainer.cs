@@ -21,8 +21,11 @@
         [MaxLength(20)]
         public string PhoneNumber { get; set; } = string.Empty;
 
-        [MaxLength(100)]
-        public string Specialty { get; set; } = string.Empty;
+        [Indexed]
+        public int CategoryId { get; set; }
+
+        [Ignore]
+        public string CategoryName { get; set; } = string.Empty;
 
         [MaxLength(1000)]
         public string Description { get; set; } = string.Empty;
@@ -39,5 +42,8 @@
 
         [Ignore]
         public string GymName { get; set; } = string.Empty;
+
+        [Ignore]
+        public string GymCity { get; set; } = string.Empty;
     }
 }

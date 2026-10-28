@@ -105,7 +105,7 @@
                     Spacing="10">
 
                     <BindableLayout.ItemTemplate>
-                        <DataTemplate x:DataType="models:Articles">
+                        <DataTemplate x:DataType="models:Article">
 
                             <Border
                             Padding="15"

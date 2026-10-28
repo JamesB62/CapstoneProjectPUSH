@@ -7,22 +7,22 @@ namespace CapstoneProjectPUSH.ViewModels.Home
         private List<Workout> allPlans = new List<Workout>();
         private string currentCategory = string.Empty;
 
-        public List<Articles> FeaturedArticles { get; set; } = new List<Articles>();
+        public List<Article> FeaturedArticles { get; set; } = new List<Article>();
 
         [ObservableProperty]
         public partial List<Workout> FeaturedPlans { get; set; }
 
         public HomeViewModel()
         {
-            allPlans.Add(new Workout { Title = "Push Day Basics", Subtitle = "Chest, shoulders, triceps", Category = "Strength" });
-            allPlans.Add(new Workout { Title = "Full Body Starter", Subtitle = "3 days a week", Category = "Strength" });
-            allPlans.Add(new Workout { Title = "Couch to 5K", Subtitle = "8 week running plan", Category = "Cardio" });
-            allPlans.Add(new Workout { Title = "HIIT Burner", Subtitle = "20 minute intervals", Category = "Cardio" });
-            allPlans.Add(new Workout { Title = "Morning Stretch", Subtitle = "10 minute routine", Category = "Flexibility" });
+            allPlans.Add(new Workout { Name = "Push Day Basics", Subtitle = "Chest, shoulders, triceps", CategoryName = "Strength" });
+            allPlans.Add(new Workout { Name = "Full Body Starter", Subtitle = "3 days a week", CategoryName = "Strength" });
+            allPlans.Add(new Workout { Name = "Couch to 5K", Subtitle = "8 week running plan", CategoryName = "Cardio" });
+            allPlans.Add(new Workout { Name = "HIIT Burner", Subtitle = "20 minute intervals", CategoryName = "Cardio" });
+            allPlans.Add(new Workout { Name = "Morning Stretch", Subtitle = "10 minute routine", CategoryName = "Flexibility" });
 
-            FeaturedArticles.Add(new Articles { Title = "How Much Protein Do You Need?", Subtitle = "5 min read" });
-            FeaturedArticles.Add(new Articles { Title = "Progressive Overload Explained", Subtitle = "4 min read" });
-            FeaturedArticles.Add(new Articles { Title = "Sleep and Muscle Recovery", Subtitle = "6 min read" });
+            FeaturedArticles.Add(new Article { Title = "How Much Protein Do You Need?", Subtitle = "5 min read" });
+            FeaturedArticles.Add(new Article { Title = "Progressive Overload Explained", Subtitle = "4 min read" });
+            FeaturedArticles.Add(new Article { Title = "Sleep and Muscle Recovery", Subtitle = "6 min read" });
 
             FeaturedPlans = allPlans;
         }
@@ -39,7 +39,7 @@ namespace CapstoneProjectPUSH.ViewModels.Home
             else
             {
                 currentCategory = category;
-                FeaturedPlans = allPlans.Where(p => p.Category == category).ToList();
+                FeaturedPlans = allPlans.Where(p => p.CategoryName == category).ToList();
             }
         }
     }
