@@ -16,6 +16,10 @@
 
             // Trainers
             Routing.RegisterRoute(nameof(TrainerDetailsPage), typeof(TrainerDetailsPage));
+            
+            //workout
+            Routing.RegisterRoute(nameof(WorkoutPage), typeof(WorkoutPage));
+
         }
     }
 }

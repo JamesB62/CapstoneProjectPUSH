@@ -10,16 +10,19 @@
     
     xmlns:profile="clr-namespace:CapstoneProjectPUSH.Views.Profile"
     xmlns:trainers="clr-namespace:CapstoneProjectPUSH.Views.Trainers"
+    xmlns:workouts="clr-namespace:CapstoneProjectPUSH.Views.Workouts"
+
 
     Title="CapstoneProjectPUSH"
     Shell.FlyoutBehavior="Disabled">
 
     <ShellContent
-        Title="TrainersPage"
-        ContentTemplate="{DataTemplate trainers:TrainersPage}"
-        Route="TrainersPage"/>
+        Title="WorkoutPage"
+        ContentTemplate="{DataTemplate  workouts:WorkoutPage}"
+        Route="WorkoutPage"/>
 
     <!-- ADD NAVBAR WHEN ENOUGH PAGES ARE REGISTERED -->
+    
 
     <ShellContent
         Title="LandingPage"

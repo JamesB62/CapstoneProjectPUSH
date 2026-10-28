@@ -48,6 +48,9 @@ namespace CapstoneProjectPUSH
             builder.Services.AddTransient<TrainerDetailsViewModel>();
             builder.Services.AddTransient<TrainersViewModel>();
 
+            //Workout plan
+            builder.Services.AddTransient<WorkoutViewModel>();
+
             // ========================== Views ===========================
 
             // Auth
@@ -67,6 +70,9 @@ namespace CapstoneProjectPUSH
             // Trainer
             builder.Services.AddTransient<TrainerDetailsPage>();
             builder.Services.AddTransient<TrainersPage>();
+
+            //workout plan
+            builder.Services.AddTransient<WorkoutPage>();
 
 #if DEBUG
             builder.Logging.AddDebug();
