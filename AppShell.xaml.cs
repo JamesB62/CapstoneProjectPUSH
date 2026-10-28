@@ -13,6 +13,10 @@
             // Base
             Routing.RegisterRoute(nameof(LandingPage), typeof(LandingPage));
             Routing.RegisterRoute(nameof(PrivacyPage), typeof(PrivacyPage));
+
+            //workout
+            Routing.RegisterRoute(nameof(WorkoutPage), typeof(WorkoutPage));
+
         }
     }
 }
