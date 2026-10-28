@@ -8,13 +8,13 @@ namespace CapstoneProjectPUSH.Services
     public class WorkoutLogService
     {
         private readonly DatabaseService _databaseService;
-        private readonly Stats _stats;
+        private readonly StatsService _statsService;
 
 
-        public WorkoutLogService(DatabaseService databaseService, Stats statsService)
+        public WorkoutLogService(DatabaseService databaseService, StatsService statsService)
         {
             _databaseService = databaseService;
-            _stats = statsService;
+            _statsService = statsService;
         }
 
         public async Task<List<WorkoutLog>> GetWorkoutLogsAsync(int userId)

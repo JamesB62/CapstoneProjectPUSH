@@ -31,10 +31,12 @@ namespace CapstoneProjectPUSH
             builder.Services.AddSingleton<CategoryService>();
             builder.Services.AddSingleton<DatabaseService>();
             builder.Services.AddSingleton<ExerciseService>();
+            builder.Services.AddSingleton<StatsService>();
             builder.Services.AddSingleton<GymService>();
             builder.Services.AddSingleton<TrainerService>();
             builder.Services.AddSingleton<UserService>();
             builder.Services.AddSingleton<WorkoutService>();
+            builder.Services.AddSingleton<WorkoutLogService>();
 
             // ======================== ViewModels ========================
 
