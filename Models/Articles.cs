@@ -9,6 +9,9 @@
         [NotNull, MaxLength(100)]
         public string Title { get; set; } = string.Empty;
 
+        [NotNull, MaxLength(100)]
+        public string Subtitle { get; set; } = string.Empty;
+
         // May need to increase MaxLength value
         [NotNull, MaxLength(5000)]
         public string Content { get; set; } = string.Empty;

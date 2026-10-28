@@ -33,6 +33,7 @@
                     await connection.CreateTableAsync<User>();
                     await connection.CreateTableAsync<Workout>();
                     await connection.CreateTableAsync<WorkoutExercise>();
+                    await connection.CreateTableAsync<WorkoutLog>();
 
                     _connection = connection;
 

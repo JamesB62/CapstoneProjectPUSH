@@ -1,5 +1,3 @@
-using CapstoneProjectPUSH.ViewModels.Home;
-
 namespace CapstoneProjectPUSH.Views.Home;
 
 public partial class HomePage : ContentPage

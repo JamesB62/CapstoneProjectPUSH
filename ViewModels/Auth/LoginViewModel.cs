@@ -1,4 +1,7 @@
-﻿namespace CapstoneProjectPUSH.ViewModels.Auth
+using CapstoneProjectPUSH.Views.Base;
+using CapstoneProjectPUSH.Views.Home;
+
+namespace CapstoneProjectPUSH.ViewModels.Auth
 {
     public partial class LoginViewModel : BaseViewModel
     {
@@ -46,11 +49,8 @@
                 }
 
                 Password = string.Empty;
-                
-                await Shell.Current.DisplayAlertAsync("Login Successful", "You have been logged in successfully.", "OK");
 
-                // Replace with navigation to dashboard page
-                //await Shell.Current.GoToAsync("//DashboardPage");
+                await Shell.Current.GoToAsync("//HomePage");
             }
             catch (Exception ex)
             {
@@ -70,4 +70,5 @@
             await Shell.Current.GoToAsync($"../{nameof(RegisterPage)}");
         }
     }
+
 }

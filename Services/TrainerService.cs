@@ -21,13 +21,23 @@
                 .ToListAsync();
 
             var gyms = await db.Table<Gym>().ToListAsync();
-            var gymNames = gyms.ToDictionary(g => g.Id, g => g.Name);
+            var gymLookup = gyms.ToDictionary(g => g.Id);
 
             var categoryNames = await _categoryService.GetCategoryNamesAsync();
 
             foreach (var trainer in trainers)
             {
-                trainer.GymName = gymNames.GetValueOrDefault(trainer.GymId, "Unknown Gym");
+                if (gymLookup.TryGetValue(trainer.GymId, out var gym))
+                {
+                    trainer.GymName = gym.Name;
+                    trainer.GymCity = gym.City;
+                }
+                else
+                {
+                    trainer.GymName = "Unknown Gym";
+                    trainer.GymCity = string.Empty;
+                }
+
                 trainer.CategoryName = categoryNames.GetValueOrDefault(trainer.CategoryId, "Uncategorised");
             }
 
@@ -54,10 +64,12 @@
             if (gym is null)
             {
                 trainer.GymName = "Unknown Gym";
+                trainer.GymCity = string.Empty;
             }
             else
             {
                 trainer.GymName = gym.Name;
+                trainer.GymCity = gym.City;
             }
 
             var categoryNames = await _categoryService.GetCategoryNamesAsync();
