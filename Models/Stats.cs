@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace CapstoneProjectPUSH.Models
+﻿namespace CapstoneProjectPUSH.Models
 {
     [Table("Stats")]
     public class Stats
@@ -18,8 +14,5 @@ namespace CapstoneProjectPUSH.Models
         public int TotalCalories { get; set; }
 
         public DateTime LastWorkoutDate { get; set; } = DateTime.Now;
-
-
-
     }
 }
