@@ -22,7 +22,7 @@ namespace CapstoneProjectPUSH.Services
             var db = await _databaseService.GetConnectionAsync();
             return await db.Table<WorkoutLog>()
                 .Where(wl => wl.UserId == userId)
-                .OrderByDescending(wl => wl.Date)
+                .OrderByDescending(wl => wl.DateTimeCompleted)
                 .ToListAsync();
         }
 

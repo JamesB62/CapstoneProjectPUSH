@@ -16,6 +16,8 @@
 
         public int DurationSeconds { get; set; }
 
+        public int DurationMinutes { get; set; }
+
         // Create additional model to log each exercise within a workout?
     }
 }
