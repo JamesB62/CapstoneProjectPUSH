@@ -50,7 +50,7 @@ namespace CapstoneProjectPUSH.ViewModels.Auth
 
                 Password = string.Empty;
 
-                await Shell.Current.GoToAsync("//MainTabs/Home/HomePage");
+                await Shell.Current.GoToAsync("//HomePage");
             }
             catch (Exception ex)
             {

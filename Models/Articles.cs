@@ -30,7 +30,5 @@
 
         [Ignore]
         public string CategoryName { get; set; } = string.Empty;
-
-
     }
 }

@@ -5,7 +5,8 @@
              xmlns:vm="clr-namespace:CapstoneProjectPUSH.ViewModels.Workouts"
              x:Class="CapstoneProjectPUSH.Views.Workouts.WorkoutsPage"
              x:DataType="vm:WorkoutsViewModel"
-             Title="WorkoutsPage">
+             Title=""
+             Shell.NavBarIsVisible="False">
 
     <Grid
         RowDefinitions="*,Auto">

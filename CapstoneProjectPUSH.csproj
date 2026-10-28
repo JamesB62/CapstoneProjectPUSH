@@ -66,6 +66,15 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <AndroidResource Remove="ViewModels\Admin\**" />
+	  <Compile Remove="ViewModels\Admin\**" />
+	  <EmbeddedResource Remove="ViewModels\Admin\**" />
+	  <MauiCss Remove="ViewModels\Admin\**" />
+	  <MauiXaml Remove="ViewModels\Admin\**" />
+	  <None Remove="ViewModels\Admin\**" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
 		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
@@ -130,10 +139,6 @@
 	  <MauiXaml Update="Views\Profile\ProfilePage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	</ItemGroup>
-   
-	<ItemGroup>
-	  <Folder Include="ViewModels\Admin\" />
 	</ItemGroup>
 
 </Project>
