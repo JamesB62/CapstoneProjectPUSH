@@ -24,4 +24,9 @@
     <!-- ADD NAVBAR WHEN ENOUGH PAGES ARE REGISTERED -->
     
 
+    <ShellContent
+        Title="LandingPage"
+        ContentTemplate="{DataTemplate base:LandingPage}"
+        Route="LandingPage"/>
+    
 </Shell>

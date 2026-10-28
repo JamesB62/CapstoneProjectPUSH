@@ -1,11 +1,11 @@
 ﻿namespace CapstoneProjectPUSH.ViewModels.Trainers
 {
-    public partial class TrainerViewModel : BaseViewModel
+    public partial class TrainersViewModel : BaseViewModel
     {
         private readonly TrainerService _trainerService;
         private readonly CategoryService _categoryService;
 
-        public TrainerViewModel(TrainerService trainerService, CategoryService categoryService)
+        public TrainersViewModel(TrainerService trainerService, CategoryService categoryService)
         {
             _trainerService = trainerService;
             _categoryService = categoryService;
@@ -23,7 +23,12 @@
         private Category? selectedCategory;
 
         [ObservableProperty]
+        private Trainer? selectedTrainer;
+
+        [ObservableProperty]
         private string statusMessage = "Loading trainers...";
+
+        private bool isNavigating;
 
         [RelayCommand]
         private async Task LoadTrainersAsync()
@@ -100,19 +105,43 @@
                 Trainers.Add(trainer);
             }
 
-            switch (Trainers.Count)
+            if (Trainers.Count == 1)
             {
-                case 0:
-                    StatusMessage = "No trainers found";
-                    break;
+                StatusMessage = "Showing 1 trainer";
+            }
+            else
+            {
+                StatusMessage = $"Showing {Trainers.Count} trainers";
+            }
+        }
 
-                case 1:
-                    StatusMessage = "Showing 1 trainer";
-                    break;
+        partial void OnSelectedTrainerChanged(Trainer? value)
+        {
+            if (value is null)
+            {
+                return;
+            }
 
-                default:
-                    StatusMessage = $"Showing {Trainers.Count} trainers";
-                    break;
+            ViewTrainerCommand.Execute(value);
+            SelectedTrainer = null;
+        }
+
+        [RelayCommand]
+        private async Task ViewTrainerAsync(Trainer? trainer)
+        {
+            if (trainer is null || isNavigating)
+            {
+                return;
+            }
+
+            isNavigating = true;
+            try
+            {
+                await Shell.Current.GoToAsync($"{nameof(TrainerDetailsPage)}?TrainerId={trainer.Id}");
+            }
+            finally
+            {
+                isNavigating = false;
             }
         }
 

@@ -42,5 +42,8 @@
 
         [Ignore]
         public string GymName { get; set; } = string.Empty;
+
+        [Ignore]
+        public string GymCity { get; set; } = string.Empty;
     }
 }

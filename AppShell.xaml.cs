@@ -14,6 +14,9 @@
             Routing.RegisterRoute(nameof(LandingPage), typeof(LandingPage));
             Routing.RegisterRoute(nameof(PrivacyPage), typeof(PrivacyPage));
 
+            // Trainers
+            Routing.RegisterRoute(nameof(TrainerDetailsPage), typeof(TrainerDetailsPage));
+            
             //workout
             Routing.RegisterRoute(nameof(WorkoutPage), typeof(WorkoutPage));
 

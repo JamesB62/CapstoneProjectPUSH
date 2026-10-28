@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:CapstoneProjectPUSH.ViewModels.Trainers"
+             x:Class="CapstoneProjectPUSH.Views.Trainers.TrainerDetailsPage"
+             x:DataType="vm:TrainerDetailsViewModel"
+             Title="">
+
+    <ScrollView>
+
+        <VerticalStackLayout
+            Padding="20,0,20,20"
+            Spacing="15">
+
+            <Label
+                FontAttributes="Bold"
+                FontSize="18"
+                Grid.Column="0"
+                Grid.Row="0"
+                Text="PUSH Trainer Details"/>
+
+            <!-- ADD IMAGE HERE? -->
+
+            <Grid
+                ColumnDefinitions="*,Auto"
+                ColumnSpacing="15">
+
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="16"
+                    Grid.Column="0"
+                    LineBreakMode="WordWrap"
+                    Text="{Binding Trainer.FullName}"
+                    VerticalOptions="Center"/>
+
+                <Border
+                    Grid.Column="1"
+                    Padding="10,5"
+                    StrokeShape="RoundRectangle 10"
+                    VerticalOptions="Start">
+
+                    <Label
+                        FontSize="12"
+                        Text="{Binding Trainer.AvailableText}"/>
+
+                </Border>
+
+            </Grid>
+
+            <Label
+                FontAttributes="Bold"
+                Text="About Me"/>
+
+            <Label
+                Text="{Binding Trainer.Description}"/>
+
+            <VerticalStackLayout
+                Spacing="5">
+
+                <HorizontalStackLayout
+                    Spacing="0">
+
+                    <Label
+                        Text="• Specialty: "/>
+
+                    <Label
+                        Text="{Binding Trainer.CategoryName}"/>
+
+                </HorizontalStackLayout>
+
+                <!-- INCLUDE STREET ADDRESS? -->
+                
+                <HorizontalStackLayout
+                    Spacing="0">
+
+                    <Label
+                        Text="• Gym: "/>
+
+                    <Label>
+
+                        <Label.Text>
+
+                            <MultiBinding
+                                StringFormat="{}{0}, {1}">
+
+                                <Binding
+                                    Path="Trainer.GymName"/>
+
+                                <Binding
+                                    Path="Trainer.GymCity"/>
+
+                            </MultiBinding>
+
+                        </Label.Text>
+
+                    </Label>
+
+                </HorizontalStackLayout>
+
+            </VerticalStackLayout>
+
+            <Label
+                FontAttributes="Bold"
+                Text="Contact Details"/>
+
+            <!-- REPLACE WITH BUTTONS? -->
+            
+            <VerticalStackLayout
+                Spacing="5">
+
+                <HorizontalStackLayout
+                    IsVisible="{Binding HasEmail}">
+
+                    <Label
+                        Text="• Email: "/>
+
+                    <Label
+                        Text="{Binding Trainer.Email}"/>
+
+                </HorizontalStackLayout>
+
+                <HorizontalStackLayout
+                    IsVisible="{Binding HasPhone}">
+
+                    <Label
+                        Text="• Phone: "/>
+
+                    <Label
+                        Text="{Binding Trainer.PhoneNumber}"/>
+
+                </HorizontalStackLayout>
+
+            </VerticalStackLayout>
+
+        </VerticalStackLayout>
+        
+    </ScrollView>
+
+</ContentPage>
