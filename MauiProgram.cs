@@ -45,7 +45,8 @@ namespace CapstoneProjectPUSH
             builder.Services.AddTransient<ProfileViewModel>();
 
             // Trainer
-            builder.Services.AddTransient<TrainerViewModel>();
+            builder.Services.AddTransient<TrainerDetailsViewModel>();
+            builder.Services.AddTransient<TrainersViewModel>();
 
             // ========================== Views ===========================
 
@@ -64,7 +65,8 @@ namespace CapstoneProjectPUSH
             builder.Services.AddTransient<ProfilePage>();
 
             // Trainer
-            builder.Services.AddTransient<TrainerPage>();
+            builder.Services.AddTransient<TrainerDetailsPage>();
+            builder.Services.AddTransient<TrainersPage>();
 
 #if DEBUG
             builder.Logging.AddDebug();
