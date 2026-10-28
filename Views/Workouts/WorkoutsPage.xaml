@@ -3,9 +3,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:models="clr-namespace:CapstoneProjectPUSH.Models"
              xmlns:vm="clr-namespace:CapstoneProjectPUSH.ViewModels.Workouts"
-             x:Class="CapstoneProjectPUSH.Views.Workouts.WorkoutPage"
-             x:DataType="vm:WorkoutViewModel"
-             Title="WorkoutPage">
+             x:Class="CapstoneProjectPUSH.Views.Workouts.WorkoutsPage"
+             x:DataType="vm:WorkoutsViewModel"
+             Title=""
+             Shell.NavBarIsVisible="False">
 
     <Grid
         RowDefinitions="*,Auto">

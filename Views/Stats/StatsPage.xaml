@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:stats="clr-namespace:CapstoneProjectPUSH.ViewModels.Stats"
+             x:Class="CapstoneProjectPUSH.Views.Stats.StatsPage"
+             Title=""
+             Shell.NavBarIsVisible="False">
+
+    <Grid
+        RowDefinitions="*,Auto">
+
+        <ScrollView
+            Grid.Row="0">
+
+            <VerticalStackLayout
+                Padding="20"
+                Spacing="15">
+
+
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="18"
+                    Text="My Stats"/>
+
+                <!-- Time filters -->
+                <Grid
+                    ColumnDefinitions="*,*,*"
+                    ColumnSpacing="10">
+
+                    <Button
+                        Grid.Column="0"
+                        Command="{Binding SelectFilterCommand}"
+                        CommandParameter="Week"
+                        FontSize="12"
+                        Text="Week"/>
+
+                    <Button
+                        Grid.Column="1"
+                        Command="{Binding SelectFilterCommand}"
+                        CommandParameter="Month"
+                        FontSize="12"
+                        Text="Month"/>
+
+                    <Button
+                        Grid.Column="2"
+                        Command="{Binding SelectFilterCommand}"
+                        CommandParameter="Year"
+                        FontSize="12"
+                        Text="Year"/>
+
+                </Grid>
+
+                <!-- Top stats -->
+                <Border
+                    Padding="15"
+                    BackgroundColor="{AppThemeBinding Light=#E5E7EB, Dark=#2C2C31}"
+                    StrokeShape="RoundRectangle 10"
+                    StrokeThickness="0"
+                    HeightRequest="200">
+
+                    <VerticalStackLayout
+                        Spacing="12"
+                        VerticalOptions="Center">
+
+                        <Label
+                            FontAttributes="Bold"
+                            HorizontalTextAlignment="Center"
+                            Text="Top Stats"/>
+
+                        <Label
+                            FontSize="12"
+                            HorizontalTextAlignment="Center"
+                            Text="{Binding SelectedFilter, StringFormat='Showing: {0}'}"/>
+
+                        <Grid
+                            ColumnDefinitions="*,*"
+                            RowDefinitions="Auto,Auto"
+                            RowSpacing="12">
+
+                            <VerticalStackLayout Grid.Row="0" Grid.Column="0">
+                                <Label FontAttributes="Bold" FontSize="20" HorizontalTextAlignment="Center" Text="{Binding WorkoutCountText}"/>
+                                <Label FontSize="11" HorizontalTextAlignment="Center" Text="Workouts"/>
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout Grid.Row="0" Grid.Column="1">
+                                <Label FontAttributes="Bold" FontSize="20" HorizontalTextAlignment="Center" Text="{Binding TotalTimeText}"/>
+                                <Label FontSize="11" HorizontalTextAlignment="Center" Text="Total time"/>
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout Grid.Row="1" Grid.Column="0">
+                                <Label FontAttributes="Bold" FontSize="20" HorizontalTextAlignment="Center" Text="{Binding AvgDurationText}"/>
+                                <Label FontSize="11" HorizontalTextAlignment="Center" Text="Avg. duration"/>
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout Grid.Row="1" Grid.Column="1">
+                                <Label FontAttributes="Bold" FontSize="20" HorizontalTextAlignment="Center" Text="{Binding StreakText}"/>
+                                <Label FontSize="11" HorizontalTextAlignment="Center" Text="Current streak"/>
+                            </VerticalStackLayout>
+
+                        </Grid>
+
+                    </VerticalStackLayout>
+
+                </Border>
+
+                <!-- Activity chart (minutes trained per day / week / month) -->
+                <Border
+                    Padding="15"
+                    BackgroundColor="{AppThemeBinding Light=#E5E7EB, Dark=#2C2C31}"
+                    StrokeShape="RoundRectangle 10"
+                    StrokeThickness="0"
+                    HeightRequest="300">
+
+                    <VerticalStackLayout
+                        Spacing="15"
+                        VerticalOptions="Center">
+
+                        <Label
+                            FontAttributes="Bold"
+                            HorizontalTextAlignment="Center"
+                            Text="Minutes Trained"/>
+
+                        <FlexLayout
+                            BindableLayout.ItemsSource="{Binding Bars}"
+                            Direction="Row"
+                            JustifyContent="SpaceEvenly">
+
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="stats:ChartBar">
+                                    <Grid RowDefinitions="130,Auto" RowSpacing="4">
+                                        <BoxView
+                                            Grid.Row="0"
+                                            CornerRadius="3"
+                                            VerticalOptions="End"
+                                            WidthRequest="14"
+                                            HeightRequest="{Binding BarHeight}"
+                                            Color="{AppThemeBinding Light=#2563EB, Dark=#60A5FA}"/>
+                                        <Label
+                                            Grid.Row="1"
+                                            FontSize="9"
+                                            HorizontalTextAlignment="Center"
+                                            Text="{Binding Label}"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+
+                        </FlexLayout>
+
+                    </VerticalStackLayout>
+
+                </Border>
+
+            </VerticalStackLayout>
+
+        </ScrollView>
+
+
+    </Grid>
+
+</ContentPage>

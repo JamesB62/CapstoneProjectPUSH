@@ -52,21 +52,21 @@
         // Add other functions as needed, CRUD
         //------------------------------------//
 
-        //add workout
+        // Add
         public async Task<int> AddWorkoutAsync(Workout workout)
         {
             var db = await _databaseService.GetConnectionAsync();
             return await db.InsertAsync(workout);
         }
 
-        //delete workout
+        // Delete
         public async Task DeleteWorkoutAsync(int workoutId, int userId)
         {
             var db = await _databaseService.GetConnectionAsync();
             await db.Table<WorkoutExercise>().DeleteAsync(we => we.WorkoutId == workoutId);
             await db.Table<Workout>().DeleteAsync(w => w.Id == workoutId && w.UserId == userId);
         }
-        //update
+        // Update
         public async Task<int> UpdateWorkoutAsync(Workout workout)
         {
             var db = await _databaseService.GetConnectionAsync();
