@@ -20,7 +20,12 @@
         Title="FirstLoadingPage"
         ContentTemplate="{DataTemplate base:FirstLoadingPage}"
         Route="FirstLoadingPage"/>
-    
+
+    <ShellContent
+        Title="LandingPage"
+        ContentTemplate="{DataTemplate base:LandingPage}"
+        Route="LandingPage"/>
+
     <TabBar
         Route="MainTabs">
 

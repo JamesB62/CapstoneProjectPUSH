@@ -1,6 +1,3 @@
-using CapstoneProjectPUSH.Views.Base;
-using CapstoneProjectPUSH.Views.Home;
-
 namespace CapstoneProjectPUSH.ViewModels.Auth
 {
     public partial class LoginViewModel : BaseViewModel
@@ -26,7 +23,7 @@ namespace CapstoneProjectPUSH.ViewModels.Auth
             Password = string.Empty;
         }
 
-        // Generates LoginCommand
+        // Login command
         [RelayCommand]
         private async Task LoginAsync()
         {
@@ -54,7 +51,7 @@ namespace CapstoneProjectPUSH.ViewModels.Auth
             }
             catch (Exception ex)
             {
-                ErrorMessage = "Something went wrong. Please try again.";
+                ErrorMessage = "Something went wrong, please try again.";
                 System.Diagnostics.Debug.WriteLine(ex);
             }
             finally
@@ -63,7 +60,7 @@ namespace CapstoneProjectPUSH.ViewModels.Auth
             }
         }
 
-        // Generates GoToRegisterCommand
+        // Register link command
         [RelayCommand]
         private async Task GoToRegisterAsync()
         {

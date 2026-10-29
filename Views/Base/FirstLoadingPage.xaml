@@ -4,39 +4,31 @@
              x:Class="CapstoneProjectPUSH.Views.Base.FirstLoadingPage"
              Title="">
 
-    <Grid
-        Padding="20,0,20,20"
+    <VerticalStackLayout
+        Padding="30"
+        Spacing="30"
         VerticalOptions="Center">
 
-        <Border
-            Padding="30"
-            StrokeShape="RoundRectangle 10">
+        <!-- Splash text -->
+        <VerticalStackLayout
+            Spacing="5">
 
-            <VerticalStackLayout>
+            <Label 
+                FontAttributes="Bold"
+                FontSize="21"
+                HorizontalOptions="Center"
+                Text="Welcome to PUSH"/>
 
-                <Label 
-                    Text="Welcome to PUSH!"
-                    FontSize="Title"
-                    VerticalOptions="Center" 
-                    HorizontalOptions="Center"
-                    Grid.Column="2"
-                    Grid.Row="1"/>
+            <Label
+                HorizontalOptions="Center"
+                Text="Preparing your exercise journey..."/>
 
-                <Label
-                    Text="Preparing your exercise journey"
-                    FontSize="Caption"
-                    VerticalOptions="Center" 
-                    HorizontalOptions="Center"/>
+        </VerticalStackLayout>
 
-                <ProgressBar
-                    x:Name="MyProgressBar">
+        <!-- Loading bar -->
+        <ProgressBar
+            x:Name="MyProgressBar"/>
 
-                </ProgressBar>
-
-            </VerticalStackLayout>
-
-        </Border>
-
-    </Grid>
+    </VerticalStackLayout>
     
 </ContentPage>
