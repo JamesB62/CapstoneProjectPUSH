@@ -1,3 +1,6 @@
+using CapstoneProjectPUSH.ViewModels.Admins;
+using CapstoneProjectPUSH.Views.Admin;
+
 namespace CapstoneProjectPUSH
 {
     public static class MauiProgram
@@ -51,6 +54,9 @@ namespace CapstoneProjectPUSH
             // Workouts
             builder.Services.AddTransient<WorkoutsViewModel>();
 
+            // Admin
+            builder.Services.AddTransient<AdminDashboardViewModel>();
+
             // ========================== Views ===========================
 
             // Auth
@@ -76,6 +82,10 @@ namespace CapstoneProjectPUSH
           
             // Workout
             builder.Services.AddTransient<WorkoutsPage>();
+
+            // Admin
+            builder.Services.AddTransient<AdminDashboard>();
+
 
 #if DEBUG
             builder.Logging.AddDebug();
