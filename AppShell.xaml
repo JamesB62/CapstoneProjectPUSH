@@ -4,11 +4,86 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:CapstoneProjectPUSH"
-    Title="CapstoneProjectPUSH">
+    
+    xmlns:auth="clr-namespace:CapstoneProjectPUSH.Views.Auth"
+    xmlns:base="clr-namespace:CapstoneProjectPUSH.Views.Base"
+    xmlns:home="clr-namespace:CapstoneProjectPUSH.Views.Home"
+    xmlns:profile="clr-namespace:CapstoneProjectPUSH.Views.Profile"
+    xmlns:stats="clr-namespace:CapstoneProjectPUSH.Views.Stats"
+    xmlns:trainers="clr-namespace:CapstoneProjectPUSH.Views.Trainers"
+    xmlns:workouts="clr-namespace:CapstoneProjectPUSH.Views.Workouts"
+
+    Title="CapstoneProjectPUSH"
+    Shell.FlyoutBehavior="Disabled">
 
     <ShellContent
-        Title="Home"
-        ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
+        Title="FirstLoadingPage"
+        ContentTemplate="{DataTemplate base:FirstLoadingPage}"
+        Route="FirstLoadingPage"/>
+
+    <ShellContent
+        Title="LandingPage"
+        ContentTemplate="{DataTemplate base:LandingPage}"
+        Route="LandingPage"/>
+
+    <TabBar
+        Route="MainTabs">
+
+        <Tab
+            Icon="house.svg"
+            Route="HomePage"
+            Title="Home">
+
+            <ShellContent
+                ContentTemplate="{DataTemplate home:HomePage}"
+                Route="HomePage"/>
+
+        </Tab>
+
+        <Tab
+            Icon="stopwatch.svg"
+            Route="WorkoutsPage"
+            Title="Workouts">
+
+            <ShellContent
+                ContentTemplate="{DataTemplate workouts:WorkoutsPage}"
+                Route="WorkoutsPage"/>
+
+        </Tab>
+
+        <Tab
+            Icon="graph_up.svg"
+            Route="StatsPage"
+            Title="Stats">
+
+            <ShellContent
+                ContentTemplate="{DataTemplate stats:StatsPage}"
+                Route="StatsPage"/>
+
+        </Tab>
+
+        <Tab
+            Icon="person_vcard.svg"
+            Route="TrainersPage"
+            Title="Trainers">
+
+            <ShellContent
+                ContentTemplate="{DataTemplate trainers:TrainersPage}"
+                Route="TrainersPage"/>
+
+        </Tab>
+
+        <Tab
+            Icon="person.svg"
+            Route="ProfilePage"
+            Title="Profile">
+
+            <ShellContent
+                ContentTemplate="{DataTemplate profile:ProfilePage}"
+                Route="ProfilePage"/>
+
+        </Tab>
+
+    </TabBar>
 
 </Shell>

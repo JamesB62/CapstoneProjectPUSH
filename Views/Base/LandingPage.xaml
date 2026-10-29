@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="CapstoneProjectPUSH.Views.Base.LandingPage"
+             Title="">
+
+    <VerticalStackLayout
+        Padding="30"
+        VerticalOptions="Center">
+
+        <VerticalStackLayout
+            Spacing="15">
+
+            <!-- Branding -->
+            <HorizontalStackLayout
+                HorizontalOptions="Center"
+                Spacing="10">
+                    
+                <!-- Logo placeholder -->
+                <Border
+                    HeightRequest="50"
+                    StrokeShape="RoundRectangle 10"
+                    WidthRequest="50">
+
+                    <Label
+                        FontAttributes="Bold"
+                        FontSize="10"
+                        HorizontalOptions="Center"
+                        Text="Logo"
+                        VerticalOptions="Center"/>
+
+                </Border>
+
+                <Label
+                    FontSize="21"
+                    FontAttributes="Bold"
+                    Text="PUSH"
+                    VerticalOptions="Center"/>
+                    
+            </HorizontalStackLayout>
+
+            <!-- Buttons -->
+            <VerticalStackLayout
+                Spacing="10">
+
+                <Button
+                    Command="{Binding GoToLoginCommand}"
+                    FontAttributes="Bold"
+                    Text="Log In"/>
+
+                <Button
+                    Command="{Binding GoToRegisterCommand}"
+                    FontAttributes="Bold"
+                    Text="Register"/>
+
+            </VerticalStackLayout>
+
+            <!-- Privacy statement link -->
+            <Label
+                Text="View Privacy Statement">
+
+                <Label.GestureRecognizers>
+
+                    <TapGestureRecognizer
+                       Command="{Binding GoToPrivacyCommand}"/>
+
+                </Label.GestureRecognizers>
+
+            </Label>
+
+        </VerticalStackLayout>
+
+    </VerticalStackLayout>
+    
+</ContentPage>

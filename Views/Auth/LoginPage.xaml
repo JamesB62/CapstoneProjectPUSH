@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="CapstoneProjectPUSH.Views.Auth.LoginPage"
+             Title="">
+
+    <ScrollView>
+
+        <VerticalStackLayout
+            Padding="30,0,30,30"
+            Spacing="15"
+            VerticalOptions="Center">
+
+            <!-- Branding -->
+            <HorizontalStackLayout
+                HorizontalOptions="Center"
+                Spacing="10">
+
+                <!-- Logo placeholder -->
+                <Border
+                    HeightRequest="50"
+                    StrokeShape="RoundRectangle 10"
+                    WidthRequest="50">
+
+                    <Label
+                        FontAttributes="Bold"
+                        FontSize="10"
+                        HorizontalOptions="Center"
+                        Text="Logo"
+                        VerticalOptions="Center"/>
+
+                </Border>
+
+                <Label
+                    FontSize="21"
+                    FontAttributes="Bold"
+                    Text="PUSH"
+                    VerticalOptions="Center"/>
+
+            </HorizontalStackLayout>
+
+            <Label
+                HorizontalOptions="Center"
+                Text="Log in to your PUSH account"/>
+
+            <!-- Login form -->
+            <VerticalStackLayout
+                Spacing="5">
+
+                <Entry
+                    Keyboard="Email"
+                    Placeholder="Enter your email address here"
+                    Text="{Binding Email}"/>
+
+                <Entry
+                    IsPassword="True"
+                    Placeholder="Enter your password here"
+                    Text="{Binding Password}"/>
+
+            </VerticalStackLayout>
+
+            <!-- Error message -->
+            <Label
+                IsVisible="{Binding HasErrorMessage}"
+                Text="{Binding ErrorMessage}"
+                TextColor="Red"/>
+
+            <!-- Login button -->
+            <Button
+                Command="{Binding LoginCommand}"
+                FontAttributes="Bold"
+                IsEnabled="{Binding IsNotBusy}"
+                Text="Log In"/>
+
+            <!-- Register link -->
+            <Label
+                Text="Don't have an account? Tap here to register">
+
+                <Label.GestureRecognizers>
+
+                    <TapGestureRecognizer
+                        Command="{Binding GoToRegisterCommand}"/>
+
+                </Label.GestureRecognizers>
+
+            </Label>
+
+            <!-- Loading circle -->
+            <ActivityIndicator
+                IsRunning="{Binding IsBusy}"
+                IsVisible="{Binding IsBusy}"/>
+
+        </VerticalStackLayout>
+
+    </ScrollView>
+
+</ContentPage>
