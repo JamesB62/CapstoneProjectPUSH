@@ -11,7 +11,7 @@
         }
 
         [ObservableProperty]
-        private int? trainerId;
+        private int trainerId;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(HasEmail))]
@@ -21,9 +21,9 @@
         public bool HasEmail => !string.IsNullOrWhiteSpace(Trainer?.Email);
         public bool HasPhone => !string.IsNullOrWhiteSpace(Trainer?.PhoneNumber);
 
-        partial void OnTrainerIdChanged(int? value)
+        partial void OnTrainerIdChanged(int value)
         {
-            if (value is null)
+            if (value <= 0)
             {
                 return;
             }
@@ -43,7 +43,13 @@
 
             try
             {
-                Trainer = await _trainerService.GetTrainerByIdAsync(TrainerId!.Value);
+                // Trainer = await _trainerService.GetTrainerByIdAsync(TrainerId!.Value);
+                Trainer = await _trainerService.GetTrainerByIdAsync(TrainerId);
+
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error loading trainer: {ex.Message}");
             }
             finally
             {
