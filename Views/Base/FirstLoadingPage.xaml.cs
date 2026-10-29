@@ -11,11 +11,12 @@ public partial class FirstLoadingPage : ContentPage
     {
         base.OnAppearing();
 
-        // Animate to 100% (1.0) over 3000 milliseconds (3 seconds)
+        // Wait 3 seconds
+        await Task.Delay(3000);
+
+        // Animate to 100% over 3 seconds
         await MyProgressBar.ProgressTo(1.0, 3000, Easing.Linear);
 
-        // Navigate to another page using Shell routes
-        await Shell.Current.GoToAsync("LandingPage");
-
+        await Shell.Current.GoToAsync("//LandingPage");
     }
 }

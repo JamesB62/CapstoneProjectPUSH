@@ -5,137 +5,132 @@
              Title="">
 
     <ScrollView>
-        
-        <Grid
-            Padding="20,0,20,20"
+
+        <VerticalStackLayout
+            Padding="30,0,30,30"
+            Spacing="15"
             VerticalOptions="Center">
-            
-            <Border
-                Padding="30"
-                StrokeShape="RoundRectangle 10">
 
-                <VerticalStackLayout
-                    Spacing="15">
+            <!-- Branding -->
+            <HorizontalStackLayout
+                HorizontalOptions="Center"
+                Spacing="10">
 
-                    <!-- Branding -->
-                    <HorizontalStackLayout
-                        HorizontalOptions="Center"
-                        Spacing="10">
-
-                        <!-- Placeholder logo -->
-                        <Border
-                            HeightRequest="50"
-                            StrokeShape="RoundRectangle 12"
-                            WidthRequest="50">
-
-                            <Label
-                                FontAttributes="Bold"
-                                FontSize="10"
-                                HorizontalOptions="Center"
-                                Text="Logo"
-                                VerticalOptions="Center"/>
-
-                        </Border>
-
-                        <Label
-                            FontSize="26"
-                            FontAttributes="Bold"
-                            Text="PUSH"
-                            VerticalOptions="Center"/>
-
-                    </HorizontalStackLayout>
+                <!-- Logo placeholder -->
+                <Border
+                    HeightRequest="50"
+                    StrokeShape="RoundRectangle 12"
+                    WidthRequest="50">
 
                     <Label
-                        HorizontalOptions="Center"
-                        Text="Create your PUSH account"/>
-
-                    <VerticalStackLayout
-                        Spacing="10">
-
-                        <Entry
-                            Placeholder="Enter your display name here"
-                            Text="{Binding DisplayName}"/>
-
-                        <Entry
-                            Keyboard="Email"
-                            Placeholder="Enter your email address here"
-                            Text="{Binding Email}"/>
-
-                        <Entry
-                            IsPassword="True"
-                            Placeholder="Enter your password here"
-                            Text="{Binding Password}"/>
-
-                        <Entry
-                            IsPassword="True"
-                            Placeholder="Confirm your password here"
-                            Text="{Binding ConfirmPassword}"/>
-
-                        <Label
-                            FontAttributes="Italic"
-                            FontSize="14"
-                            Text="{Binding PasswordRequirements}"/>
-
-                        <!-- Not implemented yet -->
-                        <HorizontalStackLayout>
-
-                            <CheckBox
-                                IsChecked="False"/>
-
-                            <Label
-                                Text="Privacy Consent"
-                                VerticalOptions="Center"/>
-
-                        </HorizontalStackLayout>
-
-                        <!-- Privacy link -->
-                        <Label
-                            Text="View Privacy Statement">
-
-                            <Label.GestureRecognizers>
-
-                                <TapGestureRecognizer
-                                    Command="{Binding GoToPrivacyCommand}"/>
-
-                            </Label.GestureRecognizers>
-
-                        </Label>
-
-                        <Label
-                            IsVisible="{Binding HasErrorMessage}"
-                            Text="{Binding ErrorMessage}"
-                            TextColor="Red"/>
-
-                    </VerticalStackLayout>
-                    
-                    <Button 
-                        Command="{Binding RegisterCommand}"
                         FontAttributes="Bold"
-                        IsEnabled="{Binding IsNotBusy}"
-                        Text="Register"/>
+                        FontSize="10"
+                        HorizontalOptions="Center"
+                        Text="Logo"
+                        VerticalOptions="Center"/>
 
-                    <ActivityIndicator
-                        IsRunning="{Binding IsBusy}"
-                        IsVisible="{Binding IsBusy}"/>
+                </Border>
 
+                <Label
+                    FontSize="21"
+                    FontAttributes="Bold"
+                    Text="PUSH"
+                    VerticalOptions="Center"/>
+
+            </HorizontalStackLayout>
+
+            <Label
+                HorizontalOptions="Center"
+                Text="Create your PUSH account"/>
+
+            <!-- Register form -->
+            <VerticalStackLayout
+                Spacing="5">
+
+                <Entry
+                    Placeholder="Enter your display name here"
+                    Text="{Binding DisplayName}"/>
+
+                <Entry
+                    Keyboard="Email"
+                    Placeholder="Enter your email address here"
+                    Text="{Binding Email}"/>
+
+                <Entry
+                    IsPassword="True"
+                    Placeholder="Enter your password here"
+                    Text="{Binding Password}"/>
+
+                <Entry
+                    IsPassword="True"
+                    Placeholder="Confirm your password here"
+                    Text="{Binding ConfirmPassword}"/>
+
+                <Label
+                    FontAttributes="Italic"
+                    FontSize="14"
+                    Text="{Binding PasswordRequirements}"/>
+
+                <!-- Privacy consent check -->
+                <HorizontalStackLayout
+                    Margin="0,0,0,-5"
+                    Spacing="-5">
+
+                    <CheckBox
+                        IsChecked="{Binding HasAcceptedPrivacy}"/>
+
+                    <!-- Privacy statement link -->
                     <Label
-                        Text="Already have an account? Tap here to log in">
+                        Text="Privacy Consent"
+                        TextDecorations="Underline"
+                        VerticalOptions="Center">
 
                         <Label.GestureRecognizers>
 
                             <TapGestureRecognizer
-                                Command="{Binding GoToLoginCommand}"/>
+                                Command="{Binding GoToPrivacyCommand}"/>
 
                         </Label.GestureRecognizers>
 
                     </Label>
 
-                </VerticalStackLayout>
-                
-            </Border>
-            
-        </Grid>
-        
+                </HorizontalStackLayout>
+
+            </VerticalStackLayout>
+
+            <!-- Error message -->
+            <Label
+                IsVisible="{Binding HasErrorMessage}"
+                Text="{Binding ErrorMessage}"
+                TextColor="Red"/>
+
+            <!-- Register button -->
+            <Button
+                Command="{Binding RegisterCommand}"
+                FontAttributes="Bold"
+                IsEnabled="{Binding IsNotBusy}"
+                Text="Register"/>
+
+            <!-- Login link -->
+            <Label
+                Text="Already have an account? Tap here to log in">
+
+                <Label.GestureRecognizers>
+
+                    <TapGestureRecognizer
+                        Command="{Binding GoToLoginCommand}"/>
+
+                </Label.GestureRecognizers>
+
+            </Label>
+
+            <!-- Loading circle -->
+            <ActivityIndicator
+                IsRunning="{Binding IsBusy}"
+                IsVisible="{Binding IsBusy}"/>
+
+        </VerticalStackLayout>
+
     </ScrollView>
 
 </ContentPage>
