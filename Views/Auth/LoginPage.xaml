@@ -5,97 +5,93 @@
              Title="">
 
     <ScrollView>
-        
-        <Grid
-            Padding="20,0,20,20"
+
+        <VerticalStackLayout
+            Padding="30,0,30,30"
+            Spacing="15"
             VerticalOptions="Center">
 
-            <Border
-                Padding="30"
-                StrokeShape="RoundRectangle 10">
+            <!-- Branding -->
+            <HorizontalStackLayout
+                HorizontalOptions="Center"
+                Spacing="10">
 
-                <VerticalStackLayout
-                    Spacing="15">
-
-                    <!-- Branding -->
-                    <HorizontalStackLayout
-                        HorizontalOptions="Center"
-                        Spacing="10">
-
-                        <!-- Placeholder logo -->
-                        <Border
-                            HeightRequest="50"
-                            StrokeShape="RoundRectangle 10"
-                            WidthRequest="50">
-
-                            <Label
-                                FontAttributes="Bold"
-                                FontSize="10"
-                                HorizontalOptions="Center"
-                                Text="Logo"
-                                VerticalOptions="Center"/>
-
-                        </Border>
-
-                        <Label
-                            FontSize="26"
-                            FontAttributes="Bold"
-                            Text="PUSH"
-                            VerticalOptions="Center"/>
-
-                    </HorizontalStackLayout>
+                <!-- Logo placeholder -->
+                <Border
+                    HeightRequest="50"
+                    StrokeShape="RoundRectangle 10"
+                    WidthRequest="50">
 
                     <Label
-                        HorizontalOptions="Center"
-                        Text="Log in to your PUSH account"/>
-
-                    <!-- Login form -->
-                    <Entry
-                        Keyboard="Email"
-                        Margin="0,-10,0,-5"
-                        Placeholder="Enter your email address here"
-                        Text="{Binding Email}"/>
-
-                    <Entry
-                        IsPassword="True"
-                        Margin="0,-10,0,-5"
-                        Placeholder="Enter your password here"
-                        Text="{Binding Password}"/>
-
-                    <!-- Error message -->
-                    <Label
-                        IsVisible="{Binding HasErrorMessage}"
-                        Text="{Binding ErrorMessage}"
-                        TextColor="Red"/>
-
-                    <Button
-                        Command="{Binding LoginCommand}"
                         FontAttributes="Bold"
-                        IsEnabled="{Binding IsNotBusy}"
-                        Text="Log In"/>
+                        FontSize="10"
+                        HorizontalOptions="Center"
+                        Text="Logo"
+                        VerticalOptions="Center"/>
 
-                    <ActivityIndicator
-                        IsRunning="{Binding IsBusy}"
-                        IsVisible="{Binding IsBusy}"/>
+                </Border>
 
-                    <Label
-                        Text="Don't have an account? Tap here to register">
+                <Label
+                    FontSize="21"
+                    FontAttributes="Bold"
+                    Text="PUSH"
+                    VerticalOptions="Center"/>
 
-                        <Label.GestureRecognizers>
+            </HorizontalStackLayout>
 
-                            <TapGestureRecognizer
-                                Command="{Binding GoToRegisterCommand}"/>
+            <Label
+                HorizontalOptions="Center"
+                Text="Log in to your PUSH account"/>
 
-                        </Label.GestureRecognizers>
+            <!-- Login form -->
+            <VerticalStackLayout
+                Spacing="5">
 
-                    </Label>
+                <Entry
+                    Keyboard="Email"
+                    Placeholder="Enter your email address here"
+                    Text="{Binding Email}"/>
 
-                </VerticalStackLayout>
-                
-            </Border>
-            
-        </Grid>
-        
+                <Entry
+                    IsPassword="True"
+                    Placeholder="Enter your password here"
+                    Text="{Binding Password}"/>
+
+            </VerticalStackLayout>
+
+            <!-- Error message -->
+            <Label
+                IsVisible="{Binding HasErrorMessage}"
+                Text="{Binding ErrorMessage}"
+                TextColor="Red"/>
+
+            <!-- Login button -->
+            <Button
+                Command="{Binding LoginCommand}"
+                FontAttributes="Bold"
+                IsEnabled="{Binding IsNotBusy}"
+                Text="Log In"/>
+
+            <!-- Register link -->
+            <Label
+                Text="Don't have an account? Tap here to register">
+
+                <Label.GestureRecognizers>
+
+                    <TapGestureRecognizer
+                        Command="{Binding GoToRegisterCommand}"/>
+
+                </Label.GestureRecognizers>
+
+            </Label>
+
+            <!-- Loading circle -->
+            <ActivityIndicator
+                IsRunning="{Binding IsBusy}"
+                IsVisible="{Binding IsBusy}"/>
+
+        </VerticalStackLayout>
+
     </ScrollView>
 
 </ContentPage>
