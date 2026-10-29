@@ -60,8 +60,8 @@
         private async Task LogoutAsync()
         {
             _userService.Logout();
+            await Shell.Current.GoToAsync("//LandingPage");
             DisplayName = "Username";
-            await Shell.Current.GoToAsync("//LoginPage");
         }
 
         // Generates GoToPrivacyCommand

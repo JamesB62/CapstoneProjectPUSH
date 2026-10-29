@@ -30,6 +30,7 @@
         Route="MainTabs">
 
         <Tab
+            Icon="house.svg"
             Route="HomePage"
             Title="Home">
 
@@ -40,6 +41,7 @@
         </Tab>
 
         <Tab
+            Icon="stopwatch.svg"
             Route="WorkoutsPage"
             Title="Workouts">
 
@@ -50,7 +52,7 @@
         </Tab>
 
         <Tab
-
+            Icon="graph_up.svg"
             Route="StatsPage"
             Title="Stats">
 
@@ -61,7 +63,7 @@
         </Tab>
 
         <Tab
-
+            Icon="person_vcard.svg"
             Route="TrainersPage"
             Title="Trainers">
 
@@ -70,8 +72,9 @@
                 Route="TrainersPage"/>
 
         </Tab>
-      
+
         <Tab
+            Icon="person.svg"
             Route="ProfilePage"
             Title="Profile">
 
