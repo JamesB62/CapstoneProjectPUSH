@@ -2,25 +2,25 @@
 {
     public partial class LandingViewModel : BaseViewModel
     {
-        // Generates GoToLoginCommand
+        // Login command
         [RelayCommand]
         private async Task GoToLoginAsync()
         {
-            await Shell.Current.GoToAsync(nameof(Views.Auth.LoginPage));
+            await Shell.Current.GoToAsync(nameof(LoginPage));
         }
 
-        // Generates GoToRegisterCommand
+        // Register command
         [RelayCommand]
         private async Task GoToRegisterAsync()
         {
-            await Shell.Current.GoToAsync(nameof(Views.Auth.RegisterPage));
+            await Shell.Current.GoToAsync(nameof(RegisterPage));
         }
 
-        // Generates GoToPrivacyCommand
+        // Privacy link command
         [RelayCommand]
         private async Task GoToPrivacyAsync()
         {
-            await Shell.Current.GoToAsync(nameof(Views.Base.PrivacyPage));
+            await Shell.Current.GoToAsync(nameof(PrivacyPage));
         }
     }
 }

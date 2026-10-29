@@ -16,6 +16,9 @@
         [ObservableProperty]
         public partial string ConfirmPassword { get; set; }
 
+        [ObservableProperty]
+        public partial bool HasAcceptedPrivacy { get; set; }
+
         public string PasswordRequirements => UserService.PasswordRequirementsText;
 
         [ObservableProperty]
@@ -33,7 +36,7 @@
             ConfirmPassword = string.Empty;
         }
 
-        // Generates RegisterCommand
+        // Register command
         [RelayCommand]
         private async Task RegisterAsync()
         {
@@ -47,7 +50,7 @@
                 IsBusy = true;
                 ErrorMessage = string.Empty;
 
-                var result = await _userService.RegisterAsync(DisplayName, Email, Password, ConfirmPassword);
+                var result = await _userService.RegisterAsync(DisplayName, Email, Password, ConfirmPassword, HasAcceptedPrivacy);
 
                 if (!result.Success)
                 {
@@ -55,8 +58,15 @@
                     return;
                 }
 
-                await Shell.Current.DisplayAlertAsync("Register Successful", "Your account has been created. Please log in.", "OK");
-                await Shell.Current.GoToAsync($"../{nameof(LoginPage)}");
+                DisplayName = string.Empty;
+                Email = string.Empty;
+                Password = string.Empty;
+                ConfirmPassword = string.Empty;
+
+                IsBusy = false;
+
+                await Shell.Current.DisplayAlertAsync("Register Successful", "Your account has been created.", "OK");
+                await Shell.Current.GoToAsync("//HomePage");
             }
             catch (Exception ex)
             {
@@ -69,11 +79,18 @@
             }
         }
 
-        // Generates GoToLoginCommand
+        // Login command
         [RelayCommand]
         private async Task GoToLoginAsync()
         {
             await Shell.Current.GoToAsync($"../{nameof(LoginPage)}");
+        }
+
+        // Privacy link command
+        [RelayCommand]
+        private async Task GoToPrivacyAsync()
+        {
+            await Shell.Current.GoToAsync(nameof(PrivacyPage));
         }
     }
 }

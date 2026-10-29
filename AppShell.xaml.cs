@@ -11,23 +11,23 @@ namespace CapstoneProjectPUSH
             Routing.RegisterRoute(nameof(RegisterPage), typeof(RegisterPage));
 
             // Base
-            Routing.RegisterRoute(nameof(LandingPage), typeof(LandingPage));
             Routing.RegisterRoute(nameof(PrivacyPage), typeof(PrivacyPage));
             
-            // Home
+            // Home - incorrect
             Routing.RegisterRoute(nameof(HomePage), typeof(HomePage));
             
-            // Profile
+            // Profile - incorrect
             Routing.RegisterRoute(nameof(ProfilePage), typeof(ProfilePage));
             
-            // Stats
+            // Stats - incorrect
             Routing.RegisterRoute(nameof(StatsPage), typeof(StatsPage));
             
-            // Trainers
+            // Trainers - incorrect
             Routing.RegisterRoute(nameof(TrainersPage), typeof(TrainersPage));
+            // Good
             Routing.RegisterRoute(nameof(TrainerDetailsPage), typeof(TrainerDetailsPage));
             
-            // Workouts
+            // Workouts - incorrect
             Routing.RegisterRoute(nameof(WorkoutsPage), typeof(WorkoutsPage));
         }
     }

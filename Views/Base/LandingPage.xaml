@@ -2,77 +2,74 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="CapstoneProjectPUSH.Views.Base.LandingPage"
-             Title=""
-             NavigationPage.HasNavigationBar="False">
-    
+             Title="">
+
     <VerticalStackLayout
-        Padding="20,0,20,20"
+        Padding="30"
         VerticalOptions="Center">
 
-        <Border
-            Padding="30"
-            StrokeShape="RoundRectangle 10"
-            VerticalOptions="Center">
+        <VerticalStackLayout
+            Spacing="15">
 
-            <VerticalStackLayout
-                Spacing="15">
-
-                <!-- Branding -->
-                <HorizontalStackLayout
-                    HorizontalOptions="Center"
-                    Spacing="10">
+            <!-- Branding -->
+            <HorizontalStackLayout
+                HorizontalOptions="Center"
+                Spacing="10">
                     
-                    <!-- Placeholder logo -->
-                    <Border
-                        HeightRequest="50"
-                        StrokeShape="RoundRectangle 10"
-                        WidthRequest="50">
-
-                        <Label
-                            FontAttributes="Bold"
-                            FontSize="10"
-                            HorizontalOptions="Center"
-                            Text="Logo"
-                            VerticalOptions="Center"/>
-
-                    </Border>
+                <!-- Logo placeholder -->
+                <Border
+                    HeightRequest="50"
+                    StrokeShape="RoundRectangle 10"
+                    WidthRequest="50">
 
                     <Label
-                        FontSize="26"
                         FontAttributes="Bold"
-                        Text="PUSH"
+                        FontSize="10"
+                        HorizontalOptions="Center"
+                        Text="Logo"
                         VerticalOptions="Center"/>
-                    
-                </HorizontalStackLayout>
 
-                <!-- Buttons -->
+                </Border>
+
+                <Label
+                    FontSize="21"
+                    FontAttributes="Bold"
+                    Text="PUSH"
+                    VerticalOptions="Center"/>
+                    
+            </HorizontalStackLayout>
+
+            <!-- Buttons -->
+            <VerticalStackLayout
+                Spacing="10">
+
                 <Button
                     Command="{Binding GoToLoginCommand}"
                     FontAttributes="Bold"
-                    Text="Login"/>
+                    Text="Log In"/>
 
                 <Button
                     Command="{Binding GoToRegisterCommand}"
                     FontAttributes="Bold"
                     Text="Register"/>
 
-                <!-- Privacy link -->
-                <Label
-                    Text="View Privacy Statement">
-
-                    <Label.GestureRecognizers>
-
-                        <TapGestureRecognizer
-                            Command="{Binding GoToPrivacyCommand}"/>
-
-                    </Label.GestureRecognizers>
-
-                </Label>
-
             </VerticalStackLayout>
-            
-        </Border>
-        
+
+            <!-- Privacy statement link -->
+            <Label
+                Text="View Privacy Statement">
+
+                <Label.GestureRecognizers>
+
+                    <TapGestureRecognizer
+                       Command="{Binding GoToPrivacyCommand}"/>
+
+                </Label.GestureRecognizers>
+
+            </Label>
+
+        </VerticalStackLayout>
+
     </VerticalStackLayout>
     
 </ContentPage>
