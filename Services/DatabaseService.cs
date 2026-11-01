@@ -3,6 +3,10 @@
     public class DatabaseService
     {
         public const string DbFileName = "push.db3";
+
+        // Seeded admin login (testing only, change or remove before release)
+        public const string SeedAdminEmail = "admin@push.local";
+        public const string SeedAdminPassword = "Admin123!";
         public static string DbPath => Path.Combine(FileSystem.AppDataDirectory, DbFileName);
 
         private SQLiteAsyncConnection? _connection;
@@ -44,6 +48,7 @@
                     await SeedExercisesAsync();
                     await SeedWorkoutsAsync();
                     await SeedArticlesAsync();
+                    await SeedAdminAsync();
                 }
             }
             finally
@@ -52,6 +57,33 @@
             }
 
             return _connection;
+        }
+
+        private async Task SeedAdminAsync()
+        {
+            var db = await GetConnectionAsync();
+
+            var adminExists = await db.Table<User>().Where(u => u.IsAdmin == true).CountAsync() > 0;
+            if (adminExists)
+            {
+                return;
+            }
+
+            // If a regular user already took this email, leave it alone rather than promoting them
+            var emailTaken = await db.Table<User>().Where(u => u.Email == SeedAdminEmail).CountAsync() > 0;
+            if (emailTaken)
+            {
+                return;
+            }
+
+            await db.InsertAsync(new User
+            {
+                Email = SeedAdminEmail,
+                DisplayName = "Administrator",
+                PasswordHash = UserService.HashPassword(SeedAdminPassword),
+                IsAdmin = true,
+                DateTimeCreated = DateTime.Now
+            });
         }
 
         private async Task SeedCategoriesAsync()

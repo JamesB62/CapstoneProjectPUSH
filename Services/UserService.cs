@@ -73,7 +73,7 @@
             return new AuthResult(true, "Account created successfully.", user);
         }
 
-        public async Task<AuthResult> LoginAsync(string email, string password)
+        public async Task<AuthResult> LoginAsync(string email, string password, bool requireAdmin = false)
         {
             email = NormalizeEmail(email);
 
@@ -101,11 +101,23 @@
                 return new AuthResult(false, invalid);
             }
 
+            // Checked after the password so the message can't be used to probe which emails are admins
+            if (requireAdmin && !user.IsAdmin)
+            {
+                return new AuthResult(false, "This account does not have admin access.");
+            }
+
             CurrentUser = user;
             return new AuthResult(true, $"Welcome back, {user.DisplayName}!", user);
         }
 
         public void Logout() => CurrentUser = null;
+
+        public async Task<int> GetUserCountAsync()
+        {
+            var db = await _database.GetConnectionAsync();
+            return await db.Table<User>().CountAsync();
+        }
 
         // Helpers
         private static string NormalizeEmail(string? email) => (email ?? string.Empty).Trim().ToLowerInvariant();
@@ -134,7 +146,7 @@
             && password.Any(char.IsLetter)
             && password.Any(char.IsDigit);
 
-        private static string HashPassword(string password)
+        public static string HashPassword(string password)
         {
             var salt = RandomNumberGenerator.GetBytes(SaltSize);
             var key = Rfc2898DeriveBytes.Pbkdf2(password, salt, Iterations, HashAlgorithmName.SHA256, KeySize);
