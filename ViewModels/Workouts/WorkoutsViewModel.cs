@@ -39,7 +39,7 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
         [RelayCommand]
         private async Task AddWorkoutAsync()
         {
-            await Shell.Current.DisplayAlertAsync("Coming soon", "Adding workouts isn't built yet.", "OK");
+            await Shell.Current.GoToAsync(nameof(SelectExercisesPage));
         }
     }
 }
