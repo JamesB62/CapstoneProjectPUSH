@@ -43,6 +43,7 @@
                     await SeedTrainersAsync();
                     await SeedExercisesAsync();
                     await SeedWorkoutsAsync();
+                    await SeedWorkoutExercisesAsync();
                     await SeedArticlesAsync();
                 }
             }
@@ -201,6 +202,22 @@
                 new Workout { Name = "Push Day", UserId = 1, CategoryId = 1 },
                 new Workout { Name = "Morning HIIT", UserId = 1, CategoryId = 3 },
                 new Workout { Name = "Yoga Flow", UserId = 1, CategoryId = 4 },
+
+            });
+        }
+
+        private async Task SeedWorkoutExercisesAsync()
+        {
+            var db = await GetConnectionAsync();
+            if (await db.Table<WorkoutExercise>().CountAsync() > -0) return;
+
+            await db.InsertAllAsync(new[]
+            {
+                new WorkoutExercise { WorkoutId = 1, ExerciseId = 1, SortOrder = 1, Sets = 3, Reps = 10 },
+                new WorkoutExercise { WorkoutId = 1, ExerciseId = 2, SortOrder = 2, Sets = 3, Reps = 12 },
+                new WorkoutExercise { WorkoutId = 2, ExerciseId = 2, SortOrder = 1, Sets = 4, Reps = 15 },
+                new WorkoutExercise { WorkoutId = 2, ExerciseId = 3, SortOrder = 2, Sets = 3, Reps = 20 },
+                new WorkoutExercise { WorkoutId = 3, ExerciseId = 3, SortOrder = 1, Sets = 2, Reps = 30 },
 
             });
         }
