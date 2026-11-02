@@ -35,6 +35,14 @@ namespace CapstoneProjectPUSH
             
             // Workouts - incorrect
             Routing.RegisterRoute(nameof(WorkoutsPage), typeof(WorkoutsPage));
+            //workout detail
+            Routing.RegisterRoute(nameof(WorkoutDetailPage), typeof(WorkoutDetailPage));
+
+            //Exercises
+            Routing.RegisterRoute(nameof(SelectExercisesPage), typeof(SelectExercisesPage));
+
+            //Admin
+            Routing.RegisterRoute(nameof(AdminDashboard), typeof(AdminDashboard));
         }
     }
 }

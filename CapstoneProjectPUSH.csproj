@@ -82,6 +82,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Compile Update="Views\Admin\AdminDashboard.xaml.cs">
+	    <DependentUpon>AdminDashboard.xaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Views\Base\FirstLoadingPage.xaml.cs">
 	    <DependentUpon>FirstLoadingPage.xaml</DependentUpon>
 	  </Compile>
@@ -103,6 +106,9 @@
 	</ItemGroup>
    
 	<ItemGroup>
+	  <MauiXaml Update="Views\Admin\AdminDashboard.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Views\Auth\LoginPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="CapstoneProjectPUSH.Views.Workouts.WorkoutDetailPage"
+    xmlns:models="clr-namespace:CapstoneProjectPUSH.Models"
+    xmlns:vm="clr-namespace:CapstoneProjectPUSH.ViewModels.Workouts"
+    Title="{Binding WorkoutName}"
+    x:DataType="vm:WorkoutDetailViewModel">
+
+    <Grid RowDefinitions="*,Auto">
+
+        <Grid
+            Grid.Row="0"
+            Padding="20,20,20,0"
+            RowDefinitions="Auto,*"
+            RowSpacing="15">
+
+            <VerticalStackLayout Grid.Row="0" Spacing="4">
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="22"
+                    Text="{Binding WorkoutName}" />
+                <Label FontSize="14" Text="{Binding CategoryName}" />
+            </VerticalStackLayout>
+
+            <CollectionView Grid.Row="1" ItemsSource="{Binding Exercises}">
+
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout ItemSpacing="10" Orientation="Vertical" />
+                </CollectionView.ItemsLayout>
+
+                <CollectionView.EmptyView>
+                    <Label
+                        HorizontalOptions="Center"
+                        Text="No exercises in this workout yet."
+                        VerticalOptions="Center" />
+                </CollectionView.EmptyView>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:WorkoutExercise">
+                        <Border
+                            Padding="15"
+                            BackgroundColor="{AppThemeBinding Light=#E5E7EB,
+                                                              Dark=#2C2C31}"
+                            StrokeShape="RoundRectangle 10"
+                            StrokeThickness="0">
+
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="15">
+                                <Label
+                                    Grid.Column="0"
+                                    FontAttributes="Bold"
+                                    FontSize="18"
+                                    Text="{Binding SortOrder}"
+                                    VerticalOptions="Center" />
+
+                                <VerticalStackLayout Grid.Column="1" Spacing="4">
+                                    <Label FontAttributes="Bold" Text="{Binding ExerciseTitle}" />
+                                    <Label FontSize="12">
+                                        <Label.Text>
+                                            <MultiBinding StringFormat="{}{0} sets × {1} reps">
+                                                <Binding Path="Sets" />
+                                                <Binding Path="Reps" />
+                                            </MultiBinding>
+                                        </Label.Text>
+                                    </Label>
+                                </VerticalStackLayout>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </Grid>
+
+        <Button
+            Grid.Row="1"
+            Margin="20"
+            Command="{Binding StartWorkoutCommand}"
+            Text="Start Workout" />
+    </Grid>
+</ContentPage>
