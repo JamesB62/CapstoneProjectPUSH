@@ -17,7 +17,7 @@
         // User who is currently logged in, or null
         public User? CurrentUser { get; private set; }
 
-        public async Task<AuthResult> RegisterAsync(string displayName, string email, string password, string confirmPassword)
+        public async Task<AuthResult> RegisterAsync(string displayName, string email, string password, string confirmPassword, bool hasAcceptedPrivacy)
         {
             displayName = (displayName ?? string.Empty).Trim();
 
@@ -41,6 +41,11 @@
             if (password != confirmPassword)
             {
                 return new AuthResult(false, "Passwords do not match.");
+            }
+
+            if (!hasAcceptedPrivacy)
+            {
+                return new AuthResult(false, "You must agree to the privacy consent to register.");
             }
 
             var db = await _database.GetConnectionAsync();
@@ -70,6 +75,7 @@
                 return new AuthResult(false, "An account with that email already exists.");
             }
 
+            CurrentUser = user;
             return new AuthResult(true, "Account created successfully.", user);
         }
 
@@ -79,7 +85,7 @@
 
             if (string.IsNullOrWhiteSpace(email) || string.IsNullOrEmpty(password))
             {
-                return new AuthResult(false, "Please enter your email and password.");
+                return new AuthResult(false, "Please enter your email address and password.");
             }
 
             var db = await _database.GetConnectionAsync();
