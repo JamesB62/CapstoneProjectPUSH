@@ -1,6 +1,3 @@
-using CapstoneProjectPUSH.Views.Admin;
-
-
 namespace CapstoneProjectPUSH
 {
     public partial class AppShell : Shell
