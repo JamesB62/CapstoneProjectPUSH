@@ -13,6 +13,10 @@
         [NotNull, MaxLength(1000)]
         public string Description { get; set; } = string.Empty;
 
+        // Change to index?
+        [NotNull]
+        public string Difficulty { get; set; } = string.Empty;
+
         [Indexed]
         public int CategoryId { get; set; }
 

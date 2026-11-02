@@ -8,7 +8,7 @@
              Title="">
 
     <Grid
-        Padding="20"
+        Padding="30"
         RowDefinitions="Auto,*"
         RowSpacing="15">
 

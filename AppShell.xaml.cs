@@ -12,11 +12,17 @@ namespace CapstoneProjectPUSH
 
             // Base
             Routing.RegisterRoute(nameof(PrivacyPage), typeof(PrivacyPage));
+
+            // Exercises
+            Routing.RegisterRoute(nameof(ExerciseDetailsPage), typeof(ExerciseDetailsPage));
             
+
+            // Double check/update page routing before removing
             // Home - incorrect
             Routing.RegisterRoute(nameof(HomePage), typeof(HomePage));
-            
+
             // Profile - incorrect
+            Routing.RegisterRoute(nameof(UpdateProfilePage), typeof(UpdateProfilePage));
             Routing.RegisterRoute(nameof(ProfilePage), typeof(ProfilePage));
             
             // Stats - incorrect

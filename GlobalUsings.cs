@@ -14,6 +14,7 @@ global using CapstoneProjectPUSH.Services;
 
 global using CapstoneProjectPUSH.Views.Auth;
 global using CapstoneProjectPUSH.Views.Base;
+global using CapstoneProjectPUSH.Views.Exercises;
 global using CapstoneProjectPUSH.Views.Home;
 global using CapstoneProjectPUSH.Views.Profile;
 global using CapstoneProjectPUSH.Views.Stats;
@@ -22,6 +23,7 @@ global using CapstoneProjectPUSH.Views.Workouts;
 
 global using CapstoneProjectPUSH.ViewModels.Auth;
 global using CapstoneProjectPUSH.ViewModels.Base;
+global using CapstoneProjectPUSH.ViewModels.Exercises;
 global using CapstoneProjectPUSH.ViewModels.Home;
 global using CapstoneProjectPUSH.ViewModels.Profile;
 global using CapstoneProjectPUSH.ViewModels.Stats;

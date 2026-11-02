@@ -2,86 +2,94 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="CapstoneProjectPUSH.Views.Profile.ProfilePage"
-             Title=""
-             Shell.NavBarIsVisible="False">
+             Title="">
 
-    <Grid
-        RowDefinitions="*,Auto">
+    <ScrollView>
 
-        <ScrollView
-            Grid.Row="0">
+        <VerticalStackLayout
+            Padding="30"
+            Spacing="15">
+
+            <Label
+                FontAttributes="Bold"
+                FontSize="18"
+                Text="My PUSH Profile"/>
+
+            <!-- Profile picture placeholder -->
+            <Border
+                HeightRequest="100"
+                HorizontalOptions="Center"
+                StrokeShape="RoundRectangle 50"
+                WidthRequest="100">
+
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="10"
+                    HorizontalOptions="Center"
+                    Text="PFP"
+                    VerticalOptions="Center"/>
+
+            </Border>
+
+            <Label
+                FontAttributes="Bold"
+                FontSize="18"
+                Margin="0,0,0,-5"
+                HorizontalOptions="Center"
+                Text="{Binding DisplayName}"/>
+            
+            <Label
+                Margin="0,0,0,10"
+                HorizontalOptions="Center"
+                Text="{Binding Email}"/>
+
+            <!-- Buttons -->
 
             <VerticalStackLayout
-                Padding="20"
-                Spacing="15">
-
-                <Label
-                    FontAttributes="Bold"
-                    FontSize="18"
-                    Text="My Profile"/>
-
-                <!-- Profile picture placeholder -->
-                <Border
-                    BackgroundColor="{AppThemeBinding Light=#E5E7EB, Dark=#2C2C31}"
-                    HeightRequest="120"
-                    HorizontalOptions="Center"
-                    StrokeShape="RoundRectangle 60"
-                    StrokeThickness="0"
-                    WidthRequest="120">
-
-                    <Label
-                        FontAttributes="Bold"
-                        HorizontalOptions="Center"
-                        Text="PFP"
-                        VerticalOptions="Center"/>
-
-                </Border>
-
-                <Label
-                    FontAttributes="Bold"
-                    FontSize="22"
-                    HorizontalOptions="Center"
-                    Text="{Binding DisplayName}"/>
+                Spacing="10">
 
                 <Button
-                    Command="{Binding UpdateDetailsCommand}"
+                    Command="{Binding GoToUpdateDetailsCommand}"
+                    FontAttributes="Bold"
                     Text="Update Details"/>
 
                 <Button
                     Command="{Binding MyWorkoutsCommand}"
+                    FontAttributes="Bold"
                     Text="My Workouts"/>
 
                 <Button
                     Command="{Binding MyNotesCommand}"
+                    FontAttributes="Bold"
                     Text="My Notes"/>
 
                 <Button
                     Command="{Binding AdminCommand}"
-                    Text="Admin"/>
+                    FontAttributes="Bold"
+                    Text="Admin Dashboard"/>
 
                 <Button
                     Command="{Binding LogoutCommand}"
                     FontAttributes="Bold"
                     Text="Logout"/>
 
-                <!-- Privacy link -->
-                <Label
-                    FontSize="12"
-                    Text="Privacy statement">
-
-                    <Label.GestureRecognizers>
-
-                        <TapGestureRecognizer
-                            Command="{Binding GoToPrivacyCommand}"/>
-
-                    </Label.GestureRecognizers>
-
-                </Label>
-
             </VerticalStackLayout>
 
-        </ScrollView>
+            <!-- Privacy statement link -->
+            <Label
+                Text="View Privacy Statement">
 
-    </Grid>
+                <Label.GestureRecognizers>
+
+                    <TapGestureRecognizer
+                       Command="{Binding GoToPrivacyCommand}"/>
+
+                </Label.GestureRecognizers>
+
+            </Label>
+
+        </VerticalStackLayout>
+
+    </ScrollView>
 
 </ContentPage>

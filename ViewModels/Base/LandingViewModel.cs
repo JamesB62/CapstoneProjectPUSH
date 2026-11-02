@@ -6,21 +6,60 @@
         [RelayCommand]
         private async Task GoToLoginAsync()
         {
-            await Shell.Current.GoToAsync(nameof(LoginPage));
+            if (IsBusy)
+            {
+                return;
+            }
+
+            IsBusy = true;
+            try
+            {
+                await Shell.Current.GoToAsync(nameof(LoginPage));
+            }
+            finally
+            {
+                IsBusy = false;
+            }
         }
 
         // Register command
         [RelayCommand]
         private async Task GoToRegisterAsync()
         {
-            await Shell.Current.GoToAsync(nameof(RegisterPage));
+            if (IsBusy)
+            {
+                return;
+            }
+
+            IsBusy = true;
+            try
+            {
+                await Shell.Current.GoToAsync(nameof(RegisterPage));
+            }
+            finally
+            {
+                IsBusy = false;
+            }
         }
 
         // Privacy link command
         [RelayCommand]
         private async Task GoToPrivacyAsync()
         {
-            await Shell.Current.GoToAsync(nameof(PrivacyPage));
+            if (IsBusy)
+            {
+                return;
+            }
+
+            IsBusy = true;
+            try
+            {
+                await Shell.Current.GoToAsync(nameof(PrivacyPage));
+            }
+            finally
+            {
+                IsBusy = false;
+            }
         }
     }
 }

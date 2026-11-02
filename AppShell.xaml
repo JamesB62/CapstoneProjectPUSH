@@ -7,32 +7,32 @@
     
     xmlns:auth="clr-namespace:CapstoneProjectPUSH.Views.Auth"
     xmlns:base="clr-namespace:CapstoneProjectPUSH.Views.Base"
+    xmlns:exercises="clr-namespace:CapstoneProjectPUSH.Views.Exercises"
     xmlns:home="clr-namespace:CapstoneProjectPUSH.Views.Home"
     xmlns:profile="clr-namespace:CapstoneProjectPUSH.Views.Profile"
     xmlns:stats="clr-namespace:CapstoneProjectPUSH.Views.Stats"
     xmlns:trainers="clr-namespace:CapstoneProjectPUSH.Views.Trainers"
     xmlns:workouts="clr-namespace:CapstoneProjectPUSH.Views.Workouts"
 
-    Title="CapstoneProjectPUSH"
-    Shell.FlyoutBehavior="Disabled">
+    Title="CapstoneProjectPUSH">
 
     <ShellContent
         Title="FirstLoadingPage"
         ContentTemplate="{DataTemplate base:FirstLoadingPage}"
-        Route="FirstLoadingPage"/>
+        Route="FirstLoadingPage"
+        FlyoutItemIsVisible="False"/>
 
     <ShellContent
         Title="LandingPage"
         ContentTemplate="{DataTemplate base:LandingPage}"
-        Route="LandingPage"/>
+        Route="LandingPage"
+        FlyoutItemIsVisible="False"/>
 
-    <TabBar
-        Route="MainTabs">
+    <FlyoutItem
+        Icon="house.svg"
+        Title="Home">
 
-        <Tab
-            Icon="house.svg"
-            Route="HomePage"
-            Title="Home">
+        <Tab>
 
             <ShellContent
                 ContentTemplate="{DataTemplate home:HomePage}"
@@ -40,10 +40,14 @@
 
         </Tab>
 
-        <Tab
-            Icon="stopwatch.svg"
-            Route="WorkoutsPage"
-            Title="Workouts">
+    </FlyoutItem>
+
+
+    <FlyoutItem
+        Icon="stopwatch.svg"
+        Title="Workouts">
+
+        <Tab>
 
             <ShellContent
                 ContentTemplate="{DataTemplate workouts:WorkoutsPage}"
@@ -51,10 +55,27 @@
 
         </Tab>
 
-        <Tab
-            Icon="graph_up.svg"
-            Route="StatsPage"
-            Title="Stats">
+    </FlyoutItem>
+
+    <FlyoutItem
+        Icon="person_walking.svg"
+        Title="Exercises">
+
+        <Tab>
+
+            <ShellContent
+                ContentTemplate="{DataTemplate exercises:ExercisesPage}"
+                Route="ExercisesPage"/>
+
+        </Tab>
+
+    </FlyoutItem>
+
+    <FlyoutItem
+        Icon="graph_up.svg"
+        Title="Stats">
+
+        <Tab>
 
             <ShellContent
                 ContentTemplate="{DataTemplate stats:StatsPage}"
@@ -62,10 +83,13 @@
 
         </Tab>
 
-        <Tab
-            Icon="person_vcard.svg"
-            Route="TrainersPage"
-            Title="Trainers">
+    </FlyoutItem>
+
+    <FlyoutItem
+        Icon="person_vcard.svg"
+        Title="Trainers">
+
+        <Tab>
 
             <ShellContent
                 ContentTemplate="{DataTemplate trainers:TrainersPage}"
@@ -73,10 +97,13 @@
 
         </Tab>
 
-        <Tab
-            Icon="person.svg"
-            Route="ProfilePage"
-            Title="Profile">
+    </FlyoutItem>
+
+    <FlyoutItem
+        Icon="person.svg"
+        Title="Profile">
+
+        <Tab>
 
             <ShellContent
                 ContentTemplate="{DataTemplate profile:ProfilePage}"
@@ -84,6 +111,6 @@
 
         </Tab>
 
-    </TabBar>
+    </FlyoutItem>
 
 </Shell>
