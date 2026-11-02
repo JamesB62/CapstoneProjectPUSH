@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:CapstoneProjectPUSH.ViewModels.Exercises"
+             x:Class="CapstoneProjectPUSH.Views.Exercises.ExerciseDetailsPage"
+             x:DataType="vm:ExerciseDetailsViewModel"
+             Title="">
+
+    <ScrollView>
+
+        <VerticalStackLayout
+            Padding="20,0,20,20"
+            Spacing="15">
+
+            <Label
+                FontAttributes="Bold"
+                FontSize="18"
+                Grid.Column="0"
+                Grid.Row="0"
+                Text="PUSH Exercise Details"/>
+
+            <!-- ADD IMAGE HERE? -->
+
+            <Grid
+                ColumnDefinitions="*,Auto"
+                ColumnSpacing="15">
+
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="16"
+                    Grid.Column="0"
+                    LineBreakMode="WordWrap"
+                    Text="{Binding Exercise.Title}"
+                    VerticalOptions="Center"/>
+
+                <Border
+                    Grid.Column="1"
+                    Padding="10,5"
+                    StrokeShape="RoundRectangle 10"
+                    VerticalOptions="Start">
+
+                    <Label
+                        FontSize="12"
+                        Text="{Binding Exercise.CategoryName}"/>
+
+                </Border>
+
+            </Grid>
+
+            <Label
+                FontAttributes="Bold"
+                Text="About The Exercise"/>
+
+            <Label
+                Text="{Binding Exercise.Description}"/>
+
+            <VerticalStackLayout
+                Spacing="5">
+
+                <HorizontalStackLayout
+                    Spacing="0">
+
+                    <Label
+                        Text="• Difficulty: "/>
+
+                    <Label
+                        Text="{Binding Exercise.Difficulty}"/>
+
+                </HorizontalStackLayout>
+
+            </VerticalStackLayout>
+
+        </VerticalStackLayout>
+
+    </ScrollView>
+
+</ContentPage>

@@ -25,6 +25,7 @@ global using CapstoneProjectPUSH.Views.Exercises;
 
 global using CapstoneProjectPUSH.ViewModels.Auth;
 global using CapstoneProjectPUSH.ViewModels.Base;
+global using CapstoneProjectPUSH.ViewModels.Exercises;
 global using CapstoneProjectPUSH.ViewModels.Home;
 global using CapstoneProjectPUSH.ViewModels.Profile;
 global using CapstoneProjectPUSH.ViewModels.Stats;

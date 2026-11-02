@@ -47,6 +47,7 @@
                     await SeedTrainersAsync();
                     await SeedExercisesAsync();
                     await SeedWorkoutsAsync();
+                    await SeedWorkoutLogsAsync();
                     await SeedWorkoutExercisesAsync();
                     await SeedArticlesAsync();
                     await SeedAdminAsync();
@@ -202,6 +203,7 @@
                 {
                     Title = "Exercise 1",
                     Description = "This is a placeholder description for Exercise 1.",
+                    Difficulty = "Easy",
                     CategoryId = 1
                 },
 
@@ -209,6 +211,7 @@
                 {
                     Title = "Exercise 2",
                     Description = "This is a placeholder description for Exercise 2.",
+                    Difficulty = "Medium",
                     CategoryId = 3
                 },
 
@@ -216,6 +219,7 @@
                 {
                     Title = "Exercise 3",
                     Description = "This is a placeholder description for Exercise 3.",
+                    Difficulty = "Hard",
                     CategoryId = 5
                 }
             };
@@ -295,6 +299,35 @@
             };
 
             await db.InsertAllAsync(articles);
+        }
+
+        private async Task SeedWorkoutLogsAsync()
+        {
+            var db = await GetConnectionAsync();
+            if (await db.Table<WorkoutLog>().CountAsync() > 0) return;
+
+            WorkoutLog Log(int workoutId, int daysAgo, int minutes) => new()
+            {
+                WorkoutId = workoutId,
+                UserId = 1,
+                DateTimeCompleted = DateTime.Today.AddDays(-daysAgo).AddHours(7),
+                DurationMinutes = minutes,
+                DurationSeconds = minutes * 60
+            };
+
+            await db.InsertAllAsync(new[]
+            {
+                // Week
+                Log(1, 0, 45), Log(2, 1, 30), Log(3, 2, 60), Log(1, 3, 40), Log(2, 5, 35),
+
+                // Month
+                Log(1, 8, 45), Log(3, 10, 30), Log(2, 13, 60), Log(1, 15, 40),
+                Log(2, 20, 50), Log(3, 24, 35), Log(1, 27, 45),
+
+                // Year
+                Log(1, 40, 50), Log(2, 70, 45), Log(3, 100, 60), Log(1, 130, 30),
+                Log(2, 160, 55), Log(3, 200, 40), Log(1, 250, 70), Log(2, 300, 45),
+            });
         }
     }
 }
