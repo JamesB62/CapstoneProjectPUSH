@@ -19,6 +19,7 @@
                 .OrderBy(e => e.Title)
                 .ToListAsync();
 
+
             var categoryNames = await _categoryService.GetCategoryNamesAsync();
 
             foreach (var exercise in exercises)

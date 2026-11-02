@@ -1,3 +1,4 @@
+using CapstoneProjectPUSH.Views.Exercises;
 using CapstoneProjectPUSH.ViewModels.Admins;
 using CapstoneProjectPUSH.Views.Admin;
 
@@ -28,6 +29,7 @@ namespace CapstoneProjectPUSH
             builder.Services.AddSingleton<UserService>();
             builder.Services.AddSingleton<WorkoutService>();
             builder.Services.AddSingleton<WorkoutLogService>();
+            builder.Services.AddSingleton<ExerciseService>();
 
             // ======================== ViewModels ========================
 
@@ -53,6 +55,11 @@ namespace CapstoneProjectPUSH
 
             // Workouts
             builder.Services.AddTransient<WorkoutsViewModel>();
+            //workout detail
+            builder.Services.AddTransient<WorkoutsDetailViewModel>();
+
+            //Exercise
+            builder.Services.AddTransient<ExercisesViewModel>();
 
             // Admin
             builder.Services.AddTransient<AdminDashboardViewModel>();
@@ -82,6 +89,11 @@ namespace CapstoneProjectPUSH
           
             // Workout
             builder.Services.AddTransient<WorkoutsPage>();
+            //workout detail 
+            builder.Services.AddTransient<WorkoutDetailPage>();
+
+            //Exercises 
+            builder.Services.AddTransient<SelectExercisesPage>();
 
             // Admin
             builder.Services.AddTransient<AdminDashboard>();
