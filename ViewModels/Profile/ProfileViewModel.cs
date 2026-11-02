@@ -1,4 +1,6 @@
-﻿namespace CapstoneProjectPUSH.ViewModels.Profile
+﻿using CapstoneProjectPUSH.Views.Admin;
+
+namespace CapstoneProjectPUSH.ViewModels.Profile
 {
     public partial class ProfileViewModel : BaseViewModel
     {
@@ -52,7 +54,7 @@
         [RelayCommand]
         private async Task AdminAsync()
         {
-            await Shell.Current.DisplayAlertAsync("Coming soon", "Admin isn't built yet.", "OK");
+            await Shell.Current.Navigation.PushAsync(new AdminDashboard());
         }
 
         // Generates LogoutCommand
@@ -60,8 +62,8 @@
         private async Task LogoutAsync()
         {
             _userService.Logout();
+            await Shell.Current.GoToAsync("//LandingPage");
             DisplayName = "Username";
-            await Shell.Current.GoToAsync("//LoginPage");
         }
 
         // Generates GoToPrivacyCommand

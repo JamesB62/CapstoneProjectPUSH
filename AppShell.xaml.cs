@@ -1,3 +1,6 @@
+using CapstoneProjectPUSH.Views.Admin;
+
+
 namespace CapstoneProjectPUSH
 {
     public partial class AppShell : Shell
@@ -34,6 +37,9 @@ namespace CapstoneProjectPUSH
 
             //Exercises
             Routing.RegisterRoute(nameof(SelectExercisesPage), typeof(SelectExercisesPage));
+
+            //Admin
+            Routing.RegisterRoute(nameof(AdminDashboard), typeof(AdminDashboard));
         }
     }
 }

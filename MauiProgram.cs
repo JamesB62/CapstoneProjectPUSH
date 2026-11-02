@@ -1,4 +1,6 @@
 using CapstoneProjectPUSH.Views.Exercises;
+using CapstoneProjectPUSH.ViewModels.Admins;
+using CapstoneProjectPUSH.Views.Admin;
 
 namespace CapstoneProjectPUSH
 {
@@ -59,6 +61,9 @@ namespace CapstoneProjectPUSH
             //Exercise
             builder.Services.AddTransient<ExercisesViewModel>();
 
+            // Admin
+            builder.Services.AddTransient<AdminDashboardViewModel>();
+
             // ========================== Views ===========================
 
             // Auth
@@ -89,6 +94,10 @@ namespace CapstoneProjectPUSH
 
             //Exercises 
             builder.Services.AddTransient<SelectExercisesPage>();
+
+            // Admin
+            builder.Services.AddTransient<AdminDashboard>();
+
 
 #if DEBUG
             builder.Logging.AddDebug();

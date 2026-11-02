@@ -17,5 +17,8 @@
         public string PasswordHash { get; set; } = string.Empty;
 
         public DateTime DateTimeCreated { get; set; } = DateTime.Now;
+
+        // Admin accounts can sign in to the admin dashboard. Never set from registration.
+        public bool IsAdmin { get; set; }
     }
 }
