@@ -78,6 +78,18 @@
             return trainer;
         }
 
+        public async Task<int> UpdateTrainerAsync(Trainer trainer)
+        {
+            var db = await _databaseService.GetConnectionAsync();
+            return await db.UpdateAsync(trainer);
+        }
+
+        public async Task<int> DeleteTrainerAsync(int trainerId)
+        {
+            var db = await _databaseService.GetConnectionAsync();
+            return await db.DeleteAsync<Trainer>(trainerId);
+        }
+
         // Add other functions as needed, CRUD?
     }
 }
