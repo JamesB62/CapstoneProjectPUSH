@@ -119,6 +119,89 @@
 
         public void Logout() => CurrentUser = null;
 
+        public async Task<AuthResult> UpdateDetailsAsync(string displayName, string email, string currentPassword, string newPassword, string confirmPassword)
+        {
+            if (CurrentUser is null)
+            {
+                return new AuthResult(false, "You must be signed in to update your details.");
+            }
+
+            displayName = (displayName ?? string.Empty).Trim();
+
+            email = NormalizeEmail(email);
+
+            if (displayName.Length < 2 || displayName.Length > 50)
+            {
+                return new AuthResult(false, "Display name must be between 2 and 50 characters.");
+            }
+
+            if (!IsValidEmail(email))
+            {
+                return new AuthResult(false, "Please enter a valid email address.");
+            }
+
+            var changingPassword = !string.IsNullOrEmpty(newPassword) || !string.IsNullOrEmpty(confirmPassword);
+
+            if (changingPassword)
+            {
+                if (string.IsNullOrEmpty(currentPassword))
+                {
+                    return new AuthResult(false, "Enter your current password to set a new one.");
+                }
+
+                if (!IsStrongPassword(newPassword))
+                {
+                    return new AuthResult(false, PasswordRequirementsText);
+                }
+
+                if (newPassword != confirmPassword)
+                {
+                    return new AuthResult(false, "New passwords do not match.");
+                }
+            }
+
+            var db = await _database.GetConnectionAsync();
+
+            var user = await db.Table<User>().Where(u => u.Id == CurrentUser.Id).FirstOrDefaultAsync();
+
+            if (user is null)
+            {
+                return new AuthResult(false, "Account could not be found.");
+            }
+
+            var emailTaken = await db.Table<User>().Where(u => u.Email == email && u.Id != user.Id).FirstOrDefaultAsync();
+
+            if (emailTaken is not null)
+            {
+                return new AuthResult(false, "An account with that email already exists.");
+            }
+
+            if (changingPassword)
+            {
+                if (!VerifyPassword(currentPassword, user.PasswordHash))
+                {
+                    return new AuthResult(false, "Current password is incorrect.");
+                }
+
+                user.PasswordHash = HashPassword(newPassword);
+            }
+
+            user.DisplayName = displayName;
+            user.Email = email;
+
+            try
+            {
+                await db.UpdateAsync(user);
+            }
+            catch (SQLiteException)
+            {
+                return new AuthResult(false, "An account with that email already exists.");
+            }
+
+            CurrentUser = user;
+            return new AuthResult(true, "Details updated successfully.", user);
+        }
+      
         public async Task<int> GetUserCountAsync()
         {
             var db = await _database.GetConnectionAsync();

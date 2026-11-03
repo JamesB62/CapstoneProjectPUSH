@@ -19,21 +19,26 @@ namespace CapstoneProjectPUSH.ViewModels.Profile
             if (user is null)
             {
                 DisplayName = "Username";
+                Email = "Email Address";
             }
             else
             {
                 DisplayName = user.DisplayName;
+                Email = user.Email;
             }
         }
 
         [ObservableProperty]
-        public partial string DisplayName { get; set; }
+        public partial string DisplayName { get; set; } = string.Empty;
 
-        // Generates UpdateDetailsCommand
+        [ObservableProperty]
+        public partial string Email { get; set; } = string.Empty;
+
+        // Generates GoToUpdateDetailsCommand
         [RelayCommand]
-        private async Task UpdateDetailsAsync()
+        private async Task GoToUpdateDetailsAsync()
         {
-            await Shell.Current.DisplayAlertAsync("Coming soon", "Update Details isn't built yet.", "OK");
+            await Shell.Current.GoToAsync(nameof(UpdateProfilePage));
         }
 
         // Generates MyWorkoutsCommand

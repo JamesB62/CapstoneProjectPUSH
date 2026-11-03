@@ -11,8 +11,8 @@ public partial class FirstLoadingPage : ContentPage
     {
         base.OnAppearing();
 
-        // Wait 3 seconds
-        await Task.Delay(3000);
+        // Wait 1 second
+        await Task.Delay(1000);
 
         // Animate to 100% over 3 seconds
         await MyProgressBar.ProgressTo(1.0, 3000, Easing.Linear);

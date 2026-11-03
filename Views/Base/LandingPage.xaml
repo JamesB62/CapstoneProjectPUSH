@@ -2,20 +2,21 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="CapstoneProjectPUSH.Views.Base.LandingPage"
-             Title="">
+             Title=""
+             Shell.FlyoutBehavior="Disabled">
 
-    <VerticalStackLayout
-        Padding="30"
-        VerticalOptions="Center">
+    <ScrollView>
 
         <VerticalStackLayout
-            Spacing="15">
+            Padding="30,0,30,30"
+            Spacing="15"
+            VerticalOptions="Center">
 
             <!-- Branding -->
             <HorizontalStackLayout
                 HorizontalOptions="Center"
                 Spacing="10">
-                    
+
                 <!-- Logo placeholder -->
                 <Border
                     HeightRequest="50"
@@ -36,7 +37,7 @@
                     FontAttributes="Bold"
                     Text="PUSH"
                     VerticalOptions="Center"/>
-                    
+
             </HorizontalStackLayout>
 
             <!-- Buttons -->
@@ -57,12 +58,13 @@
 
             <!-- Privacy statement link -->
             <Label
-                Text="View Privacy Statement">
+                Text="View Privacy Statement"
+                TextDecorations="Underline">
 
                 <Label.GestureRecognizers>
 
                     <TapGestureRecognizer
-                       Command="{Binding GoToPrivacyCommand}"/>
+                        Command="{Binding GoToPrivacyCommand}"/>
 
                 </Label.GestureRecognizers>
 
@@ -70,6 +72,6 @@
 
         </VerticalStackLayout>
 
-    </VerticalStackLayout>
-    
+    </ScrollView>
+
 </ContentPage>

@@ -65,7 +65,7 @@
 
                 IsBusy = false;
 
-                await Shell.Current.DisplayAlertAsync("Register Successful", "Your account has been created.", "OK");
+                await Shell.Current.DisplayAlertAsync("Register Successful", "Your PUSH account has been created.", "OK");
                 await Shell.Current.GoToAsync("//HomePage");
             }
             catch (Exception ex)
@@ -83,14 +83,40 @@
         [RelayCommand]
         private async Task GoToLoginAsync()
         {
-            await Shell.Current.GoToAsync($"../{nameof(LoginPage)}");
+            if (IsBusy)
+            {
+                return;
+            }
+
+            IsBusy = true;
+            try
+            {
+                await Shell.Current.GoToAsync($"../{nameof(LoginPage)}");
+            }
+            finally
+            {
+                IsBusy = false;
+            }
         }
 
         // Privacy link command
         [RelayCommand]
         private async Task GoToPrivacyAsync()
         {
-            await Shell.Current.GoToAsync(nameof(PrivacyPage));
+            if (IsBusy)
+            {
+                return;
+            }
+
+            IsBusy = true;
+            try
+            {
+                await Shell.Current.GoToAsync(nameof(PrivacyPage));
+            }
+            finally
+            {
+                IsBusy = false;
+            }
         }
     }
 }
