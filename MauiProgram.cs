@@ -65,6 +65,7 @@ namespace CapstoneProjectPUSH
 
             //Exercise
             builder.Services.AddTransient<ExercisesViewModel>();
+            builder.Services.AddTransient<SelectExercisesViewModel>();
 
             // Admin
             builder.Services.AddTransient<AdminDashboardViewModel>();
