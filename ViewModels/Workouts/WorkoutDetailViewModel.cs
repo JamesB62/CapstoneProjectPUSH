@@ -25,7 +25,7 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
         {
             int userId = /* test user */ 1 ;
 
-            var workout = await _workoutService.GetWorkoutByIdAsync(workoutId, userId);
+            var workout = await _workoutService.GetWorkoutByIdAsync(WorkoutId, userId);
             if(workout is null)
             {
                 await Shell.Current.GoToAsync("..");
@@ -35,7 +35,7 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
             WorkoutName = workout.Name;
             CategoryNames = workout.CategoryName;
 
-            var items = await _workoutService.GetExercisesForWorkoutAsync(workoutId);
+            var items = await _workoutService.GetExercisesForWorkoutAsync(WorkoutId);
             Exercises.Clear();
             foreach (var item in items) Exercises.Add(item);
         }
