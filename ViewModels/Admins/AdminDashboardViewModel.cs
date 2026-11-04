@@ -41,6 +41,7 @@ namespace CapstoneProjectPUSH.ViewModels.Admins
             _exerciseService = services.GetRequiredService<ExerciseService>();
             _articleService = services.GetRequiredService<ArticleService>();
 
+
             Trainers.CollectionChanged += (_, _) => OnPropertyChanged(nameof(HasNoTrainers));
 
             SignInCommand = new Command(async () => await SignInAsync());
@@ -126,6 +127,8 @@ namespace CapstoneProjectPUSH.ViewModels.Admins
         public ObservableCollection<Trainer> Trainers { get; } = new();
 
         public bool HasNoTrainers => Trainers.Count == 0;
+
+        public bool HasTrainers => Trainers.Count > 0;
 
         // Commands
         public ICommand SignInCommand { get; }

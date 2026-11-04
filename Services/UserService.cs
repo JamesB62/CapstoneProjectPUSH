@@ -59,12 +59,15 @@
 
             var user = new User
             {
-                Email = email,
+                UserId = await GetUserCountAsync() + 1,
                 DisplayName = displayName,
+                Email = email,
                 // PBKDF2 is deliberately slow
                 PasswordHash = await Task.Run(() => HashPassword(password)),
                 DateTimeCreated = DateTime.Now
             };
+
+
 
             try
             {

@@ -38,16 +38,16 @@
                     <Button
                         Grid.Column="1"
                         Command="{Binding SelectCategoryCommand}"
-                        CommandParameter="Cardio"
+                        CommandParameter="Yoga"
                         FontSize="12"
-                        Text="Cardio"/>
+                        Text="Yoga"/>
 
                     <Button
                         Grid.Column="2"
                         Command="{Binding SelectCategoryCommand}"
-                        CommandParameter="Flexibility &amp; Mobility"
+                        CommandParameter="HIIT"
                         FontSize="12"
-                        Text="Flexibility"/>
+                        Text="HIIT"/>
 
                 </Grid>
 

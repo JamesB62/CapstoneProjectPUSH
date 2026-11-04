@@ -1,4 +1,6 @@
-﻿namespace CapstoneProjectPUSH.Models
+﻿using System.Runtime.CompilerServices;
+
+namespace CapstoneProjectPUSH.Models
 {
     [Table("Workouts")]
     public class Workout
@@ -24,5 +26,9 @@
         public string CategoryName { get; set; } = string.Empty;
 
         public DateTime DateTimeCreated { get; set; } = DateTime.Now;
+
+        public string WorkoutId { get; set; } = string.Empty;
+    
+
     }
 }
