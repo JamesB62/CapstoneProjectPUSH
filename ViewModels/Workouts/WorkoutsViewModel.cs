@@ -46,7 +46,7 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
         private async Task OpenWorkoutAsync(Workout workout)
         {
             if(workout is null) return;
-            await Shell.Current.GoToAsync($"{nameof(WorkoutDetailPage)}?workoutId={workout.Id}");
+            await Shell.Current.GoToAsync($"{nameof(WorkoutDetailsPage)}?workoutId={workout.Id}");
         }
     }
 }

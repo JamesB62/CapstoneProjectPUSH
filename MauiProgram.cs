@@ -61,7 +61,7 @@ namespace CapstoneProjectPUSH
             // Workouts
             builder.Services.AddTransient<WorkoutsViewModel>();
             //workout detail
-            builder.Services.AddTransient<WorkoutsDetailViewModel>();
+            builder.Services.AddTransient<WorkoutDetailsViewModel>();
 
             //Exercise
             builder.Services.AddTransient<ExercisesViewModel>();
@@ -101,7 +101,7 @@ namespace CapstoneProjectPUSH
             // Workout
             builder.Services.AddTransient<WorkoutsPage>();
             //workout detail 
-            builder.Services.AddTransient<WorkoutDetailPage>();
+            builder.Services.AddTransient<WorkoutDetailsPage>();
 
             //Exercises 
             builder.Services.AddTransient<SelectExercisesPage>();

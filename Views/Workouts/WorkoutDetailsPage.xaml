@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    x:Class="CapstoneProjectPUSH.Views.Workouts.WorkoutDetailPage"
+    x:Class="CapstoneProjectPUSH.Views.Workouts.WorkoutDetailsPage"
     xmlns:models="clr-namespace:CapstoneProjectPUSH.Models"
     xmlns:vm="clr-namespace:CapstoneProjectPUSH.ViewModels.Workouts"
     Title="{Binding WorkoutName}"
-    x:DataType="vm:WorkoutDetailViewModel">
+    x:DataType="vm:WorkoutDetailsViewModel">
 
     <Grid RowDefinitions="*,Auto">
 
