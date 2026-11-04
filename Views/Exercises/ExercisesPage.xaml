@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:CapstoneProjectPUSH.Models"
+             xmlns:vm="clr-namespace:CapstoneProjectPUSH.ViewModels.Exercises"
+             x:Class="CapstoneProjectPUSH.Views.Exercises.ExercisesPage"
+             x:DataType="vm:ExercisesViewModel"
+             Title="">
+
+    <Grid
+        Padding="30"
+        RowDefinitions="Auto,*"
+        RowSpacing="15">
+
+        <VerticalStackLayout
+            Grid.Row="0"
+            Spacing="10">
+
+            <Label
+                FontAttributes="Bold"
+                FontSize="18"
+                Text="PUSH Exercises"/>
+
+            <Picker
+                ItemDisplayBinding="{Binding Name, x:DataType=models:Category}"
+                ItemsSource="{Binding Categories}"
+                SelectedItem="{Binding SelectedCategory}"
+                Title="Filter by category"/>
+
+            <Label
+                FontAttributes="Italic"
+                FontSize="12"
+                Text="{Binding StatusMessage}"/>
+
+        </VerticalStackLayout>
+
+        <RefreshView
+            Command="{Binding LoadExercisesCommand}"
+            Grid.Row="1"
+            IsRefreshing="{Binding IsBusy, Mode=OneWay}">
+
+            <CollectionView
+                ItemsSource="{Binding Exercises}"
+                SelectionMode="Single"
+                SelectedItem="{Binding SelectedExercise, Mode=TwoWay}">
+
+                <CollectionView.EmptyView>
+
+                    <VerticalStackLayout
+                        HorizontalOptions="Center"
+                        VerticalOptions="Center">
+
+                        <Label
+                            FontAttributes="Italic"
+                            HorizontalTextAlignment="Center"
+                            Text="No exercises found"/>
+
+                        <Label
+                            FontAttributes="Italic"
+                            HorizontalTextAlignment="Center"
+                            Text="Pull down to try again"/>
+
+                    </VerticalStackLayout>
+
+                </CollectionView.EmptyView>
+
+                <CollectionView.ItemsLayout>
+
+                    <LinearItemsLayout
+                        ItemSpacing="10"
+                        Orientation="Vertical"/>
+
+                </CollectionView.ItemsLayout>
+
+                <CollectionView.ItemTemplate>
+
+                    <DataTemplate
+                        x:DataType="models:Exercise">
+
+                        <Border
+                            Padding="15"
+                            StrokeShape="RoundRectangle 10">
+
+                            <Grid
+                                ColumnDefinitions="*,Auto"
+                                ColumnSpacing="10"
+                                RowDefinitions="Auto,Auto"
+                                RowSpacing="10">
+
+                                <Label
+                                    Grid.Column="0"
+                                    Grid.Row="0"
+                                    FontAttributes="Bold"
+                                    FontSize="16"
+                                    LineBreakMode="TailTruncation"
+                                    Text="{Binding Title}"
+                                    VerticalOptions="Center"/>
+
+                                <Border
+                                    Grid.Column="1"
+                                    Grid.Row="0"
+                                    Padding="10,5"
+                                    StrokeShape="RoundRectangle 10">
+
+                                    <Label
+                                        FontSize="12"
+                                        Text="{Binding CategoryName}"/>
+
+                                </Border>
+
+                                <VerticalStackLayout
+                                    Grid.Column="0"
+                                    Grid.Row="1"
+                                    Spacing="3">
+
+                                    <HorizontalStackLayout>
+
+                                        <Label
+                                            Text="• Difficulty: "/>
+
+                                        <Label
+                                            Text="{Binding Difficulty}"/>
+
+                                    </HorizontalStackLayout>
+
+                                </VerticalStackLayout>
+
+                            </Grid>
+
+                        </Border>
+
+                    </DataTemplate>
+
+                </CollectionView.ItemTemplate>
+
+            </CollectionView>
+
+        </RefreshView>
+
+    </Grid>
+    
+</ContentPage>

@@ -64,8 +64,20 @@ namespace CapstoneProjectPUSH.ViewModels.Auth
         [RelayCommand]
         private async Task GoToRegisterAsync()
         {
-            await Shell.Current.GoToAsync($"../{nameof(RegisterPage)}");
+            if (IsBusy)
+            {
+                return;
+            }
+
+            IsBusy = true;
+            try
+            {
+                await Shell.Current.GoToAsync($"../{nameof(RegisterPage)}");
+            }
+            finally
+            {
+                IsBusy = false;
+            }
         }
     }
-
 }

@@ -67,7 +67,7 @@
 
                 <Label
                     LineBreakMode="WordWrap"
-                    Text="The information collected so the application can sign you in, attribute content to your account, track your progress, and save shared workouts."/>
+                    Text="The information is collected so the application can sign you in, attribute content to your account, track your progress, and save shared workouts."/>
 
             </VerticalStackLayout>
 

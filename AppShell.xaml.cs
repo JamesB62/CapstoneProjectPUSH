@@ -1,6 +1,3 @@
-using CapstoneProjectPUSH.Views.Admin;
-
-
 namespace CapstoneProjectPUSH
 {
     public partial class AppShell : Shell
@@ -15,11 +12,17 @@ namespace CapstoneProjectPUSH
 
             // Base
             Routing.RegisterRoute(nameof(PrivacyPage), typeof(PrivacyPage));
+
+            // Exercises
+            Routing.RegisterRoute(nameof(ExerciseDetailsPage), typeof(ExerciseDetailsPage));
             
+
+            // Double check/update page routing before removing
             // Home - incorrect
             Routing.RegisterRoute(nameof(HomePage), typeof(HomePage));
-            
+
             // Profile - incorrect
+            Routing.RegisterRoute(nameof(UpdateProfilePage), typeof(UpdateProfilePage));
             Routing.RegisterRoute(nameof(ProfilePage), typeof(ProfilePage));
             
             // Stats - incorrect
@@ -32,6 +35,11 @@ namespace CapstoneProjectPUSH
             
             // Workouts - incorrect
             Routing.RegisterRoute(nameof(WorkoutsPage), typeof(WorkoutsPage));
+            //workout detail
+            Routing.RegisterRoute(nameof(WorkoutDetailPage), typeof(WorkoutDetailPage));
+
+            //Exercises
+            Routing.RegisterRoute(nameof(SelectExercisesPage), typeof(SelectExercisesPage));
 
             //Admin
             Routing.RegisterRoute(nameof(AdminDashboard), typeof(AdminDashboard));

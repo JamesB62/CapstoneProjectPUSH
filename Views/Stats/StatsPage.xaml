@@ -3,8 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:stats="clr-namespace:CapstoneProjectPUSH.ViewModels.Stats"
              x:Class="CapstoneProjectPUSH.Views.Stats.StatsPage"
-             Title=""
-             Shell.NavBarIsVisible="False">
+             Title="">
 
     <Grid
         RowDefinitions="*,Auto">

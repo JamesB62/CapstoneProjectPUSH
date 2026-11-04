@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="CapstoneProjectPUSH.Views.Profile.UpdateProfilePage"
+             Title="">
+
+    <ScrollView>
+
+        <VerticalStackLayout
+            Padding="30,0,30,30"
+            Spacing="15">
+
+            <Label
+                FontAttributes="Bold"
+                FontSize="18"
+                Text="Update Your PUSH Account Details"/>
+
+            <!-- Update details form -->
+            <VerticalStackLayout
+                Spacing="5">
+
+                <Entry
+                    Placeholder="Enter your display name here"
+                    Text="{Binding DisplayName}"/>
+
+                <Entry
+                    Keyboard="Email"
+                    Placeholder="Enter your email address here"
+                    Text="{Binding Email}"/>
+
+                <Entry
+                    IsPassword="True"
+                    Placeholder="Confirm your current password here"
+                    Text="{Binding CurrentPassword}"/>
+
+                <Entry
+                    IsPassword="True"
+                    Placeholder="Enter your new password here"
+                    Text="{Binding NewPassword}"/>
+
+                <Entry
+                    IsPassword="True"
+                    Placeholder="Confirm your new password here"
+                    Text="{Binding ConfirmPassword}"/>
+
+            </VerticalStackLayout>
+
+            <!-- Error message -->
+            <Label
+                IsVisible="{Binding HasErrorMessage}"
+                Text="{Binding ErrorMessage}"
+                TextColor="Red"/>
+
+            <Button
+                Command="{Binding SaveCommand}"
+                FontAttributes="Bold"
+                Text="Save"/>
+
+            <Button
+                Command="{Binding CancelCommand}"
+                FontAttributes="Bold"
+                Text="Cancel"/>
+
+            <!-- Loading circle -->
+            <ActivityIndicator
+                IsRunning="{Binding IsBusy}"
+                IsVisible="{Binding IsBusy}"/>
+
+        </VerticalStackLayout>
+
+    </ScrollView>
+
+</ContentPage>

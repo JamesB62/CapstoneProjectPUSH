@@ -5,8 +5,7 @@
              xmlns:vm="clr-namespace:CapstoneProjectPUSH.ViewModels.Workouts"
              x:Class="CapstoneProjectPUSH.Views.Workouts.WorkoutsPage"
              x:DataType="vm:WorkoutsViewModel"
-             Title=""
-             Shell.NavBarIsVisible="False">
+             Title="">
 
     <Grid
         RowDefinitions="*,Auto">
@@ -18,17 +17,15 @@
             RowSpacing="15">
 
 
-            <!-- Title + add button -->
-            <Grid
-                Grid.Row="1"
-                ColumnDefinitions="*,Auto">
+            <!--  Title + add button  -->
+            <Grid Grid.Row="1" ColumnDefinitions="*,Auto">
 
                 <Label
                     Grid.Column="0"
                     FontAttributes="Bold"
                     FontSize="18"
                     Text="My Workout Plans"
-                    VerticalOptions="Center"/>
+                    VerticalOptions="Center" />
 
                 <Button
                     Grid.Column="1"
@@ -36,30 +33,26 @@
                     FontAttributes="Bold"
                     HeightRequest="40"
                     Text="+"
-                    WidthRequest="50"/>
+                    WidthRequest="50" />
 
             </Grid>
 
             <SearchBar
                 Grid.Row="2"
                 Placeholder="Search workouts"
-                Text="{Binding SearchText}"/>
+                Text="{Binding SearchText}" />
 
-            <CollectionView
-                Grid.Row="3"
-                ItemsSource="{Binding Workouts}">
+            <CollectionView Grid.Row="3" ItemsSource="{Binding Workouts}">
 
                 <CollectionView.ItemsLayout>
-                    <LinearItemsLayout
-                        ItemSpacing="10"
-                        Orientation="Vertical"/>
+                    <LinearItemsLayout ItemSpacing="10" Orientation="Vertical" />
                 </CollectionView.ItemsLayout>
 
                 <CollectionView.EmptyView>
                     <Label
                         HorizontalOptions="Center"
                         Text="No workouts found."
-                        VerticalOptions="Center"/>
+                        VerticalOptions="Center" />
                 </CollectionView.EmptyView>
 
                 <CollectionView.ItemTemplate>
@@ -67,24 +60,27 @@
 
                         <Border
                             Padding="15"
-                            BackgroundColor="{AppThemeBinding Light=#E5E7EB, Dark=#2C2C31}"
+                            BackgroundColor="{AppThemeBinding Light=#E5E7EB,
+                                                              Dark=#2C2C31}"
+                            HeightRequest="100"
                             StrokeShape="RoundRectangle 10"
-                            StrokeThickness="0"
-                            HeightRequest="100">
+                            StrokeThickness="0">
+                            
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:WorkoutsViewModel}}, Path=OpenWorkoutCommand}" CommandParameter="{Binding .}" />
+                            </Border.GestureRecognizers>
 
-                            <VerticalStackLayout
-                                Spacing="4"
-                                VerticalOptions="Center">
+                            <VerticalStackLayout Spacing="4" VerticalOptions="Center">
 
                                 <Label
                                     FontAttributes="Bold"
                                     HorizontalTextAlignment="Center"
-                                    Text="{Binding Name}"/>
+                                    Text="{Binding Name}" />
 
                                 <Label
                                     FontSize="12"
                                     HorizontalTextAlignment="Center"
-                                    Text="{Binding CategoryName}"/>
+                                    Text="{Binding CategoryName}" />
 
                             </VerticalStackLayout>
 
