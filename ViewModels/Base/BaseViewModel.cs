@@ -15,5 +15,24 @@
         {
             StatusMessage = string.Empty;
         }
+
+        protected async Task NavigateAsync(string route)
+        {
+            if (IsBusy)
+            {
+                return;
+            }
+
+            IsBusy = true;
+
+            try
+            {
+                await Shell.Current.GoToAsync(route);
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
     }
 }

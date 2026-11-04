@@ -1,49 +1,79 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:CapstoneProjectPUSH.ViewModels.Profile"
              x:Class="CapstoneProjectPUSH.Views.Profile.UpdateProfilePage"
-             Title="">
+             x:DataType="vm:UpdateProfileViewModel"
+             Title="Update PUSH Account Details">
 
     <ScrollView>
 
         <VerticalStackLayout
-            Padding="30,0,30,30"
+            Padding="30"
             Spacing="15">
 
-            <Label
-                FontAttributes="Bold"
-                FontSize="18"
-                Text="Update Your PUSH Account Details"/>
+            <!-- Update details forms -->
+            <VerticalStackLayout>
 
-            <!-- Update details form -->
-            <VerticalStackLayout
-                Spacing="5">
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="18"
+                    Text="Display Name"/>
 
                 <Entry
-                    Placeholder="Enter your display name here"
+                    Placeholder="Enter your new display name here"
                     Text="{Binding DisplayName}"/>
+
+            </VerticalStackLayout>
+
+            <VerticalStackLayout>
+
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="18"
+                    Text="Email Address"/>
 
                 <Entry
                     Keyboard="Email"
-                    Placeholder="Enter your email address here"
+                    Placeholder="Enter your new email address here"
                     Text="{Binding Email}"/>
 
-                <Entry
-                    IsPassword="True"
-                    Placeholder="Confirm your current password here"
-                    Text="{Binding CurrentPassword}"/>
+            </VerticalStackLayout>
 
-                <Entry
-                    IsPassword="True"
-                    Placeholder="Enter your new password here"
-                    Text="{Binding NewPassword}"/>
+            <VerticalStackLayout
+                Margin="0,0,0,-5">
 
-                <Entry
-                    IsPassword="True"
-                    Placeholder="Confirm your new password here"
-                    Text="{Binding ConfirmPassword}"/>
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="18"
+                    Text="Change Password"/>
+
+                <VerticalStackLayout
+                    Spacing="5">
+
+                    <Entry
+                        IsPassword="True"
+                        Placeholder="Enter your current password here"
+                        Text="{Binding CurrentPassword}"/>
+
+                    <Entry
+                        IsPassword="True"
+                        Placeholder="Enter your new password here"
+                        Text="{Binding NewPassword}"/>
+
+                    <Entry
+                        IsPassword="True"
+                        Placeholder="Confirm your new password here"
+                        Text="{Binding ConfirmPassword}"/>
+
+                </VerticalStackLayout>
 
             </VerticalStackLayout>
+
+            <!-- Password requirements -->
+            <Label
+                FontAttributes="Italic"
+                Text="{Binding PasswordRequirements}"/>
 
             <!-- Error message -->
             <Label
@@ -51,20 +81,25 @@
                 Text="{Binding ErrorMessage}"
                 TextColor="Red"/>
 
-            <Button
-                Command="{Binding SaveCommand}"
-                FontAttributes="Bold"
-                Text="Save"/>
+            <!-- Buttons -->
+            <VerticalStackLayout
+                Margin="0,5,0,0"
+                Spacing="10">
 
-            <Button
-                Command="{Binding CancelCommand}"
-                FontAttributes="Bold"
-                Text="Cancel"/>
+                <Button
+                    Command="{Binding SaveProfileCommand}"
+                    Text="Save"/>
+
+                <Button
+                    Command="{Binding CancelProfileCommand}"
+                    Text="Cancel"/>
+
+            </VerticalStackLayout>
 
             <!-- Loading circle -->
             <ActivityIndicator
                 IsRunning="{Binding IsBusy}"
-                IsVisible="{Binding IsBusy}"/>
+                Margin="0,10,0,0"/>
 
         </VerticalStackLayout>
 

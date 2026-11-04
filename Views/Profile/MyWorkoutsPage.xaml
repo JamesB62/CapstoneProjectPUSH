@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:CapstoneProjectPUSH.Models"
+             xmlns:vm="clr-namespace:CapstoneProjectPUSH.ViewModels.Profile"
+             x:Class="CapstoneProjectPUSH.Views.Profile.MyWorkoutsPage"
+             x:DataType="vm:MyWorkoutsViewModel"
+             Title="My PUSH Workouts">
+
+    <Grid
+        Padding="30,0,30,0"
+        RowDefinitions="Auto,*"
+        RowSpacing="15">
+
+        <VerticalStackLayout
+            Grid.Row="0"
+            Spacing="10">
+
+            <Picker
+                ItemDisplayBinding="{Binding Name, x:DataType=models:Category}"
+                ItemsSource="{Binding Categories}"
+                SelectedItem="{Binding SelectedCategory}"
+                Title="Filter by category"/>
+
+            <Label
+                FontAttributes="Italic"
+                FontSize="14"
+                Text="{Binding StatusMessage}"/>
+
+        </VerticalStackLayout>
+
+        <RefreshView
+            Command="{Binding LoadMyWorkoutsCommand}"
+            Grid.Row="1"
+            IsRefreshing="{Binding IsBusy, Mode=OneWay}">
+
+            <CollectionView
+                ItemsSource="{Binding Workouts}"
+                SelectionMode="Single"
+                SelectedItem="{Binding SelectedWorkout, Mode=TwoWay}">
+
+                <CollectionView.EmptyView>
+
+                    <VerticalStackLayout
+                        HorizontalOptions="Center"
+                        VerticalOptions="Center">
+
+                        <Label
+                            FontAttributes="Italic"
+                            HorizontalTextAlignment="Center"
+                            Text="No workouts found"/>
+
+                        <Label
+                            FontAttributes="Italic"
+                            HorizontalTextAlignment="Center"
+                            Text="Pull down to try again"/>
+
+                    </VerticalStackLayout>
+
+                </CollectionView.EmptyView>
+
+                <CollectionView.ItemsLayout>
+
+                    <LinearItemsLayout
+                        ItemSpacing="10"
+                        Orientation="Vertical"/>
+
+                </CollectionView.ItemsLayout>
+
+                <CollectionView.ItemTemplate>
+
+                    <DataTemplate
+                        x:DataType="models:Workout">
+
+                        <Border
+                            BackgroundColor="#F9FAFB"
+                            Padding="15"
+                            Stroke="#E5E7EB"
+                            StrokeShape="RoundRectangle 10">
+
+                            <Grid
+                                ColumnDefinitions="*,Auto"
+                                ColumnSpacing="10"
+                                RowDefinitions="Auto,Auto"
+                                RowSpacing="10">
+
+                                <Label
+                                    Grid.Column="0"
+                                    Grid.Row="0"
+                                    FontAttributes="Bold"
+                                    FontSize="16"
+                                    LineBreakMode="TailTruncation"
+                                    Text="{Binding Name}"
+                                    VerticalOptions="Center"/>
+
+                                <Border
+                                    Grid.Column="1"
+                                    Grid.Row="0"
+                                    Padding="10,5"
+                                    StrokeShape="RoundRectangle 10">
+
+                                    <Label
+                                        FontSize="12"
+                                        Text="{Binding CategoryName}"/>
+
+                                </Border>
+
+                                <Label
+                                    Grid.Column="0"
+                                    Grid.Row="1"
+                                    Text="{Binding DateTimeCreated, StringFormat='{0:dd MMM yyyy}'}"/>
+
+                            </Grid>
+
+                        </Border>
+
+                    </DataTemplate>
+
+                </CollectionView.ItemTemplate>
+
+            </CollectionView>
+
+        </RefreshView>
+
+    </Grid>
+
+</ContentPage>

@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:CapstoneProjectPUSH.Models"
+             xmlns:vm="clr-namespace:CapstoneProjectPUSH.ViewModels.Profile"
+             x:Class="CapstoneProjectPUSH.Views.Profile.MyNotesPage"
+             x:DataType="vm:MyNotesViewModel"
+             Title="">
+
+    <Grid
+        Padding="30"
+        RowDefinitions="Auto,*"
+        RowSpacing="15">
+
+        <VerticalStackLayout
+            Grid.Row="0"
+            Spacing="10">
+
+            <Label
+                FontAttributes="Bold"
+                FontSize="18"
+                Text="My PUSH Notes"/>
+
+            <Label
+                FontAttributes="Italic"
+                FontSize="12"
+                Text="{Binding StatusMessage}"/>
+
+        </VerticalStackLayout>
+
+        <RefreshView
+            Command="{Binding LoadMyNotesCommand}"
+            Grid.Row="1"
+            IsRefreshing="{Binding IsBusy, Mode=OneWay}">
+
+            <CollectionView
+                ItemsSource="{Binding Notes}"
+                SelectionMode="Single"
+                SelectedItem="{Binding SelectedNote, Mode=TwoWay}">
+
+                <CollectionView.EmptyView>
+
+                    <VerticalStackLayout
+                        HorizontalOptions="Center"
+                        VerticalOptions="Center">
+
+                        <Label
+                            FontAttributes="Italic"
+                            HorizontalTextAlignment="Center"
+                            Text="No notes found"/>
+
+                        <Label
+                            FontAttributes="Italic"
+                            HorizontalTextAlignment="Center"
+                            Text="Pull down to try again"/>
+
+                    </VerticalStackLayout>
+
+                </CollectionView.EmptyView>
+
+                <CollectionView.ItemsLayout>
+
+                    <LinearItemsLayout
+                        ItemSpacing="10"
+                        Orientation="Vertical"/>
+
+                </CollectionView.ItemsLayout>
+
+                <CollectionView.ItemTemplate>
+
+                    <DataTemplate
+                        x:DataType="models:Note">
+
+                        <Border
+                            Padding="15"
+                            StrokeShape="RoundRectangle 10">
+
+                            <Grid
+                                ColumnDefinitions="*,Auto"
+                                ColumnSpacing="10"
+                                RowDefinitions="Auto,Auto"
+                                RowSpacing="10">
+
+                                <Label
+                                    Grid.Column="0"
+                                    Grid.Row="0"
+                                    FontAttributes="Bold"
+                                    FontSize="16"
+                                    LineBreakMode="TailTruncation"
+                                    Text="{Binding Title}"
+                                    VerticalOptions="Center"/>
+
+                                <Border
+                                    Grid.Column="1"
+                                    Grid.Row="0"
+                                    Padding="10,5"
+                                    StrokeShape="RoundRectangle 10">
+
+                                    <Label
+                                        FontSize="12"
+                                        Text="{Binding WorkoutName}"/>
+
+                                </Border>
+
+                                <VerticalStackLayout
+                                    Grid.Column="0"
+                                    Grid.Row="1"
+                                    Spacing="3">
+
+                                    <HorizontalStackLayout>
+
+                                        <Label
+                                            Text="• Date Created: "/>
+
+                                        <Label
+                                            Text="{Binding DateTimeCreated}"/>
+
+                                    </HorizontalStackLayout>
+
+                                </VerticalStackLayout>
+
+                            </Grid>
+
+                        </Border>
+
+                    </DataTemplate>
+
+                </CollectionView.ItemTemplate>
+
+            </CollectionView>
+
+        </RefreshView>
+
+    </Grid>
+
+</ContentPage>

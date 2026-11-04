@@ -22,6 +22,8 @@ namespace CapstoneProjectPUSH
             Routing.RegisterRoute(nameof(HomePage), typeof(HomePage));
 
             // Profile - incorrect
+            Routing.RegisterRoute(nameof(MyNotesPage), typeof(MyNotesPage));
+            Routing.RegisterRoute(nameof(MyWorkoutsPage), typeof(MyWorkoutsPage));
             Routing.RegisterRoute(nameof(UpdateProfilePage), typeof(UpdateProfilePage));
             Routing.RegisterRoute(nameof(ProfilePage), typeof(ProfilePage));
             

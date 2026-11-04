@@ -21,6 +21,8 @@
         [MaxLength(20)]
         public string PhoneNumber { get; set; } = string.Empty;
 
+        public string ProfileImage { get; set; } = string.Empty;
+
         [Indexed]
         public int CategoryId { get; set; }
 
