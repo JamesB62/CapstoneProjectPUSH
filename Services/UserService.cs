@@ -59,7 +59,6 @@
 
             var user = new User
             {
-                UserId = await GetUserCountAsync() + 1,
                 DisplayName = displayName,
                 Email = email,
                 // PBKDF2 is deliberately slow

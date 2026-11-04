@@ -6,9 +6,6 @@
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
 
-        [Unique, NotNull, AutoIncrement]
-        public int UserId { get; set; }
-
         [Unique, NotNull, MaxLength(250)]
         public string Email { get; set; } = string.Empty;
 
