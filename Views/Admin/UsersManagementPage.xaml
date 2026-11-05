@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:CapstoneProjectPUSH.Models"
+             xmlns:vm="clr-namespace:CapstoneProjectPUSH.ViewModels.Admins"
+             x:Class="CapstoneProjectPUSH.Views.Admin.UsersManagementPage"
+             x:DataType="vm:UsersManagementViewModel"
+             Title="UsersManagementPage">
+
+    <Grid
+        Padding="30,0,30,0"
+        RowDefinitions="Auto,*"
+        RowSpacing="15">
+
+        <VerticalStackLayout
+            Grid.Row="0"
+            Spacing="10">
+
+            <Label
+                FontAttributes="Italic"
+                FontSize="12"
+                Text="{Binding StatusMessage}"/>
+
+        </VerticalStackLayout>
+
+        <RefreshView
+            Command="{Binding LoadUsersCommand}"
+            Grid.Row="1"
+            IsRefreshing="{Binding IsBusy, Mode=OneWay}">
+
+            <CollectionView
+                ItemsSource="{Binding Users}"
+                SelectionMode="Single"
+                SelectedItem="{Binding SelectedUser, Mode=TwoWay}">
+
+                <!-- Empty view -->
+                <CollectionView.EmptyView>
+
+                    <VerticalStackLayout
+                        HorizontalOptions="Center"
+                        VerticalOptions="Center">
+
+                        <Label
+                            FontAttributes="Italic"
+                            HorizontalTextAlignment="Center"
+                            Text="No users found"/>
+
+                        <Label
+                            FontAttributes="Italic"
+                            HorizontalTextAlignment="Center"
+                            Text="Pull down to try again"/>
+
+                    </VerticalStackLayout>
+
+                </CollectionView.EmptyView>
+
+                <!-- Item layout -->
+                <CollectionView.ItemsLayout>
+
+                    <LinearItemsLayout
+                        ItemSpacing="10"
+                        Orientation="Vertical"/>
+
+                </CollectionView.ItemsLayout>
+
+                <!-- Item template -->
+                <CollectionView.ItemTemplate>
+
+                    <DataTemplate
+                        x:DataType="models:User">
+
+                        <Border
+                            BackgroundColor="#F9FAFB"
+                            Padding="15"
+                            Stroke="#E5E7EB"
+                            StrokeShape="RoundRectangle 12">
+
+                            <Grid
+                                ColumnDefinitions="Auto,*"
+                                ColumnSpacing="15">
+
+                                <Border
+                                    Grid.Column="0"
+                                    HeightRequest="50"
+                                    HorizontalOptions="Center"
+                                    StrokeShape="Ellipse"
+                                    StrokeThickness="0"
+                                    WidthRequest="50">
+
+                                    <!-- Profile picture placeholder - sourced from Wikipedia -->
+                                    <Image
+                                        Aspect="AspectFill"
+                                        Source="profile_picture_placeholder.png"/>
+
+                                </Border>
+
+                                <VerticalStackLayout
+                                    Grid.Column="1"
+                                    Spacing="10">
+
+                                    <Grid
+                                        ColumnDefinitions="*,Auto"
+                                        ColumnSpacing="10">
+
+                                        <Label
+                                            Grid.Column="0"
+                                            FontAttributes="Bold"
+                                            FontSize="16"
+                                            LineBreakMode="TailTruncation"
+                                            Text="{Binding DisplayName}"
+                                            VerticalOptions="Center"/>
+
+                                        <Border
+                                            Grid.Column="1"
+                                            Padding="10,5"
+                                            StrokeShape="RoundRectangle 50">
+
+                                            <Label
+                                                FontSize="12"
+                                                LineBreakMode="TailTruncation"
+                                                Text="*Add active/deactive state here*"/>
+
+                                        </Border>
+
+                                    </Grid>
+
+                                    <VerticalStackLayout
+                                        Spacing="10">
+
+                                        <VerticalStackLayout
+                                            Spacing="5">
+
+                                            <Label
+                                                FontAttributes="Italic"
+                                                FontSize="12"
+                                                Text="{Binding Email, StringFormat='Email: {0}'}"/>
+
+                                            <Label
+                                                FontAttributes="Italic"
+                                                FontSize="12"
+                                                Text="{Binding DateTimeCreated, StringFormat='Created: {0:d MMMM yyyy}'}">
+
+                                            </Label>
+
+                                        </VerticalStackLayout>
+
+                                    </VerticalStackLayout>
+
+                                </VerticalStackLayout>
+
+                            </Grid>
+
+                        </Border>
+
+                    </DataTemplate>
+
+                </CollectionView.ItemTemplate>
+
+            </CollectionView>
+
+        </RefreshView>
+
+    </Grid>
+
+</ContentPage>

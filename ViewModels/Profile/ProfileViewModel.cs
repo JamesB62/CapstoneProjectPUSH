@@ -59,7 +59,7 @@ namespace CapstoneProjectPUSH.ViewModels.Profile
         [RelayCommand]
         private async Task AdminAsync()
         {
-            await Shell.Current.Navigation.PushAsync(new AdminDashboard());
+            await Shell.Current.GoToAsync(nameof(AdminDashboard));
         }
 
         // Generates LogoutCommand

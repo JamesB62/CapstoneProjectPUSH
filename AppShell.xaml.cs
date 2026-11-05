@@ -45,7 +45,7 @@ namespace CapstoneProjectPUSH
             Routing.RegisterRoute(nameof(AdminDashboard), typeof(AdminDashboard));
 
             //Users Details
-            Routing.RegisterRoute(nameof(UsersDetailsPage), typeof(UsersDetailsPage));
+            Routing.RegisterRoute(nameof(UsersManagementPage), typeof(UsersManagementPage));
         }
     }
 }

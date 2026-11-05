@@ -51,6 +51,7 @@ namespace CapstoneProjectPUSH.ViewModels.Admins
             DeleteTrainerCommand = new Command<Trainer>(async t => await DeleteTrainerAsync(t));
             NavigateToTrainersCommand = new Command(async () => await NavigateToTrainersAsync());
             NavigateToHomeCommand = new Command(async () => await NavigateToHomeAsync());
+            NavigateToUsersDetailsCommand = new Command(async () => await NavigateToUsersDetailsAsync());
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -145,6 +146,7 @@ namespace CapstoneProjectPUSH.ViewModels.Admins
         public ICommand DeleteTrainerCommand { get; }
         public ICommand NavigateToTrainersCommand { get; }
         public ICommand NavigateToHomeCommand { get; }
+        public ICommand NavigateToUsersDetailsCommand { get; }
 
         // Called from the page's OnAppearing
         public async Task LoadAsync()
@@ -169,9 +171,8 @@ namespace CapstoneProjectPUSH.ViewModels.Admins
 
         public async Task NavigateToUsersDetailsAsync()
         {
-            await Shell.Current.GoToAsync("//UsersDetailsPage");
+            await Shell.Current.GoToAsync(nameof(UsersManagementPage));
         }
-
 
         public async Task NavigateToHomeAsync()
         {

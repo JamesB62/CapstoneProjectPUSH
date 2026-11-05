@@ -2,19 +2,11 @@
 {
 
 
-        public record AuthResult(bool Success, string Message, User? User = null);
+    public record AuthResult(bool Success, string Message, User? User = null);
 
     public class UserService
     {
 
-        private readonly DatabaseService _databaseService;
-        private readonly CategoryService _categoryService;
-
-        public UserService(DatabaseService databaseService, CategoryService categoryService)
-        {
-            _databaseService = databaseService;
-            _categoryService = categoryService;
-        }
         public const string PasswordRequirementsText = "Password must be at least 8 characters and contain at least one letter and one number.";
 
         private const int SaltSize = 16;
@@ -221,6 +213,41 @@
             return await db.Table<User>().CountAsync();
         }
 
+        // =======================================================================================================================================================
+
+        public async Task<List<User>> GetUsersAsync()
+        {
+            var db = await _database.GetConnectionAsync();
+
+            var users = await db.Table<User>()
+                .OrderBy(u => u.DateTimeCreated)
+                .ToListAsync();
+
+            // Add lookups if needed
+
+            return users;
+        }
+
+        public async Task<User?> GetUserByIdAsync(int userId)
+        {
+            var db = await _database.GetConnectionAsync();
+
+            var user = await db.Table<User>()
+                .Where(u => u.Id == userId)
+                .FirstOrDefaultAsync();
+
+            if (user is null)
+            {
+                return null;
+            }
+
+            // Add lookups if needed
+
+            return user;
+        }
+
+        // =======================================================================================================================================================
+
         // Helpers
         private static string NormalizeEmail(string? email) => (email ?? string.Empty).Trim().ToLowerInvariant();
 
@@ -276,12 +303,6 @@
             {
                 return false;
             }
-        }
-
-        public async Task<int> DeleteUserAsync(int Id)
-        {
-            var db = await _databaseService.GetConnectionAsync();
-            return await db.DeleteAsync<User>(Id);
         }
     }
 }

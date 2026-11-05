@@ -22,7 +22,7 @@ global using CapstoneProjectPUSH.Views.Trainers;
 global using CapstoneProjectPUSH.Views.Workouts;
 global using CapstoneProjectPUSH.Views.Exercises;
 
-
+global using CapstoneProjectPUSH.ViewModels.Admins;
 global using CapstoneProjectPUSH.ViewModels.Auth;
 global using CapstoneProjectPUSH.ViewModels.Base;
 global using CapstoneProjectPUSH.ViewModels.Home;
