@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:CapstoneProjectPUSH.Models"
+             x:Class="CapstoneProjectPUSH.Views.Admin.UsersDetailsPage"
+             Title="UsersDetailsPage">
+    <VerticalStackLayout>
+        <Label 
+            Text="Welcome to .NET MAUI!"
+            VerticalOptions="Center" 
+            HorizontalOptions="Center" />
+
+
+        <RefreshView
+            Command="{Binding LoadUsersCommand}"
+            Grid.Row="1"
+            IsRefreshing="{Binding IsBusy, Mode=OneWay}">
+
+            <CollectionView
+                ItemsSource="{Binding Users}"
+                SelectionMode="Single"
+                SelectedItem="{Binding SelectedUser, Mode=TwoWay}">
+
+                <CollectionView.EmptyView>
+
+                    <VerticalStackLayout
+                        HorizontalOptions="Center"
+                        VerticalOptions="Center">
+
+                        <Label
+                            FontAttributes="Italic"
+                            HorizontalTextAlignment="Center"
+                            Text="No Users found"/>
+
+                        <Label
+                            FontAttributes="Italic"
+                            HorizontalTextAlignment="Center"
+                            Text="Pull down to try again"/>
+
+                    </VerticalStackLayout>
+
+                </CollectionView.EmptyView>
+
+                <CollectionView.ItemsLayout>
+
+                    <LinearItemsLayout
+                        ItemSpacing="10"
+                        Orientation="Vertical"/>
+
+                </CollectionView.ItemsLayout>
+
+                <CollectionView.ItemTemplate>
+
+                    <DataTemplate
+                        x:DataType="models:User">
+
+                        <Border
+                            Padding="15"
+                            StrokeShape="RoundRectangle 10">
+
+                            <Grid
+                                ColumnDefinitions="*,Auto"
+                                ColumnSpacing="10"
+                                RowDefinitions="Auto,Auto"
+                                RowSpacing="10">
+
+                                <Label
+                                    Grid.Column="0"
+                                    Grid.Row="0"
+                                    FontAttributes="Bold"
+                                    FontSize="16"
+                                    LineBreakMode="TailTruncation"
+                                    Text="{Binding DisplayName}"
+                                    VerticalOptions="Center"/>
+
+                                <Border
+                                    Grid.Column="1"
+                                    Grid.Row="0"
+                                    Padding="10,5"
+                                    StrokeShape="RoundRectangle 10">
+
+                                    <Label
+                                        FontSize="12"
+                                        Text="{Binding Email}"/>
+
+                                </Border>
+
+                                <VerticalStackLayout
+                                    Grid.Column="0"
+                                    Grid.Row="1"
+                                    Spacing="3">
+
+
+                                    <HorizontalStackLayout>
+
+                                        <Label
+                                            Text="• Gym: "/>
+
+
+                                    </HorizontalStackLayout>
+
+                                </VerticalStackLayout>
+
+                            </Grid>
+
+                        </Border>
+
+                    </DataTemplate>
+
+                </CollectionView.ItemTemplate>
+
+            </CollectionView>
+
+        </RefreshView>
+    </VerticalStackLayout>
+</ContentPage>

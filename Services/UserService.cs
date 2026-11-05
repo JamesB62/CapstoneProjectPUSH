@@ -1,9 +1,20 @@
 ﻿namespace CapstoneProjectPUSH.Services
 {
-    public record AuthResult(bool Success, string Message, User? User = null);
+
+
+        public record AuthResult(bool Success, string Message, User? User = null);
 
     public class UserService
     {
+
+        private readonly DatabaseService _databaseService;
+        private readonly CategoryService _categoryService;
+
+        public UserService(DatabaseService databaseService, CategoryService categoryService)
+        {
+            _databaseService = databaseService;
+            _categoryService = categoryService;
+        }
         public const string PasswordRequirementsText = "Password must be at least 8 characters and contain at least one letter and one number.";
 
         private const int SaltSize = 16;
@@ -265,6 +276,12 @@
             {
                 return false;
             }
+        }
+
+        public async Task<int> DeleteUserAsync(int Id)
+        {
+            var db = await _databaseService.GetConnectionAsync();
+            return await db.DeleteAsync<User>(Id);
         }
     }
 }

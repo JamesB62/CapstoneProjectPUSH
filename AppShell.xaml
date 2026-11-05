@@ -13,6 +13,7 @@
     xmlns:stats="clr-namespace:CapstoneProjectPUSH.Views.Stats"
     xmlns:trainers="clr-namespace:CapstoneProjectPUSH.Views.Trainers"
     xmlns:workouts="clr-namespace:CapstoneProjectPUSH.Views.Workouts"
+    xmlns:admin="clr-namespace:CapstoneProjectPUSH.Views.Admin"
 
     Title="CapstoneProjectPUSH">
 
@@ -110,6 +111,23 @@
                 Route="ProfilePage"/>
 
         </Tab>
+       
+
+    </FlyoutItem>
+    
+    <FlyoutItem
+        IsVisible="{Binding IsAdmin}"
+        Icon="person.svg"
+        Title="Admin">
+
+        <Tab>
+
+            <ShellContent
+                ContentTemplate="{DataTemplate admin:AdminDashboard}"
+                Route="AdminDashboard"/>
+
+        </Tab>
+
 
     </FlyoutItem>
 

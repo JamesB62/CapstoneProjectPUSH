@@ -100,7 +100,8 @@ namespace CapstoneProjectPUSH
           
             // Workout
             builder.Services.AddTransient<WorkoutsPage>();
-            //workout detail 
+
+            //Workout Detail 
             builder.Services.AddTransient<WorkoutDetailsPage>();
 
             //Exercises 
@@ -108,6 +109,9 @@ namespace CapstoneProjectPUSH
 
             // Admin
             builder.Services.AddTransient<AdminDashboard>();
+
+            // User 
+            builder.Services.AddTransient<UsersDetailsPage>();
 
 
 #if DEBUG

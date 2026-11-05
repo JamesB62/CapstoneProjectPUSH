@@ -118,7 +118,7 @@
                 <!-- User Management -->
                 
                 <Label Text="User Management" FontSize="20" FontAttributes="Bold" />
-                
+
                 <Label Text="No Users found."
                        IsVisible="{Binding HasNoUsers}" />
 
@@ -134,10 +134,6 @@
 
                                     <Grid ColumnDefinitions="*,*" ColumnSpacing="8" Margin="0,8,0,0">
                                         <Button Grid.Column="0"
-                            Text="Toggle Status"
-                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AdminDashboardViewModel}}, Path=ToggleStatusCommand}"
-                            CommandParameter="{Binding .}" />
-                                        <Button Grid.Column="1"
                             Text="Delete"
                             BackgroundColor="Firebrick"
                             TextColor="White"
@@ -196,7 +192,7 @@
                 <!-- Navigation / session -->
                 <Button Text="Refresh" Command="{Binding RefreshCommand}" />
                 <Button Text="Open Trainers page" Command="{Binding NavigateToTrainersCommand}" />
-                <Button Text="Open Users page" Command="{Binding NavigateToUsersCommand}" />
+                <Button Text="Open Users page" Command="{Binding NavigateToUsersDetailsCommand}" />
                 <Button Text="Back to app" Command="{Binding NavigateToHomeCommand}" />
                 <Button Text="Sign out"
                         Command="{Binding SignOutCommand}"

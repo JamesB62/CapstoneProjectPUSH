@@ -124,6 +124,13 @@ namespace CapstoneProjectPUSH.ViewModels.Admins
         public int TotalExercises { get => _totalExercises; private set => SetProperty(ref _totalExercises, value); }
         public int TotalArticles { get => _totalArticles; private set => SetProperty(ref _totalArticles, value); }
 
+
+        public ObservableCollection<User> Users { get; } = new ObservableCollection<User>();
+
+        public bool HasNoUsers => Users.Count == 0;
+
+        public bool HasUsers => Users.Count == 0;
+
         public ObservableCollection<Trainer> Trainers { get; } = new();
 
         public bool HasNoTrainers => Trainers.Count == 0;
@@ -159,6 +166,12 @@ namespace CapstoneProjectPUSH.ViewModels.Admins
         {
             await Shell.Current.GoToAsync("//TrainersPage");
         }
+
+        public async Task NavigateToUsersDetailsAsync()
+        {
+            await Shell.Current.GoToAsync("//UsersDetailsPage");
+        }
+
 
         public async Task NavigateToHomeAsync()
         {
