@@ -18,6 +18,17 @@
                 .OrderByDescending(n => n.DateTimeAdded)
                 .ToListAsync();
 
+            var workouts = await db.Table<Workout>()
+                .Where(w => w.UserId == userId)
+                .ToListAsync();
+
+            var workoutNames = workouts.ToDictionary(w => w.Id, w => w.Name);
+
+            foreach (var note in notes)
+            {
+                note.WorkoutName = workoutNames.GetValueOrDefault(note.WorkoutId, "No workout");
+            }
+
             return notes;
         }
 

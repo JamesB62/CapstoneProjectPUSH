@@ -9,7 +9,7 @@
     <ScrollView>
 
         <VerticalStackLayout
-            Padding="30"
+            Padding="30,15,30,0"
             Spacing="15">
 
             <!-- Update details forms -->

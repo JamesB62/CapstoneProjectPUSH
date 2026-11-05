@@ -30,11 +30,13 @@
                 if (gymLookup.TryGetValue(trainer.GymId, out var gym))
                 {
                     trainer.GymName = gym.Name;
+                    trainer.GymStreetAddress = gym.StreetAddress;
                     trainer.GymCity = gym.City;
                 }
                 else
                 {
                     trainer.GymName = "Unknown Gym";
+                    trainer.GymStreetAddress = string.Empty;
                     trainer.GymCity = string.Empty;
                 }
 
@@ -64,11 +66,13 @@
             if (gym is null)
             {
                 trainer.GymName = "Unknown Gym";
+                trainer.GymStreetAddress = string.Empty;
                 trainer.GymCity = string.Empty;
             }
             else
             {
                 trainer.GymName = gym.Name;
+                trainer.GymStreetAddress = gym.StreetAddress;
                 trainer.GymCity = gym.City;
             }
 

@@ -24,5 +24,8 @@
         public string CategoryName { get; set; } = string.Empty;
 
         public DateTime DateTimeCreated { get; set; } = DateTime.Now;
+
+        [Ignore]
+        public string Summary { get; set; } = string.Empty;
     }
 }

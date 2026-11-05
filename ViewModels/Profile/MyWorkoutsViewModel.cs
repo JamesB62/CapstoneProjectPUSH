@@ -66,6 +66,14 @@
 
                 var workouts = await _workoutService.GetWorkoutsForUserAsync(user.Id);
 
+                foreach (var workout in workouts)
+                {
+                    var exercises = await _workoutService.GetExercisesForWorkoutAsync(workout.Id);
+                    int totalSets = exercises.Sum(e => e.Sets);
+
+                    workout.Summary = BuildSummary(exercises.Count, totalSets);
+                }
+
                 _allWorkouts.Clear();
                 foreach (var workout in workouts)
                 {
@@ -83,6 +91,36 @@
             {
                 IsBusy = false;
             }
+        }
+
+        private static string BuildSummary(int exerciseCount, int totalSets)
+        {
+            if (exerciseCount == 0)
+            {
+                return "No exercises yet";
+            }
+
+            string exercises;
+            if (exerciseCount == 1)
+            {
+                exercises = "1 exercise";
+            }
+            else
+            {
+                exercises = $"{exerciseCount} exercises";
+            }
+
+            string sets;
+            if (totalSets == 1)
+            {
+                sets = "1 set";
+            }
+            else
+            {
+                sets = $"{totalSets} sets";
+            }
+
+            return $"{exercises} • {sets}";
         }
 
         partial void OnSelectedCategoryChanged(Category? value)
@@ -122,11 +160,11 @@
 
             if (Workouts.Count == 1)
             {
-                StatusMessage = "Showing 1 workout";
+                StatusMessage = "Showing 1 workout.";
             }
             else
             {
-                StatusMessage = $"Showing {Workouts.Count} workouts";
+                StatusMessage = $"Showing {Workouts.Count} workouts.";
             }
         }
 

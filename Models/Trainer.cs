@@ -46,6 +46,12 @@
         public string GymName { get; set; } = string.Empty;
 
         [Ignore]
+        public string GymStreetAddress { get; set; } = string.Empty;
+
+        [Ignore]
         public string GymCity { get; set; } = string.Empty;
+
+        [Ignore]
+        public string GymFullAddress => $"{GymStreetAddress}, {GymCity}";
     }
 }

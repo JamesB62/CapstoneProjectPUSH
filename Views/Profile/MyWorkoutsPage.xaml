@@ -16,6 +16,7 @@
             Grid.Row="0"
             Spacing="10">
 
+            <!-- Category picker -->
             <Picker
                 ItemDisplayBinding="{Binding Name, x:DataType=models:Category}"
                 ItemsSource="{Binding Categories}"
@@ -24,7 +25,7 @@
 
             <Label
                 FontAttributes="Italic"
-                FontSize="14"
+                FontSize="12"
                 Text="{Binding StatusMessage}"/>
 
         </VerticalStackLayout>
@@ -39,6 +40,7 @@
                 SelectionMode="Single"
                 SelectedItem="{Binding SelectedWorkout, Mode=TwoWay}">
 
+                <!-- Empty view -->
                 <CollectionView.EmptyView>
 
                     <VerticalStackLayout
@@ -59,6 +61,7 @@
 
                 </CollectionView.EmptyView>
 
+                <!-- Item layout -->
                 <CollectionView.ItemsLayout>
 
                     <LinearItemsLayout
@@ -67,6 +70,7 @@
 
                 </CollectionView.ItemsLayout>
 
+                <!-- Item template -->
                 <CollectionView.ItemTemplate>
 
                     <DataTemplate
@@ -76,41 +80,51 @@
                             BackgroundColor="#F9FAFB"
                             Padding="15"
                             Stroke="#E5E7EB"
-                            StrokeShape="RoundRectangle 10">
+                            StrokeShape="RoundRectangle 12">
 
-                            <Grid
-                                ColumnDefinitions="*,Auto"
-                                ColumnSpacing="10"
-                                RowDefinitions="Auto,Auto"
-                                RowSpacing="10">
+                            <VerticalStackLayout
+                                Spacing="10">
 
-                                <Label
-                                    Grid.Column="0"
-                                    Grid.Row="0"
-                                    FontAttributes="Bold"
-                                    FontSize="16"
-                                    LineBreakMode="TailTruncation"
-                                    Text="{Binding Name}"
-                                    VerticalOptions="Center"/>
-
-                                <Border
-                                    Grid.Column="1"
-                                    Grid.Row="0"
-                                    Padding="10,5"
-                                    StrokeShape="RoundRectangle 10">
+                                <Grid
+                                    ColumnDefinitions="*,Auto"
+                                    ColumnSpacing="10">
 
                                     <Label
+                                        Grid.Column="0"
+                                        FontAttributes="Bold"
+                                        FontSize="16"
+                                        LineBreakMode="TailTruncation"
+                                        Text="{Binding Name}"
+                                        VerticalOptions="Center"/>
+
+                                    <Border
+                                        Grid.Column="1"
+                                        Padding="10,5"
+                                        StrokeShape="RoundRectangle 50">
+
+                                        <Label
+                                            FontSize="12"
+                                            LineBreakMode="TailTruncation"
+                                            Text="{Binding CategoryName}"/>
+
+                                    </Border>
+
+                                </Grid>
+
+                                <VerticalStackLayout
+                                    Spacing="10">
+
+                                    <Label
+                                        Text="{Binding Summary, StringFormat='Summary: {0}'}"/>
+
+                                    <Label
+                                        FontAttributes="Italic"
                                         FontSize="12"
-                                        Text="{Binding CategoryName}"/>
+                                        Text="{Binding DateTimeCreated, StringFormat='Date created: {0:d MMMM yyyy}'}"/>
 
-                                </Border>
+                                </VerticalStackLayout>
 
-                                <Label
-                                    Grid.Column="0"
-                                    Grid.Row="1"
-                                    Text="{Binding DateTimeCreated, StringFormat='{0:dd MMM yyyy}'}"/>
-
-                            </Grid>
+                            </VerticalStackLayout>
 
                         </Border>
 

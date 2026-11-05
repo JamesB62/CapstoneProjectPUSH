@@ -458,21 +458,21 @@
                 new Note
                 {
                     Title = "My First Note",
-                    Content = "This is the content of my first note.",
+                    Content = "Got through my first logged workout today and it felt good to finally get started. I took it slowly to focus on my form, and a few of the movements felt awkward at first, but they got easier as I warmed up. I was out of breath sooner than I expected, so I'll keep the pace comfortable next time and build up gradually. Goal for the next session: stay consistent and pay attention to how my body feels the day after.",
                     UserId = 1,
                     WorkoutId = 1
                 },
                 new Note
                 {
                     Title = "Workout Thoughts",
-                    Content = "I felt great after today's workout!",
+                    Content = "I felt great after today's workout! My energy was high from the start and I was able to push a bit harder than last time. My legs were tired by the end, but in a good way. I noticed my breathing recovered faster between efforts, which tells me the earlier sessions are paying off. I want to keep this momentum going, so next time I'll try adding a little more challenge while keeping my form clean. Remember to drink more water before the session.",
                     UserId = 1,
                     WorkoutId = 2
                 },
                 new Note
                 {
                     Title = "Yoga Reflection",
-                    Content = "The yoga session really helped me relax.",
+                    Content = "The yoga session really helped me relax. My shoulders and lower back were tight when I started, and by the end they felt looser and my mind was a lot calmer. Slowing down and focusing on my breathing made the biggest difference, and holding the poses a little longer helped me notice where I'm stiffest. Balance poses were the hardest part, so I want to keep practising those. I'd like to make this a regular part of my week, especially after harder workouts.",
                     UserId = 1,
                     WorkoutId = 3
                 }

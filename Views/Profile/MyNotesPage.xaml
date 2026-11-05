@@ -5,10 +5,10 @@
              xmlns:vm="clr-namespace:CapstoneProjectPUSH.ViewModels.Profile"
              x:Class="CapstoneProjectPUSH.Views.Profile.MyNotesPage"
              x:DataType="vm:MyNotesViewModel"
-             Title="">
+             Title="My PUSH Notes">
 
     <Grid
-        Padding="30"
+        Padding="30,0,30,0"
         RowDefinitions="Auto,*"
         RowSpacing="15">
 
@@ -16,10 +16,14 @@
             Grid.Row="0"
             Spacing="10">
 
-            <Label
-                FontAttributes="Bold"
-                FontSize="18"
-                Text="My PUSH Notes"/>
+            <!-- Keep? -->
+            <!-- Workout picker -->
+            <Picker
+                ItemDisplayBinding="{Binding Name, x:DataType=models:Workout}"
+                ItemsSource="{Binding Workouts}"
+                Margin="0,0,0,-4"
+                SelectedItem="{Binding SelectedWorkout}"
+                Title="Filter by workout"/>
 
             <Label
                 FontAttributes="Italic"
@@ -38,6 +42,7 @@
                 SelectionMode="Single"
                 SelectedItem="{Binding SelectedNote, Mode=TwoWay}">
 
+                <!-- Empty view -->
                 <CollectionView.EmptyView>
 
                     <VerticalStackLayout
@@ -58,6 +63,7 @@
 
                 </CollectionView.EmptyView>
 
+                <!-- Item layout -->
                 <CollectionView.ItemsLayout>
 
                     <LinearItemsLayout
@@ -66,60 +72,63 @@
 
                 </CollectionView.ItemsLayout>
 
+                <!-- Item template -->
                 <CollectionView.ItemTemplate>
 
                     <DataTemplate
                         x:DataType="models:Note">
 
                         <Border
+                            BackgroundColor="#F9FAFB"
                             Padding="15"
-                            StrokeShape="RoundRectangle 10">
+                            Stroke="#E5E7EB"
+                            StrokeShape="RoundRectangle 12">
 
-                            <Grid
-                                ColumnDefinitions="*,Auto"
-                                ColumnSpacing="10"
-                                RowDefinitions="Auto,Auto"
-                                RowSpacing="10">
+                            <VerticalStackLayout
+                                Spacing="10">
 
-                                <Label
-                                    Grid.Column="0"
-                                    Grid.Row="0"
-                                    FontAttributes="Bold"
-                                    FontSize="16"
-                                    LineBreakMode="TailTruncation"
-                                    Text="{Binding Title}"
-                                    VerticalOptions="Center"/>
-
-                                <Border
-                                    Grid.Column="1"
-                                    Grid.Row="0"
-                                    Padding="10,5"
-                                    StrokeShape="RoundRectangle 10">
+                                <Grid
+                                    ColumnDefinitions="*,Auto"
+                                    ColumnSpacing="10">
 
                                     <Label
-                                        FontSize="12"
-                                        Text="{Binding WorkoutName}"/>
+                                        Grid.Column="0"
+                                        FontAttributes="Bold"
+                                        FontSize="16"
+                                        LineBreakMode="TailTruncation"
+                                        Text="{Binding Title}"
+                                        VerticalOptions="Center"/>
 
-                                </Border>
+                                    <Border
+                                        Grid.Column="1"
+                                        Padding="10,5"
+                                        StrokeShape="RoundRectangle 50">
+
+                                        <Label
+                                            FontSize="12"
+                                            LineBreakMode="TailTruncation"
+                                            Text="{Binding WorkoutName}"/>
+
+                                    </Border>
+
+                                </Grid>
 
                                 <VerticalStackLayout
-                                    Grid.Column="0"
-                                    Grid.Row="1"
-                                    Spacing="3">
+                                    Spacing="10">
 
-                                    <HorizontalStackLayout>
+                                    <Label
+                                        LineBreakMode="TailTruncation"
+                                        MaxLines="2"
+                                        Text="{Binding Content}"/>
 
-                                        <Label
-                                            Text="• Date Created: "/>
-
-                                        <Label
-                                            Text="{Binding DateTimeCreated}"/>
-
-                                    </HorizontalStackLayout>
+                                    <Label
+                                        FontAttributes="Italic"
+                                        FontSize="12"
+                                        Text="{Binding DateTimeAdded, StringFormat='Date created: {0:d MMMM yyyy}'}"/>
 
                                 </VerticalStackLayout>
 
-                            </Grid>
+                            </VerticalStackLayout>
 
                         </Border>
 
