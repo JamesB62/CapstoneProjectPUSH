@@ -14,5 +14,10 @@
         public int TotalCalories { get; set; }
 
         public DateTime LastWorkoutDate { get; set; } = DateTime.Now;
+
+        public int weightStatus { get; set; }
+
+
+
     }
 }

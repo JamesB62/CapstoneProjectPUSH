@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:stats="clr-namespace:CapstoneProjectPUSH.ViewModels.Stats"
              x:Class="CapstoneProjectPUSH.Views.Stats.StatsPage"
+             
              Title="">
 
     <Grid
@@ -143,12 +144,77 @@
                                 </DataTemplate>
                             </BindableLayout.ItemTemplate>
 
+
+
                         </FlexLayout>
 
                     </VerticalStackLayout>
 
+
+
                 </Border>
 
+                <Border
+                    Padding="15"
+                    BackgroundColor="{AppThemeBinding Light=#E5E7EB, Dark=#2C2C31}"
+                    StrokeShape="RoundRectangle 10"
+                    StrokeThickness="0"
+                    HeightRequest="300">
+                    <VerticalStackLayout
+                        Spacing="15"
+                        VerticalOptions="Center">
+                        <Label
+                            FontAttributes="Bold"
+                            HorizontalTextAlignment="Center"
+                            Text="Weigh-in"/>
+                        
+                        <Entry
+                            Placeholder="Enter your weight"
+                            Keyboard="Numeric"
+                            Text="{Binding WeightInput, Mode=TwoWay}"/>
+
+                      
+                        <Button
+                            Command="{Binding SubmitWeightCommand}"
+                            Text="Submit"/>
+                        <Label
+                            FontSize="12"
+                            HorizontalTextAlignment="Center"
+                            Text="{Binding WeightStatus}"/>
+
+                        <FlexLayout
+     BindableLayout.ItemsSource="{Binding Line}"
+     Direction="Row"
+     JustifyContent="SpaceEvenly">
+
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="stats:ChartLine">
+                                    <Grid RowDefinitions="130,Auto" RowSpacing="4">
+                                        <BoxView
+                     Grid.Row="0"
+                     CornerRadius="3"
+                     VerticalOptions="End"
+                     WidthRequest="14"
+                     HeightRequest="{Binding LineHeight}"
+                     Color="{AppThemeBinding Light=#2563EB, Dark=#60A5FA}"/>
+                                        <Label
+                     Grid.Row="1"
+                     FontSize="9"
+                     HorizontalTextAlignment="Center"
+                     Text="{Binding Label}"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+
+
+
+                        </FlexLayout>
+
+
+                    </VerticalStackLayout>
+                    
+                </Border>
+                
             </VerticalStackLayout>
 
         </ScrollView>
@@ -156,4 +222,5 @@
 
     </Grid>
 
+    
 </ContentPage>

@@ -22,4 +22,8 @@ public partial class StatsPage : ContentPage
     {
         return true;
     }
+
+
+
+
 }

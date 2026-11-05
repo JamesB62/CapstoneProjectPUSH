@@ -13,6 +13,15 @@ namespace CapstoneProjectPUSH.ViewModels.Stats
         public double BarHeight { get; set; }
     }
 
+
+    public class ChartLine
+    {
+        public string Label { get; set; } = string.Empty;
+        public double Weight { get; set; }
+        public double LineHeight { get; set; }
+    }
+
+
     public partial class StatsViewModel : BaseViewModel
     {
         private const double MaxBarHeight = 120;
@@ -48,6 +57,24 @@ namespace CapstoneProjectPUSH.ViewModels.Stats
             AvgDurationText = "0 min";
             StreakText = "0 days";
         }
+
+        public StatsViewModel(UserService userService, WorkoutLogService workoutLogService, WeightLogService WeightLogService)
+        {
+            _userService = userService;
+            _workoutLogService = workoutLogService;
+            SelectedFilter = "Week";
+            WorkoutCountText = "0";
+            TotalTimeText = "0h 0m";
+            AvgDurationText = "0 min";
+            StreakText = "0 days";
+            // Load weight logs and create chart lines
+            LoadWeightLogs(WeightLogService);
+        }
+
+
+
+        
+
 
         // Generates SelectFilterCommand
         [RelayCommand]
@@ -155,5 +182,16 @@ namespace CapstoneProjectPUSH.ViewModels.Stats
             }
             return streak;
         }
+
+        
+
+
+
+
     }
+
+    
+
+
+
 }

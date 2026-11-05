@@ -1,20 +1,9 @@
 ﻿namespace CapstoneProjectPUSH.Services
 {
-
-
-        public record AuthResult(bool Success, string Message, User? User = null);
+    public record AuthResult(bool Success, string Message, User? User = null);
 
     public class UserService
     {
-
-        private readonly DatabaseService _databaseService;
-        private readonly CategoryService _categoryService;
-
-        public UserService(DatabaseService databaseService, CategoryService categoryService)
-        {
-            _databaseService = databaseService;
-            _categoryService = categoryService;
-        }
         public const string PasswordRequirementsText = "Password must be at least 8 characters and contain at least one letter and one number.";
 
         private const int SaltSize = 16;
@@ -70,14 +59,12 @@
 
             var user = new User
             {
-                DisplayName = displayName,
                 Email = email,
+                DisplayName = displayName,
                 // PBKDF2 is deliberately slow
                 PasswordHash = await Task.Run(() => HashPassword(password)),
                 DateTimeCreated = DateTime.Now
             };
-
-
 
             try
             {
@@ -214,7 +201,7 @@
             CurrentUser = user;
             return new AuthResult(true, "Details updated successfully.", user);
         }
-      
+
         public async Task<int> GetUserCountAsync()
         {
             var db = await _database.GetConnectionAsync();
@@ -276,12 +263,6 @@
             {
                 return false;
             }
-        }
-
-        public async Task<int> DeleteUserAsync(int Id)
-        {
-            var db = await _databaseService.GetConnectionAsync();
-            return await db.DeleteAsync<User>(Id);
         }
     }
 }
