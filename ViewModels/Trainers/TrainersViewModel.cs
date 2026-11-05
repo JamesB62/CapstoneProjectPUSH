@@ -2,39 +2,48 @@
 {
     public partial class TrainersViewModel : BaseViewModel
     {
-        private readonly TrainerService _trainerService;
         private readonly CategoryService _categoryService;
+        private readonly TrainerService _trainerService;
+        private readonly UserService _userService;
 
-        public TrainersViewModel(TrainerService trainerService, CategoryService categoryService)
+        public TrainersViewModel(CategoryService categoryService, TrainerService trainerService, UserService userService)
         {
-            _trainerService = trainerService;
             _categoryService = categoryService;
+            _trainerService = trainerService;
+            _userService = userService;
         }
 
         public ObservableCollection<Trainer> Trainers { get; } = new();
         
-        private List<Trainer> AllTrainers = new();
+        private List<Trainer> _allTrainers = new();
 
         private static readonly Category AllCategory = new() { Id = 0, Name = "All" };
 
         public ObservableCollection<Category> Categories { get; } = new();
 
         [ObservableProperty]
-        private Category? selectedCategory;
+        public partial Category? SelectedCategory { get; set; }
 
         [ObservableProperty]
-        private Trainer? selectedTrainer;
+        public partial Trainer? SelectedTrainer { get; set; }
 
         [ObservableProperty]
-        private string statusMessage = "Loading trainers...";
+        public partial bool ShowAvailableOnly { get; set; }
 
-        private bool isNavigating;
+        [ObservableProperty]
+        public partial string StatusMessage { get; set; } = "Loading trainers...";
+
+        private bool _isNavigating;
 
         [RelayCommand]
         private async Task LoadTrainersAsync()
         {
-            if (IsBusy)
+            var user = _userService.CurrentUser;
+
+            if (user is null)
             {
+                // Comment out to disable redirect
+                await Shell.Current.GoToAsync("//LandingPage");
                 return;
             }
 
@@ -45,9 +54,12 @@
             {
                 if (Categories.Count == 0)
                 {
+                    var categories = await _categoryService.GetCategoriesAsync();
+
+                    Categories.Clear();
                     Categories.Add(AllCategory);
 
-                    foreach (var category in await _categoryService.GetCategoriesAsync())
+                    foreach (var category in categories)
                     {
                         Categories.Add(category);
                     }
@@ -56,13 +68,14 @@
                 }
 
                 var trainers = await _trainerService.GetTrainersAsync();
-                AllTrainers = trainers.ToList();
+                _allTrainers = trainers.ToList();
+
                 ApplyFilter();
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex);
-                StatusMessage = "Could not load trainers, please try again";
+                StatusMessage = "Something went wrong. Please try again.";
             }
             finally
             {
@@ -71,6 +84,11 @@
         }
 
         partial void OnSelectedCategoryChanged(Category? value)
+        {
+            ApplyFilter();
+        }
+
+        partial void OnShowAvailableOnlyChanged(bool value)
         {
             ApplyFilter();
         }
@@ -92,11 +110,16 @@
 
             if (categoryId == 0)
             {
-                filtered = AllTrainers;
+                filtered = _allTrainers;
             }
             else
             {
-                filtered = AllTrainers.Where(t => t.CategoryId == categoryId).ToList();
+                filtered = _allTrainers.Where(t => t.CategoryId == categoryId).ToList();
+            }
+
+            if (ShowAvailableOnly)
+            {
+                filtered = filtered.Where(t => t.Available).ToList();
             }
 
             Trainers.Clear();
@@ -107,11 +130,11 @@
 
             if (Trainers.Count == 1)
             {
-                StatusMessage = "Showing 1 trainer";
+                StatusMessage = "Showing 1 trainer.";
             }
             else
             {
-                StatusMessage = $"Showing {Trainers.Count} trainers";
+                StatusMessage = $"Showing {Trainers.Count} trainers.";
             }
         }
 
@@ -129,22 +152,20 @@
         [RelayCommand]
         private async Task ViewTrainerAsync(Trainer? trainer)
         {
-            if (trainer is null || isNavigating)
+            if (trainer is null || _isNavigating)
             {
                 return;
             }
 
-            isNavigating = true;
+            _isNavigating = true;
             try
             {
                 await Shell.Current.GoToAsync($"{nameof(TrainerDetailsPage)}?TrainerId={trainer.Id}");
             }
             finally
             {
-                isNavigating = false;
+                _isNavigating = false;
             }
         }
-
-        // Add more functions when needed
     }
 }

@@ -7,6 +7,7 @@ public partial class ProfilePage : ContentPage
     public ProfilePage(ProfileViewModel profileViewModel)
     {
         InitializeComponent();
+
         _profileViewModel = profileViewModel;
         BindingContext = _profileViewModel;
     }
@@ -14,6 +15,6 @@ public partial class ProfilePage : ContentPage
     protected override void OnAppearing()
     {
         base.OnAppearing();
-        _profileViewModel.LoadProfile();
+        _profileViewModel.LoadProfileCommand.Execute(null);
     }
 }

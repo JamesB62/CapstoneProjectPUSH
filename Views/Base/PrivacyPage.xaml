@@ -2,19 +2,15 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="CapstoneProjectPUSH.Views.Base.PrivacyPage"
-             Title="">
+             Title="PUSH Privacy Statement">
 
     <ScrollView>
 
         <VerticalStackLayout
-            Padding="30,0,30,30"
+            Padding="30,0,30,0"
             Spacing="15">
 
             <!-- All statements need to be updated -->
-            <Label
-                FontAttributes="Bold"
-                FontSize="21"
-                Text="Privacy Statement"/>
 
             <Border
                 StrokeThickness="0"
@@ -29,6 +25,7 @@
                     <Label
                         FontSize="18"
                         Grid.Column="0"
+                        Padding="10,0"
                         Text="&#128274;"
                         VerticalOptions="Center"/>
 

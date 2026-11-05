@@ -5,10 +5,10 @@
              xmlns:vm="clr-namespace:CapstoneProjectPUSH.ViewModels.Trainers"
              x:Class="CapstoneProjectPUSH.Views.Trainers.TrainersPage"
              x:DataType="vm:TrainersViewModel"
-             Title="">
+             Title="PUSH Trainers">
 
     <Grid
-        Padding="30"
+        Padding="30,0,30,0"
         RowDefinitions="Auto,*"
         RowSpacing="15">
 
@@ -16,19 +16,37 @@
             Grid.Row="0"
             Spacing="10">
 
-            <Label
-                FontAttributes="Bold"
-                FontSize="18"
-                Text="PUSH Trainers"/>
+            <Grid
+                ColumnDefinitions="*,auto"
+                ColumnSpacing="10"
+                Margin="0,0,0,-5">
 
-            <Picker
-                ItemDisplayBinding="{Binding Name, x:DataType=models:Category}"
-                ItemsSource="{Binding Categories}"
-                SelectedItem="{Binding SelectedCategory}"
-                Title="Filter by category"/>
+                <!-- Category picker -->
+                <Picker
+                    Grid.Column="0"
+                    ItemDisplayBinding="{Binding Name, x:DataType=models:Category}"
+                    ItemsSource="{Binding Categories}"
+                    SelectedItem="{Binding SelectedCategory}"
+                    Title="Filter by category"
+                    VerticalOptions="Center"/>
 
-            <!-- ADD AVAILABILITY TOGGLE? -->
-            
+                <!-- Availability toggle -->
+                <HorizontalStackLayout
+                    Grid.Column="1"
+                    Spacing="5">
+
+                    <Label
+                        Text="Available Only"
+                        VerticalOptions="Center"/>
+
+                    <Switch
+                        IsToggled="{Binding ShowAvailableOnly}"
+                        VerticalOptions="Center"/>
+
+                </HorizontalStackLayout>
+
+            </Grid>
+                        
             <Label
                 FontAttributes="Italic"
                 FontSize="12"
@@ -46,6 +64,7 @@
                 SelectionMode="Single"
                 SelectedItem="{Binding SelectedTrainer, Mode=TwoWay}">
 
+                <!-- Empty view -->
                 <CollectionView.EmptyView>
 
                     <VerticalStackLayout
@@ -66,6 +85,7 @@
 
                 </CollectionView.EmptyView>
 
+                <!-- Item layout -->
                 <CollectionView.ItemsLayout>
 
                     <LinearItemsLayout
@@ -74,82 +94,107 @@
 
                 </CollectionView.ItemsLayout>
 
+                <!-- Item template -->
                 <CollectionView.ItemTemplate>
 
                     <DataTemplate
                         x:DataType="models:Trainer">
 
                         <Border
+                            BackgroundColor="#F9FAFB"
                             Padding="15"
-                            StrokeShape="RoundRectangle 10">
+                            Stroke="#E5E7EB"
+                            StrokeShape="RoundRectangle 12">
 
                             <Grid
-                                ColumnDefinitions="*,Auto"
-                                ColumnSpacing="10"
-                                RowDefinitions="Auto,Auto"
-                                RowSpacing="10">
-
-                                <Label
-                                    Grid.Column="0"
-                                    Grid.Row="0"
-                                    FontAttributes="Bold"
-                                    FontSize="16"
-                                    LineBreakMode="TailTruncation"
-                                    Text="{Binding FullName}"
-                                    VerticalOptions="Center"/>
+                                ColumnDefinitions="Auto,*"
+                                ColumnSpacing="15">
 
                                 <Border
-                                    Grid.Column="1"
-                                    Grid.Row="0"
-                                    Padding="10,5"
-                                    StrokeShape="RoundRectangle 10">
+                                    Grid.Column="0"
+                                    HeightRequest="50"
+                                    HorizontalOptions="Center"
+                                    StrokeShape="Ellipse"
+                                    StrokeThickness="0"
+                                    WidthRequest="50">
 
-                                    <Label
-                                        FontSize="12"
-                                        Text="{Binding AvailableText}"/>
+                                    <!-- Profile picture placeholder - sourced from Wikipedia -->
+                                    <Image
+                                        Aspect="AspectFill"
+                                        Source="profile_picture_placeholder.png"/>
 
                                 </Border>
 
                                 <VerticalStackLayout
-                                    Grid.Column="0"
-                                    Grid.Row="1"
-                                    Spacing="3">
+                                    Grid.Column="1"
+                                    Spacing="10">
 
-                                    <HorizontalStackLayout>
-
-                                        <Label
-                                            Text="• Specialty: "/>
+                                    <Grid
+                                        ColumnDefinitions="*,Auto"
+                                        ColumnSpacing="10">
 
                                         <Label
-                                            Text="{Binding CategoryName}"/>
+                                            Grid.Column="0"
+                                            FontAttributes="Bold"
+                                            FontSize="16"
+                                            LineBreakMode="TailTruncation"
+                                            Text="{Binding FullName}"
+                                            VerticalOptions="Center"/>
 
-                                    </HorizontalStackLayout>
+                                        <Border
+                                            Grid.Column="1"
+                                            Padding="10,5"
+                                            StrokeShape="RoundRectangle 50">
 
-                                    <HorizontalStackLayout>
+                                            <Label
+                                                FontSize="12"
+                                                LineBreakMode="TailTruncation"
+                                                Text="{Binding AvailableText}"/>
+
+                                        </Border>
+
+                                    </Grid>
+
+                                    <VerticalStackLayout
+                                        Spacing="10">
 
                                         <Label
-                                            Text="• Gym: "/>
+                                            MaxLines="2"
+                                            LineBreakMode="TailTruncation"
+                                            Text="{Binding Description}"/>
 
-                                        <Label>
+                                        <VerticalStackLayout
+                                            Spacing="5">
 
-                                            <Label.Text>
+                                            <Label
+                                                FontAttributes="Italic"
+                                                FontSize="12"
+                                                Text="{Binding CategoryName, StringFormat='Specialty: {0}'}"/>
 
-                                                <MultiBinding
-                                                StringFormat="{}{0}, {1}">
+                                            <Label
+                                                FontAttributes="Italic"
+                                                FontSize="12">
 
-                                                    <Binding
-                                                    Path="GymName"/>
+                                                <Label.Text>
 
-                                                    <Binding
-                                                    Path="GymCity"/>
+                                                    <MultiBinding
+                                                        StringFormat="Gym: {0}, {1}">
 
-                                                </MultiBinding>
+                                                        <Binding
+                                                            Path="GymName"/>
 
-                                            </Label.Text>
+                                                        <Binding
+                                                            Path="GymCity"/>
 
-                                        </Label>
+                                                    </MultiBinding>
 
-                                    </HorizontalStackLayout>
+                                                </Label.Text>
+
+                                            </Label>
+
+                                        </VerticalStackLayout>
+
+                                    </VerticalStackLayout>
 
                                 </VerticalStackLayout>
 

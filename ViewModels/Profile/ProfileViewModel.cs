@@ -1,6 +1,4 @@
-﻿using CapstoneProjectPUSH.Views.Admin;
-
-namespace CapstoneProjectPUSH.ViewModels.Profile
+﻿namespace CapstoneProjectPUSH.ViewModels.Profile
 {
     public partial class ProfileViewModel : BaseViewModel
     {
@@ -9,23 +7,6 @@ namespace CapstoneProjectPUSH.ViewModels.Profile
         public ProfileViewModel(UserService userService)
         {
             _userService = userService;
-            LoadProfile();
-        }
-
-        public void LoadProfile()
-        {
-            var user = _userService.CurrentUser;
-
-            if (user is null)
-            {
-                DisplayName = "Username";
-                Email = "Email Address";
-            }
-            else
-            {
-                DisplayName = user.DisplayName;
-                Email = user.Email;
-            }
         }
 
         [ObservableProperty]
@@ -34,48 +15,66 @@ namespace CapstoneProjectPUSH.ViewModels.Profile
         [ObservableProperty]
         public partial string Email { get; set; } = string.Empty;
 
-        // Generates GoToUpdateDetailsCommand
+        [ObservableProperty]
+        public partial bool IsAdmin { get; set; }
+
+        [RelayCommand]
+        public async Task LoadProfileAsync()
+        {
+            var user = _userService.CurrentUser;
+
+            if (user != null)
+            {
+                DisplayName = user.DisplayName;
+                Email = user.Email;
+                IsAdmin = user.IsAdmin;
+            }
+            else
+            {
+                DisplayName = "Guest";
+                Email = "Not signed in";
+                IsAdmin = false;
+
+                // Comment out to disable redirect
+                await Shell.Current.GoToAsync("//LandingPage");
+            }
+        }
+
         [RelayCommand]
         private async Task GoToUpdateDetailsAsync()
         {
-            await Shell.Current.GoToAsync(nameof(UpdateProfilePage));
+            await NavigateAsync(nameof(UpdateProfilePage));
         }
 
-        // Generates MyWorkoutsCommand
         [RelayCommand]
-        private async Task MyWorkoutsAsync()
+        private async Task GoToMyWorkoutsAsync()
         {
-            await Shell.Current.DisplayAlertAsync("Coming soon", "My Workouts isn't built yet.", "OK");
+            await NavigateAsync(nameof(MyWorkoutsPage));
         }
 
-        // Generates MyNotesCommand
         [RelayCommand]
-        private async Task MyNotesAsync()
+        private async Task GoToMyNotesAsync()
         {
-            await Shell.Current.DisplayAlertAsync("Coming soon", "My Notes isn't built yet.", "OK");
+            await NavigateAsync(nameof(MyNotesPage));
         }
 
-        // Generates AdminCommand
         [RelayCommand]
-        private async Task AdminAsync()
+        private async Task GoToAdminDashboardAsync()
         {
-            await Shell.Current.Navigation.PushAsync(new AdminDashboard());
+            await NavigateAsync(nameof(AdminDashboard));
         }
 
-        // Generates LogoutCommand
         [RelayCommand]
         private async Task LogoutAsync()
         {
             _userService.Logout();
-            await Shell.Current.GoToAsync("//LandingPage");
-            DisplayName = "Username";
+            await NavigateAsync("//LandingPage");
         }
 
-        // Generates GoToPrivacyCommand
         [RelayCommand]
         private async Task GoToPrivacyAsync()
         {
-            await Shell.Current.Navigation.PushAsync(new PrivacyPage());
+            await NavigateAsync(nameof(PrivacyPage));
         }
     }
 }

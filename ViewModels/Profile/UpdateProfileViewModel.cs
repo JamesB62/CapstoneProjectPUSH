@@ -10,45 +10,51 @@
         }
 
         [ObservableProperty]
-        private string displayName = string.Empty;
+        public partial string DisplayName { get; set; } = string.Empty;
 
         [ObservableProperty]
-        private string email = string.Empty;
+        public partial string Email { get; set; } = string.Empty;
 
         [ObservableProperty]
-        private string currentPassword = string.Empty;
+        public partial string CurrentPassword { get; set; } = string.Empty;
 
         [ObservableProperty]
-        private string newPassword = string.Empty;
+        public partial string NewPassword { get; set; } = string.Empty;
 
         [ObservableProperty]
-        private string confirmPassword = string.Empty;
+        public partial string ConfirmPassword { get; set; } = string.Empty;
+
+        public string PasswordRequirements => UserService.PasswordRequirementsText;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(HasErrorMessage))]
-        private string? errorMessage;
+        public partial string? ErrorMessage { get; set; }
 
         public bool HasErrorMessage => !string.IsNullOrEmpty(ErrorMessage);
 
         [RelayCommand]
-        private async Task Load()
+        private async Task LoadProfileAsync()
         {
             var user = _userService.CurrentUser;
-            if (user is null)
-            {
-                return;
-            }
 
-            DisplayName = user.DisplayName;
-            Email = user.Email;
-            CurrentPassword = string.Empty;
-            NewPassword = string.Empty;
-            ConfirmPassword = string.Empty;
-            ErrorMessage = string.Empty;
+            if (user != null)
+            {
+                DisplayName = user.DisplayName;
+                Email = user.Email;
+                CurrentPassword = string.Empty;
+                NewPassword = string.Empty;
+                ConfirmPassword = string.Empty;
+                ErrorMessage = string.Empty;
+            }
+            else
+            {
+                // Comment out to disable redirect
+                await Shell.Current.GoToAsync("//LandingPage");
+            }
         }
 
         [RelayCommand]
-        private async Task SaveAsync()
+        private async Task SaveProfileAsync()
         {
             if (IsBusy)
             {
@@ -68,18 +74,19 @@
                     return;
                 }
 
-                if (result.User is not null)
-                {
-                    DisplayName = result.User.DisplayName;
-                    Email = result.User.Email;
-                }
-
                 CurrentPassword = string.Empty;
                 NewPassword = string.Empty;
                 ConfirmPassword = string.Empty;
 
+                IsBusy = false;
+
                 await Shell.Current.DisplayAlertAsync("Update Successful", "Your PUSH account details have been updated.", "OK");
                 await Shell.Current.GoToAsync("..");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex);
+                ErrorMessage = "Something went wrong. Please try again.";
             }
             finally
             {
@@ -88,23 +95,14 @@
         }
 
         [RelayCommand]
-        private async Task CancelAsync()
+        private async Task CancelProfileAsync()
         {
             if (IsBusy)
             {
                 return;
             }
 
-            IsBusy = true;
-
-            try
-            {
-                await Shell.Current.GoToAsync("..");
-            }
-            finally
-            {
-                IsBusy = false;
-            }
+            await Shell.Current.GoToAsync("..");
         }
     }
 }
