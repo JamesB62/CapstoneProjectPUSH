@@ -1,6 +1,7 @@
 using CapstoneProjectPUSH.Views.Exercises;
 using CapstoneProjectPUSH.ViewModels.Admins;
 using CapstoneProjectPUSH.Views.Admin;
+using CapstoneProjectPUSH.views.Workouts;
 
 namespace CapstoneProjectPUSH
 {
@@ -62,6 +63,8 @@ namespace CapstoneProjectPUSH
             builder.Services.AddTransient<WorkoutsViewModel>();
             //workout detail
             builder.Services.AddTransient<WorkoutsDetailViewModel>();
+            //create workout page
+            builder.Services.AddTransient<CreateWorkoutViewModel>();
 
             //Exercise
             builder.Services.AddTransient<ExercisesViewModel>();
@@ -102,6 +105,8 @@ namespace CapstoneProjectPUSH
             builder.Services.AddTransient<WorkoutsPage>();
             //workout detail 
             builder.Services.AddTransient<WorkoutDetailPage>();
+            //create workout page
+            builder.Services.AddTransient<CreateWorkoutPage>();
 
             //Exercises 
             builder.Services.AddTransient<SelectExercisesPage>();

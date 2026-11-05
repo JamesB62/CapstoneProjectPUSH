@@ -1,3 +1,5 @@
+using CapstoneProjectPUSH.views.Workouts;
+
 namespace CapstoneProjectPUSH.ViewModels.Workouts
 {
     public partial class SelectExercisesViewModel : BaseViewModel
@@ -73,8 +75,9 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
                 await Shell.Current.DisplayAlertAsync("Nothing selected", "Pick at least one exercise.", "OK");
                 return;
             }
+            await Shell.Current.GoToAsync(nameof(CreateWorkoutPage),
+                new ShellNavigationQueryParameters { {"exercises", selected} });
 
-            await Shell.Current.DisplayAlertAsync("Selected", $"{selected.Count} exercise(s) selected.", "OK");
         }
     }
 }
