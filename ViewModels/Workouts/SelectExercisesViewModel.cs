@@ -1,5 +1,3 @@
-using CapstoneProjectPUSH.views.Workouts;
-
 namespace CapstoneProjectPUSH.ViewModels.Workouts
 {
     public partial class SelectExercisesViewModel : BaseViewModel

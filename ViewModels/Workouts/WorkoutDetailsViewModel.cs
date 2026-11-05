@@ -1,7 +1,7 @@
 namespace CapstoneProjectPUSH.ViewModels.Workouts
 {
     [QueryProperty(nameof(WorkoutId), "workoutId")]
-    public partial class WorkoutsDetailViewModel : BaseViewModel
+    public partial class WorkoutDetailsViewModel : BaseViewModel
     {
         private readonly WorkoutService _workoutService;
         private readonly UserService _userService;
@@ -16,7 +16,7 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
         [ObservableProperty]
         private string categoryName = string.Empty;
 
-        public WorkoutsDetailViewModel(WorkoutService workoutService, UserService userService)
+        public WorkoutDetailsViewModel(WorkoutService workoutService, UserService userService)
         {
             _workoutService = workoutService;
             _userService = userService;

@@ -1,4 +1,4 @@
-namespace CapstoneProjectPUSH.views.Workouts;
+namespace CapstoneProjectPUSH.Views.Workouts;
 
 public partial class CreateWorkoutPage : ContentPage
 {

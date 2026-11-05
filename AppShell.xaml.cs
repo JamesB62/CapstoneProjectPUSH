@@ -1,5 +1,3 @@
-using CapstoneProjectPUSH.views.Workouts;
-
 namespace CapstoneProjectPUSH
 {
     public partial class AppShell : Shell

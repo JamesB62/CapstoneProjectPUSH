@@ -2,8 +2,8 @@ namespace CapstoneProjectPUSH.Views.Workouts;
 
 public partial class WorkoutDetailPage : ContentPage
 {
-	private readonly WorkoutDetailViewModel _viewModel;
-	public WorkoutDetailPage(WorkoutDetailViewModel viewModel)
+	private readonly WorkoutDetailsViewModel _viewModel;
+	public WorkoutDetailPage(WorkoutDetailsViewModel viewModel)
 	{
 		InitializeComponent();
 		_viewModel = viewModel;
