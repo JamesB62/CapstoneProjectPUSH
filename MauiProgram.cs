@@ -69,6 +69,7 @@ namespace CapstoneProjectPUSH
 
             // Admin
             builder.Services.AddTransient<AdminDashboardViewModel>();
+            builder.Services.AddTransient<UsersManagementViewModel>();
 
             // ========================== Views ===========================
 
@@ -111,7 +112,7 @@ namespace CapstoneProjectPUSH
             builder.Services.AddTransient<AdminDashboard>();
 
             // User 
-            builder.Services.AddTransient<UsersDetailsPage>();
+            builder.Services.AddTransient<UsersManagementPage>();
 
 
 #if DEBUG
