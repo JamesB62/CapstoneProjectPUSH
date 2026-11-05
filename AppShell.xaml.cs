@@ -1,3 +1,5 @@
+using CapstoneProjectPUSH.views.Workouts;
+
 namespace CapstoneProjectPUSH
 {
     public partial class AppShell : Shell
@@ -40,6 +42,8 @@ namespace CapstoneProjectPUSH
             Routing.RegisterRoute(nameof(WorkoutsPage), typeof(WorkoutsPage));
             //workout detail
             Routing.RegisterRoute(nameof(WorkoutDetailPage), typeof(WorkoutDetailPage));
+            //create workout page
+            Routing.RegisterRoute(nameof(CreateWorkoutPage), typeof(CreateWorkoutPage));
 
             //Exercises
             Routing.RegisterRoute(nameof(SelectExercisesPage), typeof(SelectExercisesPage));

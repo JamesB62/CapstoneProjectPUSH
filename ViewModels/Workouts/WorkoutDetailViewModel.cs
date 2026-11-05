@@ -1,9 +1,10 @@
 namespace CapstoneProjectPUSH.ViewModels.Workouts
 {
-    [QueryProperty(nameof(WorkoutId),"workoutId")]
-    public partial class WorkoutDetailViewModel : BaseViewModel
+    [QueryProperty(nameof(WorkoutId), "workoutId")]
+    public partial class WorkoutsDetailViewModel : BaseViewModel
     {
         private readonly WorkoutService _workoutService;
+        private readonly UserService _userService;
         public ObservableCollection<WorkoutExercise> Exercises { get; } = new();
 
         [ObservableProperty]
@@ -15,18 +16,24 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
         [ObservableProperty]
         private string categoryName = string.Empty;
 
-        public WorkoutDetailViewModel(WorkoutService workoutService)
+        public WorkoutsDetailViewModel(WorkoutService workoutService, UserService userService)
         {
             _workoutService = workoutService;
+            _userService = userService;
         }
 
         [RelayCommand]
         private async Task LoadAsync()
         {
-            int userId = /* test user */ 1 ;
+            var userId = _userService.CurrentUser?.Id;
+            if(userId is null)
+            {
+                await Shell.Current.GoToAsync("..");
+                return;
+            }
 
-            var workout = await _workoutService.GetWorkoutByIdAsync(WorkoutId, userId);
-            if(workout is null)
+            var workout = await _workoutService.GetWorkoutByIdAsync(WorkoutId, userId.Value);
+            if (workout is null)
             {
                 await Shell.Current.GoToAsync("..");
                 return;
@@ -43,7 +50,8 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
         [RelayCommand]
         private async Task StartWorkoutAsync()
         {
-            await Shell.Current.DisplayAlertAsync("Coming soon", "workout tracking isn't built yet.","OK");
+            await Shell.Current.DisplayAlertAsync("Coming soon", "workout tracking isn't built yet.", "OK");
         }
+
     }
 }

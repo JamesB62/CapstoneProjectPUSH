@@ -5,7 +5,6 @@
     public class UserService
     {
         public const string PasswordRequirementsText = "Password must be at least 8 characters and contain at least one letter and one number.";
-
         private const int SaltSize = 16;
         private const int KeySize = 32;
         private const int Iterations = 100_000;

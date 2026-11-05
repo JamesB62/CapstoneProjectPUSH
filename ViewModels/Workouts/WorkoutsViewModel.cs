@@ -3,15 +3,18 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
     public partial class WorkoutsViewModel : BaseViewModel
     {
         private readonly WorkoutService _workoutService;
+        private readonly UserService _userService;
         private List<Workout> _allWorkouts = new();
         public ObservableCollection<Workout> Workouts { get; } = new();
 
         [ObservableProperty]
         private string searchText = string.Empty;
 
-        public WorkoutsViewModel(WorkoutService workoutService)
+
+        public WorkoutsViewModel(WorkoutService workoutService, UserService userService)
         {
             _workoutService = workoutService;
+            _userService = userService;
         }
 
         partial void OnSearchTextChanged(string value) => ApplyFilter();
@@ -19,8 +22,10 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
         [RelayCommand]
         private async Task LoadWorkoutsAsync()
         {
-            int userId = /* Test user 1 */ 1;
-            _allWorkouts = await _workoutService.GetWorkoutsForUserAsync(userId);
+            var userId = _userService.CurrentUser?.Id;
+            if(userId is null) return;
+
+            _allWorkouts = await _workoutService.GetWorkoutsForUserAsync(userId.Value);
             ApplyFilter();
         }
 
@@ -47,6 +52,24 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
         {
             if(workout is null) return;
             await Shell.Current.GoToAsync($"{nameof(WorkoutDetailPage)}?workoutId={workout.Id}");
+        }
+        
+        [RelayCommand]
+        private async Task DeleteWorkoutAsync(Workout workout)
+        {
+            var userId = _userService.CurrentUser?.Id;
+            if(userId is null) return;
+
+            if(workout is null) return;
+
+            bool confirm = await Shell.Current.DisplayAlertAsync(
+                "Delete workout", $"Delete \"{workout.Name}\"?", "Delete", "Cancel");
+            if(!confirm) return;
+            
+            await _workoutService.DeleteWorkoutAsync(workout.Id, userId.Value);
+
+            _allWorkouts.Remove(workout);
+            ApplyFilter();
         }
     }
 }
