@@ -106,7 +106,7 @@ namespace CapstoneProjectPUSH
             // Workout
             builder.Services.AddTransient<WorkoutsPage>();
             //workout detail 
-            builder.Services.AddTransient<WorkoutDetailPage>();
+            builder.Services.AddTransient<WorkoutDetailsPage>();
 
             //Exercises 
             builder.Services.AddTransient<SelectExercisesPage>();

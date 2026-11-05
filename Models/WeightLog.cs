@@ -4,7 +4,7 @@ using System.Text;
 
 namespace CapstoneProjectPUSH.Models
 {
-    internal class WeightLog
+    public class WeightLog
     {
 
         [PrimaryKey, AutoIncrement]

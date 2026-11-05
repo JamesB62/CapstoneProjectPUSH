@@ -68,7 +68,7 @@ namespace CapstoneProjectPUSH.ViewModels.Stats
             AvgDurationText = "0 min";
             StreakText = "0 days";
             // Load weight logs and create chart lines
-            LoadWeightLogs(WeightLogService);
+            // LoadWeightLogs(WeightLogService);
         }
 
 
