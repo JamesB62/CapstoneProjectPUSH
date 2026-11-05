@@ -93,5 +93,24 @@
             var db = await _databaseService.GetConnectionAsync();
             return await db.UpdateAsync(workout);
         }
+
+        //add workout with exercises
+        public async Task<int> AddWorkoutWithExercisesAsync(Workout workout, IEnumerable<WorkoutExercise> items)
+        {
+            var db = await _databaseService.GetConnectionAsync();
+
+            await db.RunInTransactionAsync(conn =>
+            {
+                conn.Insert(workout);
+
+                foreach(var item in items)
+                {
+                    item.WorkoutId = workout.Id;
+                    conn.Insert(item);
+                }
+            });
+
+            return workout.Id;
+        }
     }
 }

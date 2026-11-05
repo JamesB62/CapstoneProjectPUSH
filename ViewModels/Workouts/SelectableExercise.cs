@@ -1,4 +1,4 @@
-namespace CapstoneProjectPUSH.ViewModels.Exercises
+namespace CapstoneProjectPUSH.ViewModels.Workouts
 {
     public partial class SelectableExercise : ObservableObject
     {

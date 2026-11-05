@@ -190,34 +190,31 @@
         private async Task SeedExercisesAsync()
         {
             var db = await GetConnectionAsync();
+            if (await db.Table<Exercise>().CountAsync() > 0) return;
 
-            var count = await db.Table<Exercise>().CountAsync();
-            if (count > 0)
-            {
-                return;
-            }
+            // CategoryId: 1 Strength, 2 Cardio, 3 HIIT, 4 Yoga, 5 Flexibility, 7 Muscle Building, 9 Recovery
 
             var exercises = new List<Exercise>
             {
                 new Exercise
                 {
-                    Title = "Exercise 1",
-                    Description = "This is a placeholder description for Exercise 1.",
+                    Title = "Barbell Bench Press",
+                    Description = "Lie on a bench, lower the bar to mid-chest, then press it back up. Works chest, shoulders and triceps.",
                     Difficulty = "Easy",
                     CategoryId = 1
                 },
 
                 new Exercise
                 {
-                    Title = "Exercise 2",
-                    Description = "This is a placeholder description for Exercise 2.",
+                    Title = "Burpees",
+                    Description = "Drop to a push-up, jump your feet in, then jump up with your arms overhead.",
                     Difficulty = "Medium",
                     CategoryId = 3
                 },
 
                 new Exercise
                 {
-                    Title = "Exercise 3",
+                    Title = "Hamstring Stretch",
                     Description = "This is a placeholder description for Exercise 3.",
                     Difficulty = "Hard",
                     CategoryId = 5
@@ -235,27 +232,75 @@
 
             await db.InsertAllAsync(new[]
             {
-                new Workout { Name = "Push Day", UserId = 1, CategoryId = 1 },
+                new Workout { Name = "Push Day",     UserId = 1, CategoryId = 1 },
+                new Workout { Name = "Pull Day",     UserId = 1, CategoryId = 1 },
+                new Workout { Name = "Leg Day",      UserId = 1, CategoryId = 1 },
                 new Workout { Name = "Morning HIIT", UserId = 1, CategoryId = 3 },
-                new Workout { Name = "Yoga Flow", UserId = 1, CategoryId = 4 },
-
+                new Workout { Name = "Cardio Burn",  UserId = 1, CategoryId = 2 },
+                new Workout { Name = "Yoga Flow",    UserId = 1, CategoryId = 4 },
+                new Workout { Name = "Cool Down",    UserId = 1, CategoryId = 9 },
             });
         }
 
         private async Task SeedWorkoutExercisesAsync()
         {
             var db = await GetConnectionAsync();
-            if (await db.Table<WorkoutExercise>().CountAsync() > -0) return;
+            if (await db.Table<WorkoutExercise>().CountAsync() > 0) return;
 
-            await db.InsertAllAsync(new[]
+            var exerciseIds = (await db.Table<Exercise>().ToListAsync())
+                .GroupBy(e => e.Title).ToDictionary(e => e.Key, e => e.First().Id);
+            var workoutIds = (await db.Table<Workout>().ToListAsync())
+            .GroupBy(w => w.Name).ToDictionary(w => w.Key, w => w.First().Id);
+            
+            var items = new List<WorkoutExercise>();
+
+            void Add(string workout, string exercise, int order, int sets, int reps)
             {
-                new WorkoutExercise { WorkoutId = 1, ExerciseId = 1, SortOrder = 1, Sets = 3, Reps = 10 },
-                new WorkoutExercise { WorkoutId = 1, ExerciseId = 2, SortOrder = 2, Sets = 3, Reps = 12 },
-                new WorkoutExercise { WorkoutId = 2, ExerciseId = 2, SortOrder = 1, Sets = 4, Reps = 15 },
-                new WorkoutExercise { WorkoutId = 2, ExerciseId = 3, SortOrder = 2, Sets = 3, Reps = 20 },
-                new WorkoutExercise { WorkoutId = 3, ExerciseId = 3, SortOrder = 1, Sets = 2, Reps = 30 },
+                if (workoutIds.TryGetValue(workout, out var wId) && exerciseIds.TryGetValue(exercise, out var eId))
+                    items.Add(new WorkoutExercise { WorkoutId = wId, ExerciseId = eId, SortOrder = order, Sets = sets, Reps = reps });
+                else
+                    System.Diagnostics.Debug.WriteLine($"Seed skipped: {workout} / {exercise}");
+            }
 
-            });
+            Add("Push Day", "Barbell Bench Press", 1, 4, 8);
+            Add("Push Day", "Overhead Press",      2, 3, 10);
+            Add("Push Day", "Push-Up",             3, 3, 15);
+
+            Add("Pull Day", "Deadlift",     1, 3, 5);
+            Add("Pull Day", "Pull-Up",      2, 4, 8);
+            Add("Pull Day", "Dumbbell Row", 3, 3, 10);
+
+            Add("Leg Day", "Back Squat",  1, 4, 8);
+            Add("Leg Day", "Deadlift",    2, 3, 5);
+            Add("Leg Day", "Jump Squats", 3, 3, 12);
+
+            Add("Morning HIIT", "Burpees",           1, 4, 15);
+            Add("Morning HIIT", "Mountain Climbers", 2, 4, 30);
+            Add("Morning HIIT", "Jump Squats",       3, 3, 20);
+
+            Add("Cardio Burn", "Jump Rope",         1, 3, 100);
+            Add("Cardio Burn", "Mountain Climbers", 2, 3, 30);
+            Add("Cardio Burn", "Burpees",           3, 3, 10);
+
+            Add("Yoga Flow", "Sun Salutation", 1, 3, 5);
+            Add("Yoga Flow", "Downward Dog",   2, 3, 8);
+
+            Add("Cool Down", "Hamstring Stretch", 1, 2, 3);
+            Add("Cool Down", "Downward Dog",      2, 2, 5);
+            Add("Cool Down", "Foam Rolling",      3, 1, 10);
+
+            await db.InsertAllAsync(items);
+
+
+
+            // await db.InsertAllAsync(new[]
+            // {
+            //     new WorkoutExercise { WorkoutId = 1, ExerciseId = 1, SortOrder = 1, Sets = 3, Reps = 10 },
+            //     new WorkoutExercise { WorkoutId = 1, ExerciseId = 2, SortOrder = 2, Sets = 3, Reps = 12 },
+            //     new WorkoutExercise { WorkoutId = 2, ExerciseId = 2, SortOrder = 1, Sets = 4, Reps = 15 },
+            //     new WorkoutExercise { WorkoutId = 2, ExerciseId = 3, SortOrder = 2, Sets = 3, Reps = 20 },
+            //     new WorkoutExercise { WorkoutId = 3, ExerciseId = 3, SortOrder = 1, Sets = 2, Reps = 30 },
+            // });
         }
 
         private async Task SeedArticlesAsync()
