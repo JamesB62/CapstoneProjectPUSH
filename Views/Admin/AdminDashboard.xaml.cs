@@ -1,4 +1,6 @@
 using CapstoneProjectPUSH.ViewModels.Admins;
+using CapstoneProjectPUSH.Services;
+
 
 namespace CapstoneProjectPUSH.Views.Admin;
 
@@ -6,10 +8,10 @@ public partial class AdminDashboard : ContentPage
 {
     private readonly AdminDashboardViewModel _viewModel;
 
-    public AdminDashboard()
+    public AdminDashboard(AdminDashboardViewModel viewModel)
     {
         InitializeComponent();
-        _viewModel = new AdminDashboardViewModel();
+        _viewModel = viewModel;
         BindingContext = _viewModel;
     }
 
@@ -18,8 +20,4 @@ public partial class AdminDashboard : ContentPage
         base.OnAppearing();
         await _viewModel.LoadAsync();
     }
-
-    
-
-
 }

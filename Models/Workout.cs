@@ -1,4 +1,6 @@
-﻿namespace CapstoneProjectPUSH.Models
+﻿using System.Runtime.CompilerServices;
+
+namespace CapstoneProjectPUSH.Models
 {
     [Table("Workouts")]
     public class Workout
@@ -27,5 +29,9 @@
 
         [Ignore]
         public string Summary { get; set; } = string.Empty;
+        
+        // public string WorkoutId { get; set; } = string.Empty;
+    
+
     }
 }

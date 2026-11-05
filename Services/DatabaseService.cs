@@ -37,10 +37,11 @@
                     await connection.CreateTableAsync<Gym>();
                     await connection.CreateTableAsync<Note>();
                     await connection.CreateTableAsync<Trainer>();
-                    await connection.CreateTableAsync<User>();
                     await connection.CreateTableAsync<Workout>();
                     await connection.CreateTableAsync<WorkoutExercise>();
                     await connection.CreateTableAsync<WorkoutLog>();
+                    await connection.CreateTableAsync<User>();
+                    await connection.CreateTableAsync<WeightLog>();
 
                     _connection = connection;
 
@@ -55,6 +56,8 @@
                     await SeedArticlesAsync();
                     await SeedNotesAsync();
                     //await SeedAdminAsync();
+                    await SeedAdminAsync();
+                    await SeedWeightLogsAsync();
                 }
             }
             finally
@@ -527,6 +530,28 @@
             };
 
             await db.InsertAllAsync(notes);
+        }
+        private async Task SeedWeightLogsAsync()
+        {
+            var db = await GetConnectionAsync();
+            if (await db.Table<WeightLog>().CountAsync() > 0) return;
+            WeightLog Log(int daysAgo, double weight) => new()
+            {
+                UserId = 1,
+                DateTimeLogged = DateTime.Today.AddDays(-daysAgo).AddHours(7),
+                WeightKg = (int)weight
+            };
+            await db.InsertAllAsync(new[]
+            {
+                // Week
+                Log(0, 80.5), Log(1, 80.2), Log(2, 80.0), Log(3, 79.8), Log(5, 79.5),
+                // Month
+                Log(8, 79.3), Log(10, 79.0), Log(13, 78.8), Log(15, 78.5),
+                Log(20, 78.3), Log(24, 78.0), Log(27, 77.8),
+                // Year
+                Log(40, 77.5), Log(70, 77.3), Log(100, 77.0), Log(130, 76.8),
+                Log(160, 76.5), Log(200, 76.3), Log(250, 76.0), Log(300, 75.8),
+            });
         }
     }
 }

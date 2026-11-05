@@ -1,9 +1,12 @@
 ﻿namespace CapstoneProjectPUSH.Services
 {
+
+
     public record AuthResult(bool Success, string Message, User? User = null);
 
     public class UserService
     {
+
         public const string PasswordRequirementsText = "Password must be at least 8 characters and contain at least one letter and one number.";
         private const int SaltSize = 16;
         private const int KeySize = 32;
@@ -200,12 +203,47 @@
             CurrentUser = user;
             return new AuthResult(true, "Details updated successfully.", user);
         }
-      
+
         public async Task<int> GetUserCountAsync()
         {
             var db = await _database.GetConnectionAsync();
             return await db.Table<User>().CountAsync();
         }
+
+        // =======================================================================================================================================================
+
+        public async Task<List<User>> GetUsersAsync()
+        {
+            var db = await _database.GetConnectionAsync();
+
+            var users = await db.Table<User>()
+                .OrderBy(u => u.DateTimeCreated)
+                .ToListAsync();
+
+            // Add lookups if needed
+
+            return users;
+        }
+
+        public async Task<User?> GetUserByIdAsync(int userId)
+        {
+            var db = await _database.GetConnectionAsync();
+
+            var user = await db.Table<User>()
+                .Where(u => u.Id == userId)
+                .FirstOrDefaultAsync();
+
+            if (user is null)
+            {
+                return null;
+            }
+
+            // Add lookups if needed
+
+            return user;
+        }
+
+        // =======================================================================================================================================================
 
         // Helpers
         private static string NormalizeEmail(string? email) => (email ?? string.Empty).Trim().ToLowerInvariant();

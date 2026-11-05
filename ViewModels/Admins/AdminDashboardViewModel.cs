@@ -41,6 +41,7 @@ namespace CapstoneProjectPUSH.ViewModels.Admins
             _exerciseService = services.GetRequiredService<ExerciseService>();
             _articleService = services.GetRequiredService<ArticleService>();
 
+
             Trainers.CollectionChanged += (_, _) => OnPropertyChanged(nameof(HasNoTrainers));
 
             SignInCommand = new Command(async () => await SignInAsync());
@@ -50,6 +51,7 @@ namespace CapstoneProjectPUSH.ViewModels.Admins
             DeleteTrainerCommand = new Command<Trainer>(async t => await DeleteTrainerAsync(t));
             NavigateToTrainersCommand = new Command(async () => await NavigateToTrainersAsync());
             NavigateToHomeCommand = new Command(async () => await NavigateToHomeAsync());
+            NavigateToUsersDetailsCommand = new Command(async () => await NavigateToUsersDetailsAsync());
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -123,9 +125,18 @@ namespace CapstoneProjectPUSH.ViewModels.Admins
         public int TotalExercises { get => _totalExercises; private set => SetProperty(ref _totalExercises, value); }
         public int TotalArticles { get => _totalArticles; private set => SetProperty(ref _totalArticles, value); }
 
+
+        public ObservableCollection<User> Users { get; } = new ObservableCollection<User>();
+
+        public bool HasNoUsers => Users.Count == 0;
+
+        public bool HasUsers => Users.Count == 0;
+
         public ObservableCollection<Trainer> Trainers { get; } = new();
 
         public bool HasNoTrainers => Trainers.Count == 0;
+
+        public bool HasTrainers => Trainers.Count > 0;
 
         // Commands
         public ICommand SignInCommand { get; }
@@ -135,6 +146,7 @@ namespace CapstoneProjectPUSH.ViewModels.Admins
         public ICommand DeleteTrainerCommand { get; }
         public ICommand NavigateToTrainersCommand { get; }
         public ICommand NavigateToHomeCommand { get; }
+        public ICommand NavigateToUsersDetailsCommand { get; }
 
         // Called from the page's OnAppearing
         public async Task LoadAsync()
@@ -155,6 +167,11 @@ namespace CapstoneProjectPUSH.ViewModels.Admins
         public async Task NavigateToTrainersAsync()
         {
             await Shell.Current.GoToAsync("//TrainersPage");
+        }
+
+        public async Task NavigateToUsersDetailsAsync()
+        {
+            await Shell.Current.GoToAsync(nameof(UsersManagementPage));
         }
 
         public async Task NavigateToHomeAsync()

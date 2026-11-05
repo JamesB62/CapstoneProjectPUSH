@@ -93,6 +93,9 @@
 	  <Compile Update="Views\Home\HomePage.xaml.cs">
 	    <DependentUpon>HomePage.xaml</DependentUpon>
 	  </Compile>
+	  <Compile Update="Views\Workouts\WorkoutDetailsPage.xaml.cs">
+	    <DependentUpon>WorkoutDetailsPage.xaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Views\Workouts\WorkoutsPage.xaml.cs">
 	    <DependentUpon>WorkoutsPage.xaml</DependentUpon>
 	  </Compile>
@@ -109,6 +112,9 @@
    
 	<ItemGroup>
 	  <MauiXaml Update="Views\Admin\AdminDashboard.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\Admin\UsersManagementPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\Auth\LoginPage.xaml">

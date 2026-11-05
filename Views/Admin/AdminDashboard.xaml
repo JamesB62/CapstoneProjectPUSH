@@ -11,7 +11,7 @@
             <Setter Property="StrokeThickness" Value="0" />
             <Setter Property="StrokeShape" Value="RoundRectangle 12" />
             <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#F2F2F7, Dark=#2C2C2E}" />
-        </Style>
+        </Style> 
         <Style x:Key="StatValue" TargetType="Label">
             <Setter Property="FontSize" Value="28" />
             <Setter Property="FontAttributes" Value="Bold" />
@@ -114,6 +114,40 @@
                         </VerticalStackLayout>
                     </Border>
                 </Grid>
+                
+                <!-- User Management -->
+                
+                <Label Text="User Management" FontSize="20" FontAttributes="Bold" />
+
+                <Label Text="No Users found."
+                       IsVisible="{Binding HasNoUsers}" />
+
+
+                <VerticalStackLayout Spacing="10"
+                                     BindableLayout.ItemsSource="{Binding Users}">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate>
+                            <Border Style="{StaticResource Card}">
+                                <VerticalStackLayout Spacing="4">
+                                    <Label Text="{Binding DisplayName}" FontSize="16" FontAttributes="Bold" />
+                                    <Label Text="{Binding Email}" />
+
+                                    <Grid ColumnDefinitions="*,*" ColumnSpacing="8" Margin="0,8,0,0">
+                                        <Button Grid.Column="0"
+                            Text="Delete"
+                            BackgroundColor="Firebrick"
+                            TextColor="White"
+                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AdminDashboardViewModel}}, Path=DeleteUserCommand}"
+                            CommandParameter="{Binding .}" />
+                                    </Grid>
+                                </VerticalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+
+
+
 
 
                 <!-- User Management -->
@@ -180,6 +214,7 @@
                 <!-- Navigation / session -->
                 <Button Text="Refresh" Command="{Binding RefreshCommand}" />
                 <Button Text="Open Trainers page" Command="{Binding NavigateToTrainersCommand}" />
+                <Button Text="Open Users page" Command="{Binding NavigateToUsersDetailsCommand}" />
                 <Button Text="Back to app" Command="{Binding NavigateToHomeCommand}" />
                 <Button Text="Sign out"
                         Command="{Binding SignOutCommand}"
@@ -188,5 +223,6 @@
             </VerticalStackLayout>
 
         </VerticalStackLayout>
+            
     </ScrollView>
 </ContentPage>

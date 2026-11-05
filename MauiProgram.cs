@@ -71,6 +71,7 @@ namespace CapstoneProjectPUSH
 
             // Admin
             builder.Services.AddTransient<AdminDashboardViewModel>();
+            builder.Services.AddTransient<UsersManagementViewModel>();
 
             // ========================== Views ===========================
 
@@ -106,14 +107,15 @@ namespace CapstoneProjectPUSH
             builder.Services.AddTransient<WorkoutsPage>();
             //workout detail 
             builder.Services.AddTransient<WorkoutDetailPage>();
-            //create workout page
-            builder.Services.AddTransient<CreateWorkoutPage>();
 
             //Exercises 
             builder.Services.AddTransient<SelectExercisesPage>();
 
             // Admin
             builder.Services.AddTransient<AdminDashboard>();
+
+            // User 
+            builder.Services.AddTransient<UsersManagementPage>();
 
 
 #if DEBUG
