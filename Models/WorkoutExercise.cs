@@ -12,7 +12,10 @@
 
         public int SortOrder { get; set; }
 
-        // Add extra variables as needed, eg. Duration, WeightKg
+        [Ignore]
+        public int DisplayNumber { get; set; }
+
+        // Add extra variables as needed, eg. Duration, WeightKg, Rests
 
         [Indexed]
         public int WorkoutId { get; set; }

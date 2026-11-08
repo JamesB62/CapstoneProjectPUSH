@@ -2,16 +2,9 @@ namespace CapstoneProjectPUSH.Views.Workouts;
 
 public partial class WorkoutDetailsPage : ContentPage
 {
-	private readonly WorkoutDetailsViewModel _viewModel;
-	public WorkoutDetailsPage(WorkoutDetailsViewModel viewModel)
-	{
-		InitializeComponent();
-		_viewModel = viewModel;
-		BindingContext = viewModel;
-	}
-	protected override async void OnAppearing()
-	{
-		base.OnAppearing();
-		await _viewModel.LoadCommand.ExecuteAsync(null);
-	}
+    public WorkoutDetailsPage(WorkoutDetailsViewModel workoutDetailsViewModel)
+    {
+        InitializeComponent();
+        BindingContext = workoutDetailsViewModel;
+    }
 }

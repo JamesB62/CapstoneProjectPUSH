@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:CapstoneProjectPUSH.ViewModels.Workouts"
+             x:Class="CapstoneProjectPUSH.Views.Workouts.SelectExercisesPage"
+             x:DataType="vm:SelectExercisesViewModel"
+             Title="Select Exercises">
+
+    <Grid
+        MaximumWidthRequest="500"
+        Padding="30,15"
+        RowDefinitions="Auto,*,Auto"
+        RowSpacing="15">
+
+        <!-- Search -->
+        <VerticalStackLayout
+            Grid.Row="0"
+            Spacing="10">
+
+            <SearchBar
+                Placeholder="Search exercises"
+                Text="{Binding SearchText}"/>
+
+            <Label
+                FontAttributes="Italic"
+                Text="{Binding StatusMessage}"/>
+
+        </VerticalStackLayout>
+
+        <CollectionView
+            Grid.Row="1"
+            ItemsSource="{Binding Exercises}"
+            SelectionMode="Single"
+            SelectedItem="{Binding SelectedExercise, Mode=TwoWay}">
+
+            <!-- Empty view -->
+            <CollectionView.EmptyView>
+
+                <Label
+                    FontAttributes="Italic"
+                    HorizontalTextAlignment="Center"
+                    Text="No exercises found."
+                    VerticalTextAlignment="Center"/>
+
+            </CollectionView.EmptyView>
+
+            <!-- Item layout -->
+            <CollectionView.ItemsLayout>
+
+                <LinearItemsLayout
+                    ItemSpacing="10"
+                    Orientation="Vertical"/>
+
+            </CollectionView.ItemsLayout>
+
+            <!-- Item template -->
+            <CollectionView.ItemTemplate>
+
+                <DataTemplate
+                    x:DataType="vm:SelectableExercise">
+
+                    <Border
+                        Style="{StaticResource Card}">
+
+                        <Grid
+                            ColumnDefinitions="*,Auto"
+                            ColumnSpacing="10">
+
+                            <VerticalStackLayout
+                                Grid.Column="0"
+                                Spacing="10">
+
+                                <Grid
+                                    ColumnDefinitions="*,Auto"
+                                    ColumnSpacing="10">
+
+                                    <Label
+                                        FontAttributes="Bold"
+                                        FontSize="16"
+                                        Grid.Column="0"
+                                        LineBreakMode="TailTruncation"
+                                        Text="{Binding Exercise.Title}"
+                                        VerticalOptions="Center"/>
+
+                                    <Border
+                                        Grid.Column="1"
+                                        Style="{StaticResource Pill}">
+
+                                        <Label
+                                            FontSize="12"
+                                            Text="{Binding Exercise.CategoryTitle}"/>
+
+                                    </Border>
+
+                                </Grid>
+
+                                <Label
+                                    LineBreakMode="TailTruncation"
+                                    MaxLines="2"
+                                    Text="{Binding Exercise.Description}"/>
+
+                            </VerticalStackLayout>
+
+                            <CheckBox
+                                Grid.Column="1"
+                                InputTransparent="True"
+                                IsChecked="{Binding IsSelected, Mode=OneWay}"
+                                VerticalOptions="Center"/>
+
+                        </Grid>
+
+                    </Border>
+
+                </DataTemplate>
+
+            </CollectionView.ItemTemplate>
+
+        </CollectionView>
+
+        <Button
+            Command="{Binding DoneCommand}"
+            Grid.Row="2"
+            Text="{Binding SelectedCount, StringFormat='Done ({0})'}"/>
+
+    </Grid>
+
+</ContentPage>

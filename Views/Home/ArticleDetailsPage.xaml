@@ -54,11 +54,11 @@
 
                 <Label
                     FontAttributes="Italic"
-                    Text="{Binding Article.ReadingTime, StringFormat='•  {0} min read'}"/>
+                    Text="{Binding Article.ReadingTime, StringFormat='• Reading time: {0}min'}"/>
 
                 <Label
                     FontAttributes="Italic"
-                    Text="{Binding Article.DateTimePublished, StringFormat='•  Published: {0:dd MMMM yyyy}'}"/>
+                    Text="{Binding Article.DateTimePublished, StringFormat='•  Date published: {0:dd MMMM yyyy}'}"/>
 
             </VerticalStackLayout>
 

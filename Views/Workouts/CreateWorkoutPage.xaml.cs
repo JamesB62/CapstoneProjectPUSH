@@ -2,17 +2,19 @@ namespace CapstoneProjectPUSH.Views.Workouts;
 
 public partial class CreateWorkoutPage : ContentPage
 {
-	private readonly CreateWorkoutViewModel _ViewModel;
-	public CreateWorkoutPage(CreateWorkoutViewModel viewModel)
-	{
-		InitializeComponent();
-		_ViewModel = viewModel;
-		BindingContext = viewModel;
-	}
+    private readonly CreateWorkoutViewModel _createWorkoutViewModel;
 
-	protected override async void OnAppearing()
-	{
-		base.OnAppearing();
-		await _ViewModel.LoadCommand.ExecuteAsync(null);
-	}
+    public CreateWorkoutPage(CreateWorkoutViewModel createWorkoutViewModel)
+    {
+        InitializeComponent();
+
+        _createWorkoutViewModel = createWorkoutViewModel;
+        BindingContext = _createWorkoutViewModel;
+    }
+
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+        _createWorkoutViewModel.LoadCategoriesCommand.Execute(null);
+    }
 }

@@ -3,79 +3,153 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
     public partial class SelectExercisesViewModel : BaseViewModel
     {
         private readonly ExerciseService _exerciseService;
-        private readonly CategoryService _categoryService;
         private readonly UserService _userService;
-        private List<SelectableExercise> _all = new();
 
-        public ObservableCollection<SelectableExercise> Exercises { get; } = new();
-
-        [ObservableProperty]
-        private string searchText = string.Empty;
-
-        [ObservableProperty]
-        private int selectedCount;
-
-        public SelectExercisesViewModel(ExerciseService exerciseService, CategoryService categoryService, UserService userService)
+        public SelectExercisesViewModel(ExerciseService exerciseService, UserService userService)
         {
             _exerciseService = exerciseService;
-            _categoryService = categoryService;
             _userService = userService;
         }
 
-        partial void OnSearchTextChanged(string value) => ApplyFilter();
+        public ObservableCollection<SelectableExercise> Exercises { get; } = new();
+
+        private List<SelectableExercise> _allExercises = new();
+
+        [ObservableProperty]
+        public partial string SearchText { get; set; } = string.Empty;
+
+        [ObservableProperty]
+        public partial SelectableExercise? SelectedExercise { get; set; }
+
+        [ObservableProperty]
+        public partial int SelectedCount { get; set; }
 
         [RelayCommand]
         private async Task LoadExercisesAsync()
         {
-            if (_all.Count > 0) return; 
-            var exercises = await _exerciseService.GetExercisesAsync();
-            var categoryTitles = await _categoryService.GetCategoryTitlesAsync();
+            IsBusy = true;
 
-            _all = exercises.Select(e =>
+            try
             {
-                var item = new SelectableExercise(e, categoryTitles.GetValueOrDefault(e.CategoryId, "Uncategorised"));
-                item.PropertyChanged += (_, args) =>
-                {
-                    if (args.PropertyName == nameof(SelectableExercise.IsSelected))
-                        SelectedCount = _all.Count(x => x.IsSelected);
-                };
-                return item;
-            }).ToList();
+                var user = _userService.CurrentUser;
 
+                if (user is null)
+                {
+                    // Comment out to disable redirect
+                    await NavigateAsync("//LandingPage");
+                    return;
+                }
+
+                // Keeps selections when returning from Create Workout
+                if (_allExercises.Count > 0)
+                {
+                    return;
+                }
+
+                StatusMessage = "Loading exercises...";
+
+                var exercises = await _exerciseService.GetExercisesAsync();
+
+                _allExercises.Clear();
+
+                foreach (var exercise in exercises)
+                {
+                    _allExercises.Add(new SelectableExercise(exercise));
+                }
+
+                ApplyFilter();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex);
+                StatusMessage = "Something went wrong. Please try again.";
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
+        partial void OnSearchTextChanged(string value)
+        {
             ApplyFilter();
         }
 
         private void ApplyFilter()
         {
-            var q = SearchText?.Trim() ?? string.Empty;
-            var filtered = string.IsNullOrEmpty(q)
-                ? _all
-                : _all.Where(x => x.Exercise.Title.Contains(q, StringComparison.OrdinalIgnoreCase)).ToList();
+            string searchTerm;
+
+            if (string.IsNullOrWhiteSpace(SearchText))
+            {
+                searchTerm = string.Empty;
+            }
+            else
+            {
+                searchTerm = SearchText.Trim();
+            }
+
+            List<SelectableExercise> filtered;
+
+            if (searchTerm.Length == 0)
+            {
+                filtered = _allExercises;
+            }
+            else
+            {
+                filtered = _allExercises
+                    .Where(e => e.Exercise.Title.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+            }
 
             Exercises.Clear();
-            foreach (var x in filtered) Exercises.Add(x);
+
+            foreach (var exercise in filtered)
+            {
+                Exercises.Add(exercise);
+            }
+
+            if (Exercises.Count == 1)
+            {
+                StatusMessage = "Showing 1 exercise.";
+            }
+            else
+            {
+                StatusMessage = $"Showing {Exercises.Count} exercises.";
+            }
+        }
+
+        partial void OnSelectedExerciseChanged(SelectableExercise? value)
+        {
+            if (value is null)
+            {
+                return;
+            }
+
+            value.IsSelected = !value.IsSelected;
+            SelectedCount = _allExercises.Count(e => e.IsSelected);
+            SelectedExercise = null;
         }
 
         [RelayCommand]
         private async Task DoneAsync()
         {
-            var userId = _userService.CurrentUser?.Id;
-            if(userId is null)
-            {
-                await Shell.Current.DisplayAlertAsync("Not signed in", "Please sign in first.", "Ok");
-                return;
-            }
-            
-            var selected = _all.Where(x => x.IsSelected).Select(x => x.Exercise).ToList();
+            List<Exercise> selected = _allExercises
+                .Where(e => e.IsSelected)
+                .Select(e => e.Exercise)
+                .ToList();
 
             if (selected.Count == 0)
             {
                 await Shell.Current.DisplayAlertAsync("Nothing selected", "Pick at least one exercise.", "OK");
                 return;
             }
-            await Shell.Current.GoToAsync(nameof(CreateWorkoutPage),
-                new ShellNavigationQueryParameters { {"exercises", selected} });
 
+            var parameters = new ShellNavigationQueryParameters
+            {
+                { "Exercises", selected }
+            };
+
+            await NavigateAsync(nameof(CreateWorkoutPage), parameters);
         }
     }
 }

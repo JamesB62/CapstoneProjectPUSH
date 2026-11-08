@@ -30,6 +30,7 @@
                 Command="{Binding AddWorkoutCommand}"
                 Grid.Column="1"
                 HeightRequest="20"
+                Padding="5"
                 Text="+"
                 WidthRequest="20"/>
 

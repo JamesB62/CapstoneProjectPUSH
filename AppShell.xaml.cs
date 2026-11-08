@@ -30,20 +30,10 @@ namespace CapstoneProjectPUSH
             // Trainers
             Routing.RegisterRoute(nameof(TrainerDetailsPage), typeof(TrainerDetailsPage));
 
-
-
-
-
-            // Double check/update page routing before removing
-
-            // Workouts - incorrect
-            Routing.RegisterRoute(nameof(WorkoutsPage), typeof(WorkoutsPage));
-            //workout detail
-            Routing.RegisterRoute(nameof(WorkoutDetailsPage), typeof(WorkoutDetailsPage));
-            //create workout page
+            // Workouts
             Routing.RegisterRoute(nameof(CreateWorkoutPage), typeof(CreateWorkoutPage));
-            //Exercises
             Routing.RegisterRoute(nameof(SelectExercisesPage), typeof(SelectExercisesPage));
+            Routing.RegisterRoute(nameof(WorkoutDetailsPage), typeof(WorkoutDetailsPage));
         }
     }
 }

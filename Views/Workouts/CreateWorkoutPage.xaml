@@ -1,152 +1,198 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage
-    x:Class="CapstoneProjectPUSH.Views.Workouts.CreateWorkoutPage"
-    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:models="clr-namespace:CapstoneProjectPUSH.Models"
-    xmlns:vm="clr-namespace:CapstoneProjectPUSH.ViewModels.Workouts"
-    Title="CreateWorkoutPage"
-    x:DataType="vm:CreateWorkoutViewModel">
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:CapstoneProjectPUSH.Models"
+             xmlns:vm="clr-namespace:CapstoneProjectPUSH.ViewModels.Workouts"
+             x:Class="CapstoneProjectPUSH.Views.Workouts.CreateWorkoutPage"
+             x:DataType="vm:CreateWorkoutViewModel"
+             Title="Create PUSH Workout">
 
-    <Grid RowDefinitions="*,Auto">
+    <Grid
+        MaximumWidthRequest="500"
+        Padding="30,15"
+        RowDefinitions="Auto,Auto,*,Auto"
+        RowSpacing="15">
 
-        <Grid
+        <!-- Title and category -->
+        <VerticalStackLayout
             Grid.Row="0"
-            Padding="20,20,20,0"
-            RowDefinitions="Auto,Auto,*"
-            RowSpacing="12">
+            Spacing="10">
 
-            <VerticalStackLayout Grid.Row="0" Spacing="10">
-                <Entry
-                    MaxLength="100"
-                    Placeholder="Workout name (e.g. Push Day)"
-                    Text="{Binding WorkoutTitle}" />
+            <Entry
+                MaxLength="100"
+                Placeholder="Workout name (e.g. Push Day)"
+                Text="{Binding WorkoutTitle}"/>
 
-                <Picker
-                    Title="Category"
-                    ItemDisplayBinding="{Binding Title, x:DataType=models:Category}"
-                    ItemsSource="{Binding Categories}"
-                    SelectedItem="{Binding SelectedCategory}" />
-            </VerticalStackLayout>
+            <Picker
+                ItemDisplayBinding="{Binding Title, x:DataType=models:Category}"
+                ItemsSource="{Binding Categories}"
+                SelectedItem="{Binding SelectedCategory}"
+                Title="Category"/>
+
+        </VerticalStackLayout>
+
+        <Label
+            FontAttributes="Bold"
+            FontSize="16"
+            Grid.Row="1"
+            Text="Exercises"/>
+
+        <!-- Exercise list -->
+        <CollectionView
+            Grid.Row="2"
+            ItemsSource="{Binding Items}">
+
+            <!-- Empty view -->
+            <CollectionView.EmptyView>
+
+                <VerticalStackLayout
+                    HorizontalOptions="Center"
+                    VerticalOptions="Center">
+
+                    <Label
+                        FontAttributes="Italic"
+                        HorizontalTextAlignment="Center"
+                        Text="No exercises left"/>
+
+                    <Label
+                        FontAttributes="Italic"
+                        HorizontalTextAlignment="Center"
+                        Text="Go back and pick some"/>
+
+                </VerticalStackLayout>
+
+            </CollectionView.EmptyView>
+
+            <!-- Item layout -->
+            <CollectionView.ItemsLayout>
+
+                <LinearItemsLayout
+                    ItemSpacing="10"
+                    Orientation="Vertical"/>
+
+            </CollectionView.ItemsLayout>
+
+            <!-- Item template -->
+            <CollectionView.ItemTemplate>
+
+                <DataTemplate
+                    x:DataType="vm:WorkoutExerciseDraft">
+
+                    <Border
+                        BackgroundColor="#F9FAFB"
+                        Padding="15"
+                        Stroke="#E5E7EB"
+                        StrokeShape="RoundRectangle 12">
+
+                        <VerticalStackLayout
+                            Spacing="10">
+
+                            <!-- Title and order/remove -->
+                            <Grid
+                                ColumnDefinitions="*,Auto,Auto,Auto"
+                                ColumnSpacing="5">
+
+                                <Label
+                                    FontAttributes="Bold"
+                                    FontSize="16"
+                                    Grid.Column="0"
+                                    LineBreakMode="TailTruncation"
+                                    Text="{Binding Exercise.Title}"
+                                    VerticalOptions="Center"/>
+
+                                <Button
+                                    BackgroundColor="Transparent"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CreateWorkoutViewModel}}, Path=MoveUpCommand}"
+                                    CommandParameter="{Binding .}"
+                                    Grid.Column="1"
+                                    HeightRequest="30"
+                                    Padding="0"
+                                    Text="▲"
+                                    TextColor="Black"
+                                    WidthRequest="30"/>
+
+                                <Button
+                                    BackgroundColor="Transparent"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CreateWorkoutViewModel}}, Path=MoveDownCommand}"
+                                    CommandParameter="{Binding .}"
+                                    Grid.Column="2"
+                                    HeightRequest="30"
+                                    Padding="0"
+                                    Text="▼"
+                                    TextColor="Black"
+                                    WidthRequest="30"/>
+
+                                <Button
+                                    BackgroundColor="Transparent"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CreateWorkoutViewModel}}, Path=RemoveItemCommand}"
+                                    CommandParameter="{Binding .}"
+                                    Grid.Column="3"
+                                    HeightRequest="30"
+                                    Padding="0"
+                                    Text="✕"
+                                    TextColor="Red"
+                                    WidthRequest="30"/>
+
+                            </Grid>
+
+                            <!-- Sets and reps -->
+                            <Grid
+                                ColumnDefinitions="Auto,*,Auto,*"
+                                ColumnSpacing="10">
+
+                                <Label
+                                    Grid.Column="0"
+                                    Text="Sets"
+                                    VerticalOptions="Center"/>
+
+                                <Entry
+                                    Grid.Column="1"
+                                    HorizontalTextAlignment="Center"
+                                    Keyboard="Numeric"
+                                    MaxLength="2"
+                                    Text="{Binding SetsText}"/>
+
+                                <Label
+                                    Grid.Column="2"
+                                    Text="Reps"
+                                    VerticalOptions="Center"/>
+
+                                <Entry
+                                    Grid.Column="3"
+                                    HorizontalTextAlignment="Center"
+                                    Keyboard="Numeric"
+                                    MaxLength="3"
+                                    Text="{Binding RepsText}"/>
+
+                            </Grid>
+
+                        </VerticalStackLayout>
+
+                    </Border>
+
+                </DataTemplate>
+
+            </CollectionView.ItemTemplate>
+
+        </CollectionView>
+
+        <VerticalStackLayout
+            Grid.Row="3"
+            Spacing="10">
 
             <Label
-                Grid.Row="1"
-                FontAttributes="Bold"
-                Text="Exercises" />
+                FontAttributes="Italic"
+                FontSize="12"
+                HorizontalTextAlignment="Center"
+                IsVisible="{Binding HasStatusMessage}"
+                Text="{Binding StatusMessage}"/>
 
-            <CollectionView Grid.Row="2" ItemsSource="{Binding Items}">
+            <Button
+                Command="{Binding SaveCommand}"
+                Text="Save Workout"/>
 
-                <CollectionView.ItemsLayout>
-                    <LinearItemsLayout ItemSpacing="10" Orientation="Vertical" />
-                </CollectionView.ItemsLayout>
+        </VerticalStackLayout>
 
-                <CollectionView.EmptyView>
-                    <Label
-                        HorizontalOptions="Center"
-                        Text="No exercises left. Go back and pick some."
-                        VerticalOptions="Center" />
-                </CollectionView.EmptyView>
-
-                <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="vm:WorkoutExerciseDraft">
-                        <Border
-                            Padding="15"
-                            BackgroundColor="{AppThemeBinding Light=#E5E7EB,
-                                                              Dark=#2C2C31}"
-                            StrokeShape="RoundRectangle 10"
-                            StrokeThickness="0">
-
-                            <VerticalStackLayout Spacing="12">
-
-                                <!--  title name + order/delete  -->
-                                <Grid ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="6">
-                                    <Label
-                                        Grid.Column="0"
-                                        FontAttributes="Bold"
-                                        Text="{Binding Title}"
-                                        VerticalOptions="Center" />
-
-                                    <Button
-                                        Grid.Column="1"
-                                        Padding="0"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CreateWorkoutViewModel}}, Path=MoveUpCommand}"
-                                        CommandParameter="{Binding .}"
-                                        HeightRequest="36"
-                                        Text="▲"
-                                        WidthRequest="36" />
-                                    <Button
-                                        Grid.Column="2"
-                                        Padding="0"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CreateWorkoutViewModel}}, Path=MoveDownCommand}"
-                                        CommandParameter="{Binding .}"
-                                        HeightRequest="36"
-                                        Text="▼"
-                                        WidthRequest="36" />
-                                    <Button
-                                        Grid.Column="3"
-                                        Padding="0"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CreateWorkoutViewModel}}, Path=RemoveItemCommand}"
-                                        CommandParameter="{Binding .}"
-                                        HeightRequest="36"
-                                        Text="✕"
-                                        WidthRequest="36" />
-                                </Grid>
-
-                                <!--  Sets / Reps  -->
-                                <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
-                                    <HorizontalStackLayout Grid.Column="0" Spacing="8">
-                                        <Label Text="Sets" VerticalOptions="Center" />
-                                        <Button
-                                            Padding="0"
-                                            Command="{Binding DecreaseSetsCommand}"
-                                            HeightRequest="36"
-                                            Text="−"
-                                            WidthRequest="36" />
-                                        <Label
-                                            HorizontalTextAlignment="Center"
-                                            Text="{Binding Sets}"
-                                            VerticalOptions="Center"
-                                            WidthRequest="30" />
-                                        <Button
-                                            Padding="0"
-                                            Command="{Binding IncreaseSetsCommand}"
-                                            HeightRequest="36"
-                                            Text="+"
-                                            WidthRequest="36" />
-                                    </HorizontalStackLayout>
-
-                                    <HorizontalStackLayout Grid.Column="1" Spacing="8">
-                                        <Label Text="Reps" VerticalOptions="Center" />
-                                        <Button
-                                            Padding="0"
-                                            Command="{Binding DecreaseRepsCommand}"
-                                            HeightRequest="36"
-                                            Text="−"
-                                            WidthRequest="36" />
-                                        <Label
-                                            HorizontalTextAlignment="Center"
-                                            Text="{Binding Reps}"
-                                            VerticalOptions="Center"
-                                            WidthRequest="36" />
-                                        <Button
-                                            Padding="0"
-                                            Command="{Binding IncreaseRepsCommand}"
-                                            HeightRequest="36"
-                                            Text="+"
-                                            WidthRequest="36" />
-                                    </HorizontalStackLayout>
-                                </Grid>
-                            </VerticalStackLayout>
-                        </Border>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
-        </Grid>
-
-        <Button
-            Grid.Row="1"
-            Margin="20"
-            Command="{Binding SaveCommand}"
-            Text="Save Workout" />
     </Grid>
+
 </ContentPage>

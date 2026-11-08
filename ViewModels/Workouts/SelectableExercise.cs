@@ -2,21 +2,14 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
 {
     public partial class SelectableExercise : ObservableObject
     {
-        public Exercise Exercise { get; }
-        public string CategoryTitle { get; }
-
-        [ObservableProperty]
-        private bool isSelected;
-
-        public SelectableExercise(Exercise exercise, string categoryTitle)
+        public SelectableExercise(Exercise exercise)
         {
             Exercise = exercise;
-            CategoryTitle = categoryTitle;
         }
 
-        [RelayCommand]
-        private void Toggle() => IsSelected = !IsSelected;
+        public Exercise Exercise { get; }
 
+        [ObservableProperty]
+        public partial bool IsSelected { get; set; }
     }
-
 }
