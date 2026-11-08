@@ -62,5 +62,16 @@
 
             return note;
         }
+
+        // Get note by Workout Id for a user
+        public async Task<List<Note>> GetNotesForWorkoutAsync(int workoutId, int userId)
+        {
+            var db = await _databaseService.GetConnectionAsync();
+
+            return await db.Table<Note>()
+                .Where(n => n.WorkoutId == workoutId && n.UserId == userId)
+                .OrderByDescending(n => n.DateTimeCreated)
+                .ToListAsync();
+        }
     }
 }

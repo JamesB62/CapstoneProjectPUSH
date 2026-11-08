@@ -163,8 +163,12 @@
                 return;
             }
 
-            // Link to workout details page when built
-            //await NavigateAsync($"{nameof(WorkoutDetailsPage)}?WorkoutId={workout.Id}");
+            if (note.WorkoutId <= 0)
+            {
+                return;
+            }
+
+            await NavigateAsync($"{nameof(WorkoutDetailsPage)}?WorkoutId={note.WorkoutId}");
         }
     }
 }

@@ -96,8 +96,7 @@
                 return;
             }
 
-            // Uncomment once WorkoutDetailsPage is created
-            // await NavigateAsync($"{nameof(WorkoutDetailsPage)}?WorkoutId={workout.Id}");
+             await NavigateAsync($"{nameof(WorkoutDetailsPage)}?WorkoutId={workout.Id}");
         }
 
         partial void OnSelectedArticleChanged(Article? value)

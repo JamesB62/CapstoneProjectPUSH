@@ -3,16 +3,20 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
     [QueryProperty(nameof(WorkoutId), "WorkoutId")]
     public partial class WorkoutDetailsViewModel : BaseViewModel
     {
+        private readonly NoteService _noteService;
         private readonly UserService _userService;
         private readonly WorkoutService _workoutService;
 
-        public WorkoutDetailsViewModel(UserService userService, WorkoutService workoutService)
+        public WorkoutDetailsViewModel(NoteService noteService, UserService userService, WorkoutService workoutService)
         {
+            _noteService = noteService;
             _userService = userService;
             _workoutService = workoutService;
         }
 
         public ObservableCollection<WorkoutExercise> Exercises { get; } = new();
+
+        public ObservableCollection<Note> Notes { get; } = new();
 
         [ObservableProperty]
         public partial int WorkoutId { get; set; }
@@ -65,6 +69,15 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
                         exercise.DisplayNumber = number;
                         Exercises.Add(exercise);
                         number++;
+                    }
+
+                    var notes = await _noteService.GetNotesForWorkoutAsync(WorkoutId, user.Id);
+
+                    Notes.Clear();
+
+                    foreach (var note in notes)
+                    {
+                        Notes.Add(note);
                     }
                 }
             }

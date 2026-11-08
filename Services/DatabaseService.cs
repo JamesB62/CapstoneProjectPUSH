@@ -431,7 +431,7 @@
                     Content = "The yoga session really helped me relax. My shoulders and lower back were tight when I started, and by the end they felt looser and my mind was a lot calmer. Slowing down and focusing on my breathing made the biggest difference, and holding the poses a little longer helped me notice where I'm stiffest. Balance poses were the hardest part, so I want to keep practising those. I'd like to make this a regular part of my week, especially after harder workouts.",
                     DateTimeCreated = DateTime.Today.AddDays(-4).AddHours(12),
                     UserId = 1,
-                    WorkoutId = 5
+                    WorkoutId = 3
                 }
             };
 
