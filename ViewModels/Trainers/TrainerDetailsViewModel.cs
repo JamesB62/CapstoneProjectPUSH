@@ -12,6 +12,8 @@
             _userService = userService;
         }
 
+        private const string PlaceholderImage = "profile_picture_placeholder.png";
+
         [ObservableProperty]
         public partial int TrainerId { get; set; }
 
@@ -45,7 +47,7 @@
             if (user is null)
             {
                 // Comment out to disable redirect
-                await Shell.Current.GoToAsync("//LandingPage");
+                await NavigateAsync("//LandingPage");
                 return;
             }
 
@@ -53,7 +55,14 @@
 
             try
             {
-                Trainer = await _trainerService.GetTrainerByIdAsync(TrainerId);
+                var trainer = await _trainerService.GetTrainerByIdAsync(TrainerId);
+
+                if (trainer != null)
+                {
+                    trainer.ProfileImage = GetProfileImageOrPlaceholder(trainer.ProfileImage);
+                }
+
+                Trainer = trainer;
             }
             catch (Exception ex)
             {
@@ -67,8 +76,23 @@
             if (Trainer is null)
             {
                 await Shell.Current.DisplayAlertAsync("Trainer not found", "This PUSH trainer could not be loaded.", "OK");
-                await Shell.Current.GoToAsync("..");
+                await NavigateAsync("..");
             }
+        }
+
+        private static string GetProfileImageOrPlaceholder(string? imagePath)
+        {
+            if (string.IsNullOrWhiteSpace(imagePath))
+            {
+                return PlaceholderImage;
+            }
+
+            if (!File.Exists(imagePath))
+            {
+                return PlaceholderImage;
+            }
+
+            return imagePath;
         }
 
         [RelayCommand]

@@ -9,7 +9,8 @@
     <ScrollView>
 
         <VerticalStackLayout
-            Padding="30,15,30,0"
+            MaximumWidthRequest="500"
+            Padding="30,15"
             Spacing="15">
 
             <Border
@@ -20,10 +21,9 @@
                 StrokeThickness="0"
                 WidthRequest="100">
 
-                <!-- Profile picture placeholder - sourced from Wikipedia -->
                 <Image
                     Aspect="AspectFill"
-                    Source="profile_picture_placeholder.png"/>
+                    Source="{Binding Trainer.ProfileImage}"/>
 
             </Border>
 
@@ -40,9 +40,7 @@
 
                 <Border
                     HorizontalOptions="Center"
-                    Padding="10,5"
-                    Stroke="#E5E7EB"
-                    StrokeShape="RoundRectangle 50">
+                    Style="{StaticResource Pill}">
 
                     <Label
                         FontSize="12"
@@ -60,19 +58,18 @@
             <Label
                 Text="{Binding Trainer.Description}"/>
 
-            <!-- Keep formatting? -->
             <VerticalStackLayout
                 Spacing="5">
 
                 <Label
-                    Text="{Binding Trainer.CategoryName, StringFormat='•  Specialty: {0}'}"/>
+                    Text="{Binding Trainer.CategoryTitle, StringFormat='• Specialty: {0}'}"/>
 
                 <Label>
 
                     <Label.Text>
 
                         <MultiBinding
-                            StringFormat="•  Gym: {0} – {1}">
+                            StringFormat="• Gym: {0} – {1}">
 
                             <Binding
                                 Path="Trainer.GymName"/>
@@ -92,7 +89,7 @@
                 FontAttributes="Bold"
                 FontSize="16"
                 IsVisible="{Binding HasContactDetails}"
-                Margin="0,0,0,7"
+                Margin="0,0,0,4"
                 Text="Contact Me"/>
 
             <VerticalStackLayout

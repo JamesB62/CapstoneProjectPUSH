@@ -8,7 +8,8 @@
              Title="PUSH Exercises">
 
     <Grid
-        Padding="30,0,30,0"
+        MaximumWidthRequest="500"
+        Padding="30,15"
         RowDefinitions="Auto,*"
         RowSpacing="15">
 
@@ -18,14 +19,13 @@
 
             <!-- Category picker -->
             <Picker
-                ItemDisplayBinding="{Binding Name, x:DataType=models:Category}"
+                ItemDisplayBinding="{Binding Title, x:DataType=models:Category}"
                 ItemsSource="{Binding Categories}"
                 SelectedItem="{Binding SelectedCategory}"
                 Title="Filter by category"/>
 
             <Label
                 FontAttributes="Italic"
-                FontSize="12"
                 Text="{Binding StatusMessage}"/>
 
         </VerticalStackLayout>
@@ -33,7 +33,7 @@
         <RefreshView
             Command="{Binding LoadExercisesCommand}"
             Grid.Row="1"
-            IsRefreshing="{Binding IsBusy, Mode=OneWay}">
+            IsRefreshing="{Binding IsBusy}">
 
             <CollectionView
                 ItemsSource="{Binding Exercises}"
@@ -50,12 +50,12 @@
                         <Label
                             FontAttributes="Italic"
                             HorizontalTextAlignment="Center"
-                            Text="No exercises found"/>
+                            Text="No exercises found."/>
 
                         <Label
                             FontAttributes="Italic"
                             HorizontalTextAlignment="Center"
-                            Text="Pull down to try again"/>
+                            Text="Pull down to try again."/>
 
                     </VerticalStackLayout>
 
@@ -77,10 +77,7 @@
                         x:DataType="models:Exercise">
 
                         <Border
-                            BackgroundColor="#F9FAFB"
-                            Padding="15"
-                            Stroke="#E5E7EB"
-                            StrokeShape="RoundRectangle 12">
+                            Style="{StaticResource Card}">
 
                             <VerticalStackLayout
                                 Spacing="10">
@@ -99,12 +96,11 @@
 
                                     <Border
                                         Grid.Column="1"
-                                        Padding="10,5"
-                                        StrokeShape="RoundRectangle 50">
+                                        Style="{StaticResource Pill}">
 
                                         <Label
                                             FontSize="12"
-                                            Text="{Binding CategoryName}"/>
+                                            Text="{Binding CategoryTitle}"/>
 
                                     </Border>
 
@@ -121,7 +117,7 @@
                                     <Label
                                         FontAttributes="Italic"
                                         FontSize="12"
-                                        Text="{Binding Difficulty, StringFormat='Difficulty: {0}'}"/>
+                                        Text="{Binding DifficultyLabel, StringFormat='• Difficulty: {0}'}"/>
 
                                 </VerticalStackLayout>
 

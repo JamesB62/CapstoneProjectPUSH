@@ -9,10 +9,11 @@
     <ScrollView>
 
         <VerticalStackLayout
-            Padding="30,0,30,0"
+            MaximumWidthRequest="500"
+            Padding="30,15"
             Spacing="15">
 
-            <!-- Placeholder image !!!MUST CHANGE BEFORE DEPLOYMENT!!! -->
+            <!-- Placeholder image -->
             <Border
                 StrokeThickness="0"
                 StrokeShape="RoundRectangle 12">
@@ -20,11 +21,10 @@
                 <Image
                     Aspect="AspectFill"
                     MaximumHeightRequest="400"
-                    Source="exercise_placeholder.jpg"/>
+                    Source="{Binding Exercise.Image}"/>
 
             </Border>
 
-            <!-- Add placeholder image here? -->
             <Grid
                 ColumnDefinitions="*,Auto"
                 ColumnSpacing="15">
@@ -39,13 +39,11 @@
 
                 <Border
                     Grid.Column="1"
-                    Padding="10,5"
-                    StrokeShape="RoundRectangle 50"
-                    VerticalOptions="Start">
+                    Style="{StaticResource Pill}">
 
                     <Label
                         FontSize="12"
-                        Text="{Binding Exercise.CategoryName}"/>
+                        Text="{Binding Exercise.CategoryTitle}"/>
 
                 </Border>
 
@@ -61,7 +59,7 @@
 
             <Label
                 FontAttributes="Italic"
-                Text="{Binding Exercise.Difficulty, StringFormat='•  Difficulty: {0}'}"/>
+                Text="{Binding Exercise.DifficultyLabel, StringFormat='•  Difficulty: {0}'}"/>
 
             <!-- Add recommended reps/duration? -->
             

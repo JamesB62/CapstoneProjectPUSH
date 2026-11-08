@@ -8,7 +8,8 @@
              Title="PUSH Trainers">
 
     <Grid
-        Padding="30,0,30,0"
+        MaximumWidthRequest="500"
+        Padding="30,15"
         RowDefinitions="Auto,*"
         RowSpacing="15">
 
@@ -17,14 +18,14 @@
             Spacing="10">
 
             <Grid
-                ColumnDefinitions="*,auto"
+                ColumnDefinitions="*,Auto"
                 ColumnSpacing="10"
-                Margin="0,0,0,-5">
+                Margin="0,0,0,-4">
 
                 <!-- Category picker -->
                 <Picker
                     Grid.Column="0"
-                    ItemDisplayBinding="{Binding Name, x:DataType=models:Category}"
+                    ItemDisplayBinding="{Binding Title, x:DataType=models:Category}"
                     ItemsSource="{Binding Categories}"
                     SelectedItem="{Binding SelectedCategory}"
                     Title="Filter by category"
@@ -49,7 +50,6 @@
                         
             <Label
                 FontAttributes="Italic"
-                FontSize="12"
                 Text="{Binding StatusMessage}"/>
 
         </VerticalStackLayout>
@@ -57,7 +57,7 @@
         <RefreshView
             Command="{Binding LoadTrainersCommand}"
             Grid.Row="1"
-            IsRefreshing="{Binding IsBusy, Mode=OneWay}">
+            IsRefreshing="{Binding IsBusy}">
             
             <CollectionView
                 ItemsSource="{Binding Trainers}"
@@ -74,12 +74,12 @@
                         <Label
                             FontAttributes="Italic"
                             HorizontalTextAlignment="Center"
-                            Text="No trainers found"/>
+                            Text="No trainers found."/>
 
                         <Label
                             FontAttributes="Italic"
                             HorizontalTextAlignment="Center"
-                            Text="Pull down to try again"/>
+                            Text="Pull down to try again."/>
 
                     </VerticalStackLayout>
 
@@ -101,10 +101,7 @@
                         x:DataType="models:Trainer">
 
                         <Border
-                            BackgroundColor="#F9FAFB"
-                            Padding="15"
-                            Stroke="#E5E7EB"
-                            StrokeShape="RoundRectangle 12">
+                            Style="{StaticResource Card}">
 
                             <Grid
                                 ColumnDefinitions="Auto,*"
@@ -118,10 +115,9 @@
                                     StrokeThickness="0"
                                     WidthRequest="50">
 
-                                    <!-- Profile picture placeholder - sourced from Wikipedia -->
                                     <Image
                                         Aspect="AspectFill"
-                                        Source="profile_picture_placeholder.png"/>
+                                        Source="{Binding ProfileImage}"/>
 
                                 </Border>
 
@@ -143,8 +139,7 @@
 
                                         <Border
                                             Grid.Column="1"
-                                            Padding="10,5"
-                                            StrokeShape="RoundRectangle 50">
+                                            Style="{StaticResource Pill}">
 
                                             <Label
                                                 FontSize="12"
@@ -164,12 +159,12 @@
                                             Text="{Binding Description}"/>
 
                                         <VerticalStackLayout
-                                            Spacing="5">
+                                            Spacing="3">
 
                                             <Label
                                                 FontAttributes="Italic"
                                                 FontSize="12"
-                                                Text="{Binding CategoryName, StringFormat='Specialty: {0}'}"/>
+                                                Text="{Binding CategoryTitle, StringFormat='• Specialty: {0}'}"/>
 
                                             <Label
                                                 FontAttributes="Italic"
@@ -178,7 +173,7 @@
                                                 <Label.Text>
 
                                                     <MultiBinding
-                                                        StringFormat="Gym: {0}, {1}">
+                                                        StringFormat="• Gym: {0}, {1}">
 
                                                         <Binding
                                                             Path="GymName"/>

@@ -7,12 +7,13 @@ public partial class WorkoutsPage : ContentPage
 	public WorkoutsPage(WorkoutsViewModel workoutsViewModel)
 	{
 		InitializeComponent();
+
 		_workoutsViewModel = workoutsViewModel;
 		BindingContext = workoutsViewModel;
 	}
-	protected override async void OnAppearing()
+	protected override void OnAppearing()
 	{
 		base.OnAppearing();
-		await _workoutsViewModel.LoadWorkoutsCommand.ExecuteAsync(null);
+		_workoutsViewModel.LoadWorkoutsCommand.Execute(null);
 	}
 }

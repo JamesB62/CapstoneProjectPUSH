@@ -26,12 +26,6 @@
 
         public string PasswordRequirements => UserService.PasswordRequirementsText;
 
-        [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(HasErrorMessage))]
-        public partial string? ErrorMessage { get; set; }
-
-        public bool HasErrorMessage => !string.IsNullOrEmpty(ErrorMessage);
-
         [RelayCommand]
         private async Task LoadProfileAsync()
         {
@@ -44,12 +38,12 @@
                 CurrentPassword = string.Empty;
                 NewPassword = string.Empty;
                 ConfirmPassword = string.Empty;
-                ErrorMessage = string.Empty;
+                StatusMessage = string.Empty;
             }
             else
             {
                 // Comment out to disable redirect
-                await Shell.Current.GoToAsync("//LandingPage");
+                await NavigateAsync("//LandingPage");
             }
         }
 
@@ -62,7 +56,7 @@
             }
 
             IsBusy = true;
-            ErrorMessage = string.Empty;
+            StatusMessage = string.Empty;
 
             try
             {
@@ -70,7 +64,7 @@
 
                 if (!result.Success)
                 {
-                    ErrorMessage = result.Message;
+                    StatusMessage = result.Message;
                     return;
                 }
 
@@ -81,12 +75,12 @@
                 IsBusy = false;
 
                 await Shell.Current.DisplayAlertAsync("Update Successful", "Your PUSH account details have been updated.", "OK");
-                await Shell.Current.GoToAsync("..");
+                await NavigateAsync("..");
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex);
-                ErrorMessage = "Something went wrong. Please try again.";
+                StatusMessage = "Something went wrong. Please try again.";
             }
             finally
             {
@@ -102,7 +96,7 @@
                 return;
             }
 
-            await Shell.Current.GoToAsync("..");
+            await NavigateAsync("..");
         }
     }
 }

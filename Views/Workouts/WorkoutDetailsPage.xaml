@@ -4,7 +4,7 @@
     x:Class="CapstoneProjectPUSH.Views.Workouts.WorkoutDetailsPage"
     xmlns:models="clr-namespace:CapstoneProjectPUSH.Models"
     xmlns:vm="clr-namespace:CapstoneProjectPUSH.ViewModels.Workouts"
-    Title="{Binding WorkoutName}"
+    Title="{Binding WorkoutTitle}"
     x:DataType="vm:WorkoutDetailsViewModel">
 
     <Grid RowDefinitions="*,Auto">
@@ -19,8 +19,8 @@
                 <Label
                     FontAttributes="Bold"
                     FontSize="22"
-                    Text="{Binding WorkoutName}" />
-                <Label FontSize="14" Text="{Binding CategoryName}" />
+                    Text="{Binding WorkoutTitle}" />
+                <Label FontSize="14" Text="{Binding CategoryTitle}" />
             </VerticalStackLayout>
 
             <CollectionView Grid.Row="1" ItemsSource="{Binding Exercises}">

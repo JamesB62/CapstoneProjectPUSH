@@ -17,7 +17,7 @@ namespace CapstoneProjectPUSH.ViewModels.Exercises
 
         private List<Exercise> _allExercises = new();
 
-        private static readonly Category AllCategory = new() { Id = 0, Name = "All" };
+        private static readonly Category AllCategory = new() { Id = 0, Title = "All" };
 
         public ObservableCollection<Category> Categories { get; } = new();
 
@@ -27,28 +27,24 @@ namespace CapstoneProjectPUSH.ViewModels.Exercises
         [ObservableProperty]
         public partial Exercise? SelectedExercise { get; set; }
 
-        [ObservableProperty]
-        public partial string StatusMessage { get; set; } = "Loading exercises...";
-
-        private bool _isNavigating;
-
         [RelayCommand]
         private async Task LoadExercisesAsync()
         {
-            var user = _userService.CurrentUser;
-
-            if (user is null)
-            {
-                // Comment out to disable redirect
-                await Shell.Current.GoToAsync("//LandingPage");
-                return;
-            }
-
             IsBusy = true;
-            StatusMessage = "Loading exercises...";
 
             try
             {
+                var user = _userService.CurrentUser;
+
+                if (user is null)
+                {
+                    // Comment out to disable redirect
+                    await NavigateAsync("//LandingPage");
+                    return;
+                }
+
+                StatusMessage = "Loading exercises...";
+
                 if (Categories.Count == 0)
                 {
                     var categories = await _categoryService.GetCategoriesAsync();
@@ -106,7 +102,7 @@ namespace CapstoneProjectPUSH.ViewModels.Exercises
             }
             else
             {
-                filtered = _allExercises.Where(t => t.CategoryId == categoryId).ToList();
+                filtered = _allExercises.Where(e => e.CategoryId == categoryId).ToList();
             }
 
             Exercises.Clear();
@@ -139,20 +135,12 @@ namespace CapstoneProjectPUSH.ViewModels.Exercises
         [RelayCommand]
         private async Task ViewExerciseAsync(Exercise? exercise)
         {
-            if (exercise is null || _isNavigating)
+            if (exercise is null)
             {
                 return;
             }
 
-            _isNavigating = true;
-            try
-            {
-                await Shell.Current.GoToAsync($"{nameof(ExerciseDetailsPage)}?ExerciseId={exercise.Id}");
-            }
-            finally
-            {
-                _isNavigating = false;
-            }
+            await NavigateAsync($"{nameof(ExerciseDetailsPage)}?ExerciseId={exercise.Id}");
         }
     }
 }

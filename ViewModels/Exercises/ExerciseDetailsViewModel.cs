@@ -12,6 +12,8 @@
             _userService = userService;
         }
 
+        private const string PlaceholderImage = "exercise_placeholder.jpg";
+
         [ObservableProperty]
         public partial int ExerciseId { get; set; }
 
@@ -36,7 +38,7 @@
             if (user is null)
             {
                 // Comment out to disable redirect
-                await Shell.Current.GoToAsync("//LandingPage");
+                await NavigateAsync("//LandingPage");
                 return;
             }
 
@@ -44,7 +46,14 @@
 
             try
             {
-                Exercise = await _exerciseService.GetExerciseByIdAsync(ExerciseId);
+                var exercise = await _exerciseService.GetExerciseByIdAsync(ExerciseId);
+
+                if (exercise != null)
+                {
+                    exercise.Image = GetImageOrPlaceholder(exercise.Image);
+                }
+
+                Exercise = exercise;
             }
             catch (Exception ex)
             {
@@ -58,8 +67,23 @@
             if (Exercise is null)
             {
                 await Shell.Current.DisplayAlertAsync("Exercise not found", "This PUSH exercise could not be loaded.", "OK");
-                await Shell.Current.GoToAsync("..");
+                await NavigateAsync("..");
             }
+        }
+
+        private static string GetImageOrPlaceholder(string? imagePath)
+        {
+            if (string.IsNullOrWhiteSpace(imagePath))
+            {
+                return PlaceholderImage;
+            }
+
+            if (!File.Exists(imagePath))
+            {
+                return PlaceholderImage;
+            }
+
+            return imagePath;
         }
     }
 }

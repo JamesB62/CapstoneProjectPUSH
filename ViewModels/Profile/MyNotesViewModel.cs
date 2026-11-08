@@ -17,7 +17,7 @@
 
         private List<Note> _allNotes = new();
 
-        private static readonly Workout AllWorkout = new() { Id = 0, Name = "All" };
+        private static readonly Workout AllWorkout = new() { Id = 0, Title = "All" };
 
         public ObservableCollection<Workout> Workouts { get; } = new();
 
@@ -27,28 +27,24 @@
         [ObservableProperty]
         public partial Note? SelectedNote { get; set; }
 
-        [ObservableProperty]
-        public partial string StatusMessage { get; set; } = "Loading notes...";
-
-        private bool _isNavigating;
-
         [RelayCommand]
         private async Task LoadMyNotesAsync()
         {
-            var user = _userService.CurrentUser;
-
-            if (user is null)
-            {
-                // Comment out to disable redirect
-                await Shell.Current.GoToAsync("//LandingPage");
-                return;
-            }
-
             IsBusy = true;
-            StatusMessage = "Loading notes...";
 
             try
             {
+                var user = _userService.CurrentUser;
+
+                if (user is null)
+                {
+                    // Comment out to disable redirect
+                    await NavigateAsync("//LandingPage");
+                    return;
+                }
+
+                StatusMessage = "Loading notes...";
+
                 var notes = await _noteService.GetNotesForUserAsync(user.Id);
                 var workouts = await _workoutService.GetWorkoutsForUserAsync(user.Id);
 
@@ -63,7 +59,7 @@
                 Workouts.Clear();
                 Workouts.Add(AllWorkout);
 
-                var sortedWorkouts = workouts.OrderBy(w => w.Name, StringComparer.OrdinalIgnoreCase).ToList();
+                var sortedWorkouts = workouts.OrderBy(w => w.Title, StringComparer.OrdinalIgnoreCase).ToList();
 
                 foreach (var workout in sortedWorkouts)
                 {
@@ -162,21 +158,13 @@
         [RelayCommand]
         private async Task ViewNoteAsync(Note? note)
         {
-            if (note is null || _isNavigating)
+            if (note is null)
             {
                 return;
             }
 
-            _isNavigating = true;
-            try
-            {
-                // Link to workout details page when built
-                //await Shell.Current.GoToAsync($"{nameof(WorkoutDetailsPage)}?WorkoutId={workout.Id}");
-            }
-            finally
-            {
-                _isNavigating = false;
-            }
+            // Link to workout details page when built
+            //await NavigateAsync($"{nameof(WorkoutDetailsPage)}?WorkoutId={workout.Id}");
         }
     }
 }

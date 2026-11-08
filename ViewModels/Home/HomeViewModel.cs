@@ -3,67 +3,69 @@
     public partial class HomeViewModel : BaseViewModel
     {
         private readonly ArticleService _articleService;
-        private readonly CategoryService _categoryService;
         private readonly UserService _userService;
         private readonly WorkoutService _workoutService;
 
-        public HomeViewModel(
-            ArticleService articleService,
-            CategoryService categoryService,
-            UserService userService,
-            WorkoutService workoutService)
+        public HomeViewModel(ArticleService articleService, UserService userService, WorkoutService workoutService)
         {
             _articleService = articleService;
-            _categoryService = categoryService;
             _userService = userService;
             _workoutService = workoutService;
         }
 
-        private List<Category> _categories = new();
-        private List<Workout> AllWorkouts = new();
-        private int currentCategoryId = 0;
+        public ObservableCollection<Workout> FeaturedWorkouts { get; } = new();
 
         public ObservableCollection<Article> FeaturedArticles { get; } = new();
 
-        public ObservableCollection<Workout> Workouts { get; } = new();
+        [ObservableProperty]
+        public partial Workout? SelectedWorkout { get; set; }
+
+        [ObservableProperty]
+        public partial Article? SelectedArticle { get; set; }
 
         [RelayCommand]
         private async Task LoadHomeAsync()
         {
-            if (IsBusy)
-            {
-                return;
-            }
-
             IsBusy = true;
 
             try
             {
-                _categories = await _categoryService.GetCategoriesAsync();
-
-                var articles = await _articleService.GetArticlesAsync();
-
-                FeaturedArticles.Clear();
-
-                // Currently grabs the first 3 articles, change?
-                foreach (var article in articles.Take(3))
-                {
-                    FeaturedArticles.Add(article);
-                }
-
-                // Only shows logged in user's workouts
                 var user = _userService.CurrentUser;
 
                 if (user is null)
                 {
-                    AllWorkouts = new List<Workout>();
-                }
-                else
-                {
-                    AllWorkouts = await _workoutService.GetWorkoutsForUserAsync(user.Id);
+                    // Comment out to disable redirect
+                    await NavigateAsync("//LandingPage");
+                    return;
                 }
 
-                ApplyFilter();
+                var articles = await _articleService.GetArticlesAsync();
+
+                List<Article> randomArticles = articles
+                    .OrderBy(a => Random.Shared.Next())
+                    .Take(3)
+                    .ToList();
+
+                FeaturedArticles.Clear();
+
+                foreach (var article in randomArticles)
+                {
+                    FeaturedArticles.Add(article);
+                }
+
+                List<Workout> workouts = await _workoutService.GetWorkoutsForUserAsync(user.Id);
+
+                List<Workout> randomWorkouts = workouts
+                    .OrderBy(w => Random.Shared.Next())
+                    .Take(3)
+                    .ToList();
+
+                FeaturedWorkouts.Clear();
+
+                foreach (var workout in randomWorkouts)
+                {
+                    FeaturedWorkouts.Add(workout);
+                }
             }
             catch (Exception ex)
             {
@@ -75,48 +77,49 @@
             }
         }
 
-        // Generates SelectCategoryCommand
-        [RelayCommand]
-        private void SelectCategory(string categoryName)
+        partial void OnSelectedWorkoutChanged(Workout? value)
         {
-            var category = _categories.FirstOrDefault(c => c.Name == categoryName);
-
-            if (category is null)
+            if (value is null)
             {
                 return;
             }
 
-            if (currentCategoryId == category.Id)
-            {
-                currentCategoryId = 0;
-            }
-            else
-            {
-                currentCategoryId = category.Id;
-            }
-
-            ApplyFilter();
+            ViewWorkoutCommand.Execute(value);
+            SelectedWorkout = null;
         }
 
-        private void ApplyFilter()
+        [RelayCommand]
+        private async Task ViewWorkoutAsync(Workout? workout)
         {
-            List<Workout> filtered;
-
-            if (currentCategoryId == 0)
+            if (workout is null)
             {
-                filtered = AllWorkouts;
-            }
-            else
-            {
-                filtered = AllWorkouts.Where(w => w.CategoryId == currentCategoryId).ToList();
+                return;
             }
 
-            Workouts.Clear();
+            // Uncomment once WorkoutDetailsPage is created
+            // await NavigateAsync($"{nameof(WorkoutDetailsPage)}?WorkoutId={workout.Id}");
+        }
 
-            foreach (var workout in filtered)
+        partial void OnSelectedArticleChanged(Article? value)
+        {
+            if (value is null)
             {
-                Workouts.Add(workout);
+                return;
             }
+
+            ViewArticleCommand.Execute(value);
+            SelectedArticle = null;
+        }
+
+        [RelayCommand]
+        private async Task ViewArticleAsync(Article? article)
+        {
+            if (article is null)
+            {
+                return;
+            }
+
+            await NavigateAsync($"{nameof(ArticleDetailsPage)}?ArticleId={article.Id}");
         }
     }
 }

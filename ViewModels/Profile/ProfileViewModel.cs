@@ -9,6 +9,8 @@
             _userService = userService;
         }
 
+        private const string PlaceholderImage = "profile_picture_placeholder.png";
+
         [ObservableProperty]
         public partial string DisplayName { get; set; } = string.Empty;
 
@@ -16,10 +18,13 @@
         public partial string Email { get; set; } = string.Empty;
 
         [ObservableProperty]
+        public partial string ProfileImage { get; set; } = PlaceholderImage;
+
+        [ObservableProperty]
         public partial bool IsAdmin { get; set; }
 
         [RelayCommand]
-        public async Task LoadProfileAsync()
+        private async Task LoadProfileAsync()
         {
             var user = _userService.CurrentUser;
 
@@ -28,16 +33,33 @@
                 DisplayName = user.DisplayName;
                 Email = user.Email;
                 IsAdmin = user.IsAdmin;
+                ProfileImage = GetProfileImageOrPlaceholder(user.ProfileImage);
             }
             else
             {
                 DisplayName = "Guest";
                 Email = "Not signed in";
                 IsAdmin = false;
+                ProfileImage = PlaceholderImage;
 
                 // Comment out to disable redirect
-                await Shell.Current.GoToAsync("//LandingPage");
+                await NavigateAsync("//LandingPage");
             }
+        }
+
+        private static string GetProfileImageOrPlaceholder(string? imagePath)
+        {
+            if (string.IsNullOrWhiteSpace(imagePath))
+            {
+                return PlaceholderImage;
+            }
+
+            if (!File.Exists(imagePath))
+            {
+                return PlaceholderImage;
+            }
+
+            return imagePath;
         }
 
         [RelayCommand]
@@ -61,12 +83,23 @@
         [RelayCommand]
         private async Task GoToAdminDashboardAsync()
         {
-            await NavigateAsync(nameof(AdminDashboard));
+            await NavigateAsync(nameof(AdminDashboardPage));
         }
 
         [RelayCommand]
         private async Task LogoutAsync()
         {
+            bool confirmed = await Shell.Current.DisplayAlertAsync(
+                "Logout",
+                "Are you sure you want to log out?",
+                "Logout",
+                "Cancel");
+
+            if (!confirmed)
+            {
+                return;
+            }
+
             _userService.Logout();
             await NavigateAsync("//LandingPage");
         }

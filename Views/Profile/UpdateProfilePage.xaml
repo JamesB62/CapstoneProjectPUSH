@@ -9,7 +9,8 @@
     <ScrollView>
 
         <VerticalStackLayout
-            Padding="30,15,30,0"
+            MaximumWidthRequest="500"
+            Padding="30,15"
             Spacing="15">
 
             <!-- Update details forms -->
@@ -77,8 +78,8 @@
 
             <!-- Error message -->
             <Label
-                IsVisible="{Binding HasErrorMessage}"
-                Text="{Binding ErrorMessage}"
+                IsVisible="{Binding HasStatusMessage}"
+                Text="{Binding StatusMessage}"
                 TextColor="Red"/>
 
             <!-- Buttons -->
@@ -88,10 +89,12 @@
 
                 <Button
                     Command="{Binding SaveProfileCommand}"
+                    IsEnabled="{Binding IsNotBusy}"
                     Text="Save"/>
 
                 <Button
                     Command="{Binding CancelProfileCommand}"
+                    IsEnabled="{Binding IsNotBusy}"
                     Text="Cancel"/>
 
             </VerticalStackLayout>

@@ -8,7 +8,8 @@
              Title="My PUSH Notes">
 
     <Grid
-        Padding="30,0,30,0"
+        MaximumWidthRequest="500"
+        Padding="30,15"
         RowDefinitions="Auto,*"
         RowSpacing="15">
 
@@ -16,10 +17,9 @@
             Grid.Row="0"
             Spacing="10">
 
-            <!-- Keep? -->
             <!-- Workout picker -->
             <Picker
-                ItemDisplayBinding="{Binding Name, x:DataType=models:Workout}"
+                ItemDisplayBinding="{Binding Title, x:DataType=models:Workout}"
                 ItemsSource="{Binding Workouts}"
                 Margin="0,0,0,-4"
                 SelectedItem="{Binding SelectedWorkout}"
@@ -27,7 +27,6 @@
 
             <Label
                 FontAttributes="Italic"
-                FontSize="12"
                 Text="{Binding StatusMessage}"/>
 
         </VerticalStackLayout>
@@ -35,7 +34,7 @@
         <RefreshView
             Command="{Binding LoadMyNotesCommand}"
             Grid.Row="1"
-            IsRefreshing="{Binding IsBusy, Mode=OneWay}">
+            IsRefreshing="{Binding IsBusy}">
 
             <CollectionView
                 ItemsSource="{Binding Notes}"
@@ -52,12 +51,12 @@
                         <Label
                             FontAttributes="Italic"
                             HorizontalTextAlignment="Center"
-                            Text="No notes found"/>
+                            Text="No notes found."/>
 
                         <Label
                             FontAttributes="Italic"
                             HorizontalTextAlignment="Center"
-                            Text="Pull down to try again"/>
+                            Text="Pull down to try again."/>
 
                     </VerticalStackLayout>
 
@@ -79,10 +78,7 @@
                         x:DataType="models:Note">
 
                         <Border
-                            BackgroundColor="#F9FAFB"
-                            Padding="15"
-                            Stroke="#E5E7EB"
-                            StrokeShape="RoundRectangle 12">
+                            Style="{StaticResource Card}">
 
                             <VerticalStackLayout
                                 Spacing="10">
@@ -101,13 +97,12 @@
 
                                     <Border
                                         Grid.Column="1"
-                                        Padding="10,5"
-                                        StrokeShape="RoundRectangle 50">
+                                        Style="{StaticResource Pill}">
 
                                         <Label
                                             FontSize="12"
                                             LineBreakMode="TailTruncation"
-                                            Text="{Binding WorkoutName}"/>
+                                            Text="{Binding WorkoutTitle}"/>
 
                                     </Border>
 
@@ -124,7 +119,7 @@
                                     <Label
                                         FontAttributes="Italic"
                                         FontSize="12"
-                                        Text="{Binding DateTimeAdded, StringFormat='Date created: {0:d MMMM yyyy}'}"/>
+                                        Text="{Binding DateTimeCreated, StringFormat='Date created: {0:d MMMM yyyy}'}"/>
 
                                 </VerticalStackLayout>
 

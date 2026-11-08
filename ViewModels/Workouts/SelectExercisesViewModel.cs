@@ -29,11 +29,11 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
         {
             if (_all.Count > 0) return; 
             var exercises = await _exerciseService.GetExercisesAsync();
-            var categoryNames = await _categoryService.GetCategoryNamesAsync();
+            var categoryTitles = await _categoryService.GetCategoryTitlesAsync();
 
             _all = exercises.Select(e =>
             {
-                var item = new SelectableExercise(e, categoryNames.GetValueOrDefault(e.CategoryId, "Uncategorised"));
+                var item = new SelectableExercise(e, categoryTitles.GetValueOrDefault(e.CategoryId, "Uncategorised"));
                 item.PropertyChanged += (_, args) =>
                 {
                     if (args.PropertyName == nameof(SelectableExercise.IsSelected))

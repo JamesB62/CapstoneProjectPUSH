@@ -11,10 +11,10 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
         private int workoutId;
 
         [ObservableProperty]
-        private string workoutName = string.Empty;
+        private string workoutTitle = string.Empty;
 
         [ObservableProperty]
-        private string categoryName = string.Empty;
+        private string categoryTitle = string.Empty;
 
         public WorkoutDetailsViewModel(WorkoutService workoutService, UserService userService)
         {
@@ -39,8 +39,8 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
                 return;
             }
 
-            WorkoutName = workout.Name;
-            CategoryName = workout.CategoryName;
+            WorkoutTitle = workout.Title;
+            CategoryTitle = workout.CategoryTitle;
 
             var items = await _workoutService.GetExercisesForWorkoutAsync(WorkoutId);
             Exercises.Clear();

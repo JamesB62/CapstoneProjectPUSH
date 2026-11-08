@@ -1,33 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace CapstoneProjectPUSH.Models
+﻿namespace CapstoneProjectPUSH.Models
 {
+    [Table("WeightLogs")]
     public class WeightLog
     {
-
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
 
-        [NotNull]
-        public int UserId { get; set; }
+        public double WeightKg { get; set; } = 0;
 
-        [NotNull]
-        public double Weight { get; set; }
-
-        [NotNull]
         public DateTime DateTimeLogged { get; set; } = DateTime.Now;
 
-        [NotNull]
-        public string WeightStatus { get; set; } = string.Empty;
+        [Indexed]
+        public int UserId { get; set; }
 
-        [NotNull]
-        public int WeightKg { get; set; } = 0;
-
-
-
-
-
+        [Ignore]
+        public string UserDisplayName { get; set; } = string.Empty;
     }
 }

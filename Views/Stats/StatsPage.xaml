@@ -1,26 +1,22 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:stats="clr-namespace:CapstoneProjectPUSH.ViewModels.Stats"
+             xmlns:charts="clr-namespace:CapstoneProjectPUSH.Models.Charts"
+             xmlns:vm="clr-namespace:CapstoneProjectPUSH.ViewModels.Stats"
              x:Class="CapstoneProjectPUSH.Views.Stats.StatsPage"
-             
-             Title="">
+             x:DataType="vm:StatsViewModel"
+             Title="My PUSH Stats">
 
-    <Grid
-        RowDefinitions="*,Auto">
+    <RefreshView
+        Command="{Binding LoadStatsCommand}"
+        IsRefreshing="{Binding IsBusy}">
 
-        <ScrollView
-            Grid.Row="0">
+        <ScrollView>
 
             <VerticalStackLayout
-                Padding="20"
+                MaximumWidthRequest="500"
+                Padding="30,15"
                 Spacing="15">
-
-
-                <Label
-                    FontAttributes="Bold"
-                    FontSize="18"
-                    Text="My Stats"/>
 
                 <!-- Time filters -->
                 <Grid
@@ -31,196 +27,249 @@
                         Grid.Column="0"
                         Command="{Binding SelectFilterCommand}"
                         CommandParameter="Week"
-                        FontSize="12"
-                        Text="Week"/>
+                        Opacity="0.5"
+                        Text="Week">
+
+                        <Button.Triggers>
+
+                            <DataTrigger
+                                Binding="{Binding SelectedFilter}"
+                                TargetType="Button"
+                                Value="Week">
+                                
+                                <Setter
+                                    Property="Opacity"
+                                    Value="1"/>
+                                
+                            </DataTrigger>
+
+                        </Button.Triggers>
+
+                    </Button>
 
                     <Button
                         Grid.Column="1"
                         Command="{Binding SelectFilterCommand}"
                         CommandParameter="Month"
-                        FontSize="12"
-                        Text="Month"/>
+                        Opacity="0.5"
+                        Text="Month">
+
+                        <Button.Triggers>
+
+                            <DataTrigger
+                                Binding="{Binding SelectedFilter}"
+                                TargetType="Button"
+                                Value="Month">
+
+                                <Setter
+                                    Property="Opacity"
+                                    Value="1"/>
+                                
+                            </DataTrigger>
+
+                        </Button.Triggers>
+
+                    </Button>
 
                     <Button
                         Grid.Column="2"
                         Command="{Binding SelectFilterCommand}"
                         CommandParameter="Year"
-                        FontSize="12"
-                        Text="Year"/>
+                        Opacity="0.5"
+                        Text="Year">
+
+                        <Button.Triggers>
+
+                            <DataTrigger
+                                Binding="{Binding SelectedFilter}"
+                                TargetType="Button"
+                                Value="Year">
+
+                                <Setter
+                                    Property="Opacity"
+                                    Value="1"/>
+                                
+                            </DataTrigger>
+
+                        </Button.Triggers>
+
+                    </Button>
 
                 </Grid>
 
                 <!-- Top stats -->
+                <Grid
+                    ColumnDefinitions="*,*"
+                    ColumnSpacing="10"
+                    RowDefinitions="Auto,Auto"
+                    RowSpacing="10">
+
+                    <Border
+                        Grid.Column="0"
+                        Grid.Row="0"
+                        Style="{StaticResource Card}">
+
+                        <VerticalStackLayout>
+
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="18"
+                                HorizontalOptions="Center"
+                                Text="{Binding WorkoutCountText}"/>
+
+                            <Label
+                                HorizontalOptions="Center"
+                                Text="Workouts"/>
+
+                        </VerticalStackLayout>
+
+                    </Border>
+
+                    <Border
+                        Grid.Column="1"
+                        Grid.Row="0"
+                        Style="{StaticResource Card}">
+
+                        <VerticalStackLayout>
+
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="18"
+                                HorizontalOptions="Center"
+                                Text="{Binding TotalTimeText}"/>
+
+                            <Label
+                                HorizontalOptions="Center"
+                                Text="Total Time"/>
+
+                        </VerticalStackLayout>
+
+                    </Border>
+
+                    <Border
+                        Grid.Column="0"
+                        Grid.Row="1"
+                        Style="{StaticResource Card}">
+
+                        <VerticalStackLayout>
+
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="18"
+                                HorizontalOptions="Center"
+                                Text="{Binding AvgDurationText}"/>
+
+                            <Label
+                                HorizontalOptions="Center"
+                                Text="Avg. Duration"/>
+
+                        </VerticalStackLayout>
+
+                    </Border>
+
+                    <Border
+                        Grid.Column="1"
+                        Grid.Row="1"
+                        Style="{StaticResource Card}">
+
+                        <VerticalStackLayout>
+
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="18"
+                                HorizontalOptions="Center"
+                                Text="{Binding StreakText}"/>
+
+                            <Label
+                                HorizontalOptions="Center"
+                                Text="Current Streak"/>
+
+                        </VerticalStackLayout>
+
+                    </Border>
+
+                </Grid>
+
+                <!-- Minutes trained chart -->
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="16"
+                    Text="Minutes Trained"/>
+
                 <Border
-                    Padding="15"
-                    BackgroundColor="{AppThemeBinding Light=#E5E7EB, Dark=#2C2C31}"
-                    StrokeShape="RoundRectangle 10"
-                    StrokeThickness="0"
-                    HeightRequest="200">
+                    Style="{StaticResource Card}">
+
+                    <FlexLayout
+                        BindableLayout.ItemsSource="{Binding Bars}"
+                        Direction="Row"
+                        JustifyContent="SpaceEvenly">
+
+                        <BindableLayout.ItemTemplate>
+
+                            <DataTemplate
+                                x:DataType="charts:ChartBar">
+
+                                <Grid
+                                    RowDefinitions="130,Auto"
+                                    RowSpacing="4">
+
+                                    <BoxView
+                                        Grid.Row="0"
+                                        Color="{AppThemeBinding Light=#2563EB, Dark=#60A5FA}"
+                                        CornerRadius="0"
+                                        HeightRequest="{Binding BarHeight}"
+                                        VerticalOptions="End"
+                                        WidthRequest="14"/>
+
+                                    <Label
+                                        Grid.Row="1"
+                                        FontSize="12"
+                                        HorizontalTextAlignment="Center"
+                                        Text="{Binding Label}"/>
+
+                                </Grid>
+
+                            </DataTemplate>
+
+                        </BindableLayout.ItemTemplate>
+
+                    </FlexLayout>
+
+                </Border>
+
+                <!-- Weigh-in chart -->
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="16"
+                    Text="Weigh-In"/>
+
+                <Border
+                    Style="{StaticResource Card}">
 
                     <VerticalStackLayout
-                        Spacing="12"
-                        VerticalOptions="Center">
+                        Spacing="10">
 
                         <Label
-                            FontAttributes="Bold"
-                            HorizontalTextAlignment="Center"
-                            Text="Top Stats"/>
+                            FontAttributes="Italic"
+                            FontSize="14"
+                            Text="{Binding LatestWeightText}"/>
 
-                        <Label
-                            FontSize="12"
-                            HorizontalTextAlignment="Center"
-                            Text="{Binding SelectedFilter, StringFormat='Showing: {0}'}"/>
-
-                        <Grid
-                            ColumnDefinitions="*,*"
-                            RowDefinitions="Auto,Auto"
-                            RowSpacing="12">
-
-                            <VerticalStackLayout Grid.Row="0" Grid.Column="0">
-                                <Label FontAttributes="Bold" FontSize="20" HorizontalTextAlignment="Center" Text="{Binding WorkoutCountText}"/>
-                                <Label FontSize="11" HorizontalTextAlignment="Center" Text="Workouts"/>
-                            </VerticalStackLayout>
-
-                            <VerticalStackLayout Grid.Row="0" Grid.Column="1">
-                                <Label FontAttributes="Bold" FontSize="20" HorizontalTextAlignment="Center" Text="{Binding TotalTimeText}"/>
-                                <Label FontSize="11" HorizontalTextAlignment="Center" Text="Total time"/>
-                            </VerticalStackLayout>
-
-                            <VerticalStackLayout Grid.Row="1" Grid.Column="0">
-                                <Label FontAttributes="Bold" FontSize="20" HorizontalTextAlignment="Center" Text="{Binding AvgDurationText}"/>
-                                <Label FontSize="11" HorizontalTextAlignment="Center" Text="Avg. duration"/>
-                            </VerticalStackLayout>
-
-                            <VerticalStackLayout Grid.Row="1" Grid.Column="1">
-                                <Label FontAttributes="Bold" FontSize="20" HorizontalTextAlignment="Center" Text="{Binding StreakText}"/>
-                                <Label FontSize="11" HorizontalTextAlignment="Center" Text="Current streak"/>
-                            </VerticalStackLayout>
-
-                        </Grid>
+                        <GraphicsView
+                            Drawable="{Binding WeightChart}"
+                            HeightRequest="160"/>
 
                     </VerticalStackLayout>
 
                 </Border>
 
-                <!-- Activity chart (minutes trained per day / week / month) -->
-                <Border
-                    Padding="15"
-                    BackgroundColor="{AppThemeBinding Light=#E5E7EB, Dark=#2C2C31}"
-                    StrokeShape="RoundRectangle 10"
-                    StrokeThickness="0"
-                    HeightRequest="300">
+                <Button
+                    Command="{Binding AddWeighInCommand}"
+                    Text="Add Today's Weigh-in"/>
 
-                    <VerticalStackLayout
-                        Spacing="15"
-                        VerticalOptions="Center">
-
-                        <Label
-                            FontAttributes="Bold"
-                            HorizontalTextAlignment="Center"
-                            Text="Minutes Trained"/>
-
-                        <FlexLayout
-                            BindableLayout.ItemsSource="{Binding Bars}"
-                            Direction="Row"
-                            JustifyContent="SpaceEvenly">
-
-                            <BindableLayout.ItemTemplate>
-                                <DataTemplate x:DataType="stats:ChartBar">
-                                    <Grid RowDefinitions="130,Auto" RowSpacing="4">
-                                        <BoxView
-                                            Grid.Row="0"
-                                            CornerRadius="3"
-                                            VerticalOptions="End"
-                                            WidthRequest="14"
-                                            HeightRequest="{Binding BarHeight}"
-                                            Color="{AppThemeBinding Light=#2563EB, Dark=#60A5FA}"/>
-                                        <Label
-                                            Grid.Row="1"
-                                            FontSize="9"
-                                            HorizontalTextAlignment="Center"
-                                            Text="{Binding Label}"/>
-                                    </Grid>
-                                </DataTemplate>
-                            </BindableLayout.ItemTemplate>
-
-
-
-                        </FlexLayout>
-
-                    </VerticalStackLayout>
-
-
-
-                </Border>
-
-                <Border
-                    Padding="15"
-                    BackgroundColor="{AppThemeBinding Light=#E5E7EB, Dark=#2C2C31}"
-                    StrokeShape="RoundRectangle 10"
-                    StrokeThickness="0"
-                    HeightRequest="300">
-                    <VerticalStackLayout
-                        Spacing="15"
-                        VerticalOptions="Center">
-                        <Label
-                            FontAttributes="Bold"
-                            HorizontalTextAlignment="Center"
-                            Text="Weigh-in"/>
-                        
-                        <Entry
-                            Placeholder="Enter your weight"
-                            Keyboard="Numeric"
-                            Text="{Binding WeightInput, Mode=TwoWay}"/>
-
-                      
-                        <Button
-                            Command="{Binding SubmitWeightCommand}"
-                            Text="Submit"/>
-                        <Label
-                            FontSize="12"
-                            HorizontalTextAlignment="Center"
-                            Text="{Binding WeightStatus}"/>
-
-                        <FlexLayout
-     BindableLayout.ItemsSource="{Binding Line}"
-     Direction="Row"
-     JustifyContent="SpaceEvenly">
-
-                            <BindableLayout.ItemTemplate>
-                                <DataTemplate x:DataType="stats:ChartLine">
-                                    <Grid RowDefinitions="130,Auto" RowSpacing="4">
-                                        <BoxView
-                     Grid.Row="0"
-                     CornerRadius="3"
-                     VerticalOptions="End"
-                     WidthRequest="14"
-                     HeightRequest="{Binding LineHeight}"
-                     Color="{AppThemeBinding Light=#2563EB, Dark=#60A5FA}"/>
-                                        <Label
-                     Grid.Row="1"
-                     FontSize="9"
-                     HorizontalTextAlignment="Center"
-                     Text="{Binding Label}"/>
-                                    </Grid>
-                                </DataTemplate>
-                            </BindableLayout.ItemTemplate>
-
-
-
-                        </FlexLayout>
-
-
-                    </VerticalStackLayout>
-                    
-                </Border>
-                
             </VerticalStackLayout>
 
         </ScrollView>
 
+    </RefreshView>
 
-    </Grid>
-
-    
 </ContentPage>

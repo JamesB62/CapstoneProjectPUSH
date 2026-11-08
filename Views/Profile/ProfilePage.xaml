@@ -9,7 +9,8 @@
     <ScrollView>
 
         <VerticalStackLayout
-            Padding="30,15,30,0"
+            MaximumWidthRequest="500"
+            Padding="30,15"
             Spacing="15">
 
             <Border
@@ -19,10 +20,9 @@
                 StrokeThickness="0"
                 WidthRequest="100">
 
-                <!-- Profile picture placeholder - sourced from Wikipedia -->
                 <Image
                     Aspect="AspectFill"
-                    Source="profile_picture_placeholder.png"/>
+                    Source="{Binding ProfileImage}"/>
 
             </Border>
 
@@ -44,7 +44,6 @@
             </VerticalStackLayout>
 
             <!-- Buttons -->
-
             <VerticalStackLayout
                 Spacing="10">
 

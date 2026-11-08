@@ -17,7 +17,7 @@
 
         private List<Workout> _allWorkouts = new();
 
-        private static readonly Category AllCategory = new() { Id = 0, Name = "All" };
+        private static readonly Category AllCategory = new() { Id = 0, Title = "All" };
 
         public ObservableCollection<Category> Categories { get; } = new();
 
@@ -27,36 +27,34 @@
         [ObservableProperty]
         public partial Workout? SelectedWorkout { get; set; }
 
-        [ObservableProperty]
-        public partial string StatusMessage { get; set; } = "Loading workouts...";
-
-        private bool _isNavigating;
-
         [RelayCommand]
         private async Task LoadMyWorkoutsAsync()
         {
-            var user = _userService.CurrentUser;
-
-            if (user is null)
-            {
-                // Comment out to disable redirect
-                await Shell.Current.GoToAsync("//LandingPage");
-                return;
-            }
-
             IsBusy = true;
-            StatusMessage = "Loading workouts...";
 
             try
             {
+                var user = _userService.CurrentUser;
+
+                if (user is null)
+                {
+                    // Comment out to disable redirect
+                    await NavigateAsync("//LandingPage");
+                    return;
+                }
+
+                StatusMessage = "Loading workouts...";
+
                 if (Categories.Count == 0)
                 {
                     var categories = await _categoryService.GetCategoriesAsync();
 
+                    var sortedCategories = categories.OrderBy(c => c.Title, StringComparer.OrdinalIgnoreCase).ToList();
+
                     Categories.Clear();
                     Categories.Add(AllCategory);
 
-                    foreach (var category in categories)
+                    foreach (var category in sortedCategories)
                     {
                         Categories.Add(category);
                     }
@@ -69,16 +67,12 @@
                 foreach (var workout in workouts)
                 {
                     var exercises = await _workoutService.GetExercisesForWorkoutAsync(workout.Id);
-                    int totalSets = exercises.Sum(e => e.Sets);
 
-                    workout.Summary = BuildSummary(exercises.Count, totalSets);
+                    workout.ExerciseCount = exercises.Count;
+                    workout.SetCount = exercises.Sum(e => e.Sets);
                 }
 
-                _allWorkouts.Clear();
-                foreach (var workout in workouts)
-                {
-                    _allWorkouts.Add(workout);
-                }
+                _allWorkouts = workouts;
 
                 ApplyFilter();
             }
@@ -91,36 +85,6 @@
             {
                 IsBusy = false;
             }
-        }
-
-        private static string BuildSummary(int exerciseCount, int totalSets)
-        {
-            if (exerciseCount == 0)
-            {
-                return "No exercises yet";
-            }
-
-            string exercises;
-            if (exerciseCount == 1)
-            {
-                exercises = "1 exercise";
-            }
-            else
-            {
-                exercises = $"{exerciseCount} exercises";
-            }
-
-            string sets;
-            if (totalSets == 1)
-            {
-                sets = "1 set";
-            }
-            else
-            {
-                sets = $"{totalSets} sets";
-            }
-
-            return $"{exercises} • {sets}";
         }
 
         partial void OnSelectedCategoryChanged(Category? value)
@@ -182,21 +146,13 @@
         [RelayCommand]
         private async Task ViewWorkoutAsync(Workout? workout)
         {
-            if (workout is null || _isNavigating)
+            if (workout is null)
             {
                 return;
             }
 
-            _isNavigating = true;
-            try
-            {
-                // Link to workout details page when built
-                //await Shell.Current.GoToAsync($"{nameof(WorkoutDetailsPage)}?WorkoutId={workout.Id}");
-            }
-            finally
-            {
-                _isNavigating = false;
-            }
+            // Link to workout details page when built
+            //await NavigateAsync($"{nameof(WorkoutDetailsPage)}?WorkoutId={workout.Id}");
         }
     }
 }

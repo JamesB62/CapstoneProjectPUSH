@@ -20,11 +20,11 @@
                 .OrderByDescending(w => w.DateTimeCreated)
                 .ToListAsync();
 
-            var categoryNames = await _categoryService.GetCategoryNamesAsync();
+            var categoryTitles = await _categoryService.GetCategoryTitlesAsync();
 
             foreach (var workout in workouts)
             {
-                workout.CategoryName = categoryNames.GetValueOrDefault(workout.CategoryId, "Uncategorised");
+                workout.CategoryTitle = categoryTitles.GetValueOrDefault(workout.CategoryId, "Uncategorised");
             }
 
             return workouts;
@@ -43,8 +43,8 @@
                 return null;
             }
 
-            var categoryNames = await _categoryService.GetCategoryNamesAsync();
-            workout.CategoryName = categoryNames.GetValueOrDefault(workout.CategoryId, "Uncategorised");
+            var categoryTitle = await _categoryService.GetCategoryTitlesAsync();
+            workout.CategoryTitle = categoryTitle.GetValueOrDefault(workout.CategoryId, "Uncategorised");
 
             return workout;
         }

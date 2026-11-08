@@ -12,18 +12,18 @@
         [NotNull, MaxLength(5000)]
         public string Content { get; set; } = string.Empty;
 
-        public DateTime DateTimeAdded { get; set; } = DateTime.Now;
+        public DateTime DateTimeCreated { get; set; } = DateTime.Now;
 
         [Indexed]
         public int UserId { get; set; }
 
         [Ignore]
-        public string UserFullName { get; set; } = string.Empty;
+        public string UserDisplayName { get; set; } = string.Empty;
 
         [Indexed]
         public int WorkoutId { get; set; }
 
         [Ignore]
-        public string WorkoutName { get; set; } = string.Empty;
+        public string WorkoutTitle { get; set; } = string.Empty;
     }
 }

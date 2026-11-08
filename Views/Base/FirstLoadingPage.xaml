@@ -6,6 +6,7 @@
              Shell.FlyoutBehavior="Disabled">
 
     <VerticalStackLayout
+        MaximumWidthRequest="500"
         Padding="30,0,30,30"
         Spacing="30"
         VerticalOptions="Center">

@@ -11,7 +11,7 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
         public ObservableCollection<Category> Categories { get; } = new();
 
         [ObservableProperty]
-        private string workoutName = string.Empty;
+        private string workoutTitle = string.Empty;
 
         [ObservableProperty]
         private Category? selectedCategory;
@@ -77,10 +77,10 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
                 return;
             }
 
-            var name = WorkoutName?.Trim() ?? string.Empty;
-            if (name.Length == 0)
+            var title = WorkoutTitle?.Trim() ?? string.Empty;
+            if (title.Length == 0)
             {
-                await Shell.Current.DisplayAlertAsync("Name required", "Give your workout a name.", "OK");
+                await Shell.Current.DisplayAlertAsync("Title required", "Give your workout a title.", "OK");
                 return;
             }
 
@@ -101,7 +101,7 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
             {
                 var workout = new Workout
                 {
-                    Name = name,
+                    Title = title,
                     UserId = userId.Value,
                     CategoryId = SelectedCategory.Id
                 };

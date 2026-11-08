@@ -6,6 +6,9 @@ namespace CapstoneProjectPUSH
         {
             InitializeComponent();
 
+            //Admin
+            Routing.RegisterRoute(nameof(AdminDashboardPage), typeof(AdminDashboardPage));
+
             // Auth
             Routing.RegisterRoute(nameof(LoginPage), typeof(LoginPage));
             Routing.RegisterRoute(nameof(RegisterPage), typeof(RegisterPage));
@@ -16,41 +19,31 @@ namespace CapstoneProjectPUSH
             // Exercises
             Routing.RegisterRoute(nameof(ExerciseDetailsPage), typeof(ExerciseDetailsPage));
 
+            // Home
+            Routing.RegisterRoute(nameof(ArticleDetailsPage), typeof(ArticleDetailsPage));
+
             // Profile
             Routing.RegisterRoute(nameof(MyNotesPage), typeof(MyNotesPage));
             Routing.RegisterRoute(nameof(MyWorkoutsPage), typeof(MyWorkoutsPage));
             Routing.RegisterRoute(nameof(UpdateProfilePage), typeof(UpdateProfilePage));
 
+            // Trainers
+            Routing.RegisterRoute(nameof(TrainerDetailsPage), typeof(TrainerDetailsPage));
+
+
 
 
 
             // Double check/update page routing before removing
-            // Home - incorrect
-            Routing.RegisterRoute(nameof(HomePage), typeof(HomePage));
 
-            // Stats - incorrect
-            Routing.RegisterRoute(nameof(StatsPage), typeof(StatsPage));
-            
-            // Trainers - incorrect
-            Routing.RegisterRoute(nameof(TrainersPage), typeof(TrainersPage));
-            // Good
-            Routing.RegisterRoute(nameof(TrainerDetailsPage), typeof(TrainerDetailsPage));
-            
             // Workouts - incorrect
             Routing.RegisterRoute(nameof(WorkoutsPage), typeof(WorkoutsPage));
             //workout detail
             Routing.RegisterRoute(nameof(WorkoutDetailsPage), typeof(WorkoutDetailsPage));
             //create workout page
             Routing.RegisterRoute(nameof(CreateWorkoutPage), typeof(CreateWorkoutPage));
-
             //Exercises
             Routing.RegisterRoute(nameof(SelectExercisesPage), typeof(SelectExercisesPage));
-
-            //Admin
-            Routing.RegisterRoute(nameof(AdminDashboard), typeof(AdminDashboard));
-
-            //Users Details
-            Routing.RegisterRoute(nameof(UsersManagementPage), typeof(UsersManagementPage));
         }
     }
 }

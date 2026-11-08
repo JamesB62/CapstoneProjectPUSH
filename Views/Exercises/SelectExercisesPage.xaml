@@ -51,7 +51,7 @@
                                     <Label FontAttributes="Bold"
                                             Text="{Binding Exercise.Title}"/>
                                     <Label FontSize="12"
-                                            Text="{Binding CategoryName}"/>
+                                            Text="{Binding CategoryTitle}"/>
                                     <Label FontSize="12"
                                            LineBreakMode="TailTruncation"
                                            MaxLines="2"

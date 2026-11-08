@@ -6,24 +6,24 @@
         [NotifyPropertyChangedFor(nameof(IsNotBusy))]
         public partial bool IsBusy { get; set; }
 
-        [ObservableProperty]
-        public partial string StatusMessage { get; set; }
-
         public bool IsNotBusy => !IsBusy;
 
-        protected BaseViewModel()
-        {
-            StatusMessage = string.Empty;
-        }
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(HasStatusMessage))]
+        public partial string StatusMessage { get; set; } = string.Empty;
+
+        public bool HasStatusMessage => !string.IsNullOrEmpty(StatusMessage);
+
+        private bool _isNavigating;
 
         protected async Task NavigateAsync(string route)
         {
-            if (IsBusy)
+            if (_isNavigating)
             {
                 return;
             }
 
-            IsBusy = true;
+            _isNavigating = true;
 
             try
             {
@@ -31,7 +31,7 @@
             }
             finally
             {
-                IsBusy = false;
+                _isNavigating = false;
             }
         }
     }

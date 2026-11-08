@@ -5,6 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:CapstoneProjectPUSH"
     
+    xmlns:admin="clr-namespace:CapstoneProjectPUSH.Views.Admin"
     xmlns:auth="clr-namespace:CapstoneProjectPUSH.Views.Auth"
     xmlns:base="clr-namespace:CapstoneProjectPUSH.Views.Base"
     xmlns:exercises="clr-namespace:CapstoneProjectPUSH.Views.Exercises"
@@ -13,7 +14,6 @@
     xmlns:stats="clr-namespace:CapstoneProjectPUSH.Views.Stats"
     xmlns:trainers="clr-namespace:CapstoneProjectPUSH.Views.Trainers"
     xmlns:workouts="clr-namespace:CapstoneProjectPUSH.Views.Workouts"
-    xmlns:admin="clr-namespace:CapstoneProjectPUSH.Views.Admin"
 
     Title="CapstoneProjectPUSH">
 
@@ -111,23 +111,6 @@
                 Route="ProfilePage"/>
 
         </Tab>
-       
-
-    </FlyoutItem>
-    
-    <FlyoutItem
-        IsVisible="{Binding IsAdmin}"
-        Icon="person.svg"
-        Title="Admin">
-
-        <Tab>
-
-            <ShellContent
-                ContentTemplate="{DataTemplate admin:AdminDashboard}"
-                Route="AdminDashboard"/>
-
-        </Tab>
-
 
     </FlyoutItem>
 

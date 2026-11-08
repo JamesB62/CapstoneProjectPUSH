@@ -13,11 +13,13 @@
             _userService = userService;
         }
 
+        private const string PlaceholderImage = "profile_picture_placeholder.png";
+
         public ObservableCollection<Trainer> Trainers { get; } = new();
         
         private List<Trainer> _allTrainers = new();
 
-        private static readonly Category AllCategory = new() { Id = 0, Name = "All" };
+        private static readonly Category AllCategory = new() { Id = 0, Title = "All" };
 
         public ObservableCollection<Category> Categories { get; } = new();
 
@@ -30,36 +32,34 @@
         [ObservableProperty]
         public partial bool ShowAvailableOnly { get; set; }
 
-        [ObservableProperty]
-        public partial string StatusMessage { get; set; } = "Loading trainers...";
-
-        private bool _isNavigating;
-
         [RelayCommand]
         private async Task LoadTrainersAsync()
         {
-            var user = _userService.CurrentUser;
-
-            if (user is null)
-            {
-                // Comment out to disable redirect
-                await Shell.Current.GoToAsync("//LandingPage");
-                return;
-            }
-
             IsBusy = true;
-            StatusMessage = "Loading trainers...";
 
             try
             {
+                var user = _userService.CurrentUser;
+
+                if (user is null)
+                {
+                    // Comment out to disable redirect
+                    await NavigateAsync("//LandingPage");
+                    return;
+                }
+
+                StatusMessage = "Loading trainers...";
+
                 if (Categories.Count == 0)
                 {
                     var categories = await _categoryService.GetCategoriesAsync();
 
+                    var sortedCategories = categories.OrderBy(c => c.Title, StringComparer.OrdinalIgnoreCase).ToList();
+
                     Categories.Clear();
                     Categories.Add(AllCategory);
 
-                    foreach (var category in categories)
+                    foreach (var category in sortedCategories)
                     {
                         Categories.Add(category);
                     }
@@ -68,6 +68,12 @@
                 }
 
                 var trainers = await _trainerService.GetTrainersAsync();
+
+                foreach (var trainer in trainers)
+                {
+                    trainer.ProfileImage = GetProfileImageOrPlaceholder(trainer.ProfileImage);
+                }
+
                 _allTrainers = trainers.ToList();
 
                 ApplyFilter();
@@ -81,6 +87,21 @@
             {
                 IsBusy = false;
             }
+        }
+
+        private static string GetProfileImageOrPlaceholder(string? imagePath)
+        {
+            if (string.IsNullOrWhiteSpace(imagePath))
+            {
+                return PlaceholderImage;
+            }
+
+            if (!File.Exists(imagePath))
+            {
+                return PlaceholderImage;
+            }
+
+            return imagePath;
         }
 
         partial void OnSelectedCategoryChanged(Category? value)
@@ -152,20 +173,12 @@
         [RelayCommand]
         private async Task ViewTrainerAsync(Trainer? trainer)
         {
-            if (trainer is null || _isNavigating)
+            if (trainer is null)
             {
                 return;
             }
 
-            _isNavigating = true;
-            try
-            {
-                await Shell.Current.GoToAsync($"{nameof(TrainerDetailsPage)}?TrainerId={trainer.Id}");
-            }
-            finally
-            {
-                _isNavigating = false;
-            }
+            await NavigateAsync($"{nameof(TrainerDetailsPage)}?TrainerId={trainer.Id}");
         }
     }
 }

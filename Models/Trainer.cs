@@ -15,19 +15,11 @@
         [Ignore]
         public string FullName => $"{FirstName} {LastName}";
 
-        [NotNull, MaxLength(250)]
+        [MaxLength(250)]
         public string Email { get; set; } = string.Empty;
 
         [MaxLength(20)]
         public string PhoneNumber { get; set; } = string.Empty;
-
-        public string ProfileImage { get; set; } = string.Empty;
-
-        [Indexed]
-        public int CategoryId { get; set; }
-
-        [Ignore]
-        public string CategoryName { get; set; } = string.Empty;
 
         [MaxLength(1000)]
         public string Description { get; set; } = string.Empty;
@@ -37,7 +29,14 @@
         [Ignore]
         public string AvailableText => Available ? "Available" : "Unavailable";
 
-        // Include schedule table?
+        // Swap to ProfileImageUrl when using remote database
+        public string ProfileImage { get; set; } = string.Empty;
+
+        [Indexed]
+        public int CategoryId { get; set; }
+
+        [Ignore]
+        public string CategoryTitle { get; set; } = string.Empty;
 
         [Indexed]
         public int GymId { get; set; }
@@ -46,12 +45,12 @@
         public string GymName { get; set; } = string.Empty;
 
         [Ignore]
-        public string GymStreetAddress { get; set; } = string.Empty;
+        public string GymAddress { get; set; } = string.Empty;
 
         [Ignore]
         public string GymCity { get; set; } = string.Empty;
 
         [Ignore]
-        public string GymFullAddress => $"{GymStreetAddress}, {GymCity}";
+        public string GymFullAddress => $"{GymAddress}, {GymCity}";
     }
 }
