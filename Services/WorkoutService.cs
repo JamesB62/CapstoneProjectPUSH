@@ -20,11 +20,11 @@
                 .OrderByDescending(w => w.DateTimeCreated)
                 .ToListAsync();
 
-            var categoryNames = await _categoryService.GetCategoryNamesAsync();
+            var categoryTitles = await _categoryService.GetCategoryTitlesAsync();
 
             foreach (var workout in workouts)
             {
-                workout.CategoryName = categoryNames.GetValueOrDefault(workout.CategoryId, "Uncategorised");
+                workout.CategoryTitle = categoryTitles.GetValueOrDefault(workout.CategoryId, "Uncategorised");
             }
 
             return workouts;
@@ -43,10 +43,31 @@
                 return null;
             }
 
-            var categoryNames = await _categoryService.GetCategoryNamesAsync();
-            workout.CategoryName = categoryNames.GetValueOrDefault(workout.CategoryId, "Uncategorised");
+            var categoryTitle = await _categoryService.GetCategoryTitlesAsync();
+            workout.CategoryTitle = categoryTitle.GetValueOrDefault(workout.CategoryId, "Uncategorised");
 
             return workout;
+        }
+
+        //workout exercisese 
+        public async Task<List<WorkoutExercise>> GetExercisesForWorkoutAsync(int workoutId)
+        {
+            var db = await _databaseService.GetConnectionAsync();
+
+            var items = await db.Table<WorkoutExercise>()
+                .Where(we => we.WorkoutId == workoutId)
+                .OrderBy(we => we.SortOrder)
+                .ToListAsync();
+
+                var exercises = await db.Table<Exercise>().ToListAsync();
+                var titles = exercises.ToDictionary(e => e.Id, e => e.Title);
+
+                foreach(var item in items)
+                {
+                    item.ExerciseTitle = titles.GetValueOrDefault(item.ExerciseId, "Unknown exercise");
+
+                }
+                return items;
         }
 
         // Add other functions as needed, CRUD
@@ -71,6 +92,25 @@
         {
             var db = await _databaseService.GetConnectionAsync();
             return await db.UpdateAsync(workout);
+        }
+
+        //add workout with exercises
+        public async Task<int> AddWorkoutWithExercisesAsync(Workout workout, IEnumerable<WorkoutExercise> items)
+        {
+            var db = await _databaseService.GetConnectionAsync();
+
+            await db.RunInTransactionAsync(conn =>
+            {
+                conn.Insert(workout);
+
+                foreach(var item in items)
+                {
+                    item.WorkoutId = workout.Id;
+                    conn.Insert(item);
+                }
+            });
+
+            return workout.Id;
         }
     }
 }

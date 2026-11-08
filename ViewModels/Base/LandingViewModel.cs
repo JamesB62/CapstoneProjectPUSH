@@ -6,21 +6,21 @@
         [RelayCommand]
         private async Task GoToLoginAsync()
         {
-            await Shell.Current.GoToAsync(nameof(LoginPage));
+            await NavigateAsync(nameof(LoginPage));
         }
 
         // Register command
         [RelayCommand]
         private async Task GoToRegisterAsync()
         {
-            await Shell.Current.GoToAsync(nameof(RegisterPage));
+            await NavigateAsync(nameof(RegisterPage));
         }
 
         // Privacy link command
         [RelayCommand]
         private async Task GoToPrivacyAsync()
         {
-            await Shell.Current.GoToAsync(nameof(PrivacyPage));
+            await NavigateAsync(nameof(PrivacyPage));
         }
     }
 }

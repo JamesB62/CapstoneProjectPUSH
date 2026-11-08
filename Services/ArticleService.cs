@@ -2,39 +2,49 @@
 {
     public class ArticleService
     {
-        private readonly DatabaseService _databaseService;
         private readonly CategoryService _categoryService;
+        private readonly DatabaseService _databaseService;
 
-        public ArticleService(DatabaseService databaseService, CategoryService categoryService)
+        public ArticleService(CategoryService categoryService, DatabaseService databaseService)
         {
-            _databaseService = databaseService;
             _categoryService = categoryService;
+            _databaseService = databaseService;
         }
 
+        // Get article count
+        public async Task<int> GetArticleCountAsync()
+        {
+            var db = await _databaseService.GetConnectionAsync();
+
+            return await db.Table<Article>().CountAsync();
+        }
+
+        // Get all articles
         public async Task<List<Article>> GetArticlesAsync()
         {
             var db = await _databaseService.GetConnectionAsync();
 
             var articles = await db.Table<Article>()
-                .OrderBy(a => a.DateTimeAdded)
+                .OrderByDescending(a => a.DateTimePublished)
                 .ToListAsync();
 
-            var categoryNames = await _categoryService.GetCategoryNamesAsync();
+            var categoryTitles = await _categoryService.GetCategoryTitlesAsync();
 
             foreach (var article in articles)
             {
-                article.CategoryName = categoryNames.GetValueOrDefault(article.CategoryId, "Uncategorised");
+                article.CategoryTitle = categoryTitles.GetValueOrDefault(article.CategoryId, "Uncategorised");
             }
 
             return articles;
         }
 
+        // Get article by Id
         public async Task<Article?> GetArticleByIdAsync(int articleId)
         {
             var db = await _databaseService.GetConnectionAsync();
 
             var article = await db.Table<Article>()
-                .Where(e => e.Id == articleId)
+                .Where(a => a.Id == articleId)
                 .FirstOrDefaultAsync();
 
             if (article is null)
@@ -42,12 +52,11 @@
                 return null;
             }
 
-            var categoryNames = await _categoryService.GetCategoryNamesAsync();
-            article.CategoryName = categoryNames.GetValueOrDefault(article.CategoryId, "Uncategorised");
+            var categoryTitle = await _categoryService.GetCategoryTitlesAsync();
+
+            article.CategoryTitle = categoryTitle.GetValueOrDefault(article.CategoryId, "Uncategorised");
 
             return article;
         }
-
-        // Add other functions as needed, CRUD?
     }
 }

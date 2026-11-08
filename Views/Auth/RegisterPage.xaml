@@ -7,6 +7,7 @@
     <ScrollView>
 
         <VerticalStackLayout
+            MaximumWidthRequest="500"
             Padding="30,0,30,30"
             Spacing="15"
             VerticalOptions="Center">
@@ -48,20 +49,24 @@
                 Spacing="5">
 
                 <Entry
+                    IsEnabled="{Binding IsNotBusy}"
                     Placeholder="Enter your display name here"
                     Text="{Binding DisplayName}"/>
 
                 <Entry
+                    IsEnabled="{Binding IsNotBusy}"
                     Keyboard="Email"
                     Placeholder="Enter your email address here"
                     Text="{Binding Email}"/>
 
                 <Entry
+                    IsEnabled="{Binding IsNotBusy}"
                     IsPassword="True"
                     Placeholder="Enter your password here"
                     Text="{Binding Password}"/>
 
                 <Entry
+                    IsEnabled="{Binding IsNotBusy}"
                     IsPassword="True"
                     Placeholder="Confirm your password here"
                     Text="{Binding ConfirmPassword}"/>
@@ -77,7 +82,8 @@
                     Spacing="-5">
 
                     <CheckBox
-                        IsChecked="{Binding HasAcceptedPrivacy}"/>
+                        IsChecked="{Binding HasAcceptedPrivacy}"
+                        IsEnabled="{Binding IsNotBusy}"/>
 
                     <!-- Privacy statement link -->
                     <Label
@@ -113,7 +119,8 @@
 
             <!-- Login link -->
             <Label
-                Text="Already have an account? Tap here to log in">
+                Text="Already have an account? Tap here to log in"
+                TextDecorations="Underline">
 
                 <Label.GestureRecognizers>
 
@@ -124,10 +131,11 @@
 
             </Label>
 
+            <!-- Adjust margin value? -->
             <!-- Loading circle -->
             <ActivityIndicator
                 IsRunning="{Binding IsBusy}"
-                IsVisible="{Binding IsBusy}"/>
+                Margin="0,10,0,0"/>
 
         </VerticalStackLayout>
 

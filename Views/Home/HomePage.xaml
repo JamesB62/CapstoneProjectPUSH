@@ -5,148 +5,187 @@
              xmlns:vm="clr-namespace:CapstoneProjectPUSH.ViewModels.Home"
              x:Class="CapstoneProjectPUSH.Views.Home.HomePage"
              x:DataType="vm:HomeViewModel"
-             Title=""
-             Shell.TabBarIsVisible="True">
+             Title="PUSH Home">
 
     <Grid
-        RowDefinitions="*,Auto">
+        MaximumWidthRequest="500"
+        Padding="30,15"
+        RowDefinitions="Auto,Auto,Auto,*"
+        RowSpacing="15">
 
-        <ScrollView
-            Grid.Row="0">
+        <Label
+            Grid.Row="0"
+            FontAttributes="Bold"
+            FontSize="16"
+            Text="Your Workouts"/>
 
-            <VerticalStackLayout
-                Padding="20"
-                Spacing="15">
+        <CollectionView
+            Grid.Row="1"
+            HeightRequest="150"
+            ItemsSource="{Binding FeaturedWorkouts}"
+            SelectionMode="Single"
+            SelectedItem="{Binding SelectedWorkout, Mode=TwoWay}">
 
+            <!-- Empty view -->
+            <CollectionView.EmptyView>
 
                 <Label
-                    FontAttributes="Bold"
-                    FontSize="18"
-                    Text="Your Workouts"/>
+                    FontAttributes="Italic"
+                    HorizontalTextAlignment="Center"
+                    Text="No workouts found."
+                    VerticalTextAlignment="Center"/>
 
-                <Grid
-                    ColumnDefinitions="*,*,*"
-                    ColumnSpacing="10">
+            </CollectionView.EmptyView>
 
-                    <Button
-                        Grid.Column="0"
-                        Command="{Binding SelectCategoryCommand}"
-                        CommandParameter="Strength Training"
-                        FontSize="12"
-                        Text="Strength"/>
+            <!-- Item layout -->
+            <CollectionView.ItemsLayout>
+                
+                <LinearItemsLayout
+                    ItemSpacing="10"
+                    Orientation="Horizontal"/>
+                
+            </CollectionView.ItemsLayout>
 
-                    <Button
-                        Grid.Column="1"
-                        Command="{Binding SelectCategoryCommand}"
-                        CommandParameter="Cardio"
-                        FontSize="12"
-                        Text="Cardio"/>
+            <!-- Item template -->
+            <CollectionView.ItemTemplate>
+                
+                <DataTemplate
+                    x:DataType="models:Workout">
 
-                    <Button
-                        Grid.Column="2"
-                        Command="{Binding SelectCategoryCommand}"
-                        CommandParameter="Flexibility &amp; Mobility"
-                        FontSize="12"
-                        Text="Flexibility"/>
+                    <Border
+                        Style="{StaticResource Card}"
+                        WidthRequest="150">
 
-                </Grid>
+                        <VerticalStackLayout
+                            Spacing="10"
+                            VerticalOptions="Center">
 
-                <CollectionView
-                    HeightRequest="170"
-                    ItemsSource="{Binding Workouts}">
-
-                    <CollectionView.EmptyView>
-                        <Label
-                            FontAttributes="Italic"
-                            HorizontalTextAlignment="Center"
-                            Text="No workouts yet."/>
-                    </CollectionView.EmptyView>
-
-                    <CollectionView.ItemsLayout>
-                        <LinearItemsLayout
-                            ItemSpacing="10"
-                            Orientation="Horizontal"/>
-                    </CollectionView.ItemsLayout>
-
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="models:Workout">
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="16"
+                                HorizontalTextAlignment="Center"
+                                LineBreakMode="TailTruncation"
+                                MaxLines="2"
+                                Text="{Binding Title}"/>
 
                             <Border
-                                Padding="15"
-                                BackgroundColor="{AppThemeBinding Light=#E5E7EB, Dark=#2C2C31}"
-                                StrokeShape="RoundRectangle 10"
-                                StrokeThickness="0"
-                                WidthRequest="160">
+                                HorizontalOptions="Center"
+                                Style="{StaticResource Pill}">
 
-                                <VerticalStackLayout
-                                    Spacing="4"
-                                    VerticalOptions="Center">
-
-                                    <Label
-                                        FontAttributes="Bold"
-                                        HorizontalTextAlignment="Center"
-                                        Text="{Binding Name}"/>
-
-                                    <Label
-                                        FontSize="12"
-                                        HorizontalTextAlignment="Center"
-                                        Text="{Binding CategoryName}"/>
-
-                                </VerticalStackLayout>
+                                <Label
+                                    FontSize="12"
+                                    HorizontalTextAlignment="Center"
+                                    LineBreakMode="TailTruncation"
+                                    Text="{Binding CategoryTitle}"/>
 
                             </Border>
 
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
+                        </VerticalStackLayout>
 
-                </CollectionView>
+                    </Border>
 
+                </DataTemplate>
+                
+            </CollectionView.ItemTemplate>
+
+        </CollectionView>
+
+        <!-- Featured Articles -->
+        <Label
+            Grid.Row="2"
+            FontAttributes="Bold"
+            FontSize="16"
+            Text="Featured Articles"/>
+
+        <CollectionView
+            Grid.Row="3"
+            ItemsSource="{Binding FeaturedArticles}"
+            SelectionMode="Single"
+            SelectedItem="{Binding SelectedArticle, Mode=TwoWay}">
+
+            <CollectionView.EmptyView>
+                
                 <Label
-                    FontAttributes="Bold"
-                    FontSize="18"
-                    Text="Featured Articles"/>
+                    FontAttributes="Italic"
+                    HorizontalTextAlignment="Center"
+                    Text="No articles available."/>
+                
+            </CollectionView.EmptyView>
 
-                <VerticalStackLayout
-                    BindableLayout.ItemsSource="{Binding FeaturedArticles}"
-                    Spacing="10">
+            <CollectionView.ItemsLayout>
+                
+                <LinearItemsLayout
+                    ItemSpacing="10"
+                    Orientation="Vertical"/>
+                
+            </CollectionView.ItemsLayout>
 
-                    <BindableLayout.ItemTemplate>
-                        <DataTemplate x:DataType="models:Article">
+            <CollectionView.ItemTemplate>
+                
+                <DataTemplate
+                    x:DataType="models:Article">
 
-                            <Border
-                                Padding="15"
-                                BackgroundColor="{AppThemeBinding Light=#E5E7EB, Dark=#2C2C31}"
-                                StrokeShape="RoundRectangle 10"
-                                StrokeThickness="0"
-                                HeightRequest="140">
+                    <Border
+                        Style="{StaticResource Card}">
 
-                                <VerticalStackLayout
-                                    Spacing="4"
-                                    VerticalOptions="Center">
+                        <VerticalStackLayout
+                            Spacing="10">
 
-                                    <Label
-                                        FontAttributes="Bold"
-                                        HorizontalTextAlignment="Center"
-                                        Text="{Binding Title}"/>
+                            <Grid
+                                ColumnDefinitions="*,auto"
+                                ColumnSpacing="10">
+
+                                <Label
+                                    FontAttributes="Bold"
+                                    FontSize="16"
+                                    Grid.Column="0"
+                                    LineBreakMode="WordWrap"
+                                    MaxLines="2"
+                                    Text="{Binding Title}"
+                                    VerticalOptions="Center"/>
+
+                                <Border
+                                    Grid.Column="1"
+                                    Style="{StaticResource Pill}">
 
                                     <Label
                                         FontSize="12"
-                                        HorizontalTextAlignment="Center"
-                                        Text="{Binding ReadingTime, StringFormat='{0} min read'}"/>
+                                        Text="{Binding CategoryTitle}"/>
 
-                                </VerticalStackLayout>
+                                </Border>
 
-                            </Border>
+                            </Grid>
 
-                        </DataTemplate>
-                    </BindableLayout.ItemTemplate>
+                            <VerticalStackLayout
+                                Spacing="3">
 
-                </VerticalStackLayout>
+                                <Label
+                                    FontAttributes="Italic"
+                                    FontSize="12"
+                                    Text="{Binding ReadingTime, StringFormat='• Reading time: {0}min'}"/>
 
-            </VerticalStackLayout>
+                                <Label
+                                    FontAttributes="Italic"
+                                    FontSize="12"
+                                    Text="{Binding Citation, StringFormat='• Written by: {0}'}"/>
 
-        </ScrollView>
+                                <Label
+                                    FontAttributes="Italic"
+                                    FontSize="12"
+                                    Text="{Binding DateTimePublished, StringFormat='• Date published: {0:d MMMM yyyy}'}"/>
+
+                            </VerticalStackLayout>
+
+                        </VerticalStackLayout>
+
+                    </Border>
+
+                </DataTemplate>
+                
+            </CollectionView.ItemTemplate>
+
+        </CollectionView>
 
     </Grid>
-
+    
 </ContentPage>

@@ -23,7 +23,7 @@
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(HasErrorMessage))]
-        private string? errorMessage;
+        public partial string? ErrorMessage { get; set; } = string.Empty;
 
         public bool HasErrorMessage => !string.IsNullOrEmpty(ErrorMessage);
 
@@ -65,8 +65,8 @@
 
                 IsBusy = false;
 
-                await Shell.Current.DisplayAlertAsync("Register Successful", "Your account has been created.", "OK");
-                await Shell.Current.GoToAsync("//HomePage");
+                await Shell.Current.DisplayAlertAsync("Register Successful", "Your PUSH account has been created.", "OK");
+                await NavigateAsync("//HomePage");
             }
             catch (Exception ex)
             {
@@ -83,14 +83,14 @@
         [RelayCommand]
         private async Task GoToLoginAsync()
         {
-            await Shell.Current.GoToAsync($"../{nameof(LoginPage)}");
+            await NavigateAsync($"../{nameof(LoginPage)}");
         }
 
         // Privacy link command
         [RelayCommand]
         private async Task GoToPrivacyAsync()
         {
-            await Shell.Current.GoToAsync(nameof(PrivacyPage));
+            await NavigateAsync(nameof(PrivacyPage));
         }
     }
 }

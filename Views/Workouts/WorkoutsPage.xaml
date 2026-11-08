@@ -5,98 +5,181 @@
              xmlns:vm="clr-namespace:CapstoneProjectPUSH.ViewModels.Workouts"
              x:Class="CapstoneProjectPUSH.Views.Workouts.WorkoutsPage"
              x:DataType="vm:WorkoutsViewModel"
-             Title=""
-             Shell.NavBarIsVisible="False">
+             Title="PUSH Workouts">
 
     <Grid
-        RowDefinitions="*,Auto">
+        MaximumWidthRequest="500"
+        Padding="30,15"
+        RowDefinitions="Auto,Auto,*"
+        RowSpacing="15">
 
         <Grid
-            Grid.Row="0"
-            Padding="20,20,20,0"
-            RowDefinitions="Auto,Auto,Auto,*"
-            RowSpacing="15">
+            ColumnDefinitions="*,Auto"
+            ColumnSpacing="10"
+            Grid.Row="0">
 
+            <Label
+                FontAttributes="Bold"
+                FontSize="16"
+                Grid.Column="0"
+                Text="My Workout Plans"
+                VerticalOptions="Center"/>
 
-            <!-- Title + add button -->
-            <Grid
-                Grid.Row="1"
-                ColumnDefinitions="*,Auto">
+            <!-- Replace? -->
+            <Button
+                Command="{Binding AddWorkoutCommand}"
+                Grid.Column="1"
+                HeightRequest="20"
+                Padding="5"
+                Text="+"
+                WidthRequest="20"/>
 
-                <Label
-                    Grid.Column="0"
-                    FontAttributes="Bold"
-                    FontSize="18"
-                    Text="My Workout Plans"
-                    VerticalOptions="Center"/>
+        </Grid>
 
-                <Button
-                    Grid.Column="1"
-                    Command="{Binding AddWorkoutCommand}"
-                    FontAttributes="Bold"
-                    HeightRequest="40"
-                    Text="+"
-                    WidthRequest="50"/>
-
-            </Grid>
+        <!-- Keep? -->
+        <!-- Search -->
+        <VerticalStackLayout
+            Grid.Row="1"
+            Spacing="10">
 
             <SearchBar
-                Grid.Row="2"
                 Placeholder="Search workouts"
                 Text="{Binding SearchText}"/>
 
-            <CollectionView
-                Grid.Row="3"
-                ItemsSource="{Binding Workouts}">
+            <Label
+                FontAttributes="Italic"
+                Text="{Binding StatusMessage}"/>
 
+        </VerticalStackLayout>
+
+        <RefreshView
+            Command="{Binding LoadWorkoutsCommand}"
+            Grid.Row="2"
+            IsRefreshing="{Binding IsBusy}">
+
+            <CollectionView
+                ItemsSource="{Binding Workouts}"
+                SelectionMode="Single"
+                SelectedItem="{Binding SelectedWorkout, Mode=TwoWay}">
+
+                <!-- Empty view -->
+                <CollectionView.EmptyView>
+
+                    <VerticalStackLayout
+                        HorizontalOptions="Center"
+                        VerticalOptions="Center">
+
+                        <Label
+                            FontAttributes="Italic"
+                            HorizontalTextAlignment="Center"
+                            Text="No workouts found."/>
+
+                        <Label
+                            FontAttributes="Italic"
+                            HorizontalTextAlignment="Center"
+                            Text="Tap + to create one."/>
+
+                    </VerticalStackLayout>
+
+                </CollectionView.EmptyView>
+
+                <!-- Item layout -->
                 <CollectionView.ItemsLayout>
+
                     <LinearItemsLayout
                         ItemSpacing="10"
                         Orientation="Vertical"/>
+
                 </CollectionView.ItemsLayout>
 
-                <CollectionView.EmptyView>
-                    <Label
-                        HorizontalOptions="Center"
-                        Text="No workouts found."
-                        VerticalOptions="Center"/>
-                </CollectionView.EmptyView>
-
+                <!-- Item template -->
                 <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="models:Workout">
 
-                        <Border
-                            Padding="15"
-                            BackgroundColor="{AppThemeBinding Light=#E5E7EB, Dark=#2C2C31}"
-                            StrokeShape="RoundRectangle 10"
-                            StrokeThickness="0"
-                            HeightRequest="100">
+                    <DataTemplate
+                        x:DataType="models:Workout">
 
-                            <VerticalStackLayout
-                                Spacing="4"
-                                VerticalOptions="Center">
+                        <!-- Keep? -->
+                        <SwipeView>
 
-                                <Label
-                                    FontAttributes="Bold"
-                                    HorizontalTextAlignment="Center"
-                                    Text="{Binding Name}"/>
+                            <SwipeView.RightItems>
 
-                                <Label
-                                    FontSize="12"
-                                    HorizontalTextAlignment="Center"
-                                    Text="{Binding CategoryName}"/>
+                                <SwipeItems>
 
-                            </VerticalStackLayout>
+                                    <SwipeItem
+                                        BackgroundColor="Red"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:WorkoutsViewModel}}, Path=DeleteWorkoutCommand}"
+                                        CommandParameter="{Binding .}"
+                                        Text="Delete"/>
 
-                        </Border>
+                                </SwipeItems>
+
+                            </SwipeView.RightItems>
+
+                            <Border
+                                Style="{StaticResource Card}">
+
+                                <VerticalStackLayout
+                                    Spacing="10">
+
+                                    <Grid
+                                        ColumnDefinitions="*,Auto"
+                                        ColumnSpacing="10">
+
+                                        <Label
+                                            Grid.Column="0"
+                                            FontAttributes="Bold"
+                                            FontSize="16"
+                                            LineBreakMode="TailTruncation"
+                                            Text="{Binding Title}"
+                                            VerticalOptions="Center"/>
+
+                                        <Border
+                                            Grid.Column="1"
+                                            Style="{StaticResource Pill}">
+
+                                            <Label
+                                                FontSize="12"
+                                                LineBreakMode="TailTruncation"
+                                                Text="{Binding CategoryTitle}"/>
+
+                                        </Border>
+
+                                    </Grid>
+
+                                    <VerticalStackLayout
+                                        Spacing="10">
+
+                                        <VerticalStackLayout
+                                            Spacing="0">
+
+                                            <Label
+                                                Text="{Binding ExerciseCount, StringFormat='• Exercises: {0}'}"/>
+
+                                            <Label
+                                                Text="{Binding SetCount, StringFormat='• Sets: {0}'}"/>
+
+                                        </VerticalStackLayout>
+
+                                        <Label
+                                            FontAttributes="Italic"
+                                            FontSize="12"
+                                            Text="{Binding DateTimeCreated, StringFormat='Date created: {0:d MMMM yyyy}'}"/>
+
+                                    </VerticalStackLayout>
+
+                                </VerticalStackLayout>
+
+                            </Border>
+
+                        </SwipeView>
 
                     </DataTemplate>
+
                 </CollectionView.ItemTemplate>
 
             </CollectionView>
 
-        </Grid>
-
+        </RefreshView>
 
     </Grid>
 
