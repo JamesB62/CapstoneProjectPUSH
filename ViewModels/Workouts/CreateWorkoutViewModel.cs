@@ -4,6 +4,7 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
     {
         private const int MaxSets = 10;
         private const int MaxReps = 100;
+        private const int MaxDurationMinutes = 300;
 
         private readonly CategoryService _categoryService;
         private readonly UserService _userService;
@@ -187,26 +188,41 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
 
             foreach (var item in Items)
             {
-                if (!int.TryParse(item.SetsText, out int sets) || sets < 1 || sets > MaxSets)
-                {
-                    StatusMessage = $"Sets for {item.Exercise.Title} must be between 1 and {MaxSets}.";
-                    return;
-                }
-
-                if (!int.TryParse(item.RepsText, out int reps) || reps < 1 || reps > MaxReps)
-                {
-                    StatusMessage = $"Reps for {item.Exercise.Title} must be between 1 and {MaxReps}.";
-                    return;
-                }
-
-                workoutExercises.Add(new WorkoutExercise
+                var workoutExercise = new WorkoutExercise
                 {
                     ExerciseId = item.Exercise.Id,
-                    SortOrder = sortOrder,
-                    Sets = sets,
-                    Reps = reps
-                });
+                    SortOrder = sortOrder
+                };
 
+                if (item.IsTimed)
+                {
+                    if (!int.TryParse(item.DurationText, out int minutes) || minutes < 1 || minutes > MaxDurationMinutes)
+                    {
+                        StatusMessage = $"Duration for {item.Exercise.Title} must be between 1 and {MaxDurationMinutes} minutes.";
+                        return;
+                    }
+
+                    workoutExercise.DurationMinutes = minutes;
+                }
+                else
+                {
+                    if (!int.TryParse(item.SetsText, out int sets) || sets < 1 || sets > MaxSets)
+                    {
+                        StatusMessage = $"Sets for {item.Exercise.Title} must be between 1 and {MaxSets}.";
+                        return;
+                    }
+
+                    if (!int.TryParse(item.RepsText, out int reps) || reps < 1 || reps > MaxReps)
+                    {
+                        StatusMessage = $"Reps for {item.Exercise.Title} must be between 1 and {MaxReps}.";
+                        return;
+                    }
+
+                    workoutExercise.Sets = sets;
+                    workoutExercise.Reps = reps;
+                }
+
+                workoutExercises.Add(workoutExercise);
                 sortOrder++;
             }
 

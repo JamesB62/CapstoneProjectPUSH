@@ -14,5 +14,12 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
 
         [ObservableProperty]
         public partial string RepsText { get; set; } = "10";
+
+        [ObservableProperty]
+        public partial string DurationText { get; set; } = "20";
+
+        public bool IsTimed => Exercise.IsTimed;
+
+        public bool IsNotTimed => !Exercise.IsTimed;
     }
 }

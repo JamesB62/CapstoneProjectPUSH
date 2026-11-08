@@ -10,12 +10,31 @@
 
         public int Sets { get; set; }
 
+        public int DurationMinutes { get; set; }
+
+        [Ignore]
+        public bool IsTimed => DurationMinutes > 0;
+
+        [Ignore]
+        public string TargetText
+        {
+            get
+            {
+                if (IsTimed)
+                {
+                    return $"{DurationMinutes} min";
+                }
+                else
+                {
+                    return $"{Sets} sets × {Reps} reps";
+                }
+            }
+        }
+
         public int SortOrder { get; set; }
 
         [Ignore]
         public int DisplayNumber { get; set; }
-
-        // Add extra variables as needed, eg. Duration, WeightKg, Rests
 
         [Indexed]
         public int WorkoutId { get; set; }

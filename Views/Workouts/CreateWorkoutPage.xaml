@@ -138,7 +138,8 @@
                             <!-- Sets and reps -->
                             <Grid
                                 ColumnDefinitions="Auto,*,Auto,*"
-                                ColumnSpacing="10">
+                                ColumnSpacing="10"
+                                IsVisible="{Binding IsNotTimed}">
 
                                 <Label
                                     Grid.Column="0"
@@ -163,6 +164,26 @@
                                     Keyboard="Numeric"
                                     MaxLength="3"
                                     Text="{Binding RepsText}"/>
+
+                            </Grid>
+
+                            <!-- Duration -->
+                            <Grid
+                                ColumnDefinitions="Auto,*"
+                                ColumnSpacing="10"
+                                IsVisible="{Binding IsTimed}">
+
+                                <Label
+                                    Grid.Column="0"
+                                    Text="Minutes"
+                                    VerticalOptions="Center"/>
+
+                                <Entry
+                                    Grid.Column="1"
+                                    HorizontalTextAlignment="Center"
+                                    Keyboard="Numeric"
+                                    MaxLength="3"
+                                    Text="{Binding DurationText}"/>
 
                             </Grid>
 
