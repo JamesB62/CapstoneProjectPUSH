@@ -1,7 +1,3 @@
-using CapstoneProjectPUSH.Views.Exercises;
-using CapstoneProjectPUSH.ViewModels.Admins;
-using CapstoneProjectPUSH.Views.Admin;
-
 namespace CapstoneProjectPUSH
 {
     public static class MauiProgram
@@ -24,14 +20,18 @@ namespace CapstoneProjectPUSH
             builder.Services.AddSingleton<DatabaseService>();
             builder.Services.AddSingleton<ExerciseService>(); 
             builder.Services.AddSingleton<GymService>();
+            builder.Services.AddSingleton<NoteService>();
             builder.Services.AddSingleton<StatsService>();
             builder.Services.AddSingleton<TrainerService>();
             builder.Services.AddSingleton<UserService>();
-            builder.Services.AddSingleton<WorkoutService>();
+            builder.Services.AddSingleton<WeightLogService>();
             builder.Services.AddSingleton<WorkoutLogService>();
-            builder.Services.AddSingleton<ExerciseService>();
+            builder.Services.AddSingleton<WorkoutService>();
 
             // ======================== ViewModels ========================
+
+            // Admin
+            builder.Services.AddTransient<AdminDashboardViewModel>();
 
             // Auth
             builder.Services.AddTransient<LoginViewModel>();
@@ -41,15 +41,18 @@ namespace CapstoneProjectPUSH
             builder.Services.AddTransient<LandingViewModel>();
 
             // Exercises
-            builder.Services.AddTransient<ExercisesViewModel>();
             builder.Services.AddTransient<ExerciseDetailsViewModel>();
+            builder.Services.AddTransient<ExercisesViewModel>();
 
             // Home
+            builder.Services.AddTransient<ArticleDetailsViewModel>();
             builder.Services.AddTransient<HomeViewModel>();
 
             // Profile
-            builder.Services.AddTransient<UpdateProfileViewModel>();
+            builder.Services.AddTransient<MyNotesViewModel>();
+            builder.Services.AddTransient<MyWorkoutsViewModel>();
             builder.Services.AddTransient<ProfileViewModel>();
+            builder.Services.AddTransient<UpdateProfileViewModel>();
 
             // Stats
             builder.Services.AddTransient<StatsViewModel>();
@@ -59,19 +62,15 @@ namespace CapstoneProjectPUSH
             builder.Services.AddTransient<TrainersViewModel>();
 
             // Workouts
-            builder.Services.AddTransient<WorkoutsViewModel>();
-            //workout detail
-            builder.Services.AddTransient<WorkoutDetailsViewModel>();
-
-            //Exercise
-            builder.Services.AddTransient<ExercisesViewModel>();
+            builder.Services.AddTransient<CreateWorkoutViewModel>();
             builder.Services.AddTransient<SelectExercisesViewModel>();
-
-            // Admin
-            builder.Services.AddTransient<AdminDashboardViewModel>();
-            builder.Services.AddTransient<UsersManagementViewModel>();
+            builder.Services.AddTransient<WorkoutDetailsViewModel>();
+            builder.Services.AddTransient<WorkoutsViewModel>();
 
             // ========================== Views ===========================
+
+            // Admin
+            builder.Services.AddTransient<AdminDashboardPage>();
 
             // Auth
             builder.Services.AddTransient<LoginPage>();
@@ -82,39 +81,32 @@ namespace CapstoneProjectPUSH
             builder.Services.AddTransient<PrivacyPage>();
 
             // Exercises
-            builder.Services.AddTransient<ExercisesPage>();
             builder.Services.AddTransient<ExerciseDetailsPage>();
+            builder.Services.AddTransient<ExercisesPage>();
 
             // Home
+            builder.Services.AddTransient<ArticleDetailsPage>();
             builder.Services.AddTransient<HomePage>();
 
             // Profile
-            builder.Services.AddTransient<UpdateProfilePage>();
+            builder.Services.AddTransient<MyNotesPage>();
+            builder.Services.AddTransient<MyWorkoutsPage>();
             builder.Services.AddTransient<ProfilePage>();
-          
+            builder.Services.AddTransient<UpdateProfilePage>();
+
             // Stats
             builder.Services.AddTransient<StatsPage>();
           
             // Trainers
             builder.Services.AddTransient<TrainerDetailsPage>();
             builder.Services.AddTransient<TrainersPage>();
-          
-            // Workout
-            builder.Services.AddTransient<WorkoutsPage>();
 
-            //Workout Detail 
-            builder.Services.AddTransient<WorkoutDetailsPage>();
-
-            //Exercises 
+            // Workouts
+            builder.Services.AddTransient<CreateWorkoutPage>();
             builder.Services.AddTransient<SelectExercisesPage>();
-
-            // Admin
-            builder.Services.AddTransient<AdminDashboard>();
-
-            // User 
-            builder.Services.AddTransient<UsersManagementPage>();
-
-
+            builder.Services.AddTransient<WorkoutDetailsPage>();
+            builder.Services.AddTransient<WorkoutsPage>();
+            
 #if DEBUG
             builder.Logging.AddDebug();
 #endif

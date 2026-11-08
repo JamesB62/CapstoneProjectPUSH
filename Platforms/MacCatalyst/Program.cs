@@ -1,7 +1,7 @@
 ﻿using ObjCRuntime;
 using UIKit;
 
-namespace CapstoneProjectPUSH
+namespace CapstoneProjectPUSH.Platforms.MacCatalyst
 {
     public class Program
     {

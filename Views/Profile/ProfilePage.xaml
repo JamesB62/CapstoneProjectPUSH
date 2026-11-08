@@ -1,83 +1,79 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:CapstoneProjectPUSH.ViewModels.Profile"
              x:Class="CapstoneProjectPUSH.Views.Profile.ProfilePage"
-             Title="">
+             x:DataType="vm:ProfileViewModel"
+             Title="My PUSH Profile">
 
     <ScrollView>
 
         <VerticalStackLayout
-            Padding="30"
+            MaximumWidthRequest="500"
+            Padding="30,15"
             Spacing="15">
 
-            <Label
-                FontAttributes="Bold"
-                FontSize="18"
-                Text="My PUSH Profile"/>
-
-            <!-- Profile picture placeholder -->
             <Border
                 HeightRequest="100"
                 HorizontalOptions="Center"
-                StrokeShape="RoundRectangle 50"
+                StrokeShape="Ellipse"
+                StrokeThickness="0"
                 WidthRequest="100">
 
-                <Label
-                    FontAttributes="Bold"
-                    FontSize="10"
-                    HorizontalOptions="Center"
-                    Text="PFP"
-                    VerticalOptions="Center"/>
+                <Image
+                    Aspect="AspectFill"
+                    Source="{Binding ProfileImage}"/>
 
             </Border>
 
-            <Label
-                FontAttributes="Bold"
-                FontSize="18"
-                Margin="0,0,0,-5"
+            <VerticalStackLayout
                 HorizontalOptions="Center"
-                Text="{Binding DisplayName}"/>
-            
-            <Label
                 Margin="0,0,0,10"
-                HorizontalOptions="Center"
-                Text="{Binding Email}"/>
+                Spacing="5">
+
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="18"
+                    HorizontalOptions="Center"
+                    Text="{Binding DisplayName}"/>
+
+                <Label
+                    HorizontalOptions="Center"
+                    Text="{Binding Email}"/>
+
+            </VerticalStackLayout>
 
             <!-- Buttons -->
-
             <VerticalStackLayout
                 Spacing="10">
 
                 <Button
                     Command="{Binding GoToUpdateDetailsCommand}"
-                    FontAttributes="Bold"
                     Text="Update Details"/>
 
                 <Button
-                    Command="{Binding MyWorkoutsCommand}"
-                    FontAttributes="Bold"
+                    Command="{Binding GoToMyWorkoutsCommand}"
                     Text="My Workouts"/>
 
                 <Button
-                    Command="{Binding MyNotesCommand}"
-                    FontAttributes="Bold"
+                    Command="{Binding GoToMyNotesCommand}"
                     Text="My Notes"/>
 
                 <Button
-                    Command="{Binding AdminCommand}"
-                    FontAttributes="Bold"
+                    Command="{Binding GoToAdminDashboardCommand}"
+                    IsVisible="{Binding IsAdmin}"
                     Text="Admin Dashboard"/>
 
                 <Button
                     Command="{Binding LogoutCommand}"
-                    FontAttributes="Bold"
                     Text="Logout"/>
 
             </VerticalStackLayout>
 
             <!-- Privacy statement link -->
             <Label
-                Text="View Privacy Statement">
+                Text="Privacy Statement"
+                TextDecorations="Underline">
 
                 <Label.GestureRecognizers>
 

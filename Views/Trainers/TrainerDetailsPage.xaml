@@ -4,40 +4,43 @@
              xmlns:vm="clr-namespace:CapstoneProjectPUSH.ViewModels.Trainers"
              x:Class="CapstoneProjectPUSH.Views.Trainers.TrainerDetailsPage"
              x:DataType="vm:TrainerDetailsViewModel"
-             Title="">
+             Title="PUSH Trainer Details">
 
     <ScrollView>
 
         <VerticalStackLayout
-            Padding="20,0,20,20"
+            MaximumWidthRequest="500"
+            Padding="30,15"
             Spacing="15">
 
-            <Label
-                FontAttributes="Bold"
-                FontSize="18"
+            <Border
                 Grid.Column="0"
-                Grid.Row="0"
-                Text="PUSH Trainer Details"/>
+                HeightRequest="100"
+                HorizontalOptions="Center"
+                StrokeShape="Ellipse"
+                StrokeThickness="0"
+                WidthRequest="100">
 
-            <!-- ADD IMAGE HERE? -->
+                <Image
+                    Aspect="AspectFill"
+                    Source="{Binding Trainer.ProfileImage}"/>
 
-            <Grid
-                ColumnDefinitions="*,Auto"
-                ColumnSpacing="15">
+            </Border>
+
+            <VerticalStackLayout
+                HorizontalOptions="Center"
+                Margin="0,0,0,10"
+                Spacing="10">
 
                 <Label
                     FontAttributes="Bold"
-                    FontSize="16"
-                    Grid.Column="0"
-                    LineBreakMode="WordWrap"
-                    Text="{Binding Trainer.FullName}"
-                    VerticalOptions="Center"/>
+                    FontSize="18"
+                    HorizontalOptions="Center"
+                    Text="{Binding Trainer.FullName}"/>
 
                 <Border
-                    Grid.Column="1"
-                    Padding="10,5"
-                    StrokeShape="RoundRectangle 10"
-                    VerticalOptions="Start">
+                    HorizontalOptions="Center"
+                    Style="{StaticResource Pill}">
 
                     <Label
                         FontSize="12"
@@ -45,10 +48,11 @@
 
                 </Border>
 
-            </Grid>
+            </VerticalStackLayout>
 
             <Label
                 FontAttributes="Bold"
+                FontSize="16"
                 Text="About Me"/>
 
             <Label
@@ -57,81 +61,55 @@
             <VerticalStackLayout
                 Spacing="5">
 
-                <HorizontalStackLayout
-                    Spacing="0">
+                <Label
+                    Text="{Binding Trainer.CategoryTitle, StringFormat='• Specialty: {0}'}"/>
 
-                    <Label
-                        Text="• Specialty: "/>
+                <Label>
 
-                    <Label
-                        Text="{Binding Trainer.CategoryName}"/>
+                    <Label.Text>
 
-                </HorizontalStackLayout>
+                        <MultiBinding
+                            StringFormat="• Gym: {0} – {1}">
 
-                <!-- INCLUDE STREET ADDRESS? -->
-                
-                <HorizontalStackLayout
-                    Spacing="0">
+                            <Binding
+                                Path="Trainer.GymName"/>
 
-                    <Label
-                        Text="• Gym: "/>
+                            <Binding
+                                Path="Trainer.GymFullAddress"/>
 
-                    <Label>
+                        </MultiBinding>
 
-                        <Label.Text>
+                    </Label.Text>
 
-                            <MultiBinding
-                                StringFormat="{}{0}, {1}">
-
-                                <Binding
-                                    Path="Trainer.GymName"/>
-
-                                <Binding
-                                    Path="Trainer.GymCity"/>
-
-                            </MultiBinding>
-
-                        </Label.Text>
-
-                    </Label>
-
-                </HorizontalStackLayout>
+                </Label>
 
             </VerticalStackLayout>
 
             <Label
                 FontAttributes="Bold"
-                Text="Contact Details"/>
+                FontSize="16"
+                IsVisible="{Binding HasContactDetails}"
+                Margin="0,0,0,4"
+                Text="Contact Me"/>
 
-            <!-- REPLACE WITH BUTTONS? -->
-            
             <VerticalStackLayout
-                Spacing="5">
+                IsVisible="{Binding HasContactDetails}"
+                Spacing="10">
 
-                <HorizontalStackLayout
-                    IsVisible="{Binding HasEmail}">
+                <Button
+                    Command="{Binding CallTrainerCommand}"
+                    IsEnabled="{Binding IsTrainerAvailable}"
+                    IsVisible="{Binding HasPhone}"
+                    Text="Call"/>
 
-                    <Label
-                        Text="• Email: "/>
-
-                    <Label
-                        Text="{Binding Trainer.Email}"/>
-
-                </HorizontalStackLayout>
-
-                <HorizontalStackLayout
-                    IsVisible="{Binding HasPhone}">
-
-                    <Label
-                        Text="• Phone: "/>
-
-                    <Label
-                        Text="{Binding Trainer.PhoneNumber}"/>
-
-                </HorizontalStackLayout>
+                <Button
+                    Command="{Binding EmailTrainerCommand}"
+                    IsEnabled="{Binding IsTrainerAvailable}"
+                    IsVisible="{Binding HasEmail}"
+                    Text="Email"/>
 
             </VerticalStackLayout>
-
+            
         </VerticalStackLayout>
         
     </ScrollView>

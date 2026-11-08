@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:CapstoneProjectPUSH.ViewModels.Base"
              x:Class="CapstoneProjectPUSH.Views.Base.LandingPage"
+             x:DataType="vm:LandingViewModel"
              Title=""
              Shell.FlyoutBehavior="Disabled">
 
     <ScrollView>
 
         <VerticalStackLayout
+            MaximumWidthRequest="500"
             Padding="30,0,30,30"
             Spacing="15"
             VerticalOptions="Center">

@@ -1,6 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-
-namespace CapstoneProjectPUSH.Models
+﻿namespace CapstoneProjectPUSH.Models
 {
     [Table("Workouts")]
     public class Workout
@@ -9,26 +7,26 @@ namespace CapstoneProjectPUSH.Models
         public int Id { get; set; }
 
         [NotNull, MaxLength(100)]
-        public string Name { get; set; } = string.Empty;
+        public string Title { get; set; } = string.Empty;
 
-        [NotNull, MaxLength(1000)]
-        public string Subtitle { get; set; } = string.Empty;
+        [Ignore]
+        public int ExerciseCount { get; set; }
+
+        [Ignore]
+        public int SetCount { get; set; }
+
+        public DateTime DateTimeCreated { get; set; } = DateTime.Now;
 
         [Indexed]
         public int UserId { get; set; }
 
-        // Display name property needed?
+        [Ignore]
+        public string UserDisplayName { get; set; } = string.Empty;
 
         [Indexed]
         public int CategoryId { get; set; }
 
         [Ignore]
-        public string CategoryName { get; set; } = string.Empty;
-
-        public DateTime DateTimeCreated { get; set; } = DateTime.Now;
-
-        public string WorkoutId { get; set; } = string.Empty;
-    
-
+        public string CategoryTitle { get; set; } = string.Empty;
     }
 }

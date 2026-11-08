@@ -1,197 +1,309 @@
-using System.Collections.ObjectModel;
-using CapstoneProjectPUSH.Models;
-using CapstoneProjectPUSH.Services;
-using CapstoneProjectPUSH.ViewModels.Workouts;
-
 namespace CapstoneProjectPUSH.ViewModels.Stats
 {
-    // One bar on the stats chart (UI only, not stored in the DB)
-    public class ChartBar
-    {
-        public string Label { get; set; } = string.Empty;
-        public double Minutes { get; set; }
-        public double BarHeight { get; set; }
-    }
-
-
-    public class ChartLine
-    {
-        public string Label { get; set; } = string.Empty;
-        public double Weight { get; set; }
-        public double LineHeight { get; set; }
-    }
-
-
     public partial class StatsViewModel : BaseViewModel
     {
         private const double MaxBarHeight = 120;
 
+        // Min and max weights for input validation
+        private const double MinWeightKg = 20;
+        private const double MaxWeightKg = 400;
+
         private readonly UserService _userService;
+        private readonly WeightLogService _weightLogService;
         private readonly WorkoutLogService _workoutLogService;
 
+        public StatsViewModel(UserService userService, WeightLogService weightLogService, WorkoutLogService workoutLogService)
+        {
+            _userService = userService;
+            _weightLogService = weightLogService;
+            _workoutLogService = workoutLogService;
+        }
+
+        // UI bindings
         [ObservableProperty]
-        public partial string SelectedFilter { get; set; }
+        public partial string SelectedFilter { get; set; } = "Week";
 
         [ObservableProperty]
-        public partial string WorkoutCountText { get; set; }
+        public partial string WorkoutCountText { get; set; } = "0";
 
         [ObservableProperty]
-        public partial string TotalTimeText { get; set; }
+        public partial string TotalTimeText { get; set; } = "0h 0m";
 
         [ObservableProperty]
-        public partial string AvgDurationText { get; set; }
+        public partial string AvgDurationText { get; set; } = "0 min";
 
         [ObservableProperty]
-        public partial string StreakText { get; set; }
+        public partial string StreakText { get; set; } = "0 days";
 
+        [ObservableProperty]
+        public partial string LatestWeightText { get; set; } = "No weigh-ins yet";
+
+        // Object used to draw the weight chart
+        [ObservableProperty]
+        public partial WeightChartDrawable WeightChart { get; set; } = new();
+
+        // Bars for the workout chart
         public ObservableCollection<ChartBar> Bars { get; } = new();
 
-        public StatsViewModel(UserService userService, WorkoutLogService workoutLogService)
-        {
-            _userService = userService;
-            _workoutLogService = workoutLogService;
-
-            SelectedFilter = "Week";
-            WorkoutCountText = "0";
-            TotalTimeText = "0h 0m";
-            AvgDurationText = "0 min";
-            StreakText = "0 days";
-        }
-
-        public StatsViewModel(UserService userService, WorkoutLogService workoutLogService, WeightLogService WeightLogService)
-        {
-            _userService = userService;
-            _workoutLogService = workoutLogService;
-            SelectedFilter = "Week";
-            WorkoutCountText = "0";
-            TotalTimeText = "0h 0m";
-            AvgDurationText = "0 min";
-            StreakText = "0 days";
-            // Load weight logs and create chart lines
-            LoadWeightLogs(WeightLogService);
-        }
-
-
-
-        
-
-
-        // Generates SelectFilterCommand
         [RelayCommand]
-        private async Task SelectFilter(string filter)
+        private async Task SelectFilterAsync(string filter)
         {
             SelectedFilter = filter;
-            await Load();
+            await LoadStatsAsync();
         }
 
-        // Generates LoadCommand
         [RelayCommand]
-        private async Task Load()
+        private async Task LoadStatsAsync()
         {
-            // Stats belong to whoever is logged in
-            var user = _userService.CurrentUser;
-            if (user is null)
+            IsBusy = true;
+
+            try
             {
-                Bars.Clear();
-                return;
+                var user = _userService.CurrentUser;
+
+                if (user is null)
+                {
+                    // Comment out to disable redirect
+                    await NavigateAsync("//LandingPage");
+                    return;
+                }
+
+                // Builds buckets for selected filter
+                var buckets = BuildBuckets();
+
+                // Gets date range from buckets
+                DateTime rangeStart = buckets.First().Start;
+                DateTime rangeEnd = buckets.Last().End;
+
+                // Load workout and weight stats
+                await LoadWorkoutStatsAsync(user.Id, buckets, rangeStart, rangeEnd);
+                await LoadWeightStatsAsync(user.Id, buckets, rangeStart, rangeEnd);
             }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex);
+                StatusMessage = "Something went wrong. Please try again.";
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
 
-            var allLogs = await _workoutLogService.GetWorkoutLogsAsync(user.Id);
-            var today = DateTime.Today;
-
-            // Build the buckets (one per bar) for the selected filter
+        // Builds the buckets (one per bar) for the selected filter
+        private List<(string Label, DateTime Start, DateTime End)> BuildBuckets()
+        {
+            // Creates an empty list for the buckets
             var buckets = new List<(string Label, DateTime Start, DateTime End)>();
 
-            switch (SelectedFilter)
+            // Creates a starting point
+            DateTime today = DateTime.Today;
+
+            if (SelectedFilter == "Month")
             {
-                case "Month": // last 4 weeks, one bar per week
-                    var monthStart = today.AddDays(-27);
-                    for (int i = 0; i < 4; i++)
-                    {
-                        var s = monthStart.AddDays(i * 7);
-                        buckets.Add((s.ToString("d MMM"), s, s.AddDays(7)));
-                    }
-                    break;
+                // Sets the start date (4 weeks ago)
+                DateTime monthStart = today.AddDays(-27);
 
-                case "Year": // last 12 months, one bar per month
-                    var yearStart = new DateTime(today.Year, today.Month, 1).AddMonths(-11);
-                    for (int i = 0; i < 12; i++)
-                    {
-                        var s = yearStart.AddMonths(i);
-                        buckets.Add((s.ToString("MMM"), s, s.AddMonths(1)));
-                    }
-                    break;
+                // Iterates once for each week
+                for (int i = 0; i < 4; i++)
+                {
+                    // Sets the label, start, and end dates for the bucket, then adds it to the list
+                    DateTime bucketStart = monthStart.AddDays(i * 7);
+                    buckets.Add((bucketStart.ToString("d MMM"), bucketStart, bucketStart.AddDays(7)));
+                }
+            }
+            else if (SelectedFilter == "Year")
+            {
+                // Sets the start date (11 months ago, on the first of the month)
+                DateTime yearStart = new DateTime(today.Year, today.Month, 1).AddMonths(-11);
 
-                default: // Week: last 7 days, one bar per day
-                    var weekStart = today.AddDays(-6);
-                    for (int i = 0; i < 7; i++)
-                    {
-                        var s = weekStart.AddDays(i);
-                        buckets.Add((s.ToString("ddd"), s, s.AddDays(1)));
-                    }
-                    break;
+                for (int i = 0; i < 12; i++)
+                {
+                    DateTime bucketStart = yearStart.AddMonths(i);
+                    buckets.Add((bucketStart.ToString("MMM"), bucketStart, bucketStart.AddMonths(1)));
+                }
+            }
+            else
+            {
+                // Sets the start date (6 days ago)
+                DateTime weekStart = today.AddDays(-6);
+
+                for (int i = 0; i < 7; i++)
+                {
+                    DateTime bucketStart = weekStart.AddDays(i);
+                    buckets.Add((bucketStart.ToString("ddd"), bucketStart, bucketStart.AddDays(1)));
+                }
             }
 
-            var rangeStart = buckets.First().Start;
-            var rangeEnd = buckets.Last().End;
+            return buckets;
+        }
+
+        // Builds the workout stats
+        private async Task LoadWorkoutStatsAsync(int userId, List<(string Label, DateTime Start, DateTime End)> buckets, DateTime rangeStart, DateTime rangeEnd)
+        {
+            var allLogs = await _workoutLogService.GetWorkoutLogsAsync(userId);
+
             var logs = allLogs
                 .Where(l => l.DateTimeCompleted >= rangeStart && l.DateTimeCompleted < rangeEnd)
                 .ToList();
 
-            // Top stats
+            // Calculates top stats
             int totalSeconds = logs.Sum(l => l.DurationSeconds);
+
             WorkoutCountText = logs.Count.ToString();
             TotalTimeText = $"{totalSeconds / 3600}h {totalSeconds % 3600 / 60}m";
-            AvgDurationText = logs.Count == 0 ? "0 min" : $"{totalSeconds / logs.Count / 60} min";
             StreakText = $"{CalculateStreak(allLogs)} days";
 
-            // Chart bars (minutes per bucket)
-            var minutes = buckets
-                .Select(b => (b.Label, Minutes: logs
-                    .Where(l => l.DateTimeCompleted >= b.Start && l.DateTimeCompleted < b.End)
-                    .Sum(l => l.DurationMinutes)))
-                .ToList();
+            if (logs.Count == 0)
+            {
+                AvgDurationText = "0 min";
+            }
+            else
+            {
+                AvgDurationText = $"{totalSeconds / logs.Count / 60} min";
+            }
 
-            double max = minutes.Max(m => m.Minutes);
+            var bucketMinutes = new List<(string Label, double Minutes)>();
+            double maxMinutes = 0;
+
+            // Calculates minutes trained per bucket then saves the max for scaling
+            foreach (var bucket in buckets)
+            {
+                double minutes = logs
+                    .Where(l => l.DateTimeCompleted >= bucket.Start && l.DateTimeCompleted < bucket.End)
+                    .Sum(l => l.DurationMinutes);
+
+                bucketMinutes.Add((bucket.Label, minutes));
+
+                if (minutes > maxMinutes)
+                {
+                    maxMinutes = minutes;
+                }
+            }
 
             Bars.Clear();
-            foreach (var (label, mins) in minutes)
+
+            // Creates a bar for each bucket, scaling the height based on the max minutes
+            foreach (var (label, minutes) in bucketMinutes)
             {
+                double barHeight;
+
+                if (maxMinutes == 0)
+                {
+                    barHeight = 2;
+                }
+                else
+                {
+                    barHeight = Math.Max(2, minutes / maxMinutes * MaxBarHeight);
+                }
+
                 Bars.Add(new ChartBar
                 {
                     Label = label,
-                    Minutes = mins,
-                    BarHeight = max == 0 ? 2 : Math.Max(2, mins / max * MaxBarHeight)
+                    Minutes = minutes,
+                    BarHeight = barHeight
                 });
             }
         }
 
-        // Consecutive days with a workout, counting back from today (or yesterday if none today yet)
+        // Builds the weight stats
+        private async Task LoadWeightStatsAsync(int userId, List<(string Label, DateTime Start, DateTime End)> buckets, DateTime rangeStart, DateTime rangeEnd)
+        {
+            var allWeightLogs = await _weightLogService.GetWeightLogsAsync(userId);
+
+            if (allWeightLogs.Count == 0)
+            {
+                LatestWeightText = "No weigh-ins yet";
+            }
+            else
+            {
+                LatestWeightText = $"Latest: {allWeightLogs[0].WeightKg:0.0} kg";
+            }
+
+            // Gets the weight logs for the selected range, ordered by date
+            var points = allWeightLogs
+                .Where(wl => wl.DateTimeLogged >= rangeStart && wl.DateTimeLogged < rangeEnd)
+                .OrderBy(wl => wl.DateTimeLogged)
+                .Select(wl => new WeightPoint { Date = wl.DateTimeLogged, WeightKg = wl.WeightKg })
+                .ToList();
+
+            var labels = buckets.Select(b => b.Label).ToList();
+
+            // Creates a new drawable for the GraphicsView
+            WeightChart = new WeightChartDrawable(points, rangeStart, rangeEnd, labels);
+        }
+
+        // Add weigh in value
+        [RelayCommand]
+        private async Task AddWeighInAsync()
+        {
+            var user = _userService.CurrentUser;
+
+            if (user is null)
+            {
+                await NavigateAsync("//LandingPage");
+                return;
+            }
+
+            // Value prompt
+            string? result = await Shell.Current.DisplayPromptAsync(
+                "Weigh-in",
+                "Enter today's weight in kg. This replaces any weigh-in already saved today.",
+                "Save",
+                "Cancel",
+                maxLength: 6,
+                keyboard: Keyboard.Numeric);
+
+            if (result is null)
+            {
+                return;
+            }
+
+            if (!double.TryParse(result.Trim(), out double weightKg))
+            {
+                await Shell.Current.DisplayAlertAsync("Invalid weight", "Please enter a number, e.g. 72.5", "OK");
+                return;
+            }
+
+            if (weightKg < MinWeightKg || weightKg > MaxWeightKg)
+            {
+                await Shell.Current.DisplayAlertAsync("Invalid weight", $"Weight must be between {MinWeightKg} and {MaxWeightKg} kg.", "OK");
+                return;
+            }
+
+            try
+            {
+                await _weightLogService.SaveWeightForTodayAsync(user.Id, Math.Round(weightKg, 1));
+                await LoadStatsAsync();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex);
+                await Shell.Current.DisplayAlertAsync("Weigh-in failed", "Your weigh-in could not be saved. Please try again.", "OK");
+            }
+        }
+
+        // Calculates day streak, counting back from today (or yesterday if none today yet)
         private static int CalculateStreak(List<WorkoutLog> logs)
         {
+            // Saves only the date and removes any duplicates
             var days = logs.Select(l => l.DateTimeCompleted.Date).ToHashSet();
-            var day = DateTime.Today;
+            DateTime day = DateTime.Today;
+
             if (!days.Contains(day))
+            {
                 day = day.AddDays(-1);
+            }
 
             int streak = 0;
+
             while (days.Contains(day))
             {
                 streak++;
                 day = day.AddDays(-1);
             }
+
             return streak;
         }
-
-        
-
-
-
-
     }
-
-    
-
-
-
 }

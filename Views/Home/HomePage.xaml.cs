@@ -11,9 +11,9 @@ public partial class HomePage : ContentPage
 		BindingContext = _homeViewModel;
 	}
 
-    protected override async void OnAppearing()
+    protected override void OnAppearing()
     {
         base.OnAppearing();
-        await _homeViewModel.LoadHomeCommand.ExecuteAsync(null);
+        _homeViewModel.LoadHomeCommand.Execute(null);
     }
 }

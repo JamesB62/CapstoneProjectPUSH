@@ -1,34 +1,43 @@
 ﻿namespace CapstoneProjectPUSH.Services
 {
-
-
     public record AuthResult(bool Success, string Message, User? User = null);
 
     public class UserService
     {
-
-        public const string PasswordRequirementsText = "Password must be at least 8 characters and contain at least one letter and one number.";
-
         private const int SaltSize = 16;
         private const int KeySize = 32;
         private const int Iterations = 100_000;
 
-        private readonly DatabaseService _database;
+        private const int MinDisplayNameLength = 5;
+        private const int MaxDisplayNameLength = 60;
 
-        public UserService(DatabaseService database) => _database = database;
+        public const string PasswordRequirementsText = "Password must be at least 8 characters and contain at least one letter and one number.";
 
-        // User who is currently logged in, or null
+        private readonly DatabaseService _databaseService;
+
+        public UserService(DatabaseService database)
+        {
+            _databaseService = database;
+        }
+
         public User? CurrentUser { get; private set; }
 
+        // Registration
         public async Task<AuthResult> RegisterAsync(string displayName, string email, string password, string confirmPassword, bool hasAcceptedPrivacy)
         {
-            displayName = (displayName ?? string.Empty).Trim();
-
-            email = NormalizeEmail(email);
-
-            if (displayName.Length < 2 || displayName.Length > 50)
+            if (displayName is null)
             {
-                return new AuthResult(false, "Display name must be between 2 and 50 characters.");
+                displayName = string.Empty;
+            }
+
+            displayName = displayName.Trim();
+
+            email = NormaliseEmail(email);
+
+            // Validation
+            if (displayName.Length < MinDisplayNameLength || displayName.Length > MaxDisplayNameLength)
+            {
+                return new AuthResult(false, $"Display name must be between {MinDisplayNameLength} and {MaxDisplayNameLength} characters.");
             }
 
             if (!IsValidEmail(email))
@@ -51,22 +60,29 @@
                 return new AuthResult(false, "You must agree to the privacy consent to register.");
             }
 
-            var db = await _database.GetConnectionAsync();
+            // Database checks
+            var db = await _databaseService.GetConnectionAsync();
 
-            var existing = await db.Table<User>().Where(u => u.Email == email).FirstOrDefaultAsync();
+            var emailTaken = await db.Table<User>().Where(u => u.Email == email).FirstOrDefaultAsync();
 
-            if (existing is not null)
+            if (emailTaken is not null)
             {
                 return new AuthResult(false, "An account with that email already exists.");
             }
 
+            var nameTaken = await db.Table<User>().Where(u => u.DisplayName.ToLower() == displayName.ToLower()).FirstOrDefaultAsync();
+
+            if (nameTaken is not null)
+            {
+                return new AuthResult(false, "An account with that display name already exists.");
+            }
+
+            // Create user
             var user = new User
             {
                 Email = email,
                 DisplayName = displayName,
-                // PBKDF2 is deliberately slow
                 PasswordHash = await Task.Run(() => HashPassword(password)),
-                DateTimeCreated = DateTime.Now
             };
 
             try
@@ -75,53 +91,65 @@
             }
             catch (SQLiteException)
             {
-                return new AuthResult(false, "An account with that email already exists.");
+                return new AuthResult(false, "An account with that email or display name already exists.");
             }
 
             CurrentUser = user;
+
             return new AuthResult(true, "Account created successfully.", user);
         }
 
+        // Login
         public async Task<AuthResult> LoginAsync(string email, string password, bool requireAdmin = false)
         {
-            email = NormalizeEmail(email);
+            email = NormaliseEmail(email);
 
-            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrEmpty(password))
+            // Validation
+            if (string.IsNullOrWhiteSpace(email))
             {
-                return new AuthResult(false, "Please enter your email address and password.");
+                return new AuthResult(false, "Please enter your email address.");
             }
 
-            var db = await _database.GetConnectionAsync();
+            if (string.IsNullOrEmpty(password))
+            {
+                return new AuthResult(false, "Please enter your password.");
+            }
+
+            // Database check
+            var db = await _databaseService.GetConnectionAsync();
 
             var user = await db.Table<User>().Where(u => u.Email == email).FirstOrDefaultAsync();
 
-            // Generic error message so emails can't be probed
-            const string invalid = "Invalid email or password.";
-
             if (user is null)
             {
-                return new AuthResult(false, invalid);
+                return new AuthResult(false, "Invalid email or password.");
             }
 
-            var ok = await Task.Run(() => VerifyPassword(password, user.PasswordHash));
+            var passwordCorrect = await Task.Run(() => VerifyPassword(password, user.PasswordHash));
 
-            if (!ok)
+            if (!passwordCorrect)
             {
-                return new AuthResult(false, invalid);
+                return new AuthResult(false, "Invalid email or password.");
             }
 
-            // Checked after the password so the message can't be used to probe which emails are admins
-            if (requireAdmin && !user.IsAdmin)
+            if (!user.IsActive)
             {
-                return new AuthResult(false, "This account does not have admin access.");
+                return new AuthResult(false, "This account has been deactivated.");
             }
 
+            // Login user
             CurrentUser = user;
+
             return new AuthResult(true, $"Welcome back, {user.DisplayName}!", user);
         }
 
-        public void Logout() => CurrentUser = null;
+        // Logout
+        public void Logout()
+        {
+            CurrentUser = null;
+        }
 
+        // Update details
         public async Task<AuthResult> UpdateDetailsAsync(string displayName, string email, string currentPassword, string newPassword, string confirmPassword)
         {
             if (CurrentUser is null)
@@ -129,13 +157,24 @@
                 return new AuthResult(false, "You must be signed in to update your details.");
             }
 
-            displayName = (displayName ?? string.Empty).Trim();
-
-            email = NormalizeEmail(email);
-
-            if (displayName.Length < 2 || displayName.Length > 50)
+            if (!CurrentUser.IsActive)
             {
-                return new AuthResult(false, "Display name must be between 2 and 50 characters.");
+                return new AuthResult(false, "This account has been deactivated.");
+            }
+
+            if (displayName is null)
+            {
+                displayName = string.Empty;
+            }
+
+            displayName = displayName.Trim();
+
+            email = NormaliseEmail(email);
+
+            // Validation
+            if (displayName.Length < MinDisplayNameLength || displayName.Length > MaxDisplayNameLength)
+            {
+                return new AuthResult(false, $"Display name must be between {MinDisplayNameLength} and {MaxDisplayNameLength} characters.");
             }
 
             if (!IsValidEmail(email))
@@ -163,7 +202,8 @@
                 }
             }
 
-            var db = await _database.GetConnectionAsync();
+            // Database checks
+            var db = await _databaseService.GetConnectionAsync();
 
             var user = await db.Table<User>().Where(u => u.Id == CurrentUser.Id).FirstOrDefaultAsync();
 
@@ -179,16 +219,26 @@
                 return new AuthResult(false, "An account with that email already exists.");
             }
 
+            var nameTaken = await db.Table<User>().Where(u => u.DisplayName == displayName && u.Id != user.Id).FirstOrDefaultAsync();
+
+            if (nameTaken is not null)
+            {
+                return new AuthResult(false, "An account with that display name already exists.");
+            }
+
             if (changingPassword)
             {
-                if (!VerifyPassword(currentPassword, user.PasswordHash))
+                var passwordCorrect = await Task.Run(() => VerifyPassword(currentPassword, user.PasswordHash));
+
+                if (!passwordCorrect)
                 {
                     return new AuthResult(false, "Current password is incorrect.");
                 }
 
-                user.PasswordHash = HashPassword(newPassword);
+                user.PasswordHash = await Task.Run(() => HashPassword(newPassword));
             }
 
+            // Update details
             user.DisplayName = displayName;
             user.Email = email;
 
@@ -202,33 +252,52 @@
             }
 
             CurrentUser = user;
+
             return new AuthResult(true, "Details updated successfully.", user);
         }
 
+        // Get user count
         public async Task<int> GetUserCountAsync()
         {
-            var db = await _database.GetConnectionAsync();
+            var db = await _databaseService.GetConnectionAsync();
+
             return await db.Table<User>().CountAsync();
         }
 
-        // =======================================================================================================================================================
+        // Get active user count
+        public async Task<int> GetActiveUserCountAsync()
+        {
+            var db = await _databaseService.GetConnectionAsync();
 
+            return await db.Table<User>().Where(u => u.IsActive).CountAsync();
+        }
+
+        // Get all users
         public async Task<List<User>> GetUsersAsync()
         {
-            var db = await _database.GetConnectionAsync();
+            if (!IsCurrentUserAdmin())
+            {
+                return new List<User>();
+            }
+
+            var db = await _databaseService.GetConnectionAsync();
 
             var users = await db.Table<User>()
                 .OrderBy(u => u.DateTimeCreated)
                 .ToListAsync();
 
-            // Add lookups if needed
-
             return users;
         }
 
+        // Get user by Id
         public async Task<User?> GetUserByIdAsync(int userId)
         {
-            var db = await _database.GetConnectionAsync();
+            if (!IsCurrentUserAdmin())
+            {
+                return null;
+            }
+
+            var db = await _databaseService.GetConnectionAsync();
 
             var user = await db.Table<User>()
                 .Where(u => u.Id == userId)
@@ -239,16 +308,56 @@
                 return null;
             }
 
-            // Add lookups if needed
-
             return user;
         }
 
-        // =======================================================================================================================================================
+        // Set user active status
+        public async Task<AuthResult> SetUserActiveStatusAsync(int userId, bool isActive)
+        {
+            if (!IsCurrentUserAdmin())
+            {
+                return new AuthResult(false, "Only administrators can change account status.");
+            }
+
+            if (userId == CurrentUser!.Id)
+            {
+                return new AuthResult(false, "You can't deactivate your own account.");
+            }
+
+            var db = await _databaseService.GetConnectionAsync();
+
+            var user = await db.Table<User>().Where(u => u.Id == userId).FirstOrDefaultAsync();
+
+            if (user is null)
+            {
+                return new AuthResult(false, "Account could not be found.");
+            }
+
+            user.IsActive = isActive;
+
+            await db.UpdateAsync(user);
+
+            if (isActive)
+            {
+                return new AuthResult(true, "Account reactivated.", user);
+            }
+
+            return new AuthResult(true, "Account deactivated.", user);
+        }
 
         // Helpers
-        private static string NormalizeEmail(string? email) => (email ?? string.Empty).Trim().ToLowerInvariant();
+        // Normalise email
+        private static string NormaliseEmail(string? email)
+        {
+            if (email is null)
+            {
+                return string.Empty;
+            }
 
+            return email.Trim().ToLowerInvariant();
+        }
+
+        // Validate email format
         private static bool IsValidEmail(string email)
         {
             if (string.IsNullOrWhiteSpace(email) || email.Length > 254)
@@ -258,8 +367,8 @@
 
             try
             {
-                var addr = new MailAddress(email);
-                return addr.Address == email;
+                var address = new MailAddress(email);
+                return address.Address == email;
             }
             catch (FormatException)
             {
@@ -267,12 +376,23 @@
             }
         }
 
-        private static bool IsStrongPassword(string? password) =>
-            !string.IsNullOrEmpty(password)
-            && password.Length >= 8
-            && password.Any(char.IsLetter)
-            && password.Any(char.IsDigit);
+        // Validate password strength
+        private static bool IsStrongPassword(string? password)
+        {
+            if (string.IsNullOrEmpty(password))
+            {
+                return false;
+            }
 
+            if (password.Length < 8)
+            {
+                return false;
+            }
+
+            return password.Any(char.IsLetter) && password.Any(char.IsDigit);
+        }
+
+        // Hash password using PBKDF2
         public static string HashPassword(string password)
         {
             var salt = RandomNumberGenerator.GetBytes(SaltSize);
@@ -281,6 +401,7 @@
             return $"{Iterations}.{Convert.ToBase64String(salt)}.{Convert.ToBase64String(key)}";
         }
 
+        // Verify password against stored hash
         private static bool VerifyPassword(string password, string stored)
         {
             var parts = stored.Split('.');
@@ -301,6 +422,17 @@
             {
                 return false;
             }
+        }
+
+        // Admin check
+        private bool IsCurrentUserAdmin()
+        {
+            if (CurrentUser == null)
+            {
+                return false;
+            }
+
+            return CurrentUser.IsAdmin;
         }
     }
 }

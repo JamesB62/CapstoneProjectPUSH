@@ -4,22 +4,26 @@
              xmlns:vm="clr-namespace:CapstoneProjectPUSH.ViewModels.Exercises"
              x:Class="CapstoneProjectPUSH.Views.Exercises.ExerciseDetailsPage"
              x:DataType="vm:ExerciseDetailsViewModel"
-             Title="">
+             Title="PUSH Exercise Details">
 
     <ScrollView>
 
         <VerticalStackLayout
-            Padding="20,0,20,20"
+            MaximumWidthRequest="500"
+            Padding="30,15"
             Spacing="15">
 
-            <Label
-                FontAttributes="Bold"
-                FontSize="18"
-                Grid.Column="0"
-                Grid.Row="0"
-                Text="PUSH Exercise Details"/>
+            <!-- Placeholder image -->
+            <Border
+                StrokeThickness="0"
+                StrokeShape="RoundRectangle 12">
 
-            <!-- ADD IMAGE HERE? -->
+                <Image
+                    Aspect="AspectFill"
+                    MaximumHeightRequest="400"
+                    Source="{Binding Exercise.Image}"/>
+
+            </Border>
 
             <Grid
                 ColumnDefinitions="*,Auto"
@@ -27,7 +31,7 @@
 
                 <Label
                     FontAttributes="Bold"
-                    FontSize="16"
+                    FontSize="18"
                     Grid.Column="0"
                     LineBreakMode="WordWrap"
                     Text="{Binding Exercise.Title}"
@@ -35,13 +39,11 @@
 
                 <Border
                     Grid.Column="1"
-                    Padding="10,5"
-                    StrokeShape="RoundRectangle 10"
-                    VerticalOptions="Start">
+                    Style="{StaticResource Pill}">
 
                     <Label
                         FontSize="12"
-                        Text="{Binding Exercise.CategoryName}"/>
+                        Text="{Binding Exercise.CategoryTitle}"/>
 
                 </Border>
 
@@ -49,27 +51,18 @@
 
             <Label
                 FontAttributes="Bold"
-                Text="About The Exercise"/>
+                FontSize="16"
+                Text="About This Exercise"/>
 
             <Label
                 Text="{Binding Exercise.Description}"/>
 
-            <VerticalStackLayout
-                Spacing="5">
+            <Label
+                FontAttributes="Italic"
+                Text="{Binding Exercise.DifficultyLabel, StringFormat='•  Difficulty: {0}'}"/>
 
-                <HorizontalStackLayout
-                    Spacing="0">
-
-                    <Label
-                        Text="• Difficulty: "/>
-
-                    <Label
-                        Text="{Binding Exercise.Difficulty}"/>
-
-                </HorizontalStackLayout>
-
-            </VerticalStackLayout>
-
+            <!-- Add recommended reps/duration? -->
+            
         </VerticalStackLayout>
 
     </ScrollView>

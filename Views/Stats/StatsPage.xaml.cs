@@ -1,29 +1,20 @@
 namespace CapstoneProjectPUSH.Views.Stats;
 
-using CapstoneProjectPUSH.ViewModels.Stats;
-
 public partial class StatsPage : ContentPage
 {
-    private readonly StatsViewModel _viewModel;
+    private readonly StatsViewModel _statsViewModel;
 
-    public StatsPage(StatsViewModel viewModel)
+    public StatsPage(StatsViewModel statsViewModel)
     {
         InitializeComponent();
-        BindingContext = _viewModel = viewModel;
+
+        _statsViewModel = statsViewModel;
+        BindingContext = _statsViewModel;
     }
 
-    protected override async void OnAppearing()
+    protected override void OnAppearing()
     {
         base.OnAppearing();
-        await _viewModel.LoadCommand.ExecuteAsync(null);
+        _statsViewModel.LoadStatsCommand.Execute(null);
     }
-
-    protected override bool OnBackButtonPressed()
-    {
-        return true;
-    }
-
-
-
-
 }

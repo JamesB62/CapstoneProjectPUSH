@@ -2,15 +2,32 @@
 {
     public class TrainerService
     {
-        private readonly DatabaseService _databaseService;
         private readonly CategoryService _categoryService;
+        private readonly DatabaseService _databaseService;
 
-        public TrainerService(DatabaseService databaseService, CategoryService categoryService)
+        public TrainerService(CategoryService categoryService, DatabaseService databaseService)
         {
-            _databaseService = databaseService;
             _categoryService = categoryService;
+            _databaseService = databaseService;
         }
 
+        // Get trainer count
+        public async Task<int> GetTrainerCountAsync()
+        {
+            var db = await _databaseService.GetConnectionAsync();
+
+            return await db.Table<Trainer>().CountAsync();
+        }
+
+        // Get available trainer count
+        public async Task<int> GetAvailableTrainerCountAsync()
+        {
+            var db = await _databaseService.GetConnectionAsync();
+
+            return await db.Table<Trainer>().Where(t => t.Available).CountAsync();
+        }
+
+        // Get all trainers
         public async Task<List<Trainer>> GetTrainersAsync()
         {
             var db = await _databaseService.GetConnectionAsync();
@@ -23,27 +40,30 @@
             var gyms = await db.Table<Gym>().ToListAsync();
             var gymLookup = gyms.ToDictionary(g => g.Id);
 
-            var categoryNames = await _categoryService.GetCategoryNamesAsync();
+            var categoryTitles = await _categoryService.GetCategoryTitlesAsync();
 
             foreach (var trainer in trainers)
             {
                 if (gymLookup.TryGetValue(trainer.GymId, out var gym))
                 {
                     trainer.GymName = gym.Name;
+                    trainer.GymAddress = gym.Address;
                     trainer.GymCity = gym.City;
                 }
                 else
                 {
                     trainer.GymName = "Unknown Gym";
+                    trainer.GymAddress = string.Empty;
                     trainer.GymCity = string.Empty;
                 }
 
-                trainer.CategoryName = categoryNames.GetValueOrDefault(trainer.CategoryId, "Uncategorised");
+                trainer.CategoryTitle = categoryTitles.GetValueOrDefault(trainer.CategoryId, "Uncategorised");
             }
 
             return trainers;
         }
 
+        // Get trainer by Id
         public async Task<Trainer?> GetTrainerByIdAsync(int trainerId)
         {
             var db = await _databaseService.GetConnectionAsync();
@@ -64,32 +84,21 @@
             if (gym is null)
             {
                 trainer.GymName = "Unknown Gym";
+                trainer.GymAddress = string.Empty;
                 trainer.GymCity = string.Empty;
             }
             else
             {
                 trainer.GymName = gym.Name;
+                trainer.GymAddress = gym.Address;
                 trainer.GymCity = gym.City;
             }
 
-            var categoryNames = await _categoryService.GetCategoryNamesAsync();
-            trainer.CategoryName = categoryNames.GetValueOrDefault(trainer.CategoryId, "Uncategorised");
+            var categoryTitle = await _categoryService.GetCategoryTitlesAsync();
+
+            trainer.CategoryTitle = categoryTitle.GetValueOrDefault(trainer.CategoryId, "Uncategorised");
 
             return trainer;
         }
-
-        public async Task<int> UpdateTrainerAsync(Trainer trainer)
-        {
-            var db = await _databaseService.GetConnectionAsync();
-            return await db.UpdateAsync(trainer);
-        }
-
-        public async Task<int> DeleteTrainerAsync(int trainerId)
-        {
-            var db = await _databaseService.GetConnectionAsync();
-            return await db.DeleteAsync<Trainer>(trainerId);
-        }
-
-        // Add other functions as needed, CRUD?
     }
 }

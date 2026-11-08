@@ -25,7 +25,9 @@
 		     For individual files, you can override by setting Inflator metadata:
 		       <MauiXaml Update="MyPage.xaml" Inflator="Default" /> (reverts to defaults: Runtime for Debug, XamlC for Release)
 		       <MauiXaml Update="MyPage.xaml" Inflator="Runtime" /> (force runtime inflation) -->
-		<MauiXamlInflator>SourceGen</MauiXamlInflator>
+
+			   <!-- .net 10 wanding from SourceGen -->
+		<!-- <MauiXamlInflator>SourceGen</MauiXamlInflator> -->
 
 		<!-- Display name -->
 		<ApplicationTitle>CapstoneProjectPUSH</ApplicationTitle>
@@ -66,15 +68,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <AndroidResource Remove="ViewModels\Admin\**" />
-	  <Compile Remove="ViewModels\Admin\**" />
-	  <EmbeddedResource Remove="ViewModels\Admin\**" />
-	  <MauiCss Remove="ViewModels\Admin\**" />
-	  <MauiXaml Remove="ViewModels\Admin\**" />
-	  <None Remove="ViewModels\Admin\**" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
 		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
@@ -82,8 +75,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Compile Update="Views\Admin\AdminDashboard.xaml.cs">
-	    <DependentUpon>AdminDashboard.xaml</DependentUpon>
+	  <Compile Update="Views\Admin\AdminDashboardPage.xaml.cs">
+	    <DependentUpon>AdminDashboardPage.xaml</DependentUpon>
 	  </Compile>
 	  <Compile Update="Views\Base\FirstLoadingPage.xaml.cs">
 	    <DependentUpon>FirstLoadingPage.xaml</DependentUpon>
@@ -109,10 +102,7 @@
 	</ItemGroup>
    
 	<ItemGroup>
-	  <MauiXaml Update="Views\Admin\AdminDashboard.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
-	  <MauiXaml Update="Views\Admin\UsersManagementPage.xaml">
+	  <MauiXaml Update="Views\Admin\AdminDashboardPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\Auth\LoginPage.xaml">
@@ -139,7 +129,16 @@
 	  <MauiXaml Update="Views\Exercises\ExercisesPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="Views\Home\ArticleDetailsPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Views\Home\HomePage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\Profile\MyNotesPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\Profile\MyWorkoutsPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\Profile\UpdateProfilePage.xaml">

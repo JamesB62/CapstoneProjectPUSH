@@ -9,15 +9,25 @@
             _databaseService = databaseService;
         }
 
+        // Get category count
+        public async Task<int> GetCategoryCountAsync()
+        {
+            var db = await _databaseService.GetConnectionAsync();
+
+            return await db.Table<Category>().CountAsync();
+        }
+
+        // Get all categories
         public async Task<List<Category>> GetCategoriesAsync()
         {
             var db = await _databaseService.GetConnectionAsync();
 
             return await db.Table<Category>()
-                .OrderBy(c => c.Name)
+                .OrderBy(c => c.Title)
                 .ToListAsync();
         }
 
+        // Get category by Id
         public async Task<Category?> GetCategoryByIdAsync(int categoryId)
         {
             var db = await _databaseService.GetConnectionAsync();
@@ -27,13 +37,11 @@
                 .FirstOrDefaultAsync();
         }
 
-        // Add other functions as needed, CRUD?
-
-        // Helpers
-        public async Task<Dictionary<int, string>> GetCategoryNamesAsync()
+        // Get category titles
+        public async Task<Dictionary<int, string>> GetCategoryTitlesAsync()
         {
             var categories = await GetCategoriesAsync();
-            return categories.ToDictionary(c => c.Id, c => c.Name);
+            return categories.ToDictionary(c => c.Id, c => c.Title);
         }
     }
 }

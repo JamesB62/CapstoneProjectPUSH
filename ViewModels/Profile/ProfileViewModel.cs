@@ -1,6 +1,4 @@
-﻿using CapstoneProjectPUSH.Views.Admin;
-
-namespace CapstoneProjectPUSH.ViewModels.Profile
+﻿namespace CapstoneProjectPUSH.ViewModels.Profile
 {
     public partial class ProfileViewModel : BaseViewModel
     {
@@ -9,24 +7,9 @@ namespace CapstoneProjectPUSH.ViewModels.Profile
         public ProfileViewModel(UserService userService)
         {
             _userService = userService;
-            LoadProfile();
         }
 
-        public void LoadProfile()
-        {
-            var user = _userService.CurrentUser;
-
-            if (user is null)
-            {
-                DisplayName = "Username";
-                Email = "Email Address";
-            }
-            else
-            {
-                DisplayName = user.DisplayName;
-                Email = user.Email;
-            }
-        }
+        private const string PlaceholderImage = "profile_picture_placeholder.png";
 
         [ObservableProperty]
         public partial string DisplayName { get; set; } = string.Empty;
@@ -34,48 +17,97 @@ namespace CapstoneProjectPUSH.ViewModels.Profile
         [ObservableProperty]
         public partial string Email { get; set; } = string.Empty;
 
-        // Generates GoToUpdateDetailsCommand
+        [ObservableProperty]
+        public partial string ProfileImage { get; set; } = PlaceholderImage;
+
+        [ObservableProperty]
+        public partial bool IsAdmin { get; set; }
+
+        [RelayCommand]
+        private async Task LoadProfileAsync()
+        {
+            var user = _userService.CurrentUser;
+
+            if (user != null)
+            {
+                DisplayName = user.DisplayName;
+                Email = user.Email;
+                IsAdmin = user.IsAdmin;
+                ProfileImage = GetProfileImageOrPlaceholder(user.ProfileImage);
+            }
+            else
+            {
+                DisplayName = "Guest";
+                Email = "Not signed in";
+                IsAdmin = false;
+                ProfileImage = PlaceholderImage;
+
+                // Comment out to disable redirect
+                await NavigateAsync("//LandingPage");
+            }
+        }
+
+        private static string GetProfileImageOrPlaceholder(string? imagePath)
+        {
+            if (string.IsNullOrWhiteSpace(imagePath))
+            {
+                return PlaceholderImage;
+            }
+
+            if (!File.Exists(imagePath))
+            {
+                return PlaceholderImage;
+            }
+
+            return imagePath;
+        }
+
         [RelayCommand]
         private async Task GoToUpdateDetailsAsync()
         {
-            await Shell.Current.GoToAsync(nameof(UpdateProfilePage));
+            await NavigateAsync(nameof(UpdateProfilePage));
         }
 
-        // Generates MyWorkoutsCommand
         [RelayCommand]
-        private async Task MyWorkoutsAsync()
+        private async Task GoToMyWorkoutsAsync()
         {
-            await Shell.Current.DisplayAlertAsync("Coming soon", "My Workouts isn't built yet.", "OK");
+            await NavigateAsync(nameof(MyWorkoutsPage));
         }
 
-        // Generates MyNotesCommand
         [RelayCommand]
-        private async Task MyNotesAsync()
+        private async Task GoToMyNotesAsync()
         {
-            await Shell.Current.DisplayAlertAsync("Coming soon", "My Notes isn't built yet.", "OK");
+            await NavigateAsync(nameof(MyNotesPage));
         }
 
-        // Generates AdminCommand
         [RelayCommand]
-        private async Task AdminAsync()
+        private async Task GoToAdminDashboardAsync()
         {
-            await Shell.Current.GoToAsync(nameof(AdminDashboard));
+            await NavigateAsync(nameof(AdminDashboardPage));
         }
 
-        // Generates LogoutCommand
         [RelayCommand]
         private async Task LogoutAsync()
         {
+            bool confirmed = await Shell.Current.DisplayAlertAsync(
+                "Logout",
+                "Are you sure you want to log out?",
+                "Logout",
+                "Cancel");
+
+            if (!confirmed)
+            {
+                return;
+            }
+
             _userService.Logout();
-            await Shell.Current.GoToAsync("//LandingPage");
-            DisplayName = "Username";
+            await NavigateAsync("//LandingPage");
         }
 
-        // Generates GoToPrivacyCommand
         [RelayCommand]
         private async Task GoToPrivacyAsync()
         {
-            await Shell.Current.Navigation.PushAsync(new PrivacyPage());
+            await NavigateAsync(nameof(PrivacyPage));
         }
     }
 }

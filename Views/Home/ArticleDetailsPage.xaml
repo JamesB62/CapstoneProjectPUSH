@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:CapstoneProjectPUSH.ViewModels.Home"
+             x:Class="CapstoneProjectPUSH.Views.Home.ArticleDetailsPage"
+             x:DataType="vm:ArticleDetailsViewModel"
+             Title="PUSH Article">
+
+    <ScrollView>
+
+        <VerticalStackLayout
+            MaximumWidthRequest="500"
+            Padding="30,15"
+            Spacing="15">
+
+            <Border
+                StrokeShape="RoundRectangle 12"
+                StrokeThickness="0">
+
+                <Image
+                    Aspect="AspectFill"
+                    MaximumHeightRequest="200"
+                    Source="{Binding Article.Image}"/>
+
+            </Border>
+
+            <Grid
+                ColumnDefinitions="*,Auto"
+                ColumnSpacing="10">
+
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="18"
+                    Grid.Column="0"
+                    LineBreakMode="WordWrap"
+                    Text="{Binding Article.Title}"
+                    VerticalOptions="Center"/>
+
+                <Border
+                    Grid.Column="1"
+                    Style="{StaticResource Pill}">
+
+                    <Label
+                        FontSize="12"
+                        Text="{Binding Article.CategoryTitle}"/>
+
+                </Border>
+
+            </Grid>
+
+            <!-- Reading time and date -->
+            <VerticalStackLayout
+                Spacing="5">
+
+                <Label
+                    FontAttributes="Italic"
+                    Text="{Binding Article.ReadingTime, StringFormat='• Reading time: {0}min'}"/>
+
+                <Label
+                    FontAttributes="Italic"
+                    Text="{Binding Article.DateTimePublished, StringFormat='•  Date published: {0:dd MMMM yyyy}'}"/>
+
+            </VerticalStackLayout>
+
+            <!-- Content -->
+            <Label
+                FontAttributes="Bold"
+                FontSize="16"
+                Text="About This Article"/>
+
+            <Label
+                Text="{Binding Article.Content}"/>
+
+            <!-- Citation -->
+            <Label
+                FontAttributes="Bold"
+                FontSize="16"
+                Text="Source"/>
+
+            <Label
+                Text="{Binding Article.Citation}"
+                TextDecorations="Underline">
+
+                <Label.GestureRecognizers>
+
+                    <TapGestureRecognizer
+                        Command="{Binding OpenSourceCommand}"/>
+
+                </Label.GestureRecognizers>
+
+            </Label>
+
+        </VerticalStackLayout>
+
+    </ScrollView>
+
+</ContentPage>

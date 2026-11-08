@@ -5,10 +5,11 @@
              xmlns:vm="clr-namespace:CapstoneProjectPUSH.ViewModels.Exercises"
              x:Class="CapstoneProjectPUSH.Views.Exercises.ExercisesPage"
              x:DataType="vm:ExercisesViewModel"
-             Title="">
+             Title="PUSH Exercises">
 
     <Grid
-        Padding="30"
+        MaximumWidthRequest="500"
+        Padding="30,15"
         RowDefinitions="Auto,*"
         RowSpacing="15">
 
@@ -16,20 +17,15 @@
             Grid.Row="0"
             Spacing="10">
 
-            <Label
-                FontAttributes="Bold"
-                FontSize="18"
-                Text="PUSH Exercises"/>
-
+            <!-- Category picker -->
             <Picker
-                ItemDisplayBinding="{Binding Name, x:DataType=models:Category}"
+                ItemDisplayBinding="{Binding Title, x:DataType=models:Category}"
                 ItemsSource="{Binding Categories}"
                 SelectedItem="{Binding SelectedCategory}"
                 Title="Filter by category"/>
 
             <Label
                 FontAttributes="Italic"
-                FontSize="12"
                 Text="{Binding StatusMessage}"/>
 
         </VerticalStackLayout>
@@ -37,13 +33,14 @@
         <RefreshView
             Command="{Binding LoadExercisesCommand}"
             Grid.Row="1"
-            IsRefreshing="{Binding IsBusy, Mode=OneWay}">
+            IsRefreshing="{Binding IsBusy}">
 
             <CollectionView
                 ItemsSource="{Binding Exercises}"
                 SelectionMode="Single"
                 SelectedItem="{Binding SelectedExercise, Mode=TwoWay}">
 
+                <!-- Empty view -->
                 <CollectionView.EmptyView>
 
                     <VerticalStackLayout
@@ -53,17 +50,18 @@
                         <Label
                             FontAttributes="Italic"
                             HorizontalTextAlignment="Center"
-                            Text="No exercises found"/>
+                            Text="No exercises found."/>
 
                         <Label
                             FontAttributes="Italic"
                             HorizontalTextAlignment="Center"
-                            Text="Pull down to try again"/>
+                            Text="Pull down to try again."/>
 
                     </VerticalStackLayout>
 
                 </CollectionView.EmptyView>
 
+                <!-- Item layout -->
                 <CollectionView.ItemsLayout>
 
                     <LinearItemsLayout
@@ -72,60 +70,58 @@
 
                 </CollectionView.ItemsLayout>
 
+                <!-- Item template -->
                 <CollectionView.ItemTemplate>
 
                     <DataTemplate
                         x:DataType="models:Exercise">
 
                         <Border
-                            Padding="15"
-                            StrokeShape="RoundRectangle 10">
+                            Style="{StaticResource Card}">
 
-                            <Grid
-                                ColumnDefinitions="*,Auto"
-                                ColumnSpacing="10"
-                                RowDefinitions="Auto,Auto"
-                                RowSpacing="10">
+                            <VerticalStackLayout
+                                Spacing="10">
 
-                                <Label
-                                    Grid.Column="0"
-                                    Grid.Row="0"
-                                    FontAttributes="Bold"
-                                    FontSize="16"
-                                    LineBreakMode="TailTruncation"
-                                    Text="{Binding Title}"
-                                    VerticalOptions="Center"/>
-
-                                <Border
-                                    Grid.Column="1"
-                                    Grid.Row="0"
-                                    Padding="10,5"
-                                    StrokeShape="RoundRectangle 10">
+                                <Grid
+                                    ColumnDefinitions="*,auto"
+                                    ColumnSpacing="10">
 
                                     <Label
-                                        FontSize="12"
-                                        Text="{Binding CategoryName}"/>
+                                        FontAttributes="Bold"
+                                        FontSize="16"
+                                        Grid.Column="0"
+                                        LineBreakMode="TailTruncation"
+                                        Text="{Binding Title}"
+                                        VerticalOptions="Center"/>
 
-                                </Border>
+                                    <Border
+                                        Grid.Column="1"
+                                        Style="{StaticResource Pill}">
+
+                                        <Label
+                                            FontSize="12"
+                                            Text="{Binding CategoryTitle}"/>
+
+                                    </Border>
+
+                                </Grid>
 
                                 <VerticalStackLayout
-                                    Grid.Column="0"
-                                    Grid.Row="1"
-                                    Spacing="3">
+                                    Spacing="10">
 
-                                    <HorizontalStackLayout>
+                                    <Label
+                                        LineBreakMode="TailTruncation"
+                                        MaxLines="2"
+                                        Text="{Binding Description}"/>
 
-                                        <Label
-                                            Text="• Difficulty: "/>
-
-                                        <Label
-                                            Text="{Binding Difficulty}"/>
-
-                                    </HorizontalStackLayout>
+                                    <Label
+                                        FontAttributes="Italic"
+                                        FontSize="12"
+                                        Text="{Binding DifficultyLabel, StringFormat='• Difficulty: {0}'}"/>
 
                                 </VerticalStackLayout>
 
-                            </Grid>
+                            </VerticalStackLayout>
 
                         </Border>
 

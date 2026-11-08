@@ -20,11 +20,11 @@
                 .OrderByDescending(w => w.DateTimeCreated)
                 .ToListAsync();
 
-            var categoryNames = await _categoryService.GetCategoryNamesAsync();
+            var categoryTitles = await _categoryService.GetCategoryTitlesAsync();
 
             foreach (var workout in workouts)
             {
-                workout.CategoryName = categoryNames.GetValueOrDefault(workout.CategoryId, "Uncategorised");
+                workout.CategoryTitle = categoryTitles.GetValueOrDefault(workout.CategoryId, "Uncategorised");
             }
 
             return workouts;
@@ -43,8 +43,8 @@
                 return null;
             }
 
-            var categoryNames = await _categoryService.GetCategoryNamesAsync();
-            workout.CategoryName = categoryNames.GetValueOrDefault(workout.CategoryId, "Uncategorised");
+            var categoryTitle = await _categoryService.GetCategoryTitlesAsync();
+            workout.CategoryTitle = categoryTitle.GetValueOrDefault(workout.CategoryId, "Uncategorised");
 
             return workout;
         }
@@ -92,6 +92,25 @@
         {
             var db = await _databaseService.GetConnectionAsync();
             return await db.UpdateAsync(workout);
+        }
+
+        //add workout with exercises
+        public async Task<int> AddWorkoutWithExercisesAsync(Workout workout, IEnumerable<WorkoutExercise> items)
+        {
+            var db = await _databaseService.GetConnectionAsync();
+
+            await db.RunInTransactionAsync(conn =>
+            {
+                conn.Insert(workout);
+
+                foreach(var item in items)
+                {
+                    item.WorkoutId = workout.Id;
+                    conn.Insert(item);
+                }
+            });
+
+            return workout.Id;
         }
     }
 }

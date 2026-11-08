@@ -12,7 +12,7 @@ namespace CapstoneProjectPUSH.ViewModels.Auth
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(HasErrorMessage))]
-        private string? errorMessage;
+        public partial string? ErrorMessage { get; set; } = string.Empty;
 
         public bool HasErrorMessage => !string.IsNullOrEmpty(ErrorMessage);
 
@@ -45,9 +45,12 @@ namespace CapstoneProjectPUSH.ViewModels.Auth
                     return;
                 }
 
+                Email = string.Empty;
                 Password = string.Empty;
 
-                await Shell.Current.GoToAsync("//HomePage");
+                IsBusy = false;
+
+                await NavigateAsync("//HomePage");
             }
             catch (Exception ex)
             {
@@ -64,20 +67,7 @@ namespace CapstoneProjectPUSH.ViewModels.Auth
         [RelayCommand]
         private async Task GoToRegisterAsync()
         {
-            if (IsBusy)
-            {
-                return;
-            }
-
-            IsBusy = true;
-            try
-            {
-                await Shell.Current.GoToAsync($"../{nameof(RegisterPage)}");
-            }
-            finally
-            {
-                IsBusy = false;
-            }
+            await NavigateAsync($"../{nameof(RegisterPage)}");
         }
     }
 }

@@ -4,17 +4,21 @@
     public partial class ExerciseDetailsViewModel : BaseViewModel
     {
         private readonly ExerciseService _exerciseService;
+        private readonly UserService _userService;
 
-        public ExerciseDetailsViewModel(ExerciseService exerciseService)
+        public ExerciseDetailsViewModel(ExerciseService exerciseService, UserService userService)
         {
             _exerciseService = exerciseService;
+            _userService = userService;
         }
 
-        [ObservableProperty]
-        private int exerciseId;
+        private const string PlaceholderImage = "exercise_placeholder.jpg";
 
         [ObservableProperty]
-        private Exercise? exercise;
+        public partial int ExerciseId { get; set; }
+
+        [ObservableProperty]
+        public partial Exercise? Exercise { get; set; }
 
         partial void OnExerciseIdChanged(int value)
         {
@@ -29,8 +33,12 @@
         [RelayCommand]
         private async Task LoadExerciseAsync()
         {
-            if (IsBusy)
+            var user = _userService.CurrentUser;
+
+            if (user is null)
             {
+                // Comment out to disable redirect
+                await NavigateAsync("//LandingPage");
                 return;
             }
 
@@ -38,17 +46,44 @@
 
             try
             {
-                Exercise = await _exerciseService.GetExerciseByIdAsync(ExerciseId);
+                var exercise = await _exerciseService.GetExerciseByIdAsync(ExerciseId);
 
+                if (exercise != null)
+                {
+                    exercise.Image = GetImageOrPlaceholder(exercise.Image);
+                }
+
+                Exercise = exercise;
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error loading exercise: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine(ex);
             }
             finally
             {
                 IsBusy = false;
             }
+
+            if (Exercise is null)
+            {
+                await Shell.Current.DisplayAlertAsync("Exercise not found", "This PUSH exercise could not be loaded.", "OK");
+                await NavigateAsync("..");
+            }
+        }
+
+        private static string GetImageOrPlaceholder(string? imagePath)
+        {
+            if (string.IsNullOrWhiteSpace(imagePath))
+            {
+                return PlaceholderImage;
+            }
+
+            if (!File.Exists(imagePath))
+            {
+                return PlaceholderImage;
+            }
+
+            return imagePath;
         }
     }
 }
