@@ -49,6 +49,7 @@
                     await SeedCategoriesAsync();
                     await SeedGymsAsync();
                     await SeedAdminAsync();
+                    await SeedGuestAsync();
                     await SeedTrainersAsync();
                     await SeedExercisesAsync();
                     await SeedArticlesAsync();
@@ -67,6 +68,41 @@
             return _connection;
         }
 
+        // guest account seed
+        private async Task SeedGuestAsync()
+        {
+            var db = await GetConnectionAsync();
+
+            var guestExists = await db.Table<User>().Where(u => u.IsGuest == true).CountAsync() > 0;
+
+            if (guestExists)
+            {
+                return;
+            }
+
+            var nameTaken = await db.Table<User>().Where(u => u.DisplayName == "Guest").CountAsync() > 0;
+
+            if (nameTaken)
+            {
+                return;
+            }
+
+            var emailTaken = await db.Table<User>().Where(u => u.Email == "guest@push.local").CountAsync() > 0;
+
+            if (emailTaken)
+            {
+                return;
+            }
+
+            await db.InsertAsync(new User
+            {
+                Email = "Guest",
+                DisplayName = "guest@push.local",
+                PasswordHash = UserService.HashPassword("Guest123!"),
+                IsGuest = true
+            });
+        }
+        
         // Admin seed
         private async Task SeedAdminAsync()
         {
@@ -101,7 +137,6 @@
                 IsAdmin = true
             });
         }
-
         // Categories seed
         private async Task SeedCategoriesAsync()
         {

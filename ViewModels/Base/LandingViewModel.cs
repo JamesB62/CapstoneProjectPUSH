@@ -2,6 +2,12 @@
 {
     public partial class LandingViewModel : BaseViewModel
     {
+        private readonly UserService _userService;
+
+        public LandingViewModel(UserService userService)
+        {
+            _userService = userService;
+        }
         // Login command
         [RelayCommand]
         private async Task GoToLoginAsync()
@@ -21,6 +27,20 @@
         private async Task GoToPrivacyAsync()
         {
             await NavigateAsync(nameof(PrivacyPage));
+        }
+
+        [RelayCommand]
+        private async Task GuestLoginAsync()
+        {
+            // var result = await _userService.GuestLoginAsync();
+
+            // if (!result.Success)
+            // {
+            //     StatusMessage = result.Message;
+            //     return;
+            // }
+
+            await NavigateAsync("//HomePage");
         }
     }
 }

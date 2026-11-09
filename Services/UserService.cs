@@ -143,6 +143,26 @@
             return new AuthResult(true, $"Welcome back, {user.DisplayName}!", user);
         }
 
+        // Login guest
+        public async Task<AuthResult> GuestLoginAsync()
+        {
+            // Database check
+            var db = await _databaseService.GetConnectionAsync();
+
+            var guestUser = await db.Table<User>().Where(u => u.Email == "guest@push.local").FirstOrDefaultAsync();
+
+            if (guestUser is null)
+            {
+                return new AuthResult(false, "Guest account not found.");
+            }
+
+            // Login user
+            CurrentUser = guestUser;
+
+            return new AuthResult(true, $"Welcome back, {guestUser.DisplayName}!", guestUser);
+        }
+
+
         // Logout
         public void Logout()
         {
