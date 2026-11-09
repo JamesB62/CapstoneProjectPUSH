@@ -100,5 +100,11 @@
             await NavigateAsync(nameof(CapstoneProjectPUSH.Views.Admin.CategoriesManagementPage));
         }
 
+        [RelayCommand]
+        private async Task GoToGymManagementAsync()
+        {
+            await NavigateAsync(nameof(CapstoneProjectPUSH.Views.Admin.GymsManagementPage));
+        }
+
     }
 }

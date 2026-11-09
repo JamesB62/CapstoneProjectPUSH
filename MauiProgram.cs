@@ -35,6 +35,7 @@ namespace CapstoneProjectPUSH
             builder.Services.AddTransient<AdminDashboardViewModel>();
             builder.Services.AddTransient<UserManagementViewModel>();
             builder.Services.AddTransient<CategoriesManagementViewModel>();
+            builder.Services.AddTransient<GymsManagementViewModel>();
 
             // Auth
             builder.Services.AddTransient<LoginViewModel>();
@@ -76,6 +77,7 @@ namespace CapstoneProjectPUSH
             builder.Services.AddTransient<AdminDashboardPage>();
             builder.Services.AddTransient<UserManagementPage>();
             builder.Services.AddTransient<CategoriesManagementPage>();
+            builder.Services.AddTransient<GymsManagementPage>();
 
             // Auth
             builder.Services.AddTransient<LoginPage>();

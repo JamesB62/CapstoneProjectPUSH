@@ -81,8 +81,8 @@
 	  <Compile Update="Views\Admin\CategoriesManagementPage.xaml.cs">
 	    <DependentUpon>CategoriesManagementPage.xaml</DependentUpon>
 	  </Compile>
-	  <Compile Update="Views\Admin\GymManagementPage.xaml.cs">
-	    <DependentUpon>GymManagementPage.xaml</DependentUpon>
+	  <Compile Update="Views\Admin\GymsManagementPage.xaml.cs">
+	    <DependentUpon>GymsManagementPage.xaml</DependentUpon>
 	  </Compile>
 	  <Compile Update="Views\Admin\UserManagementPage.xaml.cs">
 	    <DependentUpon>UserManagementPage.xaml</DependentUpon>
@@ -117,7 +117,7 @@
 	  <MauiXaml Update="Views\Admin\CategoriesManagementPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\Admin\GymManagementPage.xaml">
+	  <MauiXaml Update="Views\Admin\GymsManagementPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\Admin\UserManagementPage.xaml">
