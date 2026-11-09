@@ -91,19 +91,7 @@
         [RelayCommand]
         private async Task GoToUserManagementAsync()
         {
-            //await NavigateAsync(nameof(UserManagementPage));
-        }
-
-        [RelayCommand]
-        private async Task GoToCategoryManagementAsync()
-        {
-            //await NavigateAsync(nameof(CategoriesManagementPage));
-        }
-
-        [RelayCommand]
-        private async Task GoToGymManagementAsync()
-        {
-            //await NavigateAsync(nameof(GymsManagementPage));
+            await NavigateAsync(nameof(CapstoneProjectPUSH.Views.Admin.UserManagementPage));
         }
     }
 }
