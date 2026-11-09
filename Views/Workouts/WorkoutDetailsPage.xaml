@@ -57,7 +57,8 @@
 
                     <BindableLayout.EmptyView>
 
-                        <VerticalStackLayout
+                        <Grid
+                            HeightRequest="100"
                             HorizontalOptions="Center"
                             VerticalOptions="Center">
 
@@ -66,7 +67,7 @@
                                 HorizontalTextAlignment="Center"
                                 Text="No exercises found."/>
 
-                        </VerticalStackLayout>
+                        </Grid>
 
                     </BindableLayout.EmptyView>
 
@@ -128,7 +129,8 @@
 
                     <BindableLayout.EmptyView>
 
-                        <VerticalStackLayout
+                        <Grid
+                            HeightRequest="100"
                             HorizontalOptions="Center"
                             VerticalOptions="Center">
 
@@ -137,7 +139,7 @@
                                 HorizontalTextAlignment="Center"
                                 Text="No notes found."/>
 
-                        </VerticalStackLayout>
+                        </Grid>
 
                     </BindableLayout.EmptyView>
 

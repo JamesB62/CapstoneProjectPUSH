@@ -100,7 +100,12 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
         [RelayCommand]
         private async Task StartWorkoutAsync()
         {
-            await Shell.Current.DisplayAlertAsync("Coming soon", "Workout tracking isn't built yet.", "OK");
+            if (Workout is null)
+            {
+                return;
+            }
+
+            await NavigateAsync($"{nameof(ActiveWorkoutPage)}?WorkoutId={Workout.Id}");
         }
     }
 }
