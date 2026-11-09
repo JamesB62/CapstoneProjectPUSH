@@ -9,6 +9,7 @@ namespace CapstoneProjectPUSH
             //Admin
             Routing.RegisterRoute(nameof(AdminDashboardPage), typeof(AdminDashboardPage));
             Routing.RegisterRoute(nameof(UserManagementPage), typeof(UserManagementPage));
+            Routing.RegisterRoute(nameof(CategoriesManagementPage), typeof(CategoriesManagementPage));
 
             // Auth
             Routing.RegisterRoute(nameof(LoginPage), typeof(LoginPage));

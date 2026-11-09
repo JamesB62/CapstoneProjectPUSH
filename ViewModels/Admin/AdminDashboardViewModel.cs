@@ -93,5 +93,12 @@
         {
             await NavigateAsync(nameof(CapstoneProjectPUSH.Views.Admin.UserManagementPage));
         }
+
+        [RelayCommand]
+        private async Task GoToCategoryManagementAsync()
+        {
+            await NavigateAsync(nameof(CapstoneProjectPUSH.Views.Admin.CategoriesManagementPage));
+        }
+
     }
 }

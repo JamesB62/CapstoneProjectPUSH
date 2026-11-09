@@ -78,6 +78,12 @@
 	  <Compile Update="Views\Admin\AdminDashboardPage.xaml.cs">
 	    <DependentUpon>AdminDashboardPage.xaml</DependentUpon>
 	  </Compile>
+	  <Compile Update="Views\Admin\CategoriesManagementPage.xaml.cs">
+	    <DependentUpon>CategoriesManagementPage.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Admin\GymManagementPage.xaml.cs">
+	    <DependentUpon>GymManagementPage.xaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Views\Admin\UserManagementPage.xaml.cs">
 	    <DependentUpon>UserManagementPage.xaml</DependentUpon>
 	  </Compile>
@@ -106,6 +112,12 @@
    
 	<ItemGroup>
 	  <MauiXaml Update="Views\Admin\AdminDashboardPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\Admin\CategoriesManagementPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\Admin\GymManagementPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\Admin\UserManagementPage.xaml">
