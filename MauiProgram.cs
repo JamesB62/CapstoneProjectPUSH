@@ -15,6 +15,10 @@ namespace CapstoneProjectPUSH
 
             // ========================= Services =========================
 
+            //reset password
+            builder.Services.AddSingleton<IEmailSender, DebugEmailSender>();
+            builder.Services.AddSingleton<PasswordResetService>();
+
             builder.Services.AddSingleton<ArticleService>();
             builder.Services.AddSingleton<CategoryService>();
             builder.Services.AddSingleton<DatabaseService>();
