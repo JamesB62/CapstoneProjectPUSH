@@ -4,6 +4,12 @@
     {
         private readonly UserService _userService;
 
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(HasErrorMessage))]
+        public partial string? ErrorMessage { get; set; } = string.Empty;
+
+        public bool HasErrorMessage => !string.IsNullOrEmpty(ErrorMessage);
+
         public LandingViewModel(UserService userService)
         {
             _userService = userService;
@@ -32,15 +38,37 @@
         [RelayCommand]
         private async Task GuestLoginAsync()
         {
-            // var result = await _userService.GuestLoginAsync();
+            if (IsBusy)
+            {
+                return;
+            }
 
-            // if (!result.Success)
-            // {
-            //     StatusMessage = result.Message;
-            //     return;
-            // }
+            try
+            {
+                IsBusy = true;
+                ErrorMessage = string.Empty;
 
-            await NavigateAsync("//HomePage");
+                var result = await _userService.GuestLoginAsync();
+
+                if (!result.Success)
+                {
+                    ErrorMessage = result.Message;
+                    return;
+                }
+
+                IsBusy = false;
+
+                await NavigateAsync("//HomePage");
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = "Something went wrong, please try again.";
+                System.Diagnostics.Debug.WriteLine(ex);
+            }
+            finally
+            {
+                IsBusy = false;
+            }
         }
     }
 }

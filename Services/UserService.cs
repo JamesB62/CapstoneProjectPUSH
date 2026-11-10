@@ -149,17 +149,22 @@
             // Database check
             var db = await _databaseService.GetConnectionAsync();
 
-            var guestUser = await db.Table<User>().Where(u => u.Email == "guest@push.local").FirstOrDefaultAsync();
+            var guestUser = await db.Table<User>().Where(u => u.IsGuest).FirstOrDefaultAsync();
 
             if (guestUser is null)
             {
                 return new AuthResult(false, "Guest account not found.");
             }
 
+            if (!guestUser.IsActive)
+            {
+                return new AuthResult(false, "Guest access is currently disabled.");
+            }
+
             // Login user
             CurrentUser = guestUser;
 
-            return new AuthResult(true, $"Welcome back, {guestUser.DisplayName}!", guestUser);
+            return new AuthResult(true, "Welcome back, Guest!", guestUser);
         }
 
 
@@ -175,6 +180,11 @@
             if (CurrentUser is null)
             {
                 return new AuthResult(false, "You must be signed in to update your details.");
+            }
+
+            if (CurrentUser.IsGuest)
+            {
+                return new AuthResult(false, "Guest accounts can't update details. Register to create your own account.");
             }
 
             if (!CurrentUser.IsActive)

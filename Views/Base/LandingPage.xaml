@@ -84,6 +84,12 @@
 
             </Label>
 
+            <!-- Error message -->
+            <Label
+                IsVisible="{Binding HasErrorMessage}"
+                Text="{Binding ErrorMessage}"
+                TextColor="Red"/>
+
         </VerticalStackLayout>
 
     </ScrollView>

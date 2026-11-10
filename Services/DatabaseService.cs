@@ -68,7 +68,7 @@
             return _connection;
         }
 
-        // guest account seed
+        // Guest seed
         private async Task SeedGuestAsync()
         {
             var db = await GetConnectionAsync();
@@ -96,9 +96,9 @@
 
             await db.InsertAsync(new User
             {
-                Email = "Guest",
-                DisplayName = "guest@push.local",
-                PasswordHash = UserService.HashPassword("Guest123!"),
+                Email = "guest@push.local",
+                DisplayName = "Guest",
+                PasswordHash = string.Empty,
                 IsGuest = true
             });
         }
