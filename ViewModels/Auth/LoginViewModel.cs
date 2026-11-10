@@ -69,5 +69,12 @@ namespace CapstoneProjectPUSH.ViewModels.Auth
         {
             await NavigateAsync($"../{nameof(RegisterPage)}");
         }
+
+        //forgot password link command
+        [RelayCommand]
+        private async Task GoToForgotPasswordAsync()
+        {
+            await NavigateAsync(nameof(ForgotPasswordPage));
+        }
     }
 }

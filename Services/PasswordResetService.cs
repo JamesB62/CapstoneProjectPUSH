@@ -86,5 +86,16 @@ namespace CapstoneProjectPUSH.Services
 
         private static string HashCode(string code) =>
             Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(code)));
+
+            // check account 
+            public async Task<bool> IsEmailRegisteredAsync(string email)
+            {
+                var db = await _databaseService.GetConnectionAsync();
+                var user = await db.Table<User>().FirstOrDefaultAsync(u => u.Email.ToLower() == email.ToLower());
+                return user != null;
+            }
+
     }
+
+    
 }

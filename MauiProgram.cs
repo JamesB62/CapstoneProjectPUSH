@@ -40,6 +40,7 @@ namespace CapstoneProjectPUSH
             // Auth
             builder.Services.AddTransient<LoginViewModel>();
             builder.Services.AddTransient<RegisterViewModel>();
+            builder.Services.AddTransient<ForgotPasswordViewModel>();
 
             // Base
             builder.Services.AddTransient<LandingViewModel>();
@@ -79,6 +80,7 @@ namespace CapstoneProjectPUSH
             // Auth
             builder.Services.AddTransient<LoginPage>();
             builder.Services.AddTransient<RegisterPage>();
+            builder.Services.AddTransient<ForgotPasswordPage>();
 
             // Base
             builder.Services.AddTransient<LandingPage>();
