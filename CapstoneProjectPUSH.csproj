@@ -93,6 +93,9 @@
 	  <Compile Update="Views\Home\HomePage.xaml.cs">
 	    <DependentUpon>HomePage.xaml</DependentUpon>
 	  </Compile>
+	  <Compile Update="Views\Trainers\CreateTrainerPage.xaml.cs">
+	    <DependentUpon>CreateTrainerPage.xaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Views\Workouts\WorkoutDetailsPage.xaml.cs">
 	    <DependentUpon>WorkoutDetailsPage.xaml</DependentUpon>
 	  </Compile>
@@ -160,6 +163,9 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\Profile\UpdateProfilePage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\Trainers\CreateTrainerPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\Workouts\WorkoutsPage.xaml">

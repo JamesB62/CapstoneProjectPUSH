@@ -106,5 +106,10 @@
             await NavigateAsync(nameof(CapstoneProjectPUSH.Views.Admin.GymsManagementPage));
         }
 
+        [RelayCommand]
+        private async Task GoToCreateTrainerAsync()
+        {
+            await NavigateAsync(nameof(CapstoneProjectPUSH.Views.Trainers.CreateTrainerPage));
+        }
     }
 }

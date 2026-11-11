@@ -16,7 +16,7 @@
         private const string PlaceholderImage = "profile_picture_placeholder.png";
 
         public ObservableCollection<Trainer> Trainers { get; } = new();
-        
+
         private List<Trainer> _allTrainers = new();
 
         private static readonly Category AllCategory = new() { Id = 0, Title = "All" };
@@ -133,6 +133,7 @@
             {
                 filtered = _allTrainers;
             }
+
             else
             {
                 filtered = _allTrainers.Where(t => t.CategoryId == categoryId).ToList();
@@ -157,6 +158,8 @@
             {
                 StatusMessage = $"Showing {Trainers.Count} trainers.";
             }
+
+
         }
 
         partial void OnSelectedTrainerChanged(Trainer? value)
@@ -179,6 +182,12 @@
             }
 
             await NavigateAsync($"{nameof(TrainerDetailsPage)}?TrainerId={trainer.Id}");
+        }
+    
+    [RelayCommand]
+        private async Task AddTrainerAsync()
+        {
+            await NavigateAsync(nameof(SelectExercisesPage));
         }
     }
 }

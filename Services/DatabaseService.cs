@@ -238,6 +238,27 @@
                     Description = "Certified personal trainer with 5 years of experience specialising in high-intensity interval training. Jane designs fast-paced, varied sessions that build endurance and burn calories efficiently, and scales every workout to suit beginners through to experienced athletes.",
                     Available = false,
                     GymId = 3
+                },
+
+                new Trainer {
+                    FirstName = "Daniel",
+                    LastName = "Doe",
+                    Email = "ddoe123@example.com",
+                    PhoneNumber = "123-456-7890",
+                    CategoryId = 2,
+                    Description = "Certified personal trainer with 3 years of experience in cardio training. Daniel focuses on proper technique and progressive overload, helping clients build lasting strength safely, whether they're picking up a barbell for the first time or working toward a new personal best.",
+                    Available = true,
+                    GymId = 2
+                },
+                new Trainer {
+                    FirstName = "Alex",
+                    LastName = "Dane",
+                    Email = "adane123@example.com",
+                    PhoneNumber = "123-456-7890",
+                    CategoryId = 4,
+                    Description = "Certified personal trainer with 8 years of experience in yoga instructing. Alex focuses on proper technique and progressive overload, helping clients build lasting strength safely, whether they're picking up a barbell for the first time or working toward a new personal best.",
+                    Available = true,
+                    GymId = 5
                 }
             };
 

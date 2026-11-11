@@ -32,6 +32,7 @@ namespace CapstoneProjectPUSH
 
             // Trainers
             Routing.RegisterRoute(nameof(TrainerDetailsPage), typeof(TrainerDetailsPage));
+            Routing.RegisterRoute(nameof(CreateTrainerPage), typeof(CreateTrainerPage));
 
             // Workouts
             Routing.RegisterRoute(nameof(CreateWorkoutPage), typeof(CreateWorkoutPage));

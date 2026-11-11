@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:CapstoneProjectPUSH.Models"
+             xmlns:vm="clr-namespace:CapstoneProjectPUSH.ViewModels.Trainers"
+             x:Class="CapstoneProjectPUSH.Views.Trainers.CreateTrainerPage"
+             x:DataType="vm:CreateTrainerViewModel"
+             Title="Create PUSH Trainer">
+
+    <Grid
+        MaximumWidthRequest="500"
+        Padding="30,15"
+        RowDefinitions="*,Auto"
+        RowSpacing="15">
+
+        <ScrollView
+            Grid.Row="0">
+
+            <VerticalStackLayout
+                Spacing="10">
+
+                <Entry
+                    MaxLength="60"
+                    Placeholder="First name"
+                    Text="{Binding FirstName}"/>
+
+                <Entry
+                    MaxLength="60"
+                    Placeholder="Last name"
+                    Text="{Binding LastName}"/>
+
+                <Entry
+                    Keyboard="Email"
+                    MaxLength="250"
+                    Placeholder="Email (optional)"
+                    Text="{Binding Email}"/>
+
+                <Entry
+                    Keyboard="Telephone"
+                    MaxLength="20"
+                    Placeholder="Phone number (optional)"
+                    Text="{Binding PhoneNumber}"/>
+
+                <Picker
+                    ItemDisplayBinding="{Binding Title, x:DataType=models:Category}"
+                    ItemsSource="{Binding Categories}"
+                    SelectedItem="{Binding SelectedCategory}"
+                    Title="Category"/>
+
+                <Picker
+                    ItemsSource="{Binding GymChoices}"
+                    SelectedIndex="{Binding SelectedGymIndex}"
+                    Title="Gym"/>
+
+                <Editor
+                    HeightRequest="100"
+                    MaxLength="1000"
+                    Placeholder="Description (optional)"
+                    Text="{Binding Description}"/>
+
+                <Grid
+                    ColumnDefinitions="*,Auto"
+                    ColumnSpacing="10">
+
+                    <Label
+                        Grid.Column="0"
+                        Text="Available for new clients"
+                        VerticalOptions="Center"/>
+
+                    <Switch
+                        Grid.Column="1"
+                        IsToggled="{Binding Available}"/>
+
+                </Grid>
+
+            </VerticalStackLayout>
+
+        </ScrollView>
+
+        <VerticalStackLayout
+            Grid.Row="1"
+            Spacing="10">
+
+            <Label
+                FontAttributes="Italic"
+                FontSize="12"
+                HorizontalTextAlignment="Center"
+                IsVisible="{Binding HasStatusMessage}"
+                Text="{Binding StatusMessage}"/>
+
+            <Button
+                Command="{Binding SaveCommand}"
+                Text="Save Trainer"/>
+
+        </VerticalStackLayout>
+
+    </Grid>
+
+</ContentPage>
