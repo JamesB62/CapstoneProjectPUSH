@@ -2,7 +2,6 @@
 {
     public partial class RegisterViewModel : BaseViewModel
     {
-        private readonly UserService _userService;
 
         [ObservableProperty]
         public partial string DisplayName { get; set; }
@@ -27,9 +26,8 @@
 
         public bool HasErrorMessage => !string.IsNullOrEmpty(ErrorMessage);
 
-        public RegisterViewModel(UserService userService)
+        public RegisterViewModel(UserService userService) : base(userService)
         {
-            _userService = userService;
             DisplayName = string.Empty;
             Email = string.Empty;
             Password = string.Empty;

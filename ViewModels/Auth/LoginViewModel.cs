@@ -2,7 +2,7 @@ namespace CapstoneProjectPUSH.ViewModels.Auth
 {
     public partial class LoginViewModel : BaseViewModel
     {
-        private readonly UserService _userService;
+
 
         [ObservableProperty]
         public partial string Email { get; set; }
@@ -16,9 +16,8 @@ namespace CapstoneProjectPUSH.ViewModels.Auth
 
         public bool HasErrorMessage => !string.IsNullOrEmpty(ErrorMessage);
 
-        public LoginViewModel(UserService userService)
+        public LoginViewModel(UserService userService) : base(userService)
         {
-            _userService = userService;
             Email = string.Empty;
             Password = string.Empty;
         }

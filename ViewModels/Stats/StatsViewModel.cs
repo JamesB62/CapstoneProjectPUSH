@@ -8,13 +8,13 @@ namespace CapstoneProjectPUSH.ViewModels.Stats
         private const double MinWeightKg = 20;
         private const double MaxWeightKg = 400;
 
-        private readonly UserService _userService;
+
         private readonly WeightLogService _weightLogService;
         private readonly WorkoutLogService _workoutLogService;
 
-        public StatsViewModel(UserService userService, WeightLogService weightLogService, WorkoutLogService workoutLogService)
+        public StatsViewModel(UserService userService, WeightLogService weightLogService, WorkoutLogService workoutLogService) : base(userService)
         {
-            _userService = userService;
+
             _weightLogService = weightLogService;
             _workoutLogService = workoutLogService;
         }

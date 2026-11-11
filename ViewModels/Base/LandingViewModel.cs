@@ -2,7 +2,6 @@
 {
     public partial class LandingViewModel : BaseViewModel
     {
-        private readonly UserService _userService;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(HasErrorMessage))]
@@ -10,9 +9,9 @@
 
         public bool HasErrorMessage => !string.IsNullOrEmpty(ErrorMessage);
 
-        public LandingViewModel(UserService userService)
+        public LandingViewModel(UserService userService) : base(userService)
         {
-            _userService = userService;
+            
         }
         // Login command
         [RelayCommand]

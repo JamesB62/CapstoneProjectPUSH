@@ -2,11 +2,11 @@
 {
     public partial class ProfileViewModel : BaseViewModel
     {
-        private readonly UserService _userService;
 
-        public ProfileViewModel(UserService userService)
+
+        public ProfileViewModel(UserService userService) : base(userService)
         {
-            _userService = userService;
+
         }
 
         private const string PlaceholderImage = "profile_picture_placeholder.png";

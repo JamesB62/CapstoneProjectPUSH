@@ -22,6 +22,8 @@
 
         public User? CurrentUser { get; private set; }
 
+        public bool IsGuest => CurrentUser != null && CurrentUser.IsGuest;
+
         // Registration
         public async Task<AuthResult> RegisterAsync(string displayName, string email, string password, string confirmPassword, bool hasAcceptedPrivacy)
         {
@@ -463,6 +465,6 @@
             }
 
             return CurrentUser.IsAdmin;
-        }
+        }        
     }
 }

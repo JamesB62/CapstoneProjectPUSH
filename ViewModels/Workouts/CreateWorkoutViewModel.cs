@@ -6,13 +6,13 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
         private const int MaxReps = 100;
 
         private readonly CategoryService _categoryService;
-        private readonly UserService _userService;
+
         private readonly WorkoutService _workoutService;
 
-        public CreateWorkoutViewModel(CategoryService categoryService, UserService userService, WorkoutService workoutService)
+        public CreateWorkoutViewModel(CategoryService categoryService, UserService userService, WorkoutService workoutService) : base(userService)
         {
             _categoryService = categoryService;
-            _userService = userService;
+
             _workoutService = workoutService;
         }
 
