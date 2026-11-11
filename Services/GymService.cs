@@ -38,6 +38,69 @@
                 .FirstOrDefaultAsync();
         }
 
+        // Get all gyms for user Id, with the user's linked gyms first (every gym is still included)
+        public async Task<List<Gym>> GetGymsForUserAsync(int userId)
+        {
+            var gyms = await GetGymsAsync();
+            var linkedGymIds = await GetLinkedGymIdsAsync(userId);
+
+            foreach (var gym in gyms)
+            {
+                gym.IsLinked = linkedGymIds.Contains(gym.Id);
+            }
+
+            // OrderBy is stable, so each group keeps the Name / City order from GetGymsAsync
+            return gyms.OrderByDescending(g => g.IsLinked).ToList();
+        }
+
+        // Get Ids of the gyms linked to user Id
+        public async Task<HashSet<int>> GetLinkedGymIdsAsync(int userId)
+        {
+            var db = await _databaseService.GetConnectionAsync();
+
+            var links = await db.Table<UserGym>()
+                .Where(ug => ug.UserId == userId)
+                .ToListAsync();
+
+            return links.Select(ug => ug.GymId).ToHashSet();
+        }
+
+        // Link gym to user Id
+        public async Task<(bool Success, string Message)> LinkGymAsync(int userId, int gymId)
+        {
+            var db = await _databaseService.GetConnectionAsync();
+
+            var gym = await GetGymByIdAsync(gymId);
+
+            if (gym is null)
+            {
+                return (false, "Gym could not be found.");
+            }
+
+            var existingLink = await db.Table<UserGym>()
+                .Where(ug => ug.UserId == userId && ug.GymId == gymId)
+                .FirstOrDefaultAsync();
+
+            if (existingLink is not null)
+            {
+                return (true, $"{gym.Name} is already linked to your account.");
+            }
+
+            await db.InsertAsync(new UserGym { UserId = userId, GymId = gymId });
+
+            return (true, $"{gym.Name} linked to your account.");
+        }
+
+        // Unlink gym from user Id
+        public async Task<(bool Success, string Message)> UnlinkGymAsync(int userId, int gymId)
+        {
+            var db = await _databaseService.GetConnectionAsync();
+
+            await db.Table<UserGym>().DeleteAsync(ug => ug.UserId == userId && ug.GymId == gymId);
+
+            return (true, "Gym unlinked from your account.");
+        }
+
         // Add gym
         public async Task<(bool Success, string Message)> AddGymAsync(string name, string address, string city)
         {
@@ -123,6 +186,9 @@
             {
                 return (false, $"{gym.Name} can't be deleted because {trainerCount} trainer(s) are assigned to it.");
             }
+
+            // Remove any user links to this gym
+            await db.Table<UserGym>().DeleteAsync(ug => ug.GymId == gymId);
 
             await db.DeleteAsync(gym);
 

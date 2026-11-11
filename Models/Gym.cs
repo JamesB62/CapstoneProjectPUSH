@@ -17,5 +17,9 @@
 
         [Ignore]
         public string FullAddress => $"{Address}, {City}";
+
+        // True when the signed-in user has linked this gym (set by GymService.GetGymsForUserAsync)
+        [Ignore]
+        public bool IsLinked { get; set; }
     }
 }

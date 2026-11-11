@@ -9,7 +9,7 @@
 
         public const string DbFileName = "push.db3";
         public static string DbPath => Path.Combine(FileSystem.AppDataDirectory, DbFileName);
-        
+
         private SQLiteAsyncConnection? _connection;
 
         private readonly SemaphoreSlim _initLock = new(1, 1);
@@ -38,6 +38,7 @@
                     await connection.CreateTableAsync<Stats>();
                     await connection.CreateTableAsync<Trainer>();
                     await connection.CreateTableAsync<User>();
+                    await connection.CreateTableAsync<UserGym>();
                     await connection.CreateTableAsync<WeightLog>();
                     await connection.CreateTableAsync<Workout>();
                     await connection.CreateTableAsync<WorkoutExercise>();
@@ -491,7 +492,7 @@
                 .GroupBy(e => e.Title).ToDictionary(e => e.Key, e => e.First().Id);
             var workoutIds = (await db.Table<Workout>().ToListAsync())
             .GroupBy(w => w.Title).ToDictionary(w => w.Key, w => w.First().Id);
-            
+
             var items = new List<WorkoutExercise>();
 
             void Add(string workout, string exercise, int order, int sets, int reps)
@@ -503,31 +504,31 @@
             }
 
             Add("Push Day", "Barbell Bench Press", 1, 4, 8);
-            Add("Push Day", "Overhead Press",      2, 3, 10);
-            Add("Push Day", "Push-Up",             3, 3, 15);
+            Add("Push Day", "Overhead Press", 2, 3, 10);
+            Add("Push Day", "Push-Up", 3, 3, 15);
 
-            Add("Pull Day", "Deadlift",     1, 3, 5);
-            Add("Pull Day", "Pull-Up",      2, 4, 8);
+            Add("Pull Day", "Deadlift", 1, 3, 5);
+            Add("Pull Day", "Pull-Up", 2, 4, 8);
             Add("Pull Day", "Dumbbell Row", 3, 3, 10);
 
-            Add("Leg Day", "Back Squat",  1, 4, 8);
-            Add("Leg Day", "Deadlift",    2, 3, 5);
+            Add("Leg Day", "Back Squat", 1, 4, 8);
+            Add("Leg Day", "Deadlift", 2, 3, 5);
             Add("Leg Day", "Jump Squats", 3, 3, 12);
 
-            Add("Morning HIIT", "Burpees",           1, 4, 15);
+            Add("Morning HIIT", "Burpees", 1, 4, 15);
             Add("Morning HIIT", "Mountain Climbers", 2, 4, 30);
-            Add("Morning HIIT", "Jump Squats",       3, 3, 20);
+            Add("Morning HIIT", "Jump Squats", 3, 3, 20);
 
-            Add("Cardio Burn", "Jump Rope",         1, 3, 100);
+            Add("Cardio Burn", "Jump Rope", 1, 3, 100);
             Add("Cardio Burn", "Mountain Climbers", 2, 3, 30);
-            Add("Cardio Burn", "Burpees",           3, 3, 10);
+            Add("Cardio Burn", "Burpees", 3, 3, 10);
 
             Add("Yoga Flow", "Sun Salutation", 1, 3, 5);
-            Add("Yoga Flow", "Downward Dog",   2, 3, 8);
+            Add("Yoga Flow", "Downward Dog", 2, 3, 8);
 
             Add("Cool Down", "Hamstring Stretch", 1, 2, 3);
-            Add("Cool Down", "Downward Dog",      2, 2, 5);
-            Add("Cool Down", "Foam Rolling",      3, 1, 10);
+            Add("Cool Down", "Downward Dog", 2, 2, 5);
+            Add("Cool Down", "Foam Rolling", 3, 1, 10);
 
             await db.InsertAllAsync(items);
 
