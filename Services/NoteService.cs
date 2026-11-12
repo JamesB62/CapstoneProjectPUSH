@@ -78,5 +78,43 @@
 
             return note;
         }
+
+        // ===================================
+
+        // Add
+        public async Task<int> AddNoteAsync(Note note)
+        {
+            var db = await _databaseService.GetConnectionAsync();
+
+            return await db.InsertAsync(note);
+        }
+
+        // Delete
+        public async Task<int> DeleteNoteAsync(int noteId, int userId)
+        {
+            var db = await _databaseService.GetConnectionAsync();
+
+            return await db.Table<Note>().DeleteAsync(n => n.Id == noteId && n.UserId == userId);
+        }
+
+        // Update
+        public async Task<int> UpdateNoteAsync(Note note, int userId)
+        {
+            var db = await _databaseService.GetConnectionAsync();
+
+            var existingNote = await db.Table<Note>()
+                .Where(n => n.Id == note.Id && n.UserId == userId)
+                .FirstOrDefaultAsync();
+
+            if (existingNote is null)
+            {
+                return 0;
+            }
+
+            existingNote.Title = note.Title;
+            existingNote.Content = note.Content;
+
+            return await db.UpdateAsync(existingNote);
+        }
     }
 }

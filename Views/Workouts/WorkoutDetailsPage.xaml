@@ -126,10 +126,23 @@
                 </VerticalStackLayout>
 
                 <!-- Notes -->
-                <Label
-                    FontAttributes="Bold"
-                    FontSize="16"
-                    Text="Notes"/>
+                <Grid
+                    ColumnDefinitions="*,Auto"
+                    ColumnSpacing="15">
+
+                    <Label
+                        FontAttributes="Bold"
+                        FontSize="16"
+                        Grid.Column="0"
+                        Text="Notes"
+                        VerticalOptions="Center"/>
+
+                    <Button
+                        Command="{Binding AddNoteCommand}"
+                        Grid.Column="1"
+                        Text="Add Note"/>
+
+                </Grid>
 
                 <VerticalStackLayout
                     BindableLayout.ItemsSource="{Binding Notes}"
@@ -201,6 +214,22 @@
                                         FontAttributes="Italic"
                                         FontSize="12"
                                         Text="{Binding DateTimeCreated, StringFormat='Date created: {0:d MMMM yyyy}'}"/>
+
+                                    <HorizontalStackLayout
+                                        HorizontalOptions="End"
+                                        Spacing="10">
+
+                                        <Button
+                                            Command="{Binding EditNoteCommand, Source={RelativeSource AncestorType={x:Type vm:WorkoutDetailsViewModel}}, x:DataType=vm:WorkoutDetailsViewModel}"
+                                            CommandParameter="{Binding .}"
+                                            Text="Edit"/>
+
+                                        <Button
+                                            Command="{Binding DeleteNoteCommand, Source={RelativeSource AncestorType={x:Type vm:WorkoutDetailsViewModel}}, x:DataType=vm:WorkoutDetailsViewModel}"
+                                            CommandParameter="{Binding .}"
+                                            Text="Delete"/>
+
+                                    </HorizontalStackLayout>
 
                                 </VerticalStackLayout>
 

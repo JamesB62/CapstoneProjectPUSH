@@ -155,5 +155,73 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
 
             await NavigateAsync($"{nameof(ActiveWorkoutPage)}?WorkoutId={Workout.Id}");
         }
+
+        // =====================================
+
+        [RelayCommand]
+        private async Task AddNoteAsync()
+        {
+            if (Workout is null)
+            {
+                return;
+            }
+
+            var parameters = new ShellNavigationQueryParameters
+            {
+                { "WorkoutId", Workout.Id }
+            };
+
+            await NavigateAsync(nameof(NoteFormPage), parameters);
+        }
+
+        [RelayCommand]
+        private async Task EditNoteAsync(Note? note)
+        {
+            if (note is null)
+            {
+                return;
+            }
+
+            var parameters = new ShellNavigationQueryParameters
+            {
+                { "NoteId", note.Id }
+            };
+
+            await NavigateAsync(nameof(NoteFormPage), parameters);
+        }
+
+        [RelayCommand]
+        private async Task DeleteNoteAsync(Note? note)
+        {
+            if (note is null)
+            {
+                return;
+            }
+
+            var user = _userService.CurrentUser;
+
+            if (user is null)
+            {
+                return;
+            }
+
+            bool confirmed = await Shell.Current.DisplayAlertAsync(
+                "Delete note",
+                $"Delete \"{note.Title}\"? This can't be undone.",
+                "Delete",
+                "Cancel");
+
+            if (!confirmed)
+            {
+                return;
+            }
+
+            int rowsDeleted = await _noteService.DeleteNoteAsync(note.Id, user.Id);
+
+            if (rowsDeleted > 0)
+            {
+                Notes.Remove(note);
+            }
+        }
     }
 }

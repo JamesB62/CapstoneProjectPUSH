@@ -67,6 +67,7 @@ namespace CapstoneProjectPUSH
             // Workouts
             builder.Services.AddTransient<ActiveWorkoutViewModel>();
             builder.Services.AddTransient<CreateWorkoutViewModel>();
+            builder.Services.AddTransient<NoteFormViewModel>();
             builder.Services.AddTransient<SelectExercisesViewModel>();
             builder.Services.AddTransient<WorkoutDetailsViewModel>();
             builder.Services.AddTransient<WorkoutsViewModel>();
@@ -111,6 +112,7 @@ namespace CapstoneProjectPUSH
             // Workouts
             builder.Services.AddTransient<ActiveWorkoutPage>();
             builder.Services.AddTransient<CreateWorkoutPage>();
+            builder.Services.AddTransient<NoteFormPage>();
             builder.Services.AddTransient<SelectExercisesPage>();
             builder.Services.AddTransient<WorkoutDetailsPage>();
             builder.Services.AddTransient<WorkoutsPage>();
