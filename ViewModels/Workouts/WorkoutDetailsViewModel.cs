@@ -3,14 +3,12 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
     [QueryProperty(nameof(WorkoutId), "WorkoutId")]
     public partial class WorkoutDetailsViewModel : BaseViewModel
     {
-        private readonly NoteService _noteService;
-        private readonly UserService _userService;
         private readonly WorkoutService _workoutService;
+        private readonly NoteService _noteService;
 
-        public WorkoutDetailsViewModel(NoteService noteService, UserService userService, WorkoutService workoutService)
+        public WorkoutDetailsViewModel(NoteService noteService,UserService userService, WorkoutService workoutService) : base(userService)
         {
             _noteService = noteService;
-            _userService = userService;
             _workoutService = workoutService;
         }
 

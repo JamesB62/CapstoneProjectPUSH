@@ -1,8 +1,8 @@
 namespace CapstoneProjectPUSH.ViewModels.Auth
 {
-    public partial class LoginViewModel : BaseViewModel
+    public partial class LoginViewModel : BaseViewModel, IQueryAttributable
     {
-        private readonly UserService _userService;
+        public bool _returnToPrevious;
 
         [ObservableProperty]
         public partial string Email { get; set; }
@@ -16,12 +16,19 @@ namespace CapstoneProjectPUSH.ViewModels.Auth
 
         public bool HasErrorMessage => !string.IsNullOrEmpty(ErrorMessage);
 
-        public LoginViewModel(UserService userService)
+        public LoginViewModel(UserService userService) : base(userService)
         {
-            _userService = userService;
             Email = string.Empty;
             Password = string.Empty;
         }
+
+        public void ApplyQueryAttributes(IDictionary<string, object> query)
+        {
+            _returnToPrevious = query.TryGetValue("returnToPrevious", out var v) && v?.ToString() == "true";
+        }   
+
+        
+
 
         // Login command
         [RelayCommand]
@@ -47,10 +54,20 @@ namespace CapstoneProjectPUSH.ViewModels.Auth
 
                 Email = string.Empty;
                 Password = string.Empty;
+                await GoHomeAndClearStackAsync();//clean page after login
 
                 IsBusy = false;
 
-                await NavigateAsync("//HomePage");
+                //after login back to the page before
+                if (_returnToPrevious)
+                {
+                    await Shell.Current.GoToAsync("..");
+                }
+                else
+                {
+                    await GoHomeAndClearStackAsync();
+                }
+                
             }
             catch (Exception ex)
             {
@@ -69,5 +86,16 @@ namespace CapstoneProjectPUSH.ViewModels.Auth
         {
             await NavigateAsync($"../{nameof(RegisterPage)}");
         }
+
+        //after login clean all page
+        private async Task GoHomeAndClearStackAsync()
+        {
+            if (Shell.Current.Navigation.NavigationStack.Count > 1)
+            {
+                await Shell.Current.Navigation.PopToRootAsync(false);
+            }
+
+            await NavigateAsync("//HomePage");
+        }    
     }
 }

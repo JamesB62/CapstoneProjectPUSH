@@ -8,14 +8,12 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
 
         private readonly CategoryService _categoryService;
         private readonly ExerciseService _exerciseService;
-        private readonly UserService _userService;
         private readonly WorkoutService _workoutService;
 
-        public CreateWorkoutViewModel(CategoryService categoryService, ExerciseService exerciseService, UserService userService, WorkoutService workoutService)
+        public CreateWorkoutViewModel(CategoryService categoryService, WorkoutService workoutService,ExerciseService exerciseService,UserService userService) : base(userService)
         {
             _categoryService = categoryService;
             _exerciseService = exerciseService;
-            _userService = userService;
             _workoutService = workoutService;
         }
 

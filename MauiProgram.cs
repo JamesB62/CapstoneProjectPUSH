@@ -13,6 +13,9 @@ namespace CapstoneProjectPUSH
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
 
+            //app shell
+            builder.Services.AddSingleton<AppShell>();
+
             // ========================= Services =========================
 
             builder.Services.AddSingleton<ArticleService>();

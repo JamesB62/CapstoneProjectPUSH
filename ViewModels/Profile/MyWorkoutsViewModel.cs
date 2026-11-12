@@ -3,13 +3,12 @@
     public partial class MyWorkoutsViewModel : BaseViewModel
     {
         private readonly CategoryService _categoryService;
-        private readonly UserService _userService;
         private readonly WorkoutService _workoutService;
 
-        public MyWorkoutsViewModel(CategoryService categoryService, UserService userService, WorkoutService workoutService)
+        public MyWorkoutsViewModel(CategoryService categoryService, UserService userService, WorkoutService workoutService) : base(userService)
         {
             _categoryService = categoryService;
-            _userService = userService;
+
             _workoutService = workoutService;
         }
 

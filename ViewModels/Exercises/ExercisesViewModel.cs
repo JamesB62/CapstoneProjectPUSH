@@ -4,13 +4,13 @@ namespace CapstoneProjectPUSH.ViewModels.Exercises
     {
         private readonly CategoryService _categoryService;
         private readonly ExerciseService _exerciseService;
-        private readonly UserService _userService;
 
-        public ExercisesViewModel(CategoryService categoryService, ExerciseService exerciseService, UserService userService)
+
+        public ExercisesViewModel(CategoryService categoryService, ExerciseService exerciseService, UserService userService) : base(userService)
         {
             _categoryService = categoryService;
             _exerciseService = exerciseService;
-            _userService = userService;
+
         }
 
         public ObservableCollection<Exercise> Exercises { get; } = new();

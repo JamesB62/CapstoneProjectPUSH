@@ -3,16 +3,14 @@
     public partial class HomeViewModel : BaseViewModel
     {
         private readonly ArticleService _articleService;
-        private readonly UserService _userService;
         private readonly WeightLogService _weightLogService;
         private readonly WorkoutService _workoutService;
 
-        public HomeViewModel(ArticleService articleService, UserService userService, WeightLogService weightLogService, WorkoutService workoutService)
+        public HomeViewModel(ArticleService articleService,WorkoutService workoutService,WeightLogService weightLogService) : base(userService)
         {
             _articleService = articleService;
-            _userService = userService;
-            _weightLogService = weightLogService;
             _workoutService = workoutService;
+            _weightLogService = weightLogService;
         }
 
         private const int WeightInPromptIntervalDays = 14;
@@ -35,6 +33,9 @@
         private async Task LoadHomeAsync()
         {
             IsBusy = true;
+            
+            RefreshUserState();
+
 
             try
             {
@@ -221,5 +222,12 @@
                 await Shell.Current.DisplayAlertAsync("Weigh-in failed", "Your weigh-in could not be saved. Please try again.", "OK");
             }
         }
+        [RelayCommand]
+        private async Task GoToLoginAsync() => await NavigateAsync(nameof(LoginPage));
+
+        [RelayCommand]
+        private async Task GoToRegisterAsync() => await NavigateAsync(nameof(RegisterPage));
+
+
     }
 }

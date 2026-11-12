@@ -3,12 +3,12 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
     public partial class SelectExercisesViewModel : BaseViewModel
     {
         private readonly ExerciseService _exerciseService;
-        private readonly UserService _userService;
 
-        public SelectExercisesViewModel(ExerciseService exerciseService, UserService userService)
+
+        public SelectExercisesViewModel(ExerciseService exerciseService, UserService userService) : base(userService)
         {
             _exerciseService = exerciseService;
-            _userService = userService;
+
         }
 
         public ObservableCollection<SelectableExercise> Exercises { get; } = new();

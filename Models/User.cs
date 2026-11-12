@@ -23,6 +23,7 @@
         public bool IsAdmin { get; set; } = false;
 
         public bool IsActive { get; set; } = true;
+        public bool IsGuest { get; set; } = false;
 
         [Ignore]
         public string StatusLabel => IsActive ? "Active" : "Deactivated";
