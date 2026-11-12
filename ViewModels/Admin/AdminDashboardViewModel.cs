@@ -89,19 +89,25 @@
         [RelayCommand]
         private async Task GoToUserManagementAsync()
         {
-            //await NavigateAsync(nameof(UserManagementPage));
+            await NavigateAsync(nameof(CapstoneProjectPUSH.Views.Admin.UserManagementPage));
         }
 
         [RelayCommand]
         private async Task GoToCategoryManagementAsync()
         {
-            //await NavigateAsync(nameof(CategoriesManagementPage));
+            await NavigateAsync(nameof(CapstoneProjectPUSH.Views.Admin.CategoriesManagementPage));
         }
 
         [RelayCommand]
         private async Task GoToGymManagementAsync()
         {
-            //await NavigateAsync(nameof(GymsManagementPage));
+            await NavigateAsync(nameof(CapstoneProjectPUSH.Views.Admin.GymsManagementPage));
+        }
+
+        [RelayCommand]
+        private async Task GoToCreateTrainerAsync()
+        {
+            await NavigateAsync(nameof(CapstoneProjectPUSH.Views.Trainers.CreateTrainerPage));
         }
     }
 }

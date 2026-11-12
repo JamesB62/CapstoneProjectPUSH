@@ -197,6 +197,10 @@
                         Command="{Binding GoToGymManagementCommand}"
                         Text="Manage Gyms"/>
 
+                    <Button
+                        Command="{Binding GoToCreateTrainerCommand}"
+                        Text="Create Trainer"/>
+
                 </VerticalStackLayout>
 
             </VerticalStackLayout>

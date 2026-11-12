@@ -52,5 +52,9 @@
 
         [Ignore]
         public string GymFullAddress => $"{GymAddress}, {GymCity}";
+
+        // True when this trainer's gym is one the signed-in user has linked (set by TrainerService.GetTrainersForUserAsync)
+        [Ignore]
+        public bool IsAtLinkedGym { get; set; }
     }
 }

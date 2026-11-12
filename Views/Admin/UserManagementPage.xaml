@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:CapstoneProjectPUSH.ViewModels.Admin"
+             xmlns:models="clr-namespace:CapstoneProjectPUSH.Models"
+             x:Class="CapstoneProjectPUSH.Views.Admin.UserManagementPage"
+             x:DataType="vm:UserManagementViewModel"
+             Title="Manage Users">
+
+    <Grid
+        MaximumWidthRequest="500"
+        Padding="30,15"
+        RowDefinitions="Auto,Auto,Auto,*"
+        RowSpacing="10">
+
+        <Entry
+            Grid.Row="0"
+            Placeholder="Search by name or email"
+            Text="{Binding SearchText}"/>
+
+        <Label
+            Grid.Row="1"
+            FontAttributes="Bold"
+            Text="{Binding CountText}"/>
+
+        <Label
+            Grid.Row="2"
+            HorizontalOptions="Center"
+            IsVisible="{Binding HasStatusMessage}"
+            Text="{Binding StatusMessage}"/>
+
+        <RefreshView
+            Grid.Row="3"
+            Command="{Binding LoadCommand}"
+            IsRefreshing="{Binding IsBusy}">
+
+            <CollectionView ItemsSource="{Binding Users}">
+
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout Orientation="Vertical" ItemSpacing="10"/>
+                </CollectionView.ItemsLayout>
+
+                <CollectionView.EmptyView>
+                    <Label HorizontalOptions="Center" Text="No users found."/>
+                </CollectionView.EmptyView>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:User">
+
+                        <Border Style="{StaticResource Card}">
+
+                            <VerticalStackLayout Spacing="4">
+
+                                <HorizontalStackLayout Spacing="8">
+                                    <Label
+                                        FontAttributes="Bold"
+                                        FontSize="16"
+                                        Text="{Binding DisplayName}"/>
+                                    <Label
+                                        FontAttributes="Italic"
+                                        IsVisible="{Binding IsAdmin}"
+                                        Text="Admin"
+                                        TextColor="{AppThemeBinding Light=#2563EB, Dark=#60A5FA}"
+                                        VerticalOptions="Center"/>
+                                </HorizontalStackLayout>
+
+                                <Label Text="{Binding Email}"/>
+
+                                <Label Text="{Binding StatusLabel}">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsActive}" Value="False">
+                                            <Setter Property="TextColor" Value="Red"/>
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+
+                                <Label
+                                    FontSize="12"
+                                    Text="{Binding DateTimeCreated, StringFormat='Joined {0:d MMM yyyy}'}"/>
+
+                                <Button
+                                    BackgroundColor="Firebrick"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:UserManagementViewModel}}, Path=ToggleActiveCommand}"
+                                    CommandParameter="{Binding .}"
+                                    Margin="0,8,0,0"
+                                    Text="{Binding ActionLabel}"
+                                    TextColor="White">
+                                    <Button.Triggers>
+                                        <DataTrigger TargetType="Button" Binding="{Binding IsActive}" Value="False">
+                                            <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#2563EB, Dark=#3B82F6}"/>
+                                        </DataTrigger>
+                                    </Button.Triggers>
+                                </Button>
+
+                            </VerticalStackLayout>
+
+                        </Border>
+
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+
+            </CollectionView>
+
+        </RefreshView>
+
+    </Grid>
+
+</ContentPage>

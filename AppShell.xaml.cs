@@ -10,6 +10,9 @@ namespace CapstoneProjectPUSH
 
             //Admin
             Routing.RegisterRoute(nameof(AdminDashboardPage), typeof(AdminDashboardPage));
+            Routing.RegisterRoute(nameof(UserManagementPage), typeof(UserManagementPage));
+            Routing.RegisterRoute(nameof(CategoriesManagementPage), typeof(CategoriesManagementPage));
+            Routing.RegisterRoute(nameof(GymsManagementPage), typeof(GymsManagementPage));
 
             // Auth
             Routing.RegisterRoute(nameof(LoginPage), typeof(LoginPage));
@@ -31,6 +34,7 @@ namespace CapstoneProjectPUSH
 
             // Trainers
             Routing.RegisterRoute(nameof(TrainerDetailsPage), typeof(TrainerDetailsPage));
+            Routing.RegisterRoute(nameof(CreateTrainerPage), typeof(CreateTrainerPage));
 
             // Workouts
             Routing.RegisterRoute(nameof(ActiveWorkoutPage), typeof(ActiveWorkoutPage));
