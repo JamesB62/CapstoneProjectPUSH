@@ -2,12 +2,11 @@
 {
     public partial class CommunityWorkoutsViewModel : BaseViewModel
     {
-        private readonly UserService _userService;
         private readonly WorkoutService _workoutService;
 
-        public CommunityWorkoutsViewModel(UserService userService, WorkoutService workoutService)
+        public CommunityWorkoutsViewModel(UserService userService, WorkoutService workoutService) : base(userService)
         {
-            _userService = userService;
+
             _workoutService = workoutService;
         }
 

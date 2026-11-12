@@ -42,7 +42,7 @@ namespace CapstoneProjectPUSH
 
         //guest nav bar blocker
         private readonly UserService _userService;
-        private readonly string[] _restrictedRoutes = {"TrainersPage"};
+        private readonly string[] _restrictedRoutes = {"TrainersPage", "CommunityWorkoutsPage"};
 
         protected override async void OnNavigating(ShellNavigatingEventArgs args)
         {

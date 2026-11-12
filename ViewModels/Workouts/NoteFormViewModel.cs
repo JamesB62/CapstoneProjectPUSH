@@ -5,12 +5,11 @@
     public partial class NoteFormViewModel : BaseViewModel
     {
         private readonly NoteService _noteService;
-        private readonly UserService _userService;
 
-        public NoteFormViewModel(NoteService noteService, UserService userService)
+
+        public NoteFormViewModel(NoteService noteService, UserService userService) :base(userService)
         {
             _noteService = noteService;
-            _userService = userService;
         }
 
         [ObservableProperty]
