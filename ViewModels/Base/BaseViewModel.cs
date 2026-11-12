@@ -53,8 +53,7 @@
             if (goToLogin)
             {
 
-                await NavigateAsync(nameof(LoginPage));
-            }
+            await Shell.Current.GoToAsync($"{nameof(LoginPage)}?returnToPrevious=true");            }
 
             return false; //block user
         }

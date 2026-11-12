@@ -26,6 +26,8 @@
         {
             IsBusy = true;
             
+            RefreshUserState();
+
 
             try
             {

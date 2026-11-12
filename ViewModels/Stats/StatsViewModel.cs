@@ -237,6 +237,7 @@ namespace CapstoneProjectPUSH.ViewModels.Stats
         [RelayCommand]
         private async Task AddWeighInAsync()
         {
+            
             var user = _userService.CurrentUser;
 
             if (user is null)
@@ -244,6 +245,9 @@ namespace CapstoneProjectPUSH.ViewModels.Stats
                 await NavigateAsync("//LandingPage");
                 return;
             }
+            
+            if (!await RequireLoginAsync())
+            return;
 
             // Value prompt
             string? result = await Shell.Current.DisplayPromptAsync(

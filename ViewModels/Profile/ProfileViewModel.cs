@@ -65,30 +65,43 @@
         [RelayCommand]
         private async Task GoToUpdateDetailsAsync()
         {
+            if (!await RequireLoginAsync())
+            return;
+
             await NavigateAsync(nameof(UpdateProfilePage));
         }
 
         [RelayCommand]
         private async Task GoToMyWorkoutsAsync()
         {
+            if (!await RequireLoginAsync())
+            return;
+
             await NavigateAsync(nameof(MyWorkoutsPage));
         }
 
         [RelayCommand]
         private async Task GoToMyNotesAsync()
         {
+            if (!await RequireLoginAsync())
+            return;
+
             await NavigateAsync(nameof(MyNotesPage));
         }
 
         [RelayCommand]
         private async Task GoToAdminDashboardAsync()
         {
+            if (!await RequireLoginAsync())
+            return;
+
             await NavigateAsync(nameof(AdminDashboardPage));
         }
 
         [RelayCommand]
         private async Task LogoutAsync()
         {
+
             bool confirmed = await Shell.Current.DisplayAlertAsync(
                 "Logout",
                 "Are you sure you want to log out?",

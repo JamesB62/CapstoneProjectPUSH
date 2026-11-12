@@ -127,8 +127,9 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
         [RelayCommand]
         private async Task ViewWorkoutAsync(Workout? workout)
         {
-            if (!await RequireLoginAsync())
-            return;
+            //guest abvv
+            // if (!await RequireLoginAsync())
+            // return;
 
             if (workout is null)
             {
