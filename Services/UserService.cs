@@ -22,7 +22,15 @@
 
         public User? CurrentUser { get; private set; }
 
+        //define null nser
+        public bool IsUnauthenticated => CurrentUser == null;
+        
+        //definr guest user
         public bool IsGuest => CurrentUser != null && CurrentUser.IsGuest;
+
+        //define login user
+        public bool IsLoggedIn => CurrentUser != null && !CurrentUser.IsGuest;
+
 
         // Registration
         public async Task<AuthResult> RegisterAsync(string displayName, string email, string password, string confirmPassword, bool hasAcceptedPrivacy)

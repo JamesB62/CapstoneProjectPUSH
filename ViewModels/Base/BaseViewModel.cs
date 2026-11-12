@@ -23,12 +23,15 @@
             _userService = userService;
         }
 
+        public bool IsUnauthenticated => _userService.IsUnauthenticated;
+
         //guest
         public bool IsGuest => _userService.IsGuest;
         public bool IsLoggedIn => !IsGuest;
 
         public void RefreshUserState()
         {
+            OnPropertyChanged(nameof(IsUnauthenticated));
             OnPropertyChanged(nameof(IsGuest));
             OnPropertyChanged(nameof(IsLoggedIn));
         }
