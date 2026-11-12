@@ -6,7 +6,7 @@
         private readonly WeightLogService _weightLogService;
         private readonly WorkoutService _workoutService;
 
-        public HomeViewModel(ArticleService articleService,WorkoutService workoutService,WeightLogService weightLogService) : base(userService)
+        public HomeViewModel(ArticleService articleService,WorkoutService workoutService,WeightLogService weightLogService,UserService userService) : base(userService)
         {
             _articleService = articleService;
             _workoutService = workoutService;

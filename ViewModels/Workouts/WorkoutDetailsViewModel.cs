@@ -130,10 +130,13 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
         [RelayCommand]
         private async Task EditWorkoutAsync()
         {
+            
             if (Workout is null || !IsOwner)
             {
                 return;
             }
+            if (!await RequireLoginAsync())
+            return;
 
             var parameters = new ShellNavigationQueryParameters
             {
@@ -146,10 +149,13 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
         [RelayCommand]
         private async Task StartWorkoutAsync()
         {
+            
             if (Workout is null)
             {
                 return;
             }
+            if (!await RequireLoginAsync())
+            return;
 
             await NavigateAsync($"{nameof(ActiveWorkoutPage)}?WorkoutId={Workout.Id}");
         }
@@ -163,6 +169,8 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
             {
                 return;
             }
+            if (!await RequireLoginAsync())
+            return;
 
             var parameters = new ShellNavigationQueryParameters
             {
@@ -179,6 +187,8 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
             {
                 return;
             }
+            if (!await RequireLoginAsync())
+            return;
 
             var parameters = new ShellNavigationQueryParameters
             {
@@ -195,6 +205,8 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
             {
                 return;
             }
+            if (!await RequireLoginAsync())
+            return;
 
             var user = _userService.CurrentUser;
 

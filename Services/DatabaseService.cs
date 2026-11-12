@@ -1,4 +1,6 @@
-﻿namespace CapstoneProjectPUSH.Services
+﻿using Android.Icu.Math;
+
+namespace CapstoneProjectPUSH.Services
 {
     public class DatabaseService
     {
@@ -550,6 +552,30 @@
         private async Task SeedWorkoutsAsync()
         {
             var db = await GetConnectionAsync();
+            if(await db.Table<Workout>().CountAsync() > 0) return;
+
+            await db.InsertAllAsync(new[]
+            {
+                
+                new Workout { Title = "Push Day",     UserId = 1, CategoryId = 1 },
+                new Workout { Title = "Leg Day",      UserId = 1, CategoryId = 1 },
+                new Workout { Title = "Morning HIIT", UserId = 1, CategoryId = 3 },
+                new Workout { Title = "Cardio Burn",  UserId = 1, CategoryId = 2 },
+                new Workout { Title = "Yoga Flow",    UserId = 1, CategoryId = 4 },
+                new Workout { Title = "Cool Down",    UserId = 1, CategoryId = 9 },
+            });
+
+            var guest = await db.Table<User>().Where(u => u.IsGuest == true).FirstOrDefaultAsync();
+            if(guest is null) return;
+            if(await db.Table<Workout>().Where(w => w.UserId == guest.Id).CountAsync() > 0) return;
+
+
+            await db.InsertAllAsync(new[]
+            {
+                new Workout {Title ="Beginner Full Boday", UserId = guest.Id, CategoryId = 1},
+                new Workout { Title = "Quick Cardio",       UserId = guest.Id, CategoryId = 2 },
+                new Workout { Title = "Gentle Stretch",     UserId = guest.Id, CategoryId = 5 },
+            });
 
             var count = await db.Table<Workout>().CountAsync();
             if (count > 0)
@@ -565,8 +591,11 @@
             };
 
             await db.InsertAllAsync(workouts);
+
+
         }
 
+        //put those data in the *SeedWorkoutsAsync* 
         // Workout exercises seed
 //         private async Task SeedWorkoutExercisesAsync()
 //         {
@@ -640,24 +669,8 @@
             };
 
             await db.InsertAllAsync(workoutLogs);
-                new Workout { Title = "Push Day",     UserId = 1, CategoryId = 1 },
-                new Workout { Title = "Leg Day",      UserId = 1, CategoryId = 1 },
-                new Workout { Title = "Morning HIIT", UserId = 1, CategoryId = 3 },
-                new Workout { Title = "Cardio Burn",  UserId = 1, CategoryId = 2 },
-                new Workout { Title = "Yoga Flow",    UserId = 1, CategoryId = 4 },
-                new Workout { Title = "Cool Down",    UserId = 1, CategoryId = 9 },
-            });
+            
 
-            var guest = await db.Table<User>().Where(u => u.IsGuest == true).FirstOrDefaultAsync();
-            if(guest is null) return;
-            if(await db.Table<Workout>().Where(w => w.UserId == guest.Id).CountAsync() > 0) return;
-
-            await db.InsertAllAsync(new[]
-            {
-                new Workout {Title ="Beginner Full Boday", UserId = guest.Id, CategoryId = 1},
-                new Workout { Title = "Quick Cardio",       UserId = guest.Id, CategoryId = 2 },
-                new Workout { Title = "Gentle Stretch",     UserId = guest.Id, CategoryId = 5 },
-            });
         }
 
         private static WorkoutLog CreateWorkoutLog(int workoutId, int daysAgo, int minutes)

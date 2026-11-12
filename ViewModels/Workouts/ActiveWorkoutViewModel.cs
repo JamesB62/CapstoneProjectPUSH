@@ -3,16 +3,15 @@
     [QueryProperty(nameof(WorkoutId), "WorkoutId")]
     public partial class ActiveWorkoutViewModel : BaseViewModel
     {
-        private readonly UserService _userService;
         private readonly WorkoutLogService _workoutLogService;
         private readonly WorkoutService _workoutService;
 
         private readonly System.Diagnostics.Stopwatch _stopwatch = new();
         private IDispatcherTimer? _timer;
 
-        public ActiveWorkoutViewModel(UserService userService, WorkoutLogService workoutLogService, WorkoutService workoutService)
+        public ActiveWorkoutViewModel(UserService userService, WorkoutLogService workoutLogService, WorkoutService workoutService) :base(userService)
         {
-            _userService = userService;
+
             _workoutLogService = workoutLogService;
             _workoutService = workoutService;
         }
