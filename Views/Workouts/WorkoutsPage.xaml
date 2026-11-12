@@ -153,10 +153,12 @@
                                             Spacing="0">
 
                                             <Label
-                                                Text="{Binding ExerciseCount, StringFormat='• Exercises: {0}'}"/>
+                                                IsVisible="{Binding HasSets}"
+                                                Text="{Binding SetCount, StringFormat='• Sets: {0}'}"/>
 
                                             <Label
-                                                Text="{Binding SetCount, StringFormat='• Sets: {0}'}"/>
+                                                IsVisible="{Binding HasMinutes}"
+                                                Text="{Binding TotalMinutes, StringFormat='• Time: {0} min'}"/>
 
                                         </VerticalStackLayout>
 

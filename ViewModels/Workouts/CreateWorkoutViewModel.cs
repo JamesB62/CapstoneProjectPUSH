@@ -29,6 +29,9 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
         [ObservableProperty]
         public partial Category? SelectedCategory { get; set; }
 
+        [ObservableProperty]
+        public partial bool IsPublic { get; set; }
+
         public void ApplyQueryAttributes(IDictionary<string, object> query)
         {
             if (!query.TryGetValue("Exercises", out var value))
@@ -232,6 +235,15 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
                 UserId = user.Id,
                 CategoryId = SelectedCategory.Id
             };
+
+            if (IsPublic)
+            {
+                workout.IsPrivate = false;
+            }
+            else
+            {
+                workout.IsPrivate = true;
+            }
 
             IsBusy = true;
 

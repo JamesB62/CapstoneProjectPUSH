@@ -24,6 +24,18 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
         [ObservableProperty]
         public partial Workout? Workout { get; set; }
 
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(IsNotOwner))]
+        public partial bool IsOwner { get; set; }
+
+        public bool IsNotOwner
+        {
+            get
+            {
+                return !IsOwner;
+            }
+        }
+
         partial void OnWorkoutIdChanged(int value)
         {
             if (value <= 0)
@@ -54,6 +66,16 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
 
                 if (Workout is not null)
                 {
+                    IsOwner = true;
+                }
+                else
+                {
+                    IsOwner = false;
+                    Workout = await _workoutService.GetPublicWorkoutByIdAsync(WorkoutId);
+                }
+
+                if (Workout is not null)
+                {
                     var exercises = await _workoutService.GetExercisesForWorkoutAsync(WorkoutId);
 
                     List<WorkoutExercise> orderedExercises = exercises
@@ -71,7 +93,7 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
                         number++;
                     }
 
-                    var notes = await _noteService.GetNotesForWorkoutAsync(WorkoutId, user.Id);
+                    var notes = await _noteService.GetNoteForWorkoutAsync(WorkoutId, user.Id);
 
                     Notes.Clear();
 

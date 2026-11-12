@@ -40,6 +40,9 @@ namespace CapstoneProjectPUSH
             // Base
             builder.Services.AddTransient<LandingViewModel>();
 
+            // Community
+            builder.Services.AddTransient<CommunityWorkoutsViewModel>();
+
             // Exercises
             builder.Services.AddTransient<ExerciseDetailsViewModel>();
             builder.Services.AddTransient<ExercisesViewModel>();
@@ -80,6 +83,9 @@ namespace CapstoneProjectPUSH
             // Base
             builder.Services.AddTransient<LandingPage>();
             builder.Services.AddTransient<PrivacyPage>();
+
+            // Community
+            builder.Services.AddTransient<CommunityWorkoutsPage>();
 
             // Exercises
             builder.Services.AddTransient<ExerciseDetailsPage>();

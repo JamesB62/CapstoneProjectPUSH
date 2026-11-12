@@ -432,6 +432,13 @@
                     DateTimeCreated = DateTime.Today.AddDays(-4).AddHours(12),
                     UserId = 1,
                     WorkoutId = 3
+                },
+                new Note {
+                    Title = "Tough Workout",
+                    Content = "This is a test note.",
+                    DateTimeCreated = DateTime.Today.AddDays(-2).AddHours(4),
+                    UserId = 2,
+                    WorkoutId = 2
                 }
             };
 
@@ -451,9 +458,9 @@
 
             var workouts = new List<Workout>
             {
-                new Workout { Title = "Full Body Strength", UserId = 1, CategoryId = 1 },
-                new Workout { Title = "Cardio Burn", UserId = 1, CategoryId = 2 },
-                new Workout { Title = "Yoga & Recovery", UserId = 1, CategoryId = 4 }
+                new Workout { Title = "Full Body Strength", UserId = 1, CategoryId = 1, IsPrivate = true },
+                new Workout { Title = "Cardio Burn", UserId = 1, CategoryId = 2, IsPrivate = false },
+                new Workout { Title = "Yoga & Recovery", UserId = 1, CategoryId = 4, IsPrivate = true }
             };
 
             await db.InsertAllAsync(workouts);

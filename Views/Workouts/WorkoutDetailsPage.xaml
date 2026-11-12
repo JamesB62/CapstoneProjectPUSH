@@ -8,7 +8,6 @@
              Title="PUSH Workout Details">
 
     <Grid
-        IsVisible="{Binding IsNotBusy}"
         RowDefinitions="*,Auto">
 
         <ScrollView
@@ -44,6 +43,13 @@
                     </Border>
 
                 </Grid>
+
+                <!-- Author -->
+                <Label
+                    FontAttributes="Italic"
+                    FontSize="12"
+                    IsVisible="{Binding IsNotOwner}"
+                    Text="{Binding Workout.UserDisplayName, StringFormat='Created by: {0}'}"/>
 
                 <!-- Exercises -->
                 <Label
@@ -154,11 +160,37 @@
                                 <VerticalStackLayout
                                     Spacing="10">
 
-                                    <Label
-                                        FontAttributes="Bold"
-                                        FontSize="16"
-                                        LineBreakMode="TailTruncation"
-                                        Text="{Binding Title}"/>
+                                    <Grid
+                                        ColumnDefinitions="Auto,*"
+                                        ColumnSpacing="15">
+
+                                        <Label
+                                            FontAttributes="Bold"
+                                            FontSize="16"
+                                            Grid.Column="0"
+                                            LineBreakMode="TailTruncation"
+                                            Text="{Binding Title}"
+                                            VerticalOptions="Center"/>
+
+                                        <VerticalStackLayout
+                                            Grid.Column="1"
+                                            Spacing="5">
+
+                                            <Border
+                                                Grid.Column="1"
+                                                HorizontalOptions="End"
+                                                Style="{StaticResource Pill}"
+                                                VerticalOptions="Start">
+
+                                                <Label
+                                                    FontSize="12"
+                                                    Text="Private"/>
+
+                                            </Border>
+
+                                        </VerticalStackLayout>
+
+                                    </Grid>
 
                                     <Label
                                         Text="{Binding Content}"/>

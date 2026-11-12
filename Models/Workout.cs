@@ -15,7 +15,21 @@
         [Ignore]
         public int SetCount { get; set; }
 
+        [Ignore]
+        public int TotalMinutes { get; set; }
+
+        [Ignore]
+        public bool HasSets => SetCount > 0;
+
+        [Ignore]
+        public bool HasMinutes => TotalMinutes > 0;
+
         public DateTime DateTimeCreated { get; set; } = DateTime.Now;
+
+        public bool IsPrivate { get; set; } = true;
+
+        [Ignore]
+        public string VisibilityText => IsPrivate ? "Private" : "Public";
 
         [Indexed]
         public int UserId { get; set; }

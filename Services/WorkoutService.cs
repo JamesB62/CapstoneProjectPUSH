@@ -2,13 +2,15 @@
 {
     public class WorkoutService
     {
-        private readonly DatabaseService _databaseService;
         private readonly CategoryService _categoryService;
+        private readonly DatabaseService _databaseService;
+        private readonly UserService _userService;
 
-        public WorkoutService(DatabaseService databaseService, CategoryService categoryService)
+        public WorkoutService(CategoryService categoryService, DatabaseService databaseService, UserService userService)
         {
-            _databaseService = databaseService;
             _categoryService = categoryService;
+            _databaseService = databaseService;
+            _userService = userService;
         }
 
         public async Task<List<Workout>> GetWorkoutsForUserAsync(int userId)
@@ -48,6 +50,68 @@
 
             return workout;
         }
+
+        // TEST ==================================================================================
+        public async Task<List<Workout>> GetPublicWorkoutsAsync()
+        {
+            var db = await _databaseService.GetConnectionAsync();
+
+            var workouts = await db.Table<Workout>()
+                .Where(w => w.IsPrivate == false)
+                .OrderByDescending(w => w.DateTimeCreated)
+                .ToListAsync();
+
+            if (workouts.Count == 0)
+            {
+                return workouts;
+            }
+
+            var workoutIds = workouts.Select(w => w.Id).ToList();
+
+            var workoutExercises = await db.Table<WorkoutExercise>()
+                .Where(we => workoutIds.Contains(we.WorkoutId))
+                .ToListAsync();
+
+            var exercisesByWorkout = workoutExercises.ToLookup(we => we.WorkoutId);
+            var categoryTitles = await _categoryService.GetCategoryTitlesAsync();
+            var displayNames = await _userService.GetDisplayNamesByIdAsync();
+
+            foreach (var workout in workouts)
+            {
+                var exercises = exercisesByWorkout[workout.Id];
+
+                workout.CategoryTitle = categoryTitles.GetValueOrDefault(workout.CategoryId, "Uncategorised");
+                workout.UserDisplayName = displayNames.GetValueOrDefault(workout.UserId, "Unknown");
+                workout.ExerciseCount = exercises.Count();
+                workout.SetCount = exercises.Sum(e => e.Sets);
+                workout.TotalMinutes = exercises.Sum(e => e.DurationMinutes);
+            }
+
+            return workouts;
+        }
+
+        public async Task<Workout?> GetPublicWorkoutByIdAsync(int workoutId)
+        {
+            var db = await _databaseService.GetConnectionAsync();
+
+            var workout = await db.Table<Workout>()
+                .Where(w => w.Id == workoutId && w.IsPrivate == false)
+                .FirstOrDefaultAsync();
+
+            if (workout is null)
+            {
+                return null;
+            }
+
+            var categoryTitle = await _categoryService.GetCategoryTitlesAsync();
+            workout.CategoryTitle = categoryTitle.GetValueOrDefault(workout.CategoryId, "Uncategorised");
+
+            var displayNames = await _userService.GetDisplayNamesByIdAsync();
+            workout.UserDisplayName = displayNames.GetValueOrDefault(workout.UserId, "Unknown");
+
+            return workout;
+        }
+        // TEST ==================================================================================
 
         //workout exercisese 
         public async Task<List<WorkoutExercise>> GetExercisesForWorkoutAsync(int workoutId)

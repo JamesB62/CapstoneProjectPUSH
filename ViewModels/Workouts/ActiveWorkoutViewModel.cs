@@ -62,6 +62,11 @@
 
                 Workout = await _workoutService.GetWorkoutByIdAsync(WorkoutId, user.Id);
 
+                if (Workout is null)
+                {
+                    Workout = await _workoutService.GetPublicWorkoutByIdAsync(WorkoutId);
+                }
+
                 if (Workout is not null)
                 {
                     var exercises = await _workoutService.GetExercisesForWorkoutAsync(WorkoutId);

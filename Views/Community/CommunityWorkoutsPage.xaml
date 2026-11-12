@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:CapstoneProjectPUSH.Models"
+             xmlns:vm="clr-namespace:CapstoneProjectPUSH.ViewModels.Community"
+             x:Class="CapstoneProjectPUSH.Views.Community.CommunityWorkoutsPage"
+             x:DataType="vm:CommunityWorkoutsViewModel"
+             Title="PUSH Community Workouts">
+
+    <Grid
+        MaximumWidthRequest="500"
+        Padding="30,15"
+        RowDefinitions="Auto,Auto,*"
+        RowSpacing="15">
+
+        <!-- Remove title -->
+        <Label
+            Grid.Row="0"
+            FontAttributes="Bold"
+            FontSize="16"
+            Grid.Column="0"
+            Text="PUSH Community Workout Plans"
+            VerticalOptions="Center"/>
+
+        <!-- Keep? -->
+        <!-- Search -->
+        <VerticalStackLayout
+            Grid.Row="1"
+            Spacing="10">
+
+            <SearchBar
+                Placeholder="Search workouts"
+                Text="{Binding SearchText}"/>
+
+            <Label
+                FontAttributes="Italic"
+                Text="{Binding StatusMessage}"/>
+
+        </VerticalStackLayout>
+
+        <RefreshView
+            Command="{Binding LoadWorkoutsCommand}"
+            Grid.Row="2"
+            IsRefreshing="{Binding IsBusy}">
+
+            <CollectionView
+                ItemsSource="{Binding Workouts}"
+                SelectionMode="Single"
+                SelectedItem="{Binding SelectedWorkout, Mode=TwoWay}">
+
+                <!-- Empty view -->
+                <CollectionView.EmptyView>
+
+                    <VerticalStackLayout
+                        HorizontalOptions="Center"
+                        VerticalOptions="Center">
+
+                        <Label
+                            FontAttributes="Italic"
+                            HorizontalTextAlignment="Center"
+                            Text="No workouts found."/>
+
+                        <Label
+                            FontAttributes="Italic"
+                            HorizontalTextAlignment="Center"
+                            Text="Pull down to try again."/>
+
+                    </VerticalStackLayout>
+
+                </CollectionView.EmptyView>
+
+                <!-- Item layout -->
+                <CollectionView.ItemsLayout>
+
+                    <LinearItemsLayout
+                        ItemSpacing="10"
+                        Orientation="Vertical"/>
+
+                </CollectionView.ItemsLayout>
+
+                <!-- Item template -->
+                <CollectionView.ItemTemplate>
+
+                    <DataTemplate
+                        x:DataType="models:Workout">
+
+                        <Border
+                            Style="{StaticResource Card}">
+
+                            <VerticalStackLayout
+                                Spacing="10">
+
+                                <Grid
+                                    ColumnDefinitions="*,Auto"
+                                    ColumnSpacing="10">
+
+                                    <Label
+                                        Grid.Column="0"
+                                        FontAttributes="Bold"
+                                        FontSize="16"
+                                        LineBreakMode="TailTruncation"
+                                        Text="{Binding Title}"
+                                        VerticalOptions="Center"/>
+
+                                    <Border
+                                        Grid.Column="1"
+                                        Style="{StaticResource Pill}">
+
+                                        <Label
+                                            FontSize="12"
+                                            LineBreakMode="TailTruncation"
+                                            Text="{Binding CategoryTitle}"/>
+
+                                    </Border>
+
+                                </Grid>
+
+                                <VerticalStackLayout
+                                    Spacing="10">
+
+                                    <VerticalStackLayout
+                                        Spacing="0">
+
+                                        <Label
+                                            IsVisible="{Binding HasSets}"
+                                            Text="{Binding SetCount, StringFormat='• Sets: {0}'}"/>
+
+                                        <Label
+                                            IsVisible="{Binding HasMinutes}"
+                                            Text="{Binding TotalMinutes, StringFormat='• Time: {0} min'}"/>
+
+                                    </VerticalStackLayout>
+
+                                    <VerticalStackLayout
+                                        Spacing="0">
+
+                                        <Label
+                                            FontAttributes="Italic"
+                                            FontSize="12"
+                                            Text="{Binding UserDisplayName, StringFormat='Created by: {0}'}"/>
+
+                                        <Label
+                                            FontAttributes="Italic"
+                                            FontSize="12"
+                                            Text="{Binding DateTimeCreated, StringFormat='Date created: {0:d MMMM yyyy}'}"/>
+
+                                    </VerticalStackLayout>
+
+                                </VerticalStackLayout>
+
+                            </VerticalStackLayout>
+
+                        </Border>
+
+                    </DataTemplate>
+
+                </CollectionView.ItemTemplate>
+
+            </CollectionView>
+
+        </RefreshView>
+
+    </Grid>
+
+</ContentPage>
