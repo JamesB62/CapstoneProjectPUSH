@@ -16,6 +16,51 @@
 
         private bool _isNavigating;
 
+        protected readonly UserService _userService;
+
+        public BaseViewModel(UserService userService)
+        {
+            _userService = userService;
+        }
+
+        public bool IsUnauthenticated => _userService.IsUnauthenticated;
+
+        //guest
+        public bool IsGuest => _userService.IsGuest;
+        public bool IsLoggedIn => !IsGuest;
+
+        public void RefreshUserState()
+        {
+            OnPropertyChanged(nameof(IsUnauthenticated));
+            OnPropertyChanged(nameof(IsGuest));
+            OnPropertyChanged(nameof(IsLoggedIn));
+        }
+
+        //User login require if guest
+        protected async Task<bool> RequireLoginAsync()
+        {
+            if (!IsGuest)
+            {
+                return true; 
+            }
+
+            bool goToLogin = await Shell.Current.DisplayAlertAsync(
+                "Login Required",
+                "You are currently browsing as a guest. Please log in to use this feature.",
+                "Log In",
+                "Cancel");
+
+            if (goToLogin)
+            {
+
+            await Shell.Current.GoToAsync($"{nameof(LoginPage)}?returnToPrevious=true");            }
+
+            return false; //block user
+        }
+
+
+        //guest
+
         protected async Task NavigateAsync(string route)
         {
             if (_isNavigating)

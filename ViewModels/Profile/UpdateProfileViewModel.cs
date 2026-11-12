@@ -2,11 +2,11 @@
 {
     public partial class UpdateProfileViewModel : BaseViewModel
     {
-        private readonly UserService _userService;
 
-        public UpdateProfileViewModel(UserService userService)
+
+        public UpdateProfileViewModel(UserService userService) : base(userService)
         {
-            _userService = userService;
+
         }
 
         [ObservableProperty]

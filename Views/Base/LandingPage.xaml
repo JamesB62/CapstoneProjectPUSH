@@ -57,6 +57,17 @@
                     FontAttributes="Bold"
                     Text="Register"/>
 
+                    <!-- Guest button -->
+                <Button
+                    Command="{Binding GuestLoginCommand}"
+                    FontAttributes="Bold"
+                    Text="Continue as Guest"
+                    BackgroundColor="Transparent"
+                    BorderWidth="1"
+                    BorderColor="{AppThemeBinding Light=#9CA3AF, Dark=#6B7280}"
+                    TextColor="{AppThemeBinding Light=Black, Dark=White}"/>
+
+
             </VerticalStackLayout>
 
             <!-- Privacy statement link -->
@@ -72,6 +83,12 @@
                 </Label.GestureRecognizers>
 
             </Label>
+
+            <!-- Error message -->
+            <Label
+                IsVisible="{Binding HasErrorMessage}"
+                Text="{Binding ErrorMessage}"
+                TextColor="Red"/>
 
         </VerticalStackLayout>
 

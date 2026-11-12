@@ -4,12 +4,12 @@
     public partial class ExerciseDetailsViewModel : BaseViewModel
     {
         private readonly ExerciseService _exerciseService;
-        private readonly UserService _userService;
 
-        public ExerciseDetailsViewModel(ExerciseService exerciseService, UserService userService)
+
+        public ExerciseDetailsViewModel(ExerciseService exerciseService, UserService userService) : base(userService)
         {
             _exerciseService = exerciseService;
-            _userService = userService;
+
         }
 
         private const string PlaceholderImage = "exercise_placeholder.jpg";

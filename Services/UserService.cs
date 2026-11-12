@@ -22,6 +22,16 @@
 
         public User? CurrentUser { get; private set; }
 
+        //define null nser
+        public bool IsUnauthenticated => CurrentUser == null;
+        
+        //definr guest user
+        public bool IsGuest => CurrentUser != null && CurrentUser.IsGuest;
+
+        //define login user
+        public bool IsLoggedIn => CurrentUser != null && !CurrentUser.IsGuest;
+
+
         // Registration
         public async Task<AuthResult> RegisterAsync(string displayName, string email, string password, string confirmPassword, bool hasAcceptedPrivacy)
         {
@@ -143,6 +153,31 @@
             return new AuthResult(true, $"Welcome back, {user.DisplayName}!", user);
         }
 
+        // Login guest
+        public async Task<AuthResult> GuestLoginAsync()
+        {
+            // Database check
+            var db = await _databaseService.GetConnectionAsync();
+
+            var guestUser = await db.Table<User>().Where(u => u.IsGuest).FirstOrDefaultAsync();
+
+            if (guestUser is null)
+            {
+                return new AuthResult(false, "Guest account not found.");
+            }
+
+            if (!guestUser.IsActive)
+            {
+                return new AuthResult(false, "Guest access is currently disabled.");
+            }
+
+            // Login user
+            CurrentUser = guestUser;
+
+            return new AuthResult(true, "Welcome back, Guest!", guestUser);
+        }
+
+
         // Logout
         public void Logout()
         {
@@ -155,6 +190,11 @@
             if (CurrentUser is null)
             {
                 return new AuthResult(false, "You must be signed in to update your details.");
+            }
+
+            if (CurrentUser.IsGuest)
+            {
+                return new AuthResult(false, "Guest accounts can't update details. Register to create your own account.");
             }
 
             if (!CurrentUser.IsActive)
@@ -433,6 +473,6 @@
             }
 
             return CurrentUser.IsAdmin;
-        }
+        }        
     }
 }

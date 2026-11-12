@@ -1,8 +1,8 @@
 ﻿namespace CapstoneProjectPUSH.ViewModels.Auth
 {
-    public partial class RegisterViewModel : BaseViewModel
+    public partial class RegisterViewModel : BaseViewModel, IQueryAttributable
     {
-        private readonly UserService _userService;
+        private bool _returnToPrevious;
 
         [ObservableProperty]
         public partial string DisplayName { get; set; }
@@ -27,14 +27,19 @@
 
         public bool HasErrorMessage => !string.IsNullOrEmpty(ErrorMessage);
 
-        public RegisterViewModel(UserService userService)
+        public RegisterViewModel(UserService userService) : base(userService)
         {
-            _userService = userService;
             DisplayName = string.Empty;
             Email = string.Empty;
             Password = string.Empty;
             ConfirmPassword = string.Empty;
         }
+        public void ApplyQueryAttributes(IDictionary<string, object> query)
+        {
+            _returnToPrevious = query.TryGetValue("returnToPrevious", out var v) && v?.ToString() == "true";
+        }
+
+
 
         // Register command
         [RelayCommand]
@@ -66,7 +71,15 @@
                 IsBusy = false;
 
                 await Shell.Current.DisplayAlertAsync("Register Successful", "Your PUSH account has been created.", "OK");
-                await NavigateAsync("//HomePage");
+                //login back to before page
+                if (_returnToPrevious)
+                    {
+                        await Shell.Current.GoToAsync("..");
+                    }
+                    else
+                    {
+                        await GoHomeAndClearStackAsync();
+                    }
             }
             catch (Exception ex)
             {
@@ -91,6 +104,17 @@
         private async Task GoToPrivacyAsync()
         {
             await NavigateAsync(nameof(PrivacyPage));
+        }
+
+        private async Task GoHomeAndClearStackAsync()
+        {
+            // NavigationStack 第 0 项是根页面占位,大于 1 说明有被压进来的页面
+            if (Shell.Current.Navigation.NavigationStack.Count > 1)
+            {
+                await Shell.Current.Navigation.PopToRootAsync(false);
+            }
+
+            await NavigateAsync("//HomePage");
         }
     }
 }

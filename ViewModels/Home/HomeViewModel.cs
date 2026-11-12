@@ -3,13 +3,11 @@
     public partial class HomeViewModel : BaseViewModel
     {
         private readonly ArticleService _articleService;
-        private readonly UserService _userService;
         private readonly WorkoutService _workoutService;
 
-        public HomeViewModel(ArticleService articleService, UserService userService, WorkoutService workoutService)
+        public HomeViewModel(ArticleService articleService, UserService userService, WorkoutService workoutService) : base(userService)
         {
             _articleService = articleService;
-            _userService = userService;
             _workoutService = workoutService;
         }
 
@@ -27,6 +25,9 @@
         private async Task LoadHomeAsync()
         {
             IsBusy = true;
+            
+            RefreshUserState();
+
 
             try
             {
@@ -121,5 +122,13 @@
 
             await NavigateAsync($"{nameof(ArticleDetailsPage)}?ArticleId={article.Id}");
         }
+
+        [RelayCommand]
+        private async Task GoToLoginAsync() => await NavigateAsync(nameof(LoginPage));
+
+        [RelayCommand]
+        private async Task GoToRegisterAsync() => await NavigateAsync(nameof(RegisterPage));
+
+
     }
 }
