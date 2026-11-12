@@ -126,6 +126,96 @@
         // Add trainer
         public async Task<(bool Success, string Message)> AddTrainerAsync(Trainer trainer)
         {
+            var error = await NormaliseAndValidateAsync(trainer, null);
+
+            if (error is not null)
+            {
+                return (false, error);
+            }
+
+            var db = await _databaseService.GetConnectionAsync();
+
+            await db.InsertAsync(trainer);
+
+            return (true, $"{trainer.FullName} was added.");
+        }
+
+        // Update trainer details
+        public async Task<(bool Success, string Message)> UpdateTrainerAsync(Trainer trainer)
+        {
+            var db = await _databaseService.GetConnectionAsync();
+
+            var existing = await db.Table<Trainer>().Where(t => t.Id == trainer.Id).FirstOrDefaultAsync();
+
+            if (existing is null)
+            {
+                return (false, "Trainer could not be found.");
+            }
+
+            var error = await NormaliseAndValidateAsync(trainer, trainer.Id);
+
+            if (error is not null)
+            {
+                return (false, error);
+            }
+
+            // Copy the editable details across (the profile image is left as it is)
+            existing.FirstName = trainer.FirstName;
+            existing.LastName = trainer.LastName;
+            existing.Email = trainer.Email;
+            existing.PhoneNumber = trainer.PhoneNumber;
+            existing.Description = trainer.Description;
+            existing.Available = trainer.Available;
+            existing.CategoryId = trainer.CategoryId;
+            existing.GymId = trainer.GymId;
+
+            await db.UpdateAsync(existing);
+
+            return (true, $"{existing.FullName} was updated.");
+        }
+
+        // Set trainer availability
+        public async Task<(bool Success, string Message)> SetTrainerAvailabilityAsync(int trainerId, bool available)
+        {
+            var db = await _databaseService.GetConnectionAsync();
+
+            var trainer = await db.Table<Trainer>().Where(t => t.Id == trainerId).FirstOrDefaultAsync();
+
+            if (trainer is null)
+            {
+                return (false, "Trainer could not be found.");
+            }
+
+            trainer.Available = available;
+
+            await db.UpdateAsync(trainer);
+
+            return (true, available
+                ? $"{trainer.FullName} is now available."
+                : $"{trainer.FullName} is now unavailable.");
+        }
+
+        // Delete trainer
+        public async Task<(bool Success, string Message)> DeleteTrainerAsync(int trainerId)
+        {
+            var db = await _databaseService.GetConnectionAsync();
+
+            var trainer = await db.Table<Trainer>().Where(t => t.Id == trainerId).FirstOrDefaultAsync();
+
+            if (trainer is null)
+            {
+                return (false, "Trainer could not be found.");
+            }
+
+            await db.DeleteAsync(trainer);
+
+            return (true, $"{trainer.FullName} was deleted.");
+        }
+
+        // Helpers
+        // Trim and validate trainer details, returns an error message or null when valid
+        private async Task<string?> NormaliseAndValidateAsync(Trainer trainer, int? existingTrainerId)
+        {
             trainer.FirstName = (trainer.FirstName ?? string.Empty).Trim();
             trainer.LastName = (trainer.LastName ?? string.Empty).Trim();
             trainer.Email = (trainer.Email ?? string.Empty).Trim().ToLowerInvariant();
@@ -135,28 +225,28 @@
             // Validation
             if (trainer.FirstName.Length == 0 || trainer.FirstName.Length > 60)
             {
-                return (false, "First name is required (60 characters max).");
+                return "First name is required (60 characters max).";
             }
 
             if (trainer.LastName.Length == 0 || trainer.LastName.Length > 60)
             {
-                return (false, "Last name is required (60 characters max).");
+                return "Last name is required (60 characters max).";
             }
 
             // Email is optional, but must be valid when given
             if (trainer.Email.Length > 0 && !IsValidEmail(trainer.Email))
             {
-                return (false, "Please enter a valid email address.");
+                return "Please enter a valid email address.";
             }
 
             if (trainer.PhoneNumber.Length > 20)
             {
-                return (false, "Phone number must be 20 characters or fewer.");
+                return "Phone number must be 20 characters or fewer.";
             }
 
             if (trainer.Description.Length > 1000)
             {
-                return (false, "Description must be 1000 characters or fewer.");
+                return "Description must be 1000 characters or fewer.";
             }
 
             // Database checks
@@ -166,32 +256,34 @@
 
             if (category is null)
             {
-                return (false, "Category could not be found.");
+                return "Category could not be found.";
             }
 
             var gym = await db.Table<Gym>().Where(g => g.Id == trainer.GymId).FirstOrDefaultAsync();
 
             if (gym is null)
             {
-                return (false, "Gym could not be found.");
+                return "Gym could not be found.";
             }
 
             if (trainer.Email.Length > 0)
             {
-                var emailTaken = await db.Table<Trainer>().Where(t => t.Email == trainer.Email).FirstOrDefaultAsync();
+                // Ids start at 1, so 0 means "no trainer to ignore"
+                var ignoreId = existingTrainerId ?? 0;
+
+                var emailTaken = await db.Table<Trainer>()
+                    .Where(t => t.Email == trainer.Email && t.Id != ignoreId)
+                    .FirstOrDefaultAsync();
 
                 if (emailTaken is not null)
                 {
-                    return (false, "A trainer with that email already exists.");
+                    return "A trainer with that email already exists.";
                 }
             }
 
-            await db.InsertAsync(trainer);
-
-            return (true, $"{trainer.FullName} was added at {gym.Name} ({gym.City}).");
+            return null;
         }
 
-        // Helpers
         // Validate email format
         private static bool IsValidEmail(string email)
         {

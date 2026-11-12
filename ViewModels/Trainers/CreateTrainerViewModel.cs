@@ -6,7 +6,7 @@ using CommunityToolkit.Mvvm.Input;
 
 namespace CapstoneProjectPUSH.ViewModels.Trainers
 {
-    public partial class CreateTrainerViewModel : BaseViewModel
+    public partial class CreateTrainerViewModel : BaseViewModel, IQueryAttributable
     {
         private readonly CategoryService _categoryService;
         private readonly GymService _gymService;
@@ -15,6 +15,10 @@ namespace CapstoneProjectPUSH.ViewModels.Trainers
 
         // Gyms in the same order as GymChoices (the picker items)
         private List<Gym> _gyms = new();
+
+        // Set when the page is opened to edit an existing trainer
+        private int? _editingTrainerId;
+        private bool _hasLoadedTrainer;
 
         public CreateTrainerViewModel(
             CategoryService categoryService,
@@ -32,6 +36,12 @@ namespace CapstoneProjectPUSH.ViewModels.Trainers
 
         // Picker items shown as "Name (City)"
         public ObservableCollection<string> GymChoices { get; } = new();
+
+        [ObservableProperty]
+        public partial string PageTitle { get; set; } = "Create PUSH Trainer";
+
+        [ObservableProperty]
+        public partial string SaveButtonText { get; set; } = "Save Trainer";
 
         [ObservableProperty]
         public partial string FirstName { get; set; } = string.Empty;
@@ -56,6 +66,19 @@ namespace CapstoneProjectPUSH.ViewModels.Trainers
 
         [ObservableProperty]
         public partial int SelectedGymIndex { get; set; } = -1;
+
+        // Receives TrainerId when opened from the trainers page to edit a trainer so it doesnt crash😛
+        public void ApplyQueryAttributes(IDictionary<string, object> query)
+        {
+            if (query.TryGetValue("TrainerId", out var value)
+                && int.TryParse(value?.ToString(), out var trainerId)
+                && trainerId > 0)
+            {
+                _editingTrainerId = trainerId;
+                PageTitle = "Edit PUSH Trainer";
+                SaveButtonText = "Save Changes";
+            }
+        }
 
         [RelayCommand]
         private async Task LoadAsync()
@@ -87,6 +110,30 @@ namespace CapstoneProjectPUSH.ViewModels.Trainers
                     {
                         GymChoices.Add($"{gym.Name} ({gym.City})");
                     }
+                }
+
+                // Edit mode: fill the form once with the trainer's current details
+                if (_editingTrainerId is int trainerId && !_hasLoadedTrainer)
+                {
+                    var trainer = await _trainerService.GetTrainerByIdAsync(trainerId);
+
+                    if (trainer is null)
+                    {
+                        await Shell.Current.DisplayAlertAsync("Trainer not found", "That trainer no longer exists.", "OK");
+                        await NavigateAsync("..");
+                        return;
+                    }
+
+                    FirstName = trainer.FirstName;
+                    LastName = trainer.LastName;
+                    Email = trainer.Email;
+                    PhoneNumber = trainer.PhoneNumber;
+                    Description = trainer.Description;
+                    Available = trainer.Available;
+                    SelectedCategory = Categories.FirstOrDefault(c => c.Id == trainer.CategoryId);
+                    SelectedGymIndex = _gyms.FindIndex(g => g.Id == trainer.GymId);
+
+                    _hasLoadedTrainer = true;
                 }
             }
             catch (Exception ex)
@@ -128,6 +175,7 @@ namespace CapstoneProjectPUSH.ViewModels.Trainers
             {
                 var trainer = new Trainer
                 {
+                    Id = _editingTrainerId ?? 0,
                     FirstName = FirstName,
                     LastName = LastName,
                     Email = Email,
@@ -138,7 +186,11 @@ namespace CapstoneProjectPUSH.ViewModels.Trainers
                     GymId = _gyms[SelectedGymIndex].Id
                 };
 
-                var result = await _trainerService.AddTrainerAsync(trainer);
+                var isEditing = _editingTrainerId is not null;
+
+                var result = isEditing
+                    ? await _trainerService.UpdateTrainerAsync(trainer)
+                    : await _trainerService.AddTrainerAsync(trainer);
 
                 if (!result.Success)
                 {
@@ -146,7 +198,7 @@ namespace CapstoneProjectPUSH.ViewModels.Trainers
                     return;
                 }
 
-                await Shell.Current.DisplayAlertAsync("Trainer created", result.Message, "OK");
+                await Shell.Current.DisplayAlertAsync(isEditing ? "Trainer updated" : "Trainer created", result.Message, "OK");
                 await NavigateAsync("..");
             }
             catch (Exception ex)

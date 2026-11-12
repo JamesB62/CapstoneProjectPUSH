@@ -5,7 +5,7 @@
              xmlns:vm="clr-namespace:CapstoneProjectPUSH.ViewModels.Trainers"
              x:Class="CapstoneProjectPUSH.Views.Trainers.CreateTrainerPage"
              x:DataType="vm:CreateTrainerViewModel"
-             Title="Create PUSH Trainer">
+             Title="{Binding PageTitle}">
 
     <Grid
         MaximumWidthRequest="500"
@@ -90,7 +90,7 @@
 
             <Button
                 Command="{Binding SaveCommand}"
-                Text="Save Trainer"/>
+                Text="{Binding SaveButtonText}"/>
 
         </VerticalStackLayout>
 
