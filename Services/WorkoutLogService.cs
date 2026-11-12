@@ -29,5 +29,13 @@
                 .Where(wl => wl.Id == workoutLogId && wl.UserId == userId)
                 .FirstOrDefaultAsync();
         }
+
+        // Add workot log
+        public async Task AddWorkoutLogAsync(WorkoutLog workoutLog)
+        {
+            var db = await _databaseService.GetConnectionAsync();
+
+            await db.InsertAsync(workoutLog);
+        }
     }
 }

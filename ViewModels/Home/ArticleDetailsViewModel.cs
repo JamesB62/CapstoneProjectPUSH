@@ -4,12 +4,12 @@
     public partial class ArticleDetailsViewModel : BaseViewModel
     {
         private readonly ArticleService _articleService;
-        private readonly UserService _userService;
 
-        public ArticleDetailsViewModel(ArticleService articleService, UserService userService)
+
+        public ArticleDetailsViewModel(ArticleService articleService, UserService userService) : base(userService)
         {
             _articleService = articleService;
-            _userService = userService;
+
         }
 
         [ObservableProperty]

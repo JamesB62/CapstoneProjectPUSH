@@ -13,18 +13,30 @@
         RowDefinitions="Auto,Auto,Auto,*"
         RowSpacing="15">
 
+        <Border IsVisible="{Binding IsGuest}" Padding="15" StrokeShape="RoundRectangle 10">
+            <VerticalStackLayout Spacing="10">
+                <Label Text="You're browsing as a guest. Log in to see and create your own workouts." />
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                    <Button Grid.Column="0" Text="Log In" Command="{Binding GoToLoginCommand}" />
+                    <Button Grid.Column="1" Text="Register" Command="{Binding GoToRegisterCommand}" />
+                </Grid>
+            </VerticalStackLayout>
+        </Border>
+
         <Label
             Grid.Row="0"
             FontAttributes="Bold"
             FontSize="16"
-            Text="Your Workouts"/>
+            Text="Your Workouts"
+            IsVisible="{Binding IsLoggedIn}"/>
 
         <CollectionView
             Grid.Row="1"
             HeightRequest="150"
             ItemsSource="{Binding FeaturedWorkouts}"
             SelectionMode="Single"
-            SelectedItem="{Binding SelectedWorkout, Mode=TwoWay}">
+            SelectedItem="{Binding SelectedWorkout, Mode=TwoWay}"
+            IsVisible="{Binding IsLoggedIn}">
 
             <!-- Empty view -->
             <CollectionView.EmptyView>

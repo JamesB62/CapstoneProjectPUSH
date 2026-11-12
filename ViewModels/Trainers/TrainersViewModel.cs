@@ -4,13 +4,13 @@
     {
         private readonly CategoryService _categoryService;
         private readonly TrainerService _trainerService;
-        private readonly UserService _userService;
 
-        public TrainersViewModel(CategoryService categoryService, TrainerService trainerService, UserService userService)
+
+        public TrainersViewModel(CategoryService categoryService, TrainerService trainerService, UserService userService) : base(userService)
         {
             _categoryService = categoryService;
             _trainerService = trainerService;
-            _userService = userService;
+
         }
 
         private const string PlaceholderImage = "profile_picture_placeholder.png";

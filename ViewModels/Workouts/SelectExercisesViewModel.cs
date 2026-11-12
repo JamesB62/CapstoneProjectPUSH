@@ -3,12 +3,12 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
     public partial class SelectExercisesViewModel : BaseViewModel
     {
         private readonly ExerciseService _exerciseService;
-        private readonly UserService _userService;
 
-        public SelectExercisesViewModel(ExerciseService exerciseService, UserService userService)
+
+        public SelectExercisesViewModel(ExerciseService exerciseService, UserService userService) : base(userService)
         {
             _exerciseService = exerciseService;
-            _userService = userService;
+
         }
 
         public ObservableCollection<SelectableExercise> Exercises { get; } = new();
@@ -37,12 +37,6 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
                 {
                     // Comment out to disable redirect
                     await NavigateAsync("//LandingPage");
-                    return;
-                }
-
-                // Keeps selections when returning from Create Workout
-                if (_allExercises.Count > 0)
-                {
                     return;
                 }
 
@@ -149,7 +143,7 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
                 { "Exercises", selected }
             };
 
-            await NavigateAsync(nameof(CreateWorkoutPage), parameters);
+            await NavigateAsync("..", parameters);
         }
     }
 }

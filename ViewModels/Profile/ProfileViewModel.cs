@@ -7,15 +7,13 @@ namespace CapstoneProjectPUSH.ViewModels.Profile
     public partial class ProfileViewModel : BaseViewModel
     {
         private readonly GymService _gymService;
-        private readonly UserService _userService;
 
         // Gyms the user hasn't linked yet, in the same order as GymChoices (the picker items)
         private List<Gym> _availableGyms = new();
 
-        public ProfileViewModel(GymService gymService, UserService userService)
+        public ProfileViewModel(GymService gymService, UserService userService) : base(userService)
         {
             _gymService = gymService;
-            _userService = userService;
 
             MyGyms.CollectionChanged += (_, _) => OnPropertyChanged(nameof(HasNoGyms));
             GymChoices.CollectionChanged += (_, _) => OnPropertyChanged(nameof(HasGymChoices));
@@ -98,30 +96,43 @@ namespace CapstoneProjectPUSH.ViewModels.Profile
         [RelayCommand]
         private async Task GoToUpdateDetailsAsync()
         {
+            if (!await RequireLoginAsync())
+            return;
+
             await NavigateAsync(nameof(UpdateProfilePage));
         }
 
         [RelayCommand]
         private async Task GoToMyWorkoutsAsync()
         {
+            if (!await RequireLoginAsync())
+            return;
+
             await NavigateAsync(nameof(MyWorkoutsPage));
         }
 
         [RelayCommand]
         private async Task GoToMyNotesAsync()
         {
+            if (!await RequireLoginAsync())
+            return;
+
             await NavigateAsync(nameof(MyNotesPage));
         }
 
         [RelayCommand]
         private async Task GoToAdminDashboardAsync()
         {
+            if (!await RequireLoginAsync())
+            return;
+
             await NavigateAsync(nameof(AdminDashboardPage));
         }
 
         [RelayCommand]
         private async Task LogoutAsync()
         {
+
             bool confirmed = await Shell.Current.DisplayAlertAsync(
                 "Logout",
                 "Are you sure you want to log out?",

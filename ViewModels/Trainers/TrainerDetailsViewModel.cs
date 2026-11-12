@@ -4,12 +4,12 @@
     public partial class TrainerDetailsViewModel : BaseViewModel
     {
         private readonly TrainerService _trainerService;
-        private readonly UserService _userService;
 
-        public TrainerDetailsViewModel(TrainerService trainerService, UserService userService)
+
+        public TrainerDetailsViewModel(TrainerService trainerService, UserService userService) : base(userService)
         {
             _trainerService = trainerService;
-            _userService = userService;
+
         }
 
         private const string PlaceholderImage = "profile_picture_placeholder.png";

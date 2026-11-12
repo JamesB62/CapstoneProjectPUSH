@@ -8,13 +8,13 @@ namespace CapstoneProjectPUSH.ViewModels.Stats
         private const double MinWeightKg = 20;
         private const double MaxWeightKg = 400;
 
-        private readonly UserService _userService;
+
         private readonly WeightLogService _weightLogService;
         private readonly WorkoutLogService _workoutLogService;
 
-        public StatsViewModel(UserService userService, WeightLogService weightLogService, WorkoutLogService workoutLogService)
+        public StatsViewModel(UserService userService, WeightLogService weightLogService, WorkoutLogService workoutLogService) : base(userService)
         {
-            _userService = userService;
+
             _weightLogService = weightLogService;
             _workoutLogService = workoutLogService;
         }
@@ -237,6 +237,7 @@ namespace CapstoneProjectPUSH.ViewModels.Stats
         [RelayCommand]
         private async Task AddWeighInAsync()
         {
+            
             var user = _userService.CurrentUser;
 
             if (user is null)
@@ -244,6 +245,9 @@ namespace CapstoneProjectPUSH.ViewModels.Stats
                 await NavigateAsync("//LandingPage");
                 return;
             }
+            
+            if (!await RequireLoginAsync())
+            return;
 
             // Value prompt
             string? result = await Shell.Current.DisplayPromptAsync(

@@ -2,12 +2,10 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
 {
     public partial class WorkoutsViewModel : BaseViewModel
     {
-        private readonly UserService _userService;
         private readonly WorkoutService _workoutService;
 
-        public WorkoutsViewModel(UserService userService, WorkoutService workoutService)
+        public WorkoutsViewModel(UserService userService, WorkoutService workoutService) : base (userService)
         {
-            _userService = userService;
             _workoutService = workoutService;
         }
 
@@ -24,6 +22,8 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
         [RelayCommand]
         private async Task LoadWorkoutsAsync()
         {
+            RefreshUserState();
+
             IsBusy = true;
 
             try
@@ -114,6 +114,7 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
 
         partial void OnSelectedWorkoutChanged(Workout? value)
         {
+            
             if (value is null)
             {
                 return;
@@ -126,6 +127,10 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
         [RelayCommand]
         private async Task ViewWorkoutAsync(Workout? workout)
         {
+            //guest abvv
+            // if (!await RequireLoginAsync())
+            // return;
+
             if (workout is null)
             {
                 return;
@@ -137,12 +142,18 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
         [RelayCommand]
         private async Task AddWorkoutAsync()
         {
-            await NavigateAsync(nameof(SelectExercisesPage));
+            if (!await RequireLoginAsync())
+            return;
+
+            await NavigateAsync(nameof(CreateWorkoutPage));
         }
 
         [RelayCommand]
         private async Task DeleteWorkoutAsync(Workout? workout)
         {
+            if (!await RequireLoginAsync())
+            return;
+
             if (workout is null)
             {
                 return;

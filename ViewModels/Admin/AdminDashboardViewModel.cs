@@ -6,20 +6,18 @@
         private readonly ExerciseService _exerciseService;
         private readonly GymService _gymService;
         private readonly TrainerService _trainerService;
-        private readonly UserService _userService;
 
         public AdminDashboardViewModel(
             CategoryService categoryService,
             ExerciseService exerciseService,
             GymService gymService,
             TrainerService trainerService,
-            UserService userService)
+            UserService userService) : base (userService)
         {
             _categoryService = categoryService;
             _exerciseService = exerciseService;
             _gymService = gymService;
             _trainerService = trainerService;
-            _userService = userService;
         }
 
         [ObservableProperty]

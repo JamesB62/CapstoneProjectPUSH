@@ -8,136 +8,260 @@
              Title="PUSH Workout Details">
 
     <Grid
-        MaximumWidthRequest="500"
-        Padding="30,15"
-        RowDefinitions="Auto,Auto,*,Auto"
-        RowSpacing="15">
+        RowDefinitions="*,Auto">
 
-        <!-- Title and category -->
-        <Grid
-            ColumnDefinitions="*,Auto"
-            ColumnSpacing="15"
+        <ScrollView
             Grid.Row="0">
 
-            <Label
-                FontAttributes="Bold"
-                FontSize="18"
-                Grid.Column="0"
-                LineBreakMode="WordWrap"
-                Text="{Binding Workout.Title}"
-                VerticalOptions="Center"/>
+            <VerticalStackLayout
+                MaximumWidthRequest="500"
+                Padding="30,15"
+                Spacing="15">
 
-            <Border
-                Grid.Column="1"
-                Style="{StaticResource Pill}">
+                <!-- Title and category -->
+                <Grid
+                    ColumnDefinitions="*,Auto"
+                    ColumnSpacing="15">
 
-                <Label
-                    FontSize="12"
-                    Text="{Binding Workout.CategoryTitle}"/>
-
-            </Border>
-
-        </Grid>
-
-        <Label
-            FontAttributes="Bold"
-            FontSize="16"
-            Grid.Row="1"
-            Text="Exercises"/>
-
-        <!-- Exercise list -->
-        <CollectionView
-            Grid.Row="2"
-            ItemsSource="{Binding Exercises}">
-
-            <!-- Empty view -->
-            <CollectionView.EmptyView>
-
-                <Label
-                    FontAttributes="Italic"
-                    HorizontalTextAlignment="Center"
-                    Text="No exercises in this workout yet."
-                    VerticalTextAlignment="Center"/>
-
-            </CollectionView.EmptyView>
-
-            <!-- Item layout -->
-            <CollectionView.ItemsLayout>
-
-                <LinearItemsLayout
-                    ItemSpacing="10"
-                    Orientation="Vertical"/>
-
-            </CollectionView.ItemsLayout>
-
-            <!-- Item template -->
-            <CollectionView.ItemTemplate>
-
-                <DataTemplate
-                    x:DataType="models:WorkoutExercise">
+                    <Label
+                        FontAttributes="Bold"
+                        FontSize="18"
+                        Grid.Column="0"
+                        LineBreakMode="WordWrap"
+                        Text="{Binding Workout.Title}"
+                        VerticalOptions="Center"/>
 
                     <Border
-                        Style="{StaticResource Card}">
+                        Grid.Column="1"
+                        Style="{StaticResource Pill}"
+                        VerticalOptions="Start">
 
-                        <Grid
-                            ColumnDefinitions="Auto,*"
-                            ColumnSpacing="15">
-
-                            <Label
-                                FontAttributes="Bold"
-                                FontSize="18"
-                                Grid.Column="0"
-                                Text="{Binding DisplayNumber}"
-                                VerticalOptions="Center"/>
-
-                            <VerticalStackLayout
-                                Grid.Column="1"
-                                Spacing="5">
-
-                                <Label
-                                    FontAttributes="Bold"
-                                    FontSize="16"
-                                    LineBreakMode="TailTruncation"
-                                    Text="{Binding ExerciseTitle}"/>
-
-                                <Label
-                                    FontAttributes="Italic"
-                                    FontSize="12">
-
-                                    <Label.Text>
-
-                                        <MultiBinding
-                                            StringFormat="{}{0} sets × {1} reps">
-                                            
-                                            <Binding
-                                                Path="Sets"/>
-                                            
-                                            <Binding
-                                                Path="Reps"/>
-                                            
-                                        </MultiBinding>
-
-                                    </Label.Text>
-
-                                </Label>
-
-                            </VerticalStackLayout>
-
-                        </Grid>
+                        <Label
+                            FontSize="12"
+                            Text="{Binding Workout.CategoryTitle}"/>
 
                     </Border>
 
-                </DataTemplate>
+                </Grid>
 
-            </CollectionView.ItemTemplate>
+                <!-- Author -->
+                <Label
+                    FontAttributes="Italic"
+                    FontSize="12"
+                    IsVisible="{Binding IsNotOwner}"
+                    Text="{Binding Workout.UserDisplayName, StringFormat='Created by: {0}'}"/>
+                
+                <!-- ADD PRIVACY LABEL -->
+                
+                <!-- Exercises -->
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="16"
+                    Text="Exercises"/>
 
-        </CollectionView>
+                <VerticalStackLayout
+                    BindableLayout.ItemsSource="{Binding Exercises}"
+                    Spacing="10">
 
-        <Button
-            Command="{Binding StartWorkoutCommand}"
-            Grid.Row="3"
-            Text="Start Workout"/>
+                    <BindableLayout.EmptyView>
 
+                        <Grid
+                            HeightRequest="100"
+                            HorizontalOptions="Center"
+                            VerticalOptions="Center">
+
+                            <Label
+                                FontAttributes="Italic"
+                                HorizontalTextAlignment="Center"
+                                Text="No exercises found."/>
+
+                        </Grid>
+
+                    </BindableLayout.EmptyView>
+
+                    <BindableLayout.ItemTemplate>
+
+                        <DataTemplate
+                            x:DataType="models:WorkoutExercise">
+
+                            <Border
+                                Style="{StaticResource Card}">
+
+                                <Grid
+                                    ColumnDefinitions="Auto,*"
+                                    ColumnSpacing="15">
+
+                                    <Label
+                                        FontAttributes="Bold"
+                                        FontSize="18"
+                                        Grid.Column="0"
+                                        Text="{Binding DisplayNumber}"
+                                        VerticalOptions="Center"/>
+
+                                    <VerticalStackLayout
+                                        Grid.Column="1"
+                                        Spacing="5">
+
+                                        <Label
+                                            FontAttributes="Bold"
+                                            FontSize="16"
+                                            LineBreakMode="TailTruncation"
+                                            Text="{Binding ExerciseTitle}"/>
+
+                                        <Label
+                                            FontAttributes="Italic"
+                                            FontSize="12"
+                                            Text="{Binding TargetText}"/>
+
+                                    </VerticalStackLayout>
+
+                                </Grid>
+
+                            </Border>
+
+                        </DataTemplate>
+
+                    </BindableLayout.ItemTemplate>
+
+                </VerticalStackLayout>
+
+                <!-- Notes -->
+                <Grid
+                    ColumnDefinitions="*,Auto"
+                    ColumnSpacing="15">
+
+                    <Label
+                        FontAttributes="Bold"
+                        FontSize="16"
+                        Grid.Column="0"
+                        Text="Notes"
+                        VerticalOptions="Center"/>
+
+                    <Button
+                        Command="{Binding AddNoteCommand}"
+                        Grid.Column="1"
+                        Text="Add Note"/>
+
+                </Grid>
+
+                <VerticalStackLayout
+                    BindableLayout.ItemsSource="{Binding Notes}"
+                    Spacing="10">
+
+                    <BindableLayout.EmptyView>
+
+                        <Grid
+                            HeightRequest="100"
+                            HorizontalOptions="Center"
+                            VerticalOptions="Center">
+
+                            <Label
+                                FontAttributes="Italic"
+                                HorizontalTextAlignment="Center"
+                                Text="No notes found."/>
+
+                        </Grid>
+
+                    </BindableLayout.EmptyView>
+
+                    <BindableLayout.ItemTemplate>
+
+                        <DataTemplate
+                            x:DataType="models:Note">
+
+                            <Border
+                                Style="{StaticResource Card}">
+
+                                <VerticalStackLayout
+                                    Spacing="10">
+
+                                    <Grid
+                                        ColumnDefinitions="Auto,*"
+                                        ColumnSpacing="15">
+
+                                        <Label
+                                            FontAttributes="Bold"
+                                            FontSize="16"
+                                            Grid.Column="0"
+                                            LineBreakMode="TailTruncation"
+                                            Text="{Binding Title}"
+                                            VerticalOptions="Center"/>
+
+                                        <VerticalStackLayout
+                                            Grid.Column="1"
+                                            Spacing="5">
+
+                                            <Border
+                                                Grid.Column="1"
+                                                HorizontalOptions="End"
+                                                Style="{StaticResource Pill}"
+                                                VerticalOptions="Start">
+
+                                                <Label
+                                                    FontSize="12"
+                                                    Text="Private"/>
+
+                                            </Border>
+
+                                        </VerticalStackLayout>
+
+                                    </Grid>
+
+                                    <Label
+                                        Text="{Binding Content}"/>
+
+                                    <Label
+                                        FontAttributes="Italic"
+                                        FontSize="12"
+                                        Text="{Binding DateTimeCreated, StringFormat='Date created: {0:d MMMM yyyy}'}"/>
+
+                                    <HorizontalStackLayout
+                                        HorizontalOptions="End"
+                                        Spacing="10">
+
+                                        <Button
+                                            Command="{Binding EditNoteCommand, Source={RelativeSource AncestorType={x:Type vm:WorkoutDetailsViewModel}}, x:DataType=vm:WorkoutDetailsViewModel}"
+                                            CommandParameter="{Binding .}"
+                                            Text="Edit"/>
+
+                                        <Button
+                                            Command="{Binding DeleteNoteCommand, Source={RelativeSource AncestorType={x:Type vm:WorkoutDetailsViewModel}}, x:DataType=vm:WorkoutDetailsViewModel}"
+                                            CommandParameter="{Binding .}"
+                                            Text="Delete"/>
+
+                                    </HorizontalStackLayout>
+
+                                </VerticalStackLayout>
+
+                            </Border>
+
+                        </DataTemplate>
+
+                    </BindableLayout.ItemTemplate>
+
+                </VerticalStackLayout>
+
+            </VerticalStackLayout>
+
+        </ScrollView>
+
+        <VerticalStackLayout
+            Grid.Row="1"
+            Margin="30,0,30,15"
+            Spacing="10"
+            MaximumWidthRequest="500">
+
+            <Button
+                Command="{Binding EditWorkoutCommand}"
+                IsVisible="{Binding IsOwner}"
+                Text="Edit"/>
+
+            <Button
+                Command="{Binding StartWorkoutCommand}"
+                Text="Start Workout"/>
+
+        </VerticalStackLayout>
+        
     </Grid>
 
 </ContentPage>

@@ -2,13 +2,13 @@
 {
     public partial class MyNotesViewModel : BaseViewModel
     {
-        private readonly UserService _userService;
+
         private readonly NoteService _noteService;
         private readonly WorkoutService _workoutService;
 
-        public MyNotesViewModel(UserService userService, NoteService noteService, WorkoutService workoutService)
+        public MyNotesViewModel(UserService userService, NoteService noteService, WorkoutService workoutService) : base(userService)
         {
-            _userService = userService;
+
             _noteService = noteService;
             _workoutService = workoutService;
         }
@@ -163,8 +163,12 @@
                 return;
             }
 
-            // Link to workout details page when built
-            //await NavigateAsync($"{nameof(WorkoutDetailsPage)}?WorkoutId={workout.Id}");
+            if (note.WorkoutId <= 0)
+            {
+                return;
+            }
+
+            await NavigateAsync($"{nameof(WorkoutDetailsPage)}?WorkoutId={note.WorkoutId}");
         }
     }
 }

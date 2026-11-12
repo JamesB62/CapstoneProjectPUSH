@@ -1,4 +1,6 @@
-﻿namespace CapstoneProjectPUSH.Services
+﻿using Android.Icu.Math;
+
+namespace CapstoneProjectPUSH.Services
 {
     public class DatabaseService
     {
@@ -50,11 +52,12 @@
                     await SeedCategoriesAsync();
                     await SeedGymsAsync();
                     await SeedAdminAsync();
+                    await SeedGuestAsync();
                     await SeedTrainersAsync();
+                    await SeedWorkoutsAsync();
                     await SeedExercisesAsync();
                     await SeedArticlesAsync();
-                    await SeedWorkoutsAsync();
-                    await SeedWorkoutExercisesAsync();
+                    // await SeedWorkoutExercisesAsync();
                     await SeedWorkoutLogsAsync();
                     await SeedNotesAsync();
                     await SeedWeightLogsAsync();
@@ -68,6 +71,41 @@
             return _connection;
         }
 
+        // Guest seed
+        private async Task SeedGuestAsync()
+        {
+            var db = await GetConnectionAsync();
+
+            var guestExists = await db.Table<User>().Where(u => u.IsGuest == true).CountAsync() > 0;
+
+            if (guestExists)
+            {
+                return;
+            }
+
+            var nameTaken = await db.Table<User>().Where(u => u.DisplayName == "Guest").CountAsync() > 0;
+
+            if (nameTaken)
+            {
+                return;
+            }
+
+            var emailTaken = await db.Table<User>().Where(u => u.Email == "guest@push.local").CountAsync() > 0;
+
+            if (emailTaken)
+            {
+                return;
+            }
+
+            await db.InsertAsync(new User
+            {
+                Email = "guest@push.local",
+                DisplayName = "Guest",
+                PasswordHash = string.Empty,
+                IsGuest = true
+            });
+        }
+        
         // Admin seed
         private async Task SeedAdminAsync()
         {
@@ -102,7 +140,6 @@
                 IsAdmin = true
             });
         }
-
         // Categories seed
         private async Task SeedCategoriesAsync()
         {
@@ -300,6 +337,7 @@
                     Title = "Brisk Walk",
                     Description = "Walk at a pace that raises your heart rate but still lets you hold a conversation. Keep your posture tall, shoulders relaxed, and swing your arms naturally.",
                     Difficulty = 1,
+                    IsTimed = true,
                     CategoryId = 2
                 },
                 new Exercise
@@ -307,6 +345,7 @@
                     Title = "Jump Rope",
                     Description = "Hold the handles at hip height and turn the rope with your wrists. Jump just high enough to clear the rope, landing softly on the balls of your feet.",
                     Difficulty = 3,
+                    IsTimed = true,
                     CategoryId = 2
                 },
 
@@ -325,6 +364,7 @@
                     Title = "Downward-Facing Dog",
                     Description = "Start on hands and knees, tuck your toes, and lift your hips up and back. Press your hands into the mat, keep your spine long, and let your head hang between your arms.",
                     Difficulty = 3,
+                    IsTimed = true,
                     CategoryId = 4
                 },
 
@@ -334,6 +374,7 @@
                     Title = "Seated Hamstring Stretch",
                     Description = "Sit with one leg extended and the other bent. Hinge forward from the hips toward your extended foot until you feel a gentle stretch in the back of your thigh. Keep your back straight and breathe.",
                     Difficulty = 2,
+                    IsTimed = true,
                     CategoryId = 5
                 },
 
@@ -359,11 +400,77 @@
                     Title = "Foam Rolling",
                     Description = "Place the foam roller under the target muscle and use your body weight to roll slowly along it. Pause on tender spots and breathe deeply, avoiding joints and bones.",
                     Difficulty = 1,
+                    IsTimed = true,
                     CategoryId = 9
                 }
             };
 
             await db.InsertAllAsync(exercises);
+
+            //line with workout 
+            var exerciseIds = exercises.ToDictionary(e => e.Title, e => e.Id);
+
+            var guest = await db.Table<User>().Where(u => u.IsGuest ==true).FirstOrDefaultAsync();
+            var workouts = await db.Table<Workout>().ToListAsync();
+            var items = new List<WorkoutExercise>();
+            
+            void Add(int userId, string workout, string exercise, int order, int sets, int reps)
+            {
+                var w = workouts.FirstOrDefault(x => x.UserId == userId && x.Title == workout);
+
+                if (w is null || !exerciseIds.TryGetValue(exercise, out var eId))
+                {
+                    System.Diagnostics.Debug.WriteLine($"Seed skipped: {workout} / {exercise}");
+                    return;
+                }
+
+                items.Add(new WorkoutExercise { WorkoutId = w.Id, ExerciseId = eId, SortOrder = order, Sets = sets, Reps = reps });
+            }
+
+            //amdin see workout
+            const int demo = 1;
+            Add(demo, "Push Day", "Dumbbell Bench Press", 1, 4, 8);
+            Add(demo, "Push Day", "Push-Up",              2, 3, 15);
+
+            Add(demo, "Leg Day", "Barbell Back Squat", 1, 4, 8);
+            Add(demo, "Leg Day", "Bodyweight Squat",   2, 3, 15);
+
+            Add(demo, "Yoga Flow", "Downward-Facing Dog",      1, 3, 8);
+            Add(demo, "Yoga Flow", "Seated Hamstring Stretch", 2, 2, 3);
+
+            Add(demo, "Morning HIIT", "Burpee",           1, 4, 15);
+            Add(demo, "Morning HIIT", "Jump Rope",        2, 4, 50);
+            Add(demo, "Morning HIIT", "Bodyweight Squat", 3, 3, 20);
+
+            Add(demo, "Cardio Burn", "Jump Rope",  1, 3, 100);
+            Add(demo, "Cardio Burn", "Brisk Walk", 2, 1, 20);
+
+            Add(demo, "Cool Down", "Seated Hamstring Stretch", 1, 2, 3);
+            Add(demo, "Cool Down", "Foam Rolling",             2, 1, 10);
+
+            if (guest is not null)
+            {
+                var g = guest.Id;
+
+                Add(g, "Beginner Full Body", "Bodyweight Squat", 1, 3, 12);
+                Add(g, "Beginner Full Body", "Push-Up",          2, 3, 8);
+                Add(g, "Beginner Full Body", "Foam Rolling",     3, 1, 10);
+
+                Add(g, "Quick Cardio", "Jump Rope",  1, 3, 100);
+                Add(g, "Quick Cardio", "Burpee",     2, 3, 10);
+                Add(g, "Quick Cardio", "Brisk Walk", 3, 1, 20);
+
+                Add(g, "Gentle Stretch", "Downward-Facing Dog",      1, 3, 8);
+                Add(g, "Gentle Stretch", "Seated Hamstring Stretch", 2, 2, 3);
+                Add(g, "Gentle Stretch", "Foam Rolling",             3, 1, 10);
+            }
+            
+            if (items.Count > 0)
+            {
+                await db.InsertAllAsync(items);
+            }
+
+    
         }
 
         // Articles seed -- find better sources with usage rights
@@ -449,65 +556,40 @@
                     DateTimeCreated = DateTime.Today.AddDays(-4).AddHours(12),
                     UserId = 1,
                     WorkoutId = 3
+                },
+                new Note {
+                    Title = "Tough Workout",
+                    Content = "This is a test note.",
+                    DateTimeCreated = DateTime.Today.AddDays(-2).AddHours(4),
+                    UserId = 2,
+                    WorkoutId = 2
                 }
             };
 
             await db.InsertAllAsync(notes);
         }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         // ================================================ DOUBLE CHECK =================================
+        // Workouts seed
         private async Task SeedWorkoutsAsync()
         {
             var db = await GetConnectionAsync();
-            if (await db.Table<Workout>().CountAsync() > 0) return;
+            if(await db.Table<Workout>().CountAsync() > 0) return;
 
             await db.InsertAllAsync(new[]
             {
+                
                 new Workout { Title = "Push Day",     UserId = 1, CategoryId = 1 },
-                new Workout { Title = "Pull Day",     UserId = 1, CategoryId = 1 },
                 new Workout { Title = "Leg Day",      UserId = 1, CategoryId = 1 },
                 new Workout { Title = "Morning HIIT", UserId = 1, CategoryId = 3 },
-                new Workout { Title = "Yoga Flow",    UserId = 1, CategoryId = 4 },
                 new Workout { Title = "Cardio Burn",  UserId = 1, CategoryId = 2 },
                 new Workout { Title = "Yoga Flow",    UserId = 1, CategoryId = 4 },
                 new Workout { Title = "Cool Down",    UserId = 1, CategoryId = 9 },
             });
-        }
 
-        private async Task SeedWorkoutExercisesAsync()
-        {
-            var db = await GetConnectionAsync();
-            if (await db.Table<WorkoutExercise>().CountAsync() > 0) return;
+            var guest = await db.Table<User>().Where(u => u.IsGuest == true).FirstOrDefaultAsync();
+            if(guest is null) return;
+            if(await db.Table<Workout>().Where(w => w.UserId == guest.Id).CountAsync() > 0) return;
 
             var exerciseIds = (await db.Table<Exercise>().ToListAsync())
                 .GroupBy(e => e.Title).ToDictionary(e => e.Key, e => e.First().Id);
@@ -516,104 +598,171 @@
 
             var items = new List<WorkoutExercise>();
 
-            void Add(string workout, string exercise, int order, int sets, int reps)
+            await db.InsertAllAsync(new[]
             {
-                if (workoutIds.TryGetValue(workout, out var wId) && exerciseIds.TryGetValue(exercise, out var eId))
-                    items.Add(new WorkoutExercise { WorkoutId = wId, ExerciseId = eId, SortOrder = order, Sets = sets, Reps = reps });
-                else
-                    System.Diagnostics.Debug.WriteLine($"Seed skipped: {workout} / {exercise}");
+                new Workout {Title ="Beginner Full Boday", UserId = guest.Id, CategoryId = 1},
+                new Workout { Title = "Quick Cardio",       UserId = guest.Id, CategoryId = 2 },
+                new Workout { Title = "Gentle Stretch",     UserId = guest.Id, CategoryId = 5 },
+            });
+
+            var count = await db.Table<Workout>().CountAsync();
+            if (count > 0)
+            {
+                return;
             }
 
-            Add("Push Day", "Barbell Bench Press", 1, 4, 8);
-            Add("Push Day", "Overhead Press", 2, 3, 10);
-            Add("Push Day", "Push-Up", 3, 3, 15);
+            var workouts = new List<Workout>
+            {
+                new Workout { Title = "Full Body Strength", UserId = 1, CategoryId = 1, IsPrivate = true },
+                new Workout { Title = "Cardio Burn", UserId = 1, CategoryId = 2, IsPrivate = false },
+                new Workout { Title = "Yoga & Recovery", UserId = 1, CategoryId = 4, IsPrivate = true }
+            };
 
-            Add("Pull Day", "Deadlift", 1, 3, 5);
-            Add("Pull Day", "Pull-Up", 2, 4, 8);
-            Add("Pull Day", "Dumbbell Row", 3, 3, 10);
-
-            Add("Leg Day", "Back Squat", 1, 4, 8);
-            Add("Leg Day", "Deadlift", 2, 3, 5);
-            Add("Leg Day", "Jump Squats", 3, 3, 12);
-
-            Add("Morning HIIT", "Burpees", 1, 4, 15);
-            Add("Morning HIIT", "Mountain Climbers", 2, 4, 30);
-            Add("Morning HIIT", "Jump Squats", 3, 3, 20);
-
-            Add("Cardio Burn", "Jump Rope", 1, 3, 100);
-            Add("Cardio Burn", "Mountain Climbers", 2, 3, 30);
-            Add("Cardio Burn", "Burpees", 3, 3, 10);
-
-            Add("Yoga Flow", "Sun Salutation", 1, 3, 5);
-            Add("Yoga Flow", "Downward Dog", 2, 3, 8);
-
-            Add("Cool Down", "Hamstring Stretch", 1, 2, 3);
-            Add("Cool Down", "Downward Dog", 2, 2, 5);
-            Add("Cool Down", "Foam Rolling", 3, 1, 10);
-
-            await db.InsertAllAsync(items);
+            await db.InsertAllAsync(workouts);
 
 
-
-            // await db.InsertAllAsync(new[]
-            // {
-            //     new WorkoutExercise { WorkoutId = 1, ExerciseId = 1, SortOrder = 1, Sets = 3, Reps = 10 },
-            //     new WorkoutExercise { WorkoutId = 1, ExerciseId = 2, SortOrder = 2, Sets = 3, Reps = 12 },
-            //     new WorkoutExercise { WorkoutId = 2, ExerciseId = 2, SortOrder = 1, Sets = 4, Reps = 15 },
-            //     new WorkoutExercise { WorkoutId = 2, ExerciseId = 3, SortOrder = 2, Sets = 3, Reps = 20 },
-            //     new WorkoutExercise { WorkoutId = 3, ExerciseId = 3, SortOrder = 1, Sets = 2, Reps = 30 },
-            // });
         }
 
+        //put those data in the *SeedWorkoutsAsync* 
+        // Workout exercises seed
+//         private async Task SeedWorkoutExercisesAsync()
+//         {
+//             var db = await GetConnectionAsync();
+
+//             var count = await db.Table<WorkoutExercise>().CountAsync();
+//             if (count > 0)
+//             {
+//                 return;
+//             }
+
+//             var workoutExercises = new List<WorkoutExercise>
+//             {
+//                 // Full Body Strength
+//                 new WorkoutExercise { WorkoutId = 1, ExerciseId = 9, SortOrder = 1, Sets = 4, Reps = 8 },
+//                 new WorkoutExercise { WorkoutId = 1, ExerciseId = 8, SortOrder = 2, Sets = 4, Reps = 8 },
+//                 new WorkoutExercise { WorkoutId = 1, ExerciseId = 2, SortOrder = 3, Sets = 3, Reps = 15 },
+
+//                 // Cardio Burn
+//                 new WorkoutExercise { WorkoutId = 2, ExerciseId = 3, SortOrder = 1, DurationMinutes = 20 },
+//                 new WorkoutExercise { WorkoutId = 2, ExerciseId = 4, SortOrder = 2, DurationMinutes = 10 },
+//                 new WorkoutExercise { WorkoutId = 2, ExerciseId = 5, SortOrder = 3, Sets = 3, Reps = 10 },
+
+//                 // Yoga & Recovery
+//                 new WorkoutExercise { WorkoutId = 3, ExerciseId = 6, SortOrder = 1, DurationMinutes = 5 },
+//                 new WorkoutExercise { WorkoutId = 3, ExerciseId = 7, SortOrder = 2, DurationMinutes = 5 },
+//                 new WorkoutExercise { WorkoutId = 3, ExerciseId = 10, SortOrder = 3, DurationMinutes = 10 }
+//             };
+
+//             await db.InsertAllAsync(workoutExercises);
+//         }
+
+        // Workout logs seed
         private async Task SeedWorkoutLogsAsync()
         {
             var db = await GetConnectionAsync();
-            if (await db.Table<WorkoutLog>().CountAsync() > 0) return;
 
-            WorkoutLog Log(int workoutId, int daysAgo, int minutes) => new()
+            var count = await db.Table<WorkoutLog>().CountAsync();
+            if (count > 0)
+            {
+                return;
+            }
+
+            var workoutLogs = new List<WorkoutLog>
+            {
+                // Week
+                CreateWorkoutLog(1, 0, 45),
+                CreateWorkoutLog(2, 1, 30),
+                CreateWorkoutLog(3, 2, 60),
+                CreateWorkoutLog(1, 3, 40),
+                CreateWorkoutLog(2, 5, 35),
+
+                // Month
+                CreateWorkoutLog(1, 8, 45),
+                CreateWorkoutLog(3, 10, 30),
+                CreateWorkoutLog(2, 13, 60),
+                CreateWorkoutLog(1, 15, 40),
+                CreateWorkoutLog(2, 20, 50),
+                CreateWorkoutLog(3, 24, 35),
+                CreateWorkoutLog(1, 27, 45),
+
+                // Year
+                CreateWorkoutLog(1, 40, 50),
+                CreateWorkoutLog(2, 70, 45),
+                CreateWorkoutLog(3, 100, 60),
+                CreateWorkoutLog(1, 130, 30),
+                CreateWorkoutLog(2, 160, 55),
+                CreateWorkoutLog(3, 200, 40),
+                CreateWorkoutLog(1, 250, 70),
+                CreateWorkoutLog(2, 300, 45)
+            };
+
+            await db.InsertAllAsync(workoutLogs);
+            
+
+        }
+
+        private static WorkoutLog CreateWorkoutLog(int workoutId, int daysAgo, int minutes)
+        {
+            return new WorkoutLog
             {
                 WorkoutId = workoutId,
                 UserId = 1,
                 DateTimeCompleted = DateTime.Today.AddDays(-daysAgo).AddHours(7),
                 DurationSeconds = minutes * 60
             };
-
-            await db.InsertAllAsync(new[]
-            {
-                // Week
-                Log(1, 0, 45), Log(2, 1, 30), Log(3, 2, 60), Log(1, 3, 40), Log(2, 5, 35),
-
-                // Month
-                Log(1, 8, 45), Log(3, 10, 30), Log(2, 13, 60), Log(1, 15, 40),
-                Log(2, 20, 50), Log(3, 24, 35), Log(1, 27, 45),
-
-                // Year
-                Log(1, 40, 50), Log(2, 70, 45), Log(3, 100, 60), Log(1, 130, 30),
-                Log(2, 160, 55), Log(3, 200, 40), Log(1, 250, 70), Log(2, 300, 45),
-            });
         }
 
+        // Weight logs seed
         private async Task SeedWeightLogsAsync()
         {
             var db = await GetConnectionAsync();
-            if (await db.Table<WeightLog>().CountAsync() > 0) return;
-            WeightLog Log(int daysAgo, double weight) => new()
+
+            var count = await db.Table<WeightLog>().CountAsync();
+            if (count > 0)
+            {
+                return;
+            }
+
+            var weightLogs = new List<WeightLog>
+            {
+                // Week
+                CreateWeightLog(0, 80.5),
+                CreateWeightLog(1, 80.2),
+                CreateWeightLog(2, 80.0),
+                CreateWeightLog(3, 79.8),
+                CreateWeightLog(5, 79.5),
+
+                // Month
+                CreateWeightLog(8, 79.3),
+                CreateWeightLog(10, 79.0),
+                CreateWeightLog(13, 78.8),
+                CreateWeightLog(15, 78.5),
+                CreateWeightLog(20, 78.3),
+                CreateWeightLog(24, 78.0),
+                CreateWeightLog(27, 77.8),
+
+                // Year
+                CreateWeightLog(40, 77.5),
+                CreateWeightLog(70, 77.3),
+                CreateWeightLog(100, 77.0),
+                CreateWeightLog(130, 76.8),
+                CreateWeightLog(160, 76.5),
+                CreateWeightLog(200, 76.3),
+                CreateWeightLog(250, 76.0),
+                CreateWeightLog(300, 75.8)
+            };
+
+            await db.InsertAllAsync(weightLogs);
+        }
+
+        private static WeightLog CreateWeightLog(int daysAgo, double weightKg)
+        {
+            return new WeightLog
             {
                 UserId = 1,
                 DateTimeLogged = DateTime.Today.AddDays(-daysAgo).AddHours(7),
-                WeightKg = (double)weight
+                WeightKg = weightKg
             };
-            await db.InsertAllAsync(new[]
-            {
-                // Week
-                Log(0, 80.5), Log(1, 80.2), Log(2, 80.0), Log(3, 79.8), Log(5, 79.5),
-                // Month
-                Log(8, 79.3), Log(10, 79.0), Log(13, 78.8), Log(15, 78.5),
-                Log(20, 78.3), Log(24, 78.0), Log(27, 77.8),
-                // Year
-                Log(40, 77.5), Log(70, 77.3), Log(100, 77.0), Log(130, 76.8),
-                Log(160, 76.5), Log(200, 76.3), Log(250, 76.0), Log(300, 75.8),
-            });
         }
     }
 }
