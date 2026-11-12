@@ -40,12 +40,6 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
                     return;
                 }
 
-                // Keeps selections when returning from Create Workout
-                if (_allExercises.Count > 0)
-                {
-                    return;
-                }
-
                 StatusMessage = "Loading exercises...";
 
                 var exercises = await _exerciseService.GetExercisesAsync();
@@ -149,7 +143,7 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
                 { "Exercises", selected }
             };
 
-            await NavigateAsync(nameof(CreateWorkoutPage), parameters);
+            await NavigateAsync("..", parameters);
         }
     }
 }

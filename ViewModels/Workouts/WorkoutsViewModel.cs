@@ -145,7 +145,7 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
             if (!await RequireLoginAsync())
             return;
 
-            await NavigateAsync(nameof(SelectExercisesPage));
+            await NavigateAsync(nameof(CreateWorkoutPage));
         }
 
         [RelayCommand]

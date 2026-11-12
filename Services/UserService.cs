@@ -259,7 +259,7 @@
                 return new AuthResult(false, "An account with that email already exists.");
             }
 
-            var nameTaken = await db.Table<User>().Where(u => u.DisplayName == displayName && u.Id != user.Id).FirstOrDefaultAsync();
+            var nameTaken = await db.Table<User>().Where(u => u.DisplayName.ToLower() == displayName.ToLower() && u.Id != user.Id).FirstOrDefaultAsync();
 
             if (nameTaken is not null)
             {
@@ -288,7 +288,7 @@
             }
             catch (SQLiteException)
             {
-                return new AuthResult(false, "An account with that email already exists.");
+                return new AuthResult(false, "An account with that email or display name already exists.");
             }
 
             CurrentUser = user;
@@ -349,6 +349,35 @@
             }
 
             return user;
+        }
+
+        // Get all display names
+        public async Task<Dictionary<int, string>> GetDisplayNamesByIdAsync()
+        {
+            var db = await _databaseService.GetConnectionAsync();
+
+            var users = await db.Table<User>().ToListAsync();
+
+            return users.ToDictionary(u => u.Id, u => u.DisplayName);
+        }
+
+        // Get user's display name by Id
+        public async Task<string?> GetUserDisplayNameByIdAsync(int userId)
+        {
+            var db = await _databaseService.GetConnectionAsync();
+
+            var user = await db.Table<User>()
+                .Where(u => u.Id == userId)
+                .FirstOrDefaultAsync();
+
+            if (user is null)
+            {
+                return null;
+            }
+            else
+            {
+                return user.DisplayName;
+            }
         }
 
         // Set user active status

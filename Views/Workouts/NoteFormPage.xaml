@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:CapstoneProjectPUSH.ViewModels.Workouts"
+             x:Class="CapstoneProjectPUSH.Views.Workouts.NoteFormPage"
+             x:DataType="vm:NoteFormViewModel"
+             Title="{Binding PageTitle}">
+
+    <Grid
+        RowDefinitions="*,Auto">
+
+        <ScrollView
+            Grid.Row="0">
+
+            <VerticalStackLayout
+                MaximumWidthRequest="500"
+                Padding="30,15"
+                Spacing="15">
+
+                <Label
+                    FontAttributes="Bold"
+                    Text="Title"/>
+
+                <Entry
+                    MaxLength="100"
+                    Placeholder="e.g. Felt strong on squats"
+                    Text="{Binding NoteTitle}"/>
+
+                <Label
+                    FontAttributes="Bold"
+                    Text="Content"/>
+
+                <Editor
+                    AutoSize="TextChanges"
+                    MaxLength="5000"
+                    MinimumHeightRequest="150"
+                    Placeholder="Write your note..."
+                    Text="{Binding NoteContent}"/>
+
+                <Label
+                    IsVisible="{Binding HasError}"
+                    Text="{Binding ErrorMessage}"
+                    TextColor="Red"/>
+
+            </VerticalStackLayout>
+
+        </ScrollView>
+
+        <VerticalStackLayout
+            Grid.Row="1"
+            Margin="30,0,30,15"
+            MaximumWidthRequest="500"
+            Spacing="10">
+
+            <Button
+                Command="{Binding SaveNoteCommand}"
+                Text="{Binding SaveButtonText}"/>
+
+            <Button
+                Command="{Binding CancelCommand}"
+                Text="Cancel"/>
+
+        </VerticalStackLayout>
+
+    </Grid>
+
+</ContentPage>
