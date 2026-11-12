@@ -5,7 +5,7 @@
              xmlns:vm="clr-namespace:CapstoneProjectPUSH.ViewModels.Workouts"
              x:Class="CapstoneProjectPUSH.Views.Workouts.CreateWorkoutPage"
              x:DataType="vm:CreateWorkoutViewModel"
-             Title="Create PUSH Workout">
+             Title="{Binding PageTitle}">
 
     <Grid
         MaximumWidthRequest="500"
@@ -29,13 +29,43 @@
                 SelectedItem="{Binding SelectedCategory}"
                 Title="Category"/>
 
+            <!-- Community visibility -->
+            <Grid
+                ColumnDefinitions="*,Auto"
+                ColumnSpacing="10">
+
+                <Label
+                    Grid.Column="0"
+                    Text="Share with the PUSH community"
+                    VerticalOptions="Center"/>
+
+                <Switch
+                    Grid.Column="1"
+                    IsToggled="{Binding IsPublic}"
+                    VerticalOptions="Center"/>
+
+            </Grid>
+
         </VerticalStackLayout>
 
-        <Label
-            FontAttributes="Bold"
-            FontSize="16"
-            Grid.Row="1"
-            Text="Exercises"/>
+        <Grid
+            ColumnDefinitions="*,Auto"
+            ColumnSpacing="10"
+            Grid.Row="1">
+
+            <Label
+                FontAttributes="Bold"
+                FontSize="16"
+                Grid.Column="0"
+                Text="Exercises"
+                VerticalOptions="Center"/>
+
+            <Button
+                Command="{Binding AddExercisesCommand}"
+                Grid.Column="1"
+                Text="Add Exercises"/>
+
+        </Grid>
 
         <!-- Exercise list -->
         <CollectionView
@@ -52,12 +82,12 @@
                     <Label
                         FontAttributes="Italic"
                         HorizontalTextAlignment="Center"
-                        Text="No exercises left"/>
+                        Text="No exercises added yet."/>
 
                     <Label
                         FontAttributes="Italic"
                         HorizontalTextAlignment="Center"
-                        Text="Go back and pick some"/>
+                        Text="Tap Add Exercises to pick some."/>
 
                 </VerticalStackLayout>
 
@@ -210,7 +240,7 @@
 
             <Button
                 Command="{Binding SaveCommand}"
-                Text="Save Workout"/>
+                Text="{Binding SaveButtonText}"/>
 
         </VerticalStackLayout>
 

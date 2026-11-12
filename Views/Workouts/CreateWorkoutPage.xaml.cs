@@ -15,6 +15,6 @@ public partial class CreateWorkoutPage : ContentPage
     protected override void OnAppearing()
     {
         base.OnAppearing();
-        _createWorkoutViewModel.LoadCategoriesCommand.Execute(null);
+        _createWorkoutViewModel.LoadFormCommand.Execute(null);
     }
 }

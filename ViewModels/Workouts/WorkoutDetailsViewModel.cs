@@ -46,6 +46,16 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
             LoadWorkoutCommand.Execute(null);
         }
 
+        public void Reload()
+        {
+            if (Workout is null)
+            {
+                return;
+            }
+
+            LoadWorkoutCommand.Execute(null);
+        }
+
         [RelayCommand]
         private async Task LoadWorkoutAsync()
         {
@@ -117,6 +127,22 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
                 await Shell.Current.DisplayAlertAsync("Workout not found", "This PUSH workout could not be loaded.", "OK");
                 await NavigateAsync("..");
             }
+        }
+
+        [RelayCommand]
+        private async Task EditWorkoutAsync()
+        {
+            if (Workout is null || !IsOwner)
+            {
+                return;
+            }
+
+            var parameters = new ShellNavigationQueryParameters
+            {
+                { "WorkoutId", Workout.Id }
+            };
+
+            await NavigateAsync(nameof(CreateWorkoutPage), parameters);
         }
 
         [RelayCommand]

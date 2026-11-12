@@ -7,12 +7,14 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
         private const int MaxDurationMinutes = 300;
 
         private readonly CategoryService _categoryService;
+        private readonly ExerciseService _exerciseService;
         private readonly UserService _userService;
         private readonly WorkoutService _workoutService;
 
-        public CreateWorkoutViewModel(CategoryService categoryService, UserService userService, WorkoutService workoutService)
+        public CreateWorkoutViewModel(CategoryService categoryService, ExerciseService exerciseService, UserService userService, WorkoutService workoutService)
         {
             _categoryService = categoryService;
+            _exerciseService = exerciseService;
             _userService = userService;
             _workoutService = workoutService;
         }
@@ -32,34 +34,79 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
         [ObservableProperty]
         public partial bool IsPublic { get; set; }
 
+        private int _workoutId;
+
+        private bool _hasLoadedWorkout;
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(PageTitle))]
+        [NotifyPropertyChangedFor(nameof(SaveButtonText))]
+        public partial bool IsEditMode { get; set; }
+
+        public string PageTitle
+        {
+            get
+            {
+                if (IsEditMode)
+                {
+                    return "Edit PUSH Workout";
+                }
+                else
+                {
+                    return "Create PUSH Workout";
+                }
+            }
+        }
+
+        public string SaveButtonText
+        {
+            get
+            {
+                if (IsEditMode)
+                {
+                    return "Save Changes";
+                }
+                else
+                {
+                    return "Save Workout";
+                }
+            }
+        }
+
         public void ApplyQueryAttributes(IDictionary<string, object> query)
         {
-            if (!query.TryGetValue("Exercises", out var value))
+            if (query.TryGetValue("WorkoutId", out var idValue))
             {
-                return;
+                if (idValue is int workoutId && workoutId > 0)
+                {
+                    _workoutId = workoutId;
+                    IsEditMode = true;
+                }
             }
 
-            if (value is not List<Exercise> exercises || exercises.Count == 0)
+            if (query.TryGetValue("Exercises", out var exercisesValue))
             {
-                return;
+                if (exercisesValue is List<Exercise> exercises && exercises.Count > 0)
+                {
+                    foreach (var exercise in exercises)
+                    {
+                        Items.Add(new WorkoutExerciseDraft(exercise));
+                    }
+
+                    if (SelectedCategory is null)
+                    {
+                        _suggestedCategoryId = exercises
+                            .GroupBy(e => e.CategoryId)
+                            .OrderByDescending(g => g.Count())
+                            .First()
+                            .Key;
+                    }
+                }
             }
-
-            Items.Clear();
-
-            foreach (var exercise in exercises)
-            {
-                Items.Add(new WorkoutExerciseDraft(exercise));
-            }
-
-            _suggestedCategoryId = exercises
-                .GroupBy(e => e.CategoryId)
-                .OrderByDescending(g => g.Count())
-                .First()
-                .Key;
         }
 
         [RelayCommand]
-        private async Task LoadCategoriesAsync()
+        private async Task LoadFormAsync()
         {
             IsBusy = true;
 
@@ -84,6 +131,20 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
                     }
                 }
 
+                if (IsEditMode && !_hasLoadedWorkout)
+                {
+                    bool loaded = await LoadWorkoutAsync(user.Id);
+
+                    if (!loaded)
+                    {
+                        await Shell.Current.DisplayAlertAsync("Workout not found", "This PUSH workout could not be loaded.", "OK");
+                        await NavigateAsync("..");
+                        return;
+                    }
+
+                    _hasLoadedWorkout = true;
+                }
+
                 if (SelectedCategory is null)
                 {
                     SelectedCategory = Categories.FirstOrDefault(c => c.Id == _suggestedCategoryId);
@@ -98,6 +159,64 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
             {
                 IsBusy = false;
             }
+        }
+
+        private async Task<bool> LoadWorkoutAsync(int userId)
+        {
+            var workout = await _workoutService.GetWorkoutByIdAsync(_workoutId, userId);
+
+            if (workout is null)
+            {
+                return false;
+            }
+
+            WorkoutTitle = workout.Title;
+            SelectedCategory = Categories.FirstOrDefault(c => c.Id == workout.CategoryId);
+
+            if (workout.IsPrivate)
+            {
+                IsPublic = false;
+            }
+            else
+            {
+                IsPublic = true;
+            }
+
+            var workoutExercises = await _workoutService.GetExercisesForWorkoutAsync(_workoutId);
+            var exercises = await _exerciseService.GetExercisesAsync();
+            var exercisesById = exercises.ToDictionary(e => e.Id);
+
+            Items.Clear();
+
+            foreach (var workoutExercise in workoutExercises)
+            {
+                if (!exercisesById.TryGetValue(workoutExercise.ExerciseId, out var exercise))
+                {
+                    continue;
+                }
+
+                var draft = new WorkoutExerciseDraft(exercise);
+
+                if (exercise.IsTimed)
+                {
+                    draft.DurationText = workoutExercise.DurationMinutes.ToString();
+                }
+                else
+                {
+                    draft.SetsText = workoutExercise.Sets.ToString();
+                    draft.RepsText = workoutExercise.Reps.ToString();
+                }
+
+                Items.Add(draft);
+            }
+
+            return true;
+        }
+
+        [RelayCommand]
+        private async Task AddExercisesAsync()
+        {
+            await NavigateAsync(nameof(SelectExercisesPage));
         }
 
         [RelayCommand]
@@ -249,8 +368,25 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
 
             try
             {
-                await _workoutService.AddWorkoutWithExercisesAsync(workout, workoutExercises);
-                await NavigateAsync("../..");
+                if (IsEditMode)
+                {
+                    workout.Id = _workoutId;
+
+                    bool updated = await _workoutService.UpdateWorkoutWithExercisesAsync(workout, user.Id, workoutExercises);
+
+                    if (!updated)
+                    {
+                        StatusMessage = "This workout could not be found.";
+                        return;
+                    }
+
+                    await NavigateAsync("..");
+                }
+                else
+                {
+                    await _workoutService.AddWorkoutWithExercisesAsync(workout, workoutExercises);
+                    await NavigateAsync("..");
+                }
             }
             catch (Exception ex)
             {

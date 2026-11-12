@@ -63,7 +63,7 @@
                         <Label
                             FontAttributes="Italic"
                             HorizontalTextAlignment="Center"
-                            Text="Pull down to try again."/>
+                            Text="Share one of yours or pull down to try again."/>
 
                     </VerticalStackLayout>
 

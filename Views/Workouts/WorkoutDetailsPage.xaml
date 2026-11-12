@@ -50,7 +50,9 @@
                     FontSize="12"
                     IsVisible="{Binding IsNotOwner}"
                     Text="{Binding Workout.UserDisplayName, StringFormat='Created by: {0}'}"/>
-
+                
+                <!-- ADD PRIVACY LABEL -->
+                
                 <!-- Exercises -->
                 <Label
                     FontAttributes="Bold"
@@ -214,13 +216,23 @@
 
         </ScrollView>
 
-        <Button
-            Command="{Binding StartWorkoutCommand}"
+        <VerticalStackLayout
             Grid.Row="1"
             Margin="30,0,30,15"
-            MaximumWidthRequest="500"
-            Text="Start Workout"/>
+            Spacing="10"
+            MaximumWidthRequest="500">
 
+            <Button
+                Command="{Binding EditWorkoutCommand}"
+                IsVisible="{Binding IsOwner}"
+                Text="Edit"/>
+
+            <Button
+                Command="{Binding StartWorkoutCommand}"
+                Text="Start Workout"/>
+
+        </VerticalStackLayout>
+        
     </Grid>
 
 </ContentPage>

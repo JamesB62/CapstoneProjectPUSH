@@ -111,6 +111,38 @@
 
             return workout;
         }
+
+        public async Task<bool> UpdateWorkoutWithExercisesAsync(Workout workout, int userId, IEnumerable<WorkoutExercise> items)
+        {
+            var db = await _databaseService.GetConnectionAsync();
+
+            var existing = await db.Table<Workout>()
+                .Where(w => w.Id == workout.Id && w.UserId == userId)
+                .FirstOrDefaultAsync();
+
+            if (existing is null)
+            {
+                return false;
+            }
+
+            existing.Title = workout.Title;
+            existing.CategoryId = workout.CategoryId;
+            existing.IsPrivate = workout.IsPrivate;
+
+            await db.UpdateAsync(existing);
+
+            await db.Table<WorkoutExercise>().DeleteAsync(we => we.WorkoutId == workout.Id);
+
+            foreach (var item in items)
+            {
+                item.WorkoutId = workout.Id;
+            }
+
+            await db.InsertAllAsync(items);
+
+            return true;
+        }
+
         // TEST ==================================================================================
 
         //workout exercisese 

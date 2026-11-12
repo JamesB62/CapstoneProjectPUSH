@@ -137,7 +137,7 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
         [RelayCommand]
         private async Task AddWorkoutAsync()
         {
-            await NavigateAsync(nameof(SelectExercisesPage));
+            await NavigateAsync(nameof(CreateWorkoutPage));
         }
 
         [RelayCommand]
