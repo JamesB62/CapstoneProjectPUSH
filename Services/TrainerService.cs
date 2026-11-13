@@ -101,26 +101,24 @@
             return trainer;
         }
 
-        // Get all trainers for user Id, with trainers at the user's linked gyms first (every trainer is still included)
-        public async Task<List<Trainer>> GetTrainersForUserAsync(int userId)
+        public async Task<List<Trainer>> GetTrainersFavouriteGymFirstAsync(int? favouriteGymId)
         {
-            var db = await _databaseService.GetConnectionAsync();
-
             var trainers = await GetTrainersAsync();
-
-            var links = await db.Table<UserGym>()
-                .Where(ug => ug.UserId == userId)
-                .ToListAsync();
-
-            var linkedGymIds = links.Select(ug => ug.GymId).ToHashSet();
 
             foreach (var trainer in trainers)
             {
-                trainer.IsAtLinkedGym = linkedGymIds.Contains(trainer.GymId);
+                if (favouriteGymId is not null && trainer.GymId == favouriteGymId.Value)
+                {
+                    trainer.IsAtFavouriteGym = true;
+                }
+                else
+                {
+                    trainer.IsAtFavouriteGym = false;
+                }
             }
 
             // OrderBy is stable, so each group keeps the last name / first name order from GetTrainersAsync
-            return trainers.OrderByDescending(t => t.IsAtLinkedGym).ToList();
+            return trainers.OrderByDescending(t => t.IsAtFavouriteGym).ToList();
         }
 
         // Add trainer

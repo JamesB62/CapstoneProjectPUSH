@@ -73,8 +73,7 @@
                     SelectedCategory = AllCategory;
                 }
 
-                // Trainers at the user's linked gyms come first, but every trainer is still returned
-                var trainers = await _trainerService.GetTrainersForUserAsync(user.Id);
+                var trainers = await _trainerService.GetTrainersFavouriteGymFirstAsync(user.GymId);
 
                 foreach (var trainer in trainers)
                 {

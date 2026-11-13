@@ -40,7 +40,6 @@ namespace CapstoneProjectPUSH.Services
                     await connection.CreateTableAsync<Stats>();
                     await connection.CreateTableAsync<Trainer>();
                     await connection.CreateTableAsync<User>();
-                    await connection.CreateTableAsync<UserGym>();
                     await connection.CreateTableAsync<WeightLog>();
                     await connection.CreateTableAsync<Workout>();
                     await connection.CreateTableAsync<WorkoutExercise>();

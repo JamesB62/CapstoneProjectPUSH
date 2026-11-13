@@ -185,7 +185,7 @@
         }
 
         // Update details
-        public async Task<AuthResult> UpdateDetailsAsync(string displayName, string email, string currentPassword, string newPassword, string confirmPassword)
+        public async Task<AuthResult> UpdateDetailsAsync(string displayName, string email, string currentPassword, string newPassword, string confirmPassword, int? gymId)
         {
             if (CurrentUser is null)
             {
@@ -266,6 +266,18 @@
                 return new AuthResult(false, "An account with that display name already exists.");
             }
 
+            if (gymId is not null)
+            {
+                int favouriteGymId = gymId.Value;
+
+                var gym = await db.Table<Gym>().Where(g => g.Id == favouriteGymId).FirstOrDefaultAsync();
+
+                if (gym is null)
+                {
+                    return new AuthResult(false, "That gym could not be found.");
+                }
+            }
+
             if (changingPassword)
             {
                 var passwordCorrect = await Task.Run(() => VerifyPassword(currentPassword, user.PasswordHash));
@@ -281,6 +293,7 @@
             // Update details
             user.DisplayName = displayName;
             user.Email = email;
+            user.GymId = gymId;
 
             try
             {

@@ -23,6 +23,7 @@
         public bool IsAdmin { get; set; } = false;
 
         public bool IsActive { get; set; } = true;
+
         public bool IsGuest { get; set; } = false;
 
         [Ignore]
@@ -30,5 +31,8 @@
 
         [Ignore]
         public string ActionLabel => IsActive ? "Deactivate" : "Reactivate";
+
+        [Indexed]
+        public int? GymId { get; set; }
     }
 }
