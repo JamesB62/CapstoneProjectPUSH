@@ -9,15 +9,13 @@ namespace CapstoneProjectPUSH.ViewModels.Admin
     public partial class GymsManagementViewModel : BaseViewModel
     {
         private readonly GymService _gymService;
-        private readonly UserService _userService;
 
         // Id of the gym being edited, or null when adding a new one
         private int? _editingId;
 
-        public GymsManagementViewModel(GymService gymService, UserService userService)
+        public GymsManagementViewModel(GymService gymService, UserService userService) : base(userService)
         {
             _gymService = gymService;
-            _userService = userService;
 
             NameInput = string.Empty;
             AddressInput = string.Empty;

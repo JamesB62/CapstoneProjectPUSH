@@ -1,19 +1,11 @@
-﻿using System.Collections.ObjectModel;
-using CapstoneProjectPUSH.Models;
-using CapstoneProjectPUSH.Services;
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-
-namespace CapstoneProjectPUSH.ViewModels.Admin
+﻿namespace CapstoneProjectPUSH.ViewModels.Admin
 {
     public partial class UserManagementViewModel : BaseViewModel
     {
-        private readonly UserService _userService;
         private List<User> _allUsers = new();
 
-        public UserManagementViewModel(UserService userService)
+        public UserManagementViewModel(UserService userService) : base(userService)
         {
-            _userService = userService;
 
             SearchText = string.Empty;
             CountText = string.Empty;

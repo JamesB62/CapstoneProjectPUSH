@@ -165,6 +165,8 @@ namespace CapstoneProjectPUSH.ViewModels.Profile
                 await NavigateAsync("//LandingPage");
                 return;
             }
+            if (!await RequireLoginAsync())
+            return;
 
             if (SelectedGymIndex < 0 || SelectedGymIndex >= _availableGyms.Count)
             {
@@ -201,6 +203,8 @@ namespace CapstoneProjectPUSH.ViewModels.Profile
             {
                 return;
             }
+            if (!await RequireLoginAsync())
+            return;
 
             try
             {

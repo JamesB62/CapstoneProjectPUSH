@@ -9,15 +9,13 @@ namespace CapstoneProjectPUSH.ViewModels.Admin
     public partial class CategoriesManagementViewModel : BaseViewModel
     {
         private readonly CategoryService _categoryService;
-        private readonly UserService _userService;
 
         // Id of the category being renamed, or null when adding a new one
         private int? _editingId;
 
-        public CategoriesManagementViewModel(CategoryService categoryService, UserService userService)
+        public CategoriesManagementViewModel(CategoryService categoryService, UserService userService) : base(userService)
         {
             _categoryService = categoryService;
-            _userService = userService;
 
             TitleInput = string.Empty;
             SaveButtonText = "Add category";
