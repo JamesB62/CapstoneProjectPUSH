@@ -31,10 +31,14 @@ namespace CapstoneProjectPUSH
             builder.Services.AddSingleton<WorkoutLogService>();
             builder.Services.AddSingleton<WorkoutService>();
 
+
             // ======================== ViewModels ========================
 
             // Admin
             builder.Services.AddTransient<AdminDashboardViewModel>();
+            builder.Services.AddTransient<UserManagementViewModel>();
+            builder.Services.AddTransient<CategoriesManagementViewModel>();
+            builder.Services.AddTransient<GymsManagementViewModel>();
 
             // Auth
             builder.Services.AddTransient<LoginViewModel>();
@@ -66,6 +70,7 @@ namespace CapstoneProjectPUSH
             // Trainers
             builder.Services.AddTransient<TrainerDetailsViewModel>();
             builder.Services.AddTransient<TrainersViewModel>();
+            builder.Services.AddTransient<CreateTrainerViewModel>();
 
             // Workouts
             builder.Services.AddTransient<ActiveWorkoutViewModel>();
@@ -79,6 +84,9 @@ namespace CapstoneProjectPUSH
 
             // Admin
             builder.Services.AddTransient<AdminDashboardPage>();
+            builder.Services.AddTransient<UserManagementPage>();
+            builder.Services.AddTransient<CategoriesManagementPage>();
+            builder.Services.AddTransient<GymsManagementPage>();
 
             // Auth
             builder.Services.AddTransient<LoginPage>();
@@ -111,6 +119,7 @@ namespace CapstoneProjectPUSH
             // Trainers
             builder.Services.AddTransient<TrainerDetailsPage>();
             builder.Services.AddTransient<TrainersPage>();
+            builder.Services.AddTransient<CreateTrainerPage>();
 
             // Workouts
             builder.Services.AddTransient<ActiveWorkoutPage>();

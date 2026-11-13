@@ -11,7 +11,7 @@ namespace CapstoneProjectPUSH.Services
 
         public const string DbFileName = "push.db3";
         public static string DbPath => Path.Combine(FileSystem.AppDataDirectory, DbFileName);
-        
+
         private SQLiteAsyncConnection? _connection;
 
         private readonly SemaphoreSlim _initLock = new(1, 1);
@@ -40,6 +40,7 @@ namespace CapstoneProjectPUSH.Services
                     await connection.CreateTableAsync<Stats>();
                     await connection.CreateTableAsync<Trainer>();
                     await connection.CreateTableAsync<User>();
+                    await connection.CreateTableAsync<UserGym>();
                     await connection.CreateTableAsync<WeightLog>();
                     await connection.CreateTableAsync<Workout>();
                     await connection.CreateTableAsync<WorkoutExercise>();
@@ -274,6 +275,27 @@ namespace CapstoneProjectPUSH.Services
                     Description = "Certified personal trainer with 5 years of experience specialising in high-intensity interval training. Jane designs fast-paced, varied sessions that build endurance and burn calories efficiently, and scales every workout to suit beginners through to experienced athletes.",
                     Available = false,
                     GymId = 3
+                },
+
+                new Trainer {
+                    FirstName = "Daniel",
+                    LastName = "Doe",
+                    Email = "ddoe123@example.com",
+                    PhoneNumber = "123-456-7890",
+                    CategoryId = 2,
+                    Description = "Certified personal trainer with 3 years of experience in cardio training. Daniel focuses on proper technique and progressive overload, helping clients build lasting strength safely, whether they're picking up a barbell for the first time or working toward a new personal best.",
+                    Available = true,
+                    GymId = 2
+                },
+                new Trainer {
+                    FirstName = "Alex",
+                    LastName = "Dane",
+                    Email = "adane123@example.com",
+                    PhoneNumber = "123-456-7890",
+                    CategoryId = 4,
+                    Description = "Certified personal trainer with 8 years of experience in yoga instructing. Alex focuses on proper technique and progressive overload, helping clients build lasting strength safely, whether they're picking up a barbell for the first time or working toward a new personal best.",
+                    Available = true,
+                    GymId = 5
                 }
             };
 
@@ -569,6 +591,12 @@ namespace CapstoneProjectPUSH.Services
             if(guest is null) return;
             if(await db.Table<Workout>().Where(w => w.UserId == guest.Id).CountAsync() > 0) return;
 
+            var exerciseIds = (await db.Table<Exercise>().ToListAsync())
+                .GroupBy(e => e.Title).ToDictionary(e => e.Key, e => e.First().Id);
+            var workoutIds = (await db.Table<Workout>().ToListAsync())
+            .GroupBy(w => w.Title).ToDictionary(w => w.Key, w => w.First().Id);
+
+            var items = new List<WorkoutExercise>();
 
             await db.InsertAllAsync(new[]
             {
