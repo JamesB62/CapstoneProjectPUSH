@@ -22,9 +22,9 @@
         {
             var db = await _databaseService.GetConnectionAsync();
 
-            return await db.Table<Category>()
-                .OrderBy(c => c.Title)
-                .ToListAsync();
+            var categories = await db.Table<Category>().ToListAsync();
+
+            return categories.OrderBy(c => c.Title, StringComparer.OrdinalIgnoreCase).ToList();
         }
 
         // Get category by Id

@@ -50,7 +50,6 @@
             await LoadFavouriteGymAsync(user.GymId);
         }
 
-        // Look up the favourite gym's name for the label
         private async Task LoadFavouriteGymAsync(int? gymId)
         {
             FavouriteGymText = string.Empty;
@@ -127,13 +126,6 @@
             }
 
             await NavigateAsync(nameof(AdminDashboardPage));
-        }
-
-        // Guest springboard -- keep?
-        [RelayCommand]
-        private async Task GoToLoginOrRegisterAsync()
-        {
-            await LogoutAndRedirectAsync();
         }
 
         [RelayCommand]

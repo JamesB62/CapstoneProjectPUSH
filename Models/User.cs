@@ -32,6 +32,9 @@
         [Ignore]
         public string ActionLabel => IsActive ? "Deactivate" : "Reactivate";
 
+        [Ignore]
+        public string RoleLabel => IsAdmin ? "Admin" : IsGuest ? "Guest" : "Member";
+
         [Indexed]
         public int? GymId { get; set; }
     }

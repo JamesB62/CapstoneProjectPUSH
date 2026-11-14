@@ -52,13 +52,9 @@
 
             <!-- Buttons -->
             <VerticalStackLayout
+                Margin="0,10,0,0"
                 Spacing="10">
 
-                <Button
-                    Command="{Binding GoToLoginOrRegisterCommand}"
-                    IsVisible="{Binding IsGuest}"
-                    Text="Log In or Register"/>
-                
                 <Button
                     Command="{Binding GoToUpdateDetailsCommand}"
                     Text="Update Details"/>

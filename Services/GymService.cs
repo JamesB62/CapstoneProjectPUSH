@@ -22,10 +22,12 @@
         {
             var db = await _databaseService.GetConnectionAsync();
 
-            return await db.Table<Gym>()
-                .OrderBy(g => g.Name)
-                .ThenBy(g => g.City)
-                .ToListAsync();
+            var gyms = await db.Table<Gym>().ToListAsync();
+
+            return gyms
+                .OrderBy(g => g.Name, StringComparer.OrdinalIgnoreCase)
+                .ThenBy(g => g.City, StringComparer.OrdinalIgnoreCase)
+                .ToList();
         }
 
         // Get gym by Id

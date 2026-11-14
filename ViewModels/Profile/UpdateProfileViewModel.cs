@@ -51,7 +51,7 @@
             CurrentPassword = string.Empty;
             NewPassword = string.Empty;
             ConfirmPassword = string.Empty;
-            StatusMessage = string.Empty;
+            ErrorMessage = string.Empty;
 
             await LoadGymsAsync(user.GymId);
         }
@@ -65,7 +65,7 @@
             }
 
             IsBusy = true;
-            StatusMessage = string.Empty;
+            ErrorMessage = string.Empty;
 
             try
             {
@@ -80,7 +80,7 @@
 
                 if (!result.Success)
                 {
-                    StatusMessage = result.Message;
+                    ErrorMessage = result.Message;
                     return;
                 }
 
@@ -90,13 +90,13 @@
 
                 IsBusy = false;
 
-                await Shell.Current.DisplayAlertAsync("Update Successful", "Your PUSH account details have been updated.", "OK");
+                await Shell.Current.DisplayAlertAsync("Details Updated", "Your PUSH account details have been updated.", "OK");
                 await NavigateAsync("..");
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex);
-                StatusMessage = "Something went wrong. Please try again.";
+                ErrorMessage = "Something went wrong. Please try again.";
             }
             finally
             {

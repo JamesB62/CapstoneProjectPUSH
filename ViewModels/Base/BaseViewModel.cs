@@ -23,6 +23,12 @@
 
         public bool HasStatusMessage => !string.IsNullOrEmpty(StatusMessage);
 
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(HasErrorMessage))]
+        public partial string ErrorMessage { get; set; } = string.Empty;
+
+        public bool HasErrorMessage => !string.IsNullOrEmpty(ErrorMessage);
+
         // Signed-in state
         public bool IsUnauthenticated => _userService.IsUnauthenticated;
         public bool IsGuest => _userService.IsGuest;
@@ -60,6 +66,31 @@
                 await LogoutAndRedirectAsync();
             }
 
+            return false;
+        }
+
+        // Admin account check
+        protected async Task<bool> RequireAdminAsync()
+        {
+            var user = _userService.CurrentUser;
+
+            if (user is null)
+            {
+                await NavigateAsync("//LandingPage");
+                return false;
+            }
+
+            if (user.IsAdmin)
+            {
+                return true;
+            }
+
+            await Shell.Current.DisplayAlertAsync(
+                "Access Denied",
+                "This page is for administrators only.",
+                "OK");
+
+            await NavigateAsync("..");
             return false;
         }
 

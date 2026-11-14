@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:CapstoneProjectPUSH.ViewModels.Admin"
+             x:Class="CapstoneProjectPUSH.Views.Admin.CreateGymPage"
+             x:DataType="vm:CreateGymViewModel"
+             Title="{Binding PageTitle}">
+
+    <ScrollView>
+
+        <VerticalStackLayout
+            MaximumWidthRequest="500"
+            Padding="30"
+            Spacing="20">
+
+            <!-- Gym form -->
+            <VerticalStackLayout>
+
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="18"
+                    Text="Gym Name"/>
+
+                <Entry
+                    MaxLength="250"
+                    Placeholder="Enter the gym's name here"
+                    Text="{Binding Name}"/>
+
+            </VerticalStackLayout>
+
+            <VerticalStackLayout>
+
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="18"
+                    Text="Address"/>
+
+                <Entry
+                    MaxLength="250"
+                    Placeholder="Enter the street address here"
+                    Text="{Binding Address}"/>
+
+            </VerticalStackLayout>
+
+            <VerticalStackLayout>
+
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="18"
+                    Text="City"/>
+
+                <Entry
+                    MaxLength="100"
+                    Placeholder="Enter the city here"
+                    ReturnCommand="{Binding SaveCommand}"
+                    ReturnType="Done"
+                    Text="{Binding City}"/>
+
+            </VerticalStackLayout>
+
+            <!-- Error message -->
+            <Label
+                IsVisible="{Binding HasErrorMessage}"
+                Text="{Binding ErrorMessage}"
+                TextColor="Red"/>
+
+            <!-- Buttons -->
+            <VerticalStackLayout
+                Margin="0,5,0,0"
+                Spacing="10">
+
+                <Button
+                    Command="{Binding SaveCommand}"
+                    IsEnabled="{Binding IsNotBusy}"
+                    Text="{Binding SaveButtonText}"/>
+
+                <Button
+                    Command="{Binding CancelCommand}"
+                    IsEnabled="{Binding IsNotBusy}"
+                    Text="Cancel"/>
+
+            </VerticalStackLayout>
+
+        </VerticalStackLayout>
+
+    </ScrollView>
+
+</ContentPage>

@@ -112,8 +112,8 @@
 
             <!-- Error message -->
             <Label
-                IsVisible="{Binding HasStatusMessage}"
-                Text="{Binding StatusMessage}"
+                IsVisible="{Binding HasErrorMessage}"
+                Text="{Binding ErrorMessage}"
                 TextColor="Red"/>
 
             <!-- Buttons -->
