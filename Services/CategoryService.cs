@@ -113,16 +113,36 @@
                 return (false, "Category could not be found.");
             }
 
-            // Don't leave articles, exercises, trainers or workouts pointing at a missing category
-            var itemsUsingCategory =
-                await db.Table<Article>().Where(a => a.CategoryId == categoryId).CountAsync()
-                + await db.Table<Exercise>().Where(e => e.CategoryId == categoryId).CountAsync()
-                + await db.Table<Trainer>().Where(t => t.CategoryId == categoryId).CountAsync()
-                + await db.Table<Workout>().Where(w => w.CategoryId == categoryId).CountAsync();
+            var articles = await db.Table<Article>().Where(a => a.CategoryId == categoryId).ToListAsync();
 
-            if (itemsUsingCategory > 0)
+            foreach (var article in articles)
             {
-                return (false, $"\"{category.Title}\" can't be deleted because {itemsUsingCategory} item(s) still use it.");
+                article.CategoryId = 0;
+                await db.UpdateAsync(article);
+            }
+
+            var exercises = await db.Table<Exercise>().Where(e => e.CategoryId == categoryId).ToListAsync();
+
+            foreach (var exercise in exercises)
+            {
+                exercise.CategoryId = 0;
+                await db.UpdateAsync(exercise);
+            }
+
+            var trainers = await db.Table<Trainer>().Where(t => t.CategoryId == categoryId).ToListAsync();
+
+            foreach (var trainer in trainers)
+            {
+                trainer.CategoryId = 0;
+                await db.UpdateAsync(trainer);
+            }
+
+            var workouts = await db.Table<Workout>().Where(w => w.CategoryId == categoryId).ToListAsync();
+
+            foreach (var workout in workouts)
+            {
+                workout.CategoryId = 0;
+                await db.UpdateAsync(workout);
             }
 
             await db.DeleteAsync(category);

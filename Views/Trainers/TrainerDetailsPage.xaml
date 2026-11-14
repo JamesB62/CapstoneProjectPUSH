@@ -63,24 +63,8 @@
                 <Label
                     Text="{Binding Trainer.CategoryTitle, StringFormat='• Specialty: {0}'}"/>
 
-                <Label>
-
-                    <Label.Text>
-
-                        <MultiBinding
-                            StringFormat="• Gym: {0} – {1}">
-
-                            <Binding
-                                Path="Trainer.GymName"/>
-
-                            <Binding
-                                Path="Trainer.GymFullAddress"/>
-
-                        </MultiBinding>
-
-                    </Label.Text>
-
-                </Label>
+                <Label
+                    Text="{Binding Trainer.GymDetailsLabel, StringFormat='• Gym: {0}'}"/>
 
             </VerticalStackLayout>
 

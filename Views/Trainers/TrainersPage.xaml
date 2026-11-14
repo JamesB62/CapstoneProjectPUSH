@@ -211,24 +211,8 @@
                                                 Text="{Binding CategoryTitle, StringFormat='• Specialty: {0}'}"/>
 
                                             <Label
-                                                LineBreakMode="TailTruncation">
-
-                                                <Label.Text>
-
-                                                    <MultiBinding
-                                                        StringFormat="• Gym: {0}, {1}">
-
-                                                        <Binding
-                                                            Path="GymName"/>
-
-                                                        <Binding
-                                                            Path="GymCity"/>
-
-                                                    </MultiBinding>
-
-                                                </Label.Text>
-
-                                            </Label>
+                                                LineBreakMode="TailTruncation"
+                                                Text="{Binding GymLabel, StringFormat='• Gym: {0}'}"/>
 
                                         </VerticalStackLayout>
 

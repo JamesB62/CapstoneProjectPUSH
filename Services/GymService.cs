@@ -118,12 +118,13 @@
                 return (false, "Gym could not be found.");
             }
 
-            // Trainers belong to a gym, so don't orphan them
-            var trainerCount = await db.Table<Trainer>().Where(t => t.GymId == gymId).CountAsync();
+            // Clear the gym from its trainers
+            var trainers = await db.Table<Trainer>().Where(t => t.GymId == gymId).ToListAsync();
 
-            if (trainerCount > 0)
+            foreach (var trainer in trainers)
             {
-                return (false, $"{gym.Name} can't be deleted because {trainerCount} trainer(s) are assigned to it.");
+                trainer.GymId = 0;
+                await db.UpdateAsync(trainer);
             }
 
             var users = await db.Table<User>().Where(u => u.GymId == gymId).ToListAsync();
