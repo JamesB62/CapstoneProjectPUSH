@@ -1,45 +1,36 @@
-﻿using System.Collections.ObjectModel;
-using CapstoneProjectPUSH.Models;
-using CapstoneProjectPUSH.Services;
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-
-namespace CapstoneProjectPUSH.ViewModels.Trainers
+﻿namespace CapstoneProjectPUSH.ViewModels.Trainers
 {
-    public partial class CreateTrainerViewModel : BaseViewModel, IQueryAttributable
+    [QueryProperty(nameof(TrainerId), "TrainerId")]
+    public partial class CreateTrainerViewModel : BaseViewModel
     {
         private readonly CategoryService _categoryService;
         private readonly GymService _gymService;
         private readonly TrainerService _trainerService;
 
-        // Gyms in the same order as GymChoices (the picker items)
-        private List<Gym> _gyms = new();
-
-        // Set when the page is opened to edit an existing trainer
-        private int? _editingTrainerId;
-        private bool _hasLoadedTrainer;
-
-        public CreateTrainerViewModel(
-            CategoryService categoryService,
-            GymService gymService,
-            TrainerService trainerService,
-            UserService userService) : base(userService)
+        public CreateTrainerViewModel(CategoryService categoryService, GymService gymService, TrainerService trainerService, UserService userService) : base(userService)
         {
             _categoryService = categoryService;
             _gymService = gymService;
             _trainerService = trainerService;
         }
 
-        public ObservableCollection<Category> Categories { get; } = new();
+        // Set when the page is opened to edit an existing trainer
+        private bool _hasLoadedTrainer;
 
-        // Picker items shown as "Name (City)"
-        public ObservableCollection<string> GymChoices { get; } = new();
+        // Set when opened to edit a trainer (0 means add a new trainer)
+        [ObservableProperty]
+        public partial int TrainerId { get; set; }
 
         [ObservableProperty]
         public partial string PageTitle { get; set; } = "Create PUSH Trainer";
 
         [ObservableProperty]
         public partial string SaveButtonText { get; set; } = "Save Trainer";
+
+        // Picker items
+        public ObservableCollection<Category> Categories { get; } = new();
+
+        public ObservableCollection<Gym> Gyms { get; } = new();
 
         [ObservableProperty]
         public partial string FirstName { get; set; } = string.Empty;
@@ -63,16 +54,13 @@ namespace CapstoneProjectPUSH.ViewModels.Trainers
         public partial Category? SelectedCategory { get; set; }
 
         [ObservableProperty]
-        public partial int SelectedGymIndex { get; set; } = -1;
+        public partial Gym? SelectedGym { get; set; }
 
-        // Receives TrainerId when opened from the trainers page to edit a trainer so it doesnt crash😛
-        public void ApplyQueryAttributes(IDictionary<string, object> query)
+        // Switch the page into edit mode when a trainer Id arrives
+        partial void OnTrainerIdChanged(int value)
         {
-            if (query.TryGetValue("TrainerId", out var value)
-                && int.TryParse(value?.ToString(), out var trainerId)
-                && trainerId > 0)
+            if (value > 0)
             {
-                _editingTrainerId = trainerId;
                 PageTitle = "Edit PUSH Trainer";
                 SaveButtonText = "Save Changes";
             }
@@ -81,15 +69,16 @@ namespace CapstoneProjectPUSH.ViewModels.Trainers
         [RelayCommand]
         private async Task LoadAsync()
         {
-            IsBusy = true;
+            ErrorMessage = string.Empty;
+
+            if (!await RequireAdminAsync())
+            {
+                return;
+            }
 
             try
             {
-                if (!await EnsureAdminAsync())
-                {
-                    return;
-                }
-
+                // Picker items only need loading once per visit
                 if (Categories.Count == 0)
                 {
                     var categories = await _categoryService.GetCategoriesAsync();
@@ -100,44 +89,128 @@ namespace CapstoneProjectPUSH.ViewModels.Trainers
                     }
                 }
 
-                if (_gyms.Count == 0)
+                if (Gyms.Count == 0)
                 {
-                    _gyms = await _gymService.GetGymsAsync();
+                    var gyms = await _gymService.GetGymsAsync();
 
-                    foreach (var gym in _gyms)
+                    foreach (var gym in gyms)
                     {
-                        GymChoices.Add($"{gym.Name} ({gym.City})");
+                        Gyms.Add(gym);
                     }
                 }
 
-                // Edit mode: fill the form once with the trainer's current details
-                if (_editingTrainerId is int trainerId && !_hasLoadedTrainer)
+                // Add mode, or already filled in
+                if (TrainerId <= 0 || _hasLoadedTrainer)
                 {
-                    var trainer = await _trainerService.GetTrainerByIdAsync(trainerId);
-
-                    if (trainer is null)
-                    {
-                        await Shell.Current.DisplayAlertAsync("Trainer not found", "That trainer no longer exists.", "OK");
-                        await NavigateAsync("..");
-                        return;
-                    }
-
-                    FirstName = trainer.FirstName;
-                    LastName = trainer.LastName;
-                    Email = trainer.Email;
-                    PhoneNumber = trainer.PhoneNumber;
-                    Description = trainer.Description;
-                    Available = trainer.Available;
-                    SelectedCategory = Categories.FirstOrDefault(c => c.Id == trainer.CategoryId);
-                    SelectedGymIndex = _gyms.FindIndex(g => g.Id == trainer.GymId);
-
-                    _hasLoadedTrainer = true;
+                    return;
                 }
+
+                var trainer = await _trainerService.GetTrainerByIdAsync(TrainerId);
+
+                if (trainer is null)
+                {
+                    await Shell.Current.DisplayAlertAsync(
+                        "Trainer Not Found",
+                        "That trainer no longer exists.",
+                        "OK");
+
+                    await NavigateAsync("..");
+                    return;
+                }
+
+                FirstName = trainer.FirstName;
+                LastName = trainer.LastName;
+                Email = trainer.Email;
+                PhoneNumber = trainer.PhoneNumber;
+                Description = trainer.Description;
+                Available = trainer.Available;
+                SelectedCategory = Categories.FirstOrDefault(c => c.Id == trainer.CategoryId);
+                SelectedGym = Gyms.FirstOrDefault(g => g.Id == trainer.GymId);
+
+                _hasLoadedTrainer = true;
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex);
-                StatusMessage = "Something went wrong. Please try again.";
+                ErrorMessage = "Couldn't load the form. Please try again.";
+            }
+        }
+
+        [RelayCommand]
+        private async Task SaveAsync()
+        {
+            if (IsBusy)
+            {
+                return;
+            }
+
+            ErrorMessage = string.Empty;
+
+            if (SelectedCategory is null)
+            {
+                ErrorMessage = "Please choose a specialty for this trainer.";
+                return;
+            }
+
+            if (SelectedGym is null)
+            {
+                ErrorMessage = "Please choose the gym this trainer works at.";
+                return;
+            }
+
+            IsBusy = true;
+
+            try
+            {
+                bool isEditing = TrainerId > 0;
+
+                var trainer = new Trainer
+                {
+                    Id = TrainerId,
+                    FirstName = FirstName,
+                    LastName = LastName,
+                    Email = Email,
+                    PhoneNumber = PhoneNumber,
+                    Description = Description,
+                    Available = Available,
+                    CategoryId = SelectedCategory.Id,
+                    GymId = SelectedGym.Id
+                };
+
+                (bool Success, string Message) result;
+
+                if (isEditing)
+                {
+                    result = await _trainerService.UpdateTrainerAsync(trainer);
+                }
+                else
+                {
+                    result = await _trainerService.AddTrainerAsync(trainer);
+                }
+
+                if (!result.Success)
+                {
+                    ErrorMessage = result.Message;
+                    return;
+                }
+
+                string trainerName = $"{FirstName.Trim()} {LastName.Trim()}";
+
+                if (isEditing)
+                {
+                    await Shell.Current.DisplayAlertAsync("Trainer Updated", $"{trainerName} has been updated.", "OK");
+                }
+                else
+                {
+                    await Shell.Current.DisplayAlertAsync("Trainer Created", $"{trainerName} has been created.", "OK");
+                }
+
+                await NavigateAsync("..");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex);
+                ErrorMessage = "Couldn't save the trainer. Please try again.";
             }
             finally
             {
@@ -146,91 +219,9 @@ namespace CapstoneProjectPUSH.ViewModels.Trainers
         }
 
         [RelayCommand]
-        private async Task SaveAsync()
+        private async Task CancelAsync()
         {
-            StatusMessage = string.Empty;
-
-            if (!await EnsureAdminAsync())
-            {
-                return;
-            }
-
-            if (SelectedCategory is null)
-            {
-                StatusMessage = "Pick a category.";
-                return;
-            }
-
-            if (SelectedGymIndex < 0 || SelectedGymIndex >= _gyms.Count)
-            {
-                StatusMessage = "Pick a gym.";
-                return;
-            }
-
-            IsBusy = true;
-
-            try
-            {
-                var trainer = new Trainer
-                {
-                    Id = _editingTrainerId ?? 0,
-                    FirstName = FirstName,
-                    LastName = LastName,
-                    Email = Email,
-                    PhoneNumber = PhoneNumber,
-                    Description = Description,
-                    Available = Available,
-                    CategoryId = SelectedCategory.Id,
-                    GymId = _gyms[SelectedGymIndex].Id
-                };
-
-                var isEditing = _editingTrainerId is not null;
-
-                var result = isEditing
-                    ? await _trainerService.UpdateTrainerAsync(trainer)
-                    : await _trainerService.AddTrainerAsync(trainer);
-
-                if (!result.Success)
-                {
-                    StatusMessage = result.Message;
-                    return;
-                }
-
-                await Shell.Current.DisplayAlertAsync(isEditing ? "Trainer updated" : "Trainer created", result.Message, "OK");
-                await NavigateAsync("..");
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine(ex);
-                StatusMessage = "Couldn't save the trainer. Please try again.";
-            }
-            finally
-            {
-                IsBusy = false;
-            }
-        }
-
-        // Same access rules as the admin dashboard
-        private async Task<bool> EnsureAdminAsync()
-        {
-            var user = _userService.CurrentUser;
-
-            if (user is null)
-            {
-                // Comment out to disable redirect
-                await NavigateAsync("//LandingPage");
-                return false;
-            }
-
-            if (!user.IsAdmin)
-            {
-                await Shell.Current.DisplayAlertAsync("Access denied", "This page is for administrators only.", "OK");
-                // Comment out to disable redirect
-                await NavigateAsync("..");
-                return false;
-            }
-
-            return true;
+            await NavigateAsync("..");
         }
     }
 }

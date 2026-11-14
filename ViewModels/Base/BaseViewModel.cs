@@ -33,12 +33,14 @@
         public bool IsUnauthenticated => _userService.IsUnauthenticated;
         public bool IsGuest => _userService.IsGuest;
         public bool IsLoggedIn => _userService.IsLoggedIn;
+        public bool IsCurrentUserAdmin => _userService.CurrentUser?.IsAdmin == true;
 
         public void RefreshUserState()
         {
             OnPropertyChanged(nameof(IsUnauthenticated));
             OnPropertyChanged(nameof(IsGuest));
             OnPropertyChanged(nameof(IsLoggedIn));
+            OnPropertyChanged(nameof(IsCurrentUserAdmin));
         }
 
         // Registered account check -- login/register prompt for guests

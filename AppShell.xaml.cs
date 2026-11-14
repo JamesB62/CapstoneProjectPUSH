@@ -18,6 +18,8 @@ namespace CapstoneProjectPUSH
         private readonly string[] _guestRestrictedRoutes =
         {
             nameof(TrainersPage),
+            nameof(TrainerDetailsPage),
+            nameof(CreateTrainerPage),
             nameof(CommunityWorkoutsPage)
         };
 

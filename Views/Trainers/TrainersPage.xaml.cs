@@ -15,6 +15,23 @@ public partial class TrainersPage : ContentPage
 	protected override void OnAppearing()
 	{
 		base.OnAppearing();
-		_trainersViewModel.LoadTrainersCommand.Execute(null);
+
+        UpdateToolbar();
+
+        _trainersViewModel.LoadTrainersCommand.Execute(null);
 	}
+
+    private void UpdateToolbar()
+    {
+        bool isAdmin = _trainersViewModel.IsCurrentUserAdmin;
+
+        if (isAdmin && !ToolbarItems.Contains(AddTrainerToolbarItem))
+        {
+            ToolbarItems.Add(AddTrainerToolbarItem);
+        }
+        else if (!isAdmin)
+        {
+            ToolbarItems.Remove(AddTrainerToolbarItem);
+        }
+    }
 }

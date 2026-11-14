@@ -10,11 +10,10 @@
 
         <VerticalStackLayout
             MaximumWidthRequest="500"
-            Padding="30,15"
+            Padding="30"
             Spacing="15">
 
             <Border
-                Grid.Column="0"
                 HeightRequest="100"
                 HorizontalOptions="Center"
                 StrokeShape="Ellipse"
@@ -109,9 +108,15 @@
                     Text="Email"/>
 
             </VerticalStackLayout>
-            
+
+            <!-- Error message -->
+            <Label
+                IsVisible="{Binding HasErrorMessage}"
+                Text="{Binding ErrorMessage}"
+                TextColor="Red"/>
+
         </VerticalStackLayout>
-        
+
     </ScrollView>
 
 </ContentPage>

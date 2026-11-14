@@ -12,7 +12,7 @@
         <VerticalStackLayout
             MaximumWidthRequest="500"
             Padding="30"
-            Spacing="15">
+            Spacing="20">
 
             <!-- Profile image -->
             <Border

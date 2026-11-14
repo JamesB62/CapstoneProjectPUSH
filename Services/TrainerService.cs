@@ -242,6 +242,11 @@
                 return "Phone number must be 20 characters or fewer.";
             }
 
+            if (trainer.Email.Length == 0 && trainer.PhoneNumber.Length == 0)
+            {
+                return "Please enter an email address or phone number (or both).";
+            }
+
             if (trainer.Description.Length > 1000)
             {
                 return "Description must be 1000 characters or fewer.";

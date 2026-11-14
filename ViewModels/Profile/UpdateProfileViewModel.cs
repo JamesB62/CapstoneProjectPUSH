@@ -140,7 +140,7 @@
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex);
-                StatusMessage = "Couldn't load gyms.";
+                StatusMessage = "Couldn't load gyms. Please try again.";
             }
         }
     }
