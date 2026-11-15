@@ -11,9 +11,10 @@
 
         <VerticalStackLayout
             MaximumWidthRequest="500"
-            Padding="30,15"
-            Spacing="15">
+            Padding="30"
+            Spacing="20">
 
+            <!-- Profile image -->
             <Border
                 HeightRequest="100"
                 HorizontalOptions="Center"
@@ -27,9 +28,9 @@
 
             </Border>
 
+            <!-- Profile details -->
             <VerticalStackLayout
                 HorizontalOptions="Center"
-                Margin="0,0,0,10"
                 Spacing="5">
 
                 <Label
@@ -42,92 +43,16 @@
                     HorizontalOptions="Center"
                     Text="{Binding Email}"/>
 
-            </VerticalStackLayout>
-
-            <!-- My gyms -->
-            <VerticalStackLayout
-                Spacing="10">
-
                 <Label
-                    FontAttributes="Bold"
-                    FontSize="16"
-                    Text="My Gyms"/>
-
-                <!-- Gyms not linked yet -->
-                <Grid
-                    ColumnDefinitions="*,Auto"
-                    ColumnSpacing="10"
-                    IsVisible="{Binding HasGymChoices}">
-
-                    <Picker
-                        Grid.Column="0"
-                        ItemsSource="{Binding GymChoices}"
-                        SelectedIndex="{Binding SelectedGymIndex}"
-                        Title="Choose a gym"/>
-
-                    <Button
-                        Grid.Column="1"
-                        Command="{Binding AddGymCommand}"
-                        Text="Add"/>
-
-                </Grid>
-
-                <Label
-                    IsVisible="{Binding HasStatusMessage}"
-                    Text="{Binding StatusMessage}"/>
-
-                <Label
-                    IsVisible="{Binding HasNoGyms}"
-                    Text="You haven't added any gyms yet."/>
-
-                <!-- Linked gyms -->
-                <VerticalStackLayout
-                    BindableLayout.ItemsSource="{Binding MyGyms}"
-                    Spacing="10">
-
-                    <BindableLayout.ItemTemplate>
-                        <DataTemplate x:DataType="models:Gym">
-
-                            <Border Style="{StaticResource Card}">
-
-                                <Grid
-                                    ColumnDefinitions="*,Auto"
-                                    ColumnSpacing="10">
-
-                                    <VerticalStackLayout
-                                        Grid.Column="0"
-                                        Spacing="2"
-                                        VerticalOptions="Center">
-
-                                        <Label
-                                            FontAttributes="Bold"
-                                            Text="{Binding Name}"/>
-
-                                        <Label
-                                            FontSize="12"
-                                            Text="{Binding FullAddress}"/>
-
-                                    </VerticalStackLayout>
-
-                                    <Button
-                                        Grid.Column="1"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ProfileViewModel}}, Path=RemoveGymCommand}"
-                                        CommandParameter="{Binding .}"
-                                        Text="Remove"/>
-
-                                </Grid>
-
-                            </Border>
-
-                        </DataTemplate>
-                    </BindableLayout.ItemTemplate>
-
-                </VerticalStackLayout>
-
+                    HorizontalOptions="Center"
+                    IsVisible="{Binding HasFavouriteGym}"
+                    Text="{Binding FavouriteGymText, StringFormat='Favourite gym: {0}'}"/>
+                
             </VerticalStackLayout>
 
             <!-- Buttons -->
             <VerticalStackLayout
+                Margin="0,10,0,0"
                 Spacing="10">
 
                 <Button
@@ -148,10 +73,22 @@
                     Text="Admin Dashboard"/>
 
                 <Button
+                    Command="{Binding DeleteAccountCommand}"
+                    IsEnabled="{Binding IsNotBusy}"
+                    IsVisible="{Binding CanDeleteAccount}"
+                    Text="Delete Account"/>
+
+                <Button
                     Command="{Binding LogoutCommand}"
                     Text="Logout"/>
 
             </VerticalStackLayout>
+
+            <!-- Error message -->
+            <Label
+                IsVisible="{Binding HasErrorMessage}"
+                Text="{Binding ErrorMessage}"
+                TextColor="Red"/>
 
             <!-- Privacy statement link -->
             <Label
@@ -161,7 +98,7 @@
                 <Label.GestureRecognizers>
 
                     <TapGestureRecognizer
-                       Command="{Binding GoToPrivacyCommand}"/>
+                        Command="{Binding GoToPrivacyCommand}"/>
 
                 </Label.GestureRecognizers>
 

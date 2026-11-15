@@ -10,8 +10,8 @@
 
         <VerticalStackLayout
             MaximumWidthRequest="500"
-            Padding="30,15"
-            Spacing="15">
+            Padding="30"
+            Spacing="20">
 
             <!-- Placeholder image -->
             <Border
@@ -58,8 +58,7 @@
                 Text="{Binding Exercise.Description}"/>
 
             <Label
-                FontAttributes="Italic"
-                Text="{Binding Exercise.DifficultyLabel, StringFormat='•  Difficulty: {0}'}"/>
+                Text="{Binding Exercise.DifficultyLabel, StringFormat='• Difficulty: {0}'}"/>
 
             <!-- Add recommended reps/duration? -->
             

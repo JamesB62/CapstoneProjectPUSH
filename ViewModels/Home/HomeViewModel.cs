@@ -6,7 +6,7 @@
         private readonly WeightLogService _weightLogService;
         private readonly WorkoutService _workoutService;
 
-        public HomeViewModel(ArticleService articleService,WorkoutService workoutService,WeightLogService weightLogService,UserService userService) : base(userService)
+        public HomeViewModel(ArticleService articleService, WorkoutService workoutService, WeightLogService weightLogService, UserService userService) : base(userService)
         {
             _articleService = articleService;
             _workoutService = workoutService;
@@ -32,22 +32,20 @@
         [RelayCommand]
         private async Task LoadHomeAsync()
         {
-            IsBusy = true;
-            
-            RefreshUserState();
+            ErrorMessage = string.Empty;
 
+            var user = _userService.CurrentUser;
+
+            // AppShell sends signed-out users to the landing page
+            if (user is null)
+            {
+                return;
+            }
+
+            IsBusy = true;
 
             try
             {
-                var user = _userService.CurrentUser;
-
-                if (user is null)
-                {
-                    // Comment out to disable redirect
-                    await NavigateAsync("//LandingPage");
-                    return;
-                }
-
                 var articles = await _articleService.GetArticlesAsync();
 
                 List<Article> randomArticles = articles
@@ -75,17 +73,18 @@
                 {
                     FeaturedWorkouts.Add(workout);
                 }
-
-                await CheckWeighInPromptAsync();
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex);
+                ErrorMessage = "Couldn't load your home page. Please try again.";
             }
             finally
             {
                 IsBusy = false;
             }
+
+            await CheckWeighInPromptAsync();
         }
 
         partial void OnSelectedWorkoutChanged(Workout? value)
@@ -132,15 +131,13 @@
             await NavigateAsync($"{nameof(ArticleDetailsPage)}?ArticleId={article.Id}");
         }
 
-        // Add weigh in value
-        [RelayCommand]
-        public async Task CheckWeighInPromptAsync()
+        private async Task CheckWeighInPromptAsync()
         {
             var user = _userService.CurrentUser;
 
-            if (user is null)
+            // Guests don't record weigh-ins
+            if (user is null || user.IsGuest)
             {
-                await NavigateAsync("//LandingPage");
                 return;
             }
 
@@ -170,24 +167,15 @@
 
             Preferences.Default.Set(key, DateTime.Now);
 
-            await AddWeighInAsync();
+            await AddWeighInAsync(user.Id);
         }
 
-        // Add weigh in value
-        [RelayCommand]
-        private async Task AddWeighInAsync()
+        private async Task AddWeighInAsync(int userId)
         {
-            var user = _userService.CurrentUser;
+            ErrorMessage = string.Empty;
 
-            if (user is null)
-            {
-                await NavigateAsync("//LandingPage");
-                return;
-            }
-
-            // Value prompt
             string? result = await Shell.Current.DisplayPromptAsync(
-                "Weigh-in",
+                "Add Weigh-In",
                 "Enter today's weight in kg. This replaces any weigh-in already saved today.",
                 "Save",
                 "Cancel",
@@ -201,33 +189,25 @@
 
             if (!double.TryParse(result.Trim(), out double weightKg))
             {
-                await Shell.Current.DisplayAlertAsync("Invalid weight", "Please enter a number, e.g. 72.5", "OK");
+                ErrorMessage = "Please enter your weight as a number, e.g. 72.5.";
                 return;
             }
 
             if (weightKg < MinWeightKg || weightKg > MaxWeightKg)
             {
-                await Shell.Current.DisplayAlertAsync("Invalid weight", $"Weight must be between {MinWeightKg} and {MaxWeightKg} kg.", "OK");
+                ErrorMessage = $"Please enter a weight between {MinWeightKg} and {MaxWeightKg} kg.";
                 return;
             }
 
             try
             {
-                await _weightLogService.SaveWeightForTodayAsync(user.Id, Math.Round(weightKg, 1));
-                //await LoadStatsAsync();
+                await _weightLogService.SaveWeightForTodayAsync(userId, Math.Round(weightKg, 1));
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex);
-                await Shell.Current.DisplayAlertAsync("Weigh-in failed", "Your weigh-in could not be saved. Please try again.", "OK");
+                ErrorMessage = "Couldn't save your weigh-in. Please try again.";
             }
         }
-        [RelayCommand]
-        private async Task GoToLoginAsync() => await NavigateAsync(nameof(LoginPage));
-
-        [RelayCommand]
-        private async Task GoToRegisterAsync() => await NavigateAsync(nameof(RegisterPage));
-
-
     }
 }

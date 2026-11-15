@@ -1,38 +1,41 @@
-﻿using System.Collections.ObjectModel;
-using CapstoneProjectPUSH.Models;
-using CapstoneProjectPUSH.Services;
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-
-namespace CapstoneProjectPUSH.ViewModels.Admin
+﻿namespace CapstoneProjectPUSH.ViewModels.Admin
 {
     public partial class UserManagementViewModel : BaseViewModel
     {
-        private readonly UserService _userService;
-        private List<User> _allUsers = new();
-
-        public UserManagementViewModel(UserService userService)
+        public UserManagementViewModel(UserService userService) : base(userService)
         {
-            _userService = userService;
-
-            SearchText = string.Empty;
-            CountText = string.Empty;
         }
+
+        private List<User> _allUsers = new();
 
         public ObservableCollection<User> Users { get; } = new();
 
         [ObservableProperty]
-        public partial string SearchText { get; set; }
+        public partial string SearchText { get; set; } = string.Empty;
 
         [ObservableProperty]
-        public partial string CountText { get; set; }
+        public partial bool ShowActiveOnly { get; set; }
 
-        partial void OnSearchTextChanged(string value) => ApplyFilter();
+        partial void OnSearchTextChanged(string value)
+        {
+            ApplyFilter();
+        }
+
+        partial void OnShowActiveOnlyChanged(bool value)
+        {
+            ApplyFilter();
+        }
 
         [RelayCommand]
         private async Task LoadAsync()
         {
-            StatusMessage = string.Empty;
+            ErrorMessage = string.Empty;
+
+            if (!await RequireAdminAsync())
+            {
+                return;
+            }
+
             await RefreshAsync();
         }
 
@@ -40,17 +43,19 @@ namespace CapstoneProjectPUSH.ViewModels.Admin
         [RelayCommand]
         private async Task ToggleActiveAsync(User? user)
         {
-            if (user is null || !await EnsureAdminAsync())
+            if (user is null)
             {
                 return;
             }
+
+            ErrorMessage = string.Empty;
 
             var activate = !user.IsActive;
 
             if (!activate)
             {
                 var confirmed = await Shell.Current.DisplayAlertAsync(
-                    "Deactivate account",
+                    "Deactivate Account",
                     $"Deactivate {user.DisplayName}? They won't be able to sign in until the account is reactivated.",
                     "Deactivate",
                     "Cancel");
@@ -64,17 +69,20 @@ namespace CapstoneProjectPUSH.ViewModels.Admin
             try
             {
                 var result = await _userService.SetUserActiveStatusAsync(user.Id, activate);
-                StatusMessage = result.Message;
 
                 if (result.Success)
                 {
-                    await RefreshAsync();
+                    await LoadCommand.ExecuteAsync(null);
+                }
+                else
+                {
+                    ErrorMessage = result.Message;
                 }
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex);
-                StatusMessage = "Couldn't update that account.";
+                ErrorMessage = "Couldn't update that account. Please try again.";
             }
         }
 
@@ -84,18 +92,13 @@ namespace CapstoneProjectPUSH.ViewModels.Admin
 
             try
             {
-                if (!await EnsureAdminAsync())
-                {
-                    return;
-                }
-
                 _allUsers = await _userService.GetUsersAsync();
                 ApplyFilter();
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex);
-                StatusMessage = "Couldn't load users. Pull down to try again.";
+                ErrorMessage = "Couldn't load users. Pull down to try again.";
             }
             finally
             {
@@ -105,45 +108,47 @@ namespace CapstoneProjectPUSH.ViewModels.Admin
 
         private void ApplyFilter()
         {
-            var term = (SearchText ?? string.Empty).Trim();
+            string term = string.Empty;
 
-            var filtered = string.IsNullOrEmpty(term)
-                ? _allUsers
-                : _allUsers
+            if (SearchText is not null)
+            {
+                term = SearchText.Trim();
+            }
+
+            List<User> filtered;
+
+            if (term.Length == 0)
+            {
+                filtered = _allUsers;
+            }
+            else
+            {
+                filtered = _allUsers
                     .Where(u => u.DisplayName.Contains(term, StringComparison.OrdinalIgnoreCase)
                              || u.Email.Contains(term, StringComparison.OrdinalIgnoreCase))
                     .ToList();
+            }
+
+            if (ShowActiveOnly)
+            {
+                filtered = filtered.Where(u => u.IsActive).ToList();
+            }
 
             Users.Clear();
+
             foreach (var user in filtered)
             {
                 Users.Add(user);
             }
 
-            CountText = filtered.Count == _allUsers.Count
-                ? $"{_allUsers.Count} users"
-                : $"{filtered.Count} of {_allUsers.Count} users";
-        }
-
-        // Same access rules as the dashboard
-        private async Task<bool> EnsureAdminAsync()
-        {
-            var user = _userService.CurrentUser;
-
-            if (user is null)
+            if (filtered.Count == 1)
             {
-                await NavigateAsync("//LandingPage");
-                return false;
+                StatusMessage = "Showing 1 user.";
             }
-
-            if (!user.IsAdmin)
+            else
             {
-                await Shell.Current.DisplayAlertAsync("Access denied", "This page is for administrators only.", "OK");
-                await NavigateAsync("..");
-                return false;
+                StatusMessage = $"Showing {filtered.Count} users.";
             }
-
-            return true;
         }
     }
 }

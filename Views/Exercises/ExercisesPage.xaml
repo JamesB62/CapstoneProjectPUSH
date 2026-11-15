@@ -7,38 +7,52 @@
              x:DataType="vm:ExercisesViewModel"
              Title="PUSH Exercises">
 
+    <ContentPage.ToolbarItems>
+
+        <ToolbarItem
+            x:Name="AddExerciseToolbarItem"
+            Command="{Binding AddExerciseCommand}"
+            Text="+ Add"/>
+
+    </ContentPage.ToolbarItems>
+
     <Grid
         MaximumWidthRequest="500"
-        Padding="30,15"
-        RowDefinitions="Auto,*"
-        RowSpacing="15">
+        Padding="30,15,30,0"
+        RowDefinitions="Auto,Auto,*"
+        RowSpacing="20">
+
+        <!-- Search bar -->
+        <SearchBar
+            Grid.Row="0"
+            Placeholder="Search by title or category..."
+            Text="{Binding SearchText}"/>
 
         <VerticalStackLayout
-            Grid.Row="0"
-            Spacing="10">
+            Grid.Row="1"
+            Spacing="15">
 
-            <!-- Category picker -->
-            <Picker
-                ItemDisplayBinding="{Binding Title, x:DataType=models:Category}"
-                ItemsSource="{Binding Categories}"
-                SelectedItem="{Binding SelectedCategory}"
-                Title="Filter by category"/>
-
+            <!-- Status message -->
             <Label
-                FontAttributes="Italic"
                 Text="{Binding StatusMessage}"/>
+
+            <!-- Error message -->
+            <Label
+                IsVisible="{Binding HasErrorMessage}"
+                Text="{Binding ErrorMessage}"
+                TextColor="Red"/>
 
         </VerticalStackLayout>
 
         <RefreshView
             Command="{Binding LoadExercisesCommand}"
-            Grid.Row="1"
+            Grid.Row="2"
             IsRefreshing="{Binding IsBusy}">
 
             <CollectionView
                 ItemsSource="{Binding Exercises}"
-                SelectionMode="Single"
-                SelectedItem="{Binding SelectedExercise, Mode=TwoWay}">
+                SelectedItem="{Binding SelectedExercise, Mode=TwoWay}"
+                SelectionMode="Single">
 
                 <!-- Empty view -->
                 <CollectionView.EmptyView>
@@ -76,54 +90,86 @@
                     <DataTemplate
                         x:DataType="models:Exercise">
 
-                        <Border
-                            Style="{StaticResource Card}">
+                        <SwipeView>
 
-                            <VerticalStackLayout
-                                Spacing="10">
+                            <!-- Swipe actions (admins only) -->
+                            <SwipeView.LeftItems>
 
-                                <Grid
-                                    ColumnDefinitions="*,auto"
-                                    ColumnSpacing="10">
+                                <SwipeItems>
 
-                                    <Label
-                                        FontAttributes="Bold"
-                                        FontSize="16"
-                                        Grid.Column="0"
-                                        LineBreakMode="TailTruncation"
-                                        Text="{Binding Title}"
-                                        VerticalOptions="Center"/>
+                                    <SwipeItem
+                                        BackgroundColor="#6B7280"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ExercisesViewModel}}, Path=EditExerciseCommand}"
+                                        CommandParameter="{Binding .}"
+                                        IsVisible="{Binding Source={RelativeSource AncestorType={x:Type vm:ExercisesViewModel}}, Path=IsCurrentUserAdmin}"
+                                        Text="Edit"/>
 
-                                    <Border
-                                        Grid.Column="1"
-                                        Style="{StaticResource Pill}">
+                                </SwipeItems>
 
-                                        <Label
-                                            FontSize="12"
-                                            Text="{Binding CategoryTitle}"/>
+                            </SwipeView.LeftItems>
 
-                                    </Border>
+                            <SwipeView.RightItems>
 
-                                </Grid>
+                                <SwipeItems>
+
+                                    <SwipeItem
+                                        BackgroundColor="Red"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ExercisesViewModel}}, Path=DeleteExerciseCommand}"
+                                        CommandParameter="{Binding .}"
+                                        IsVisible="{Binding Source={RelativeSource AncestorType={x:Type vm:ExercisesViewModel}}, Path=IsCurrentUserAdmin}"
+                                        Text="Delete"/>
+
+                                </SwipeItems>
+
+                            </SwipeView.RightItems>
+
+                            <!-- Card -->
+                            <Border
+                                Style="{StaticResource Card}">
 
                                 <VerticalStackLayout
                                     Spacing="10">
 
+                                    <Grid
+                                        ColumnDefinitions="*,auto"
+                                        ColumnSpacing="10">
+
+                                        <Label
+                                            FontAttributes="Bold"
+                                            FontSize="16"
+                                            Grid.Column="0"
+                                            LineBreakMode="TailTruncation"
+                                            Text="{Binding Title}"
+                                            VerticalOptions="Center"/>
+
+                                        <Border
+                                            Grid.Column="1"
+                                            Style="{StaticResource Pill}">
+
+                                            <Label
+                                                FontSize="12"
+                                                LineBreakMode="TailTruncation"
+                                                Text="{Binding CategoryTitle}"/>
+
+                                        </Border>
+
+                                    </Grid>
+
+                                    <!-- Description -->
                                     <Label
                                         LineBreakMode="TailTruncation"
                                         MaxLines="2"
                                         Text="{Binding Description}"/>
 
+                                    <!-- Info -->
                                     <Label
-                                        FontAttributes="Italic"
-                                        FontSize="12"
                                         Text="{Binding DifficultyLabel, StringFormat='• Difficulty: {0}'}"/>
 
                                 </VerticalStackLayout>
 
-                            </VerticalStackLayout>
-
-                        </Border>
+                            </Border>
+                            
+                        </SwipeView>
 
                     </DataTemplate>
 

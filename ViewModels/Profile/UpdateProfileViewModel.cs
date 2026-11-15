@@ -2,11 +2,11 @@
 {
     public partial class UpdateProfileViewModel : BaseViewModel
     {
+        private readonly GymService _gymService;
 
-
-        public UpdateProfileViewModel(UserService userService) : base(userService)
+        public UpdateProfileViewModel(GymService gymService, UserService userService) : base(userService)
         {
-
+            _gymService = gymService;
         }
 
         [ObservableProperty]
@@ -24,6 +24,15 @@
         [ObservableProperty]
         public partial string ConfirmPassword { get; set; } = string.Empty;
 
+        [ObservableProperty]
+        public partial ObservableCollection<Gym> Gyms { get; set; } = new();
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(HasSelectedGym))]
+        public partial Gym? SelectedGym { get; set; }
+
+        public bool HasSelectedGym => SelectedGym is not null;
+
         public string PasswordRequirements => UserService.PasswordRequirementsText;
 
         [RelayCommand]
@@ -31,20 +40,20 @@
         {
             var user = _userService.CurrentUser;
 
-            if (user != null)
+            if (user is null || user.IsGuest)
             {
-                DisplayName = user.DisplayName;
-                Email = user.Email;
-                CurrentPassword = string.Empty;
-                NewPassword = string.Empty;
-                ConfirmPassword = string.Empty;
-                StatusMessage = string.Empty;
+                await NavigateAsync("..");
+                return;
             }
-            else
-            {
-                // Comment out to disable redirect
-                await NavigateAsync("//LandingPage");
-            }
+
+            DisplayName = user.DisplayName;
+            Email = user.Email;
+            CurrentPassword = string.Empty;
+            NewPassword = string.Empty;
+            ConfirmPassword = string.Empty;
+            ErrorMessage = string.Empty;
+
+            await LoadGymsAsync(user.GymId);
         }
 
         [RelayCommand]
@@ -56,15 +65,22 @@
             }
 
             IsBusy = true;
-            StatusMessage = string.Empty;
+            ErrorMessage = string.Empty;
 
             try
             {
-                var result = await _userService.UpdateDetailsAsync(DisplayName, Email, CurrentPassword, NewPassword, ConfirmPassword);
+                int? gymId = null;
+
+                if (SelectedGym is not null)
+                {
+                    gymId = SelectedGym.Id;
+                }
+
+                var result = await _userService.UpdateDetailsAsync(DisplayName, Email, CurrentPassword, NewPassword, ConfirmPassword, gymId);
 
                 if (!result.Success)
                 {
-                    StatusMessage = result.Message;
+                    ErrorMessage = result.Message;
                     return;
                 }
 
@@ -74,13 +90,13 @@
 
                 IsBusy = false;
 
-                await Shell.Current.DisplayAlertAsync("Update Successful", "Your PUSH account details have been updated.", "OK");
+                await Shell.Current.DisplayAlertAsync("Details Updated", "Your PUSH account details have been updated.", "OK");
                 await NavigateAsync("..");
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex);
-                StatusMessage = "Something went wrong. Please try again.";
+                ErrorMessage = "Something went wrong. Please try again.";
             }
             finally
             {
@@ -97,6 +113,35 @@
             }
 
             await NavigateAsync("..");
+        }
+
+        [RelayCommand]
+        private void ClearGym()
+        {
+            SelectedGym = null;
+        }
+
+        private async Task LoadGymsAsync(int? gymId)
+        {
+            try
+            {
+                var gyms = await _gymService.GetGymsAsync();
+
+                Gym? favourite = null;
+
+                if (gymId is not null)
+                {
+                    favourite = gyms.FirstOrDefault(g => g.Id == gymId.Value);
+                }
+
+                Gyms = new ObservableCollection<Gym>(gyms);
+                SelectedGym = favourite;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex);
+                StatusMessage = "Couldn't load gyms. Please try again.";
+            }
         }
     }
 }

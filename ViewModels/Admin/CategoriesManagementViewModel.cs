@@ -1,109 +1,122 @@
-﻿using System.Collections.ObjectModel;
-using CapstoneProjectPUSH.Models;
-using CapstoneProjectPUSH.Services;
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-
-namespace CapstoneProjectPUSH.ViewModels.Admin
+﻿namespace CapstoneProjectPUSH.ViewModels.Admin
 {
     public partial class CategoriesManagementViewModel : BaseViewModel
     {
         private readonly CategoryService _categoryService;
-        private readonly UserService _userService;
 
-        // Id of the category being renamed, or null when adding a new one
-        private int? _editingId;
-
-        public CategoriesManagementViewModel(CategoryService categoryService, UserService userService)
+        public CategoriesManagementViewModel(CategoryService categoryService, UserService userService) : base(userService)
         {
             _categoryService = categoryService;
-            _userService = userService;
-
-            TitleInput = string.Empty;
-            SaveButtonText = "Add category";
         }
+
+        private List<Category> _allCategories = new();
 
         public ObservableCollection<Category> Categories { get; } = new();
 
         [ObservableProperty]
-        public partial string TitleInput { get; set; }
+        public partial string SearchText { get; set; } = string.Empty;
 
-        [ObservableProperty]
-        public partial string SaveButtonText { get; set; }
-
-        [ObservableProperty]
-        public partial bool IsEditing { get; set; }
+        partial void OnSearchTextChanged(string value)
+        {
+            ApplyFilter();
+        }
 
         [RelayCommand]
         private async Task LoadAsync()
         {
-            StatusMessage = string.Empty;
+            ErrorMessage = string.Empty;
+
+            if (!await RequireAdminAsync())
+            {
+                return;
+            }
+
             await RefreshAsync();
         }
 
+        // Add a category through a popup
         [RelayCommand]
-        private async Task SaveAsync()
+        private async Task AddAsync()
         {
-            if (!await EnsureAdminAsync())
+            ErrorMessage = string.Empty;
+
+            var title = await PromptForTitleAsync("Add Category", "Add", string.Empty);
+
+            if (title is null)
             {
                 return;
             }
 
             try
             {
-                var (success, message) = _editingId is int id
-                    ? await _categoryService.UpdateCategoryAsync(id, TitleInput)
-                    : await _categoryService.AddCategoryAsync(TitleInput);
+                var result = await _categoryService.AddCategoryAsync(title);
 
-                StatusMessage = message;
-
-                if (!success)
+                if (result.Success)
                 {
-                    return;
+                    await LoadCommand.ExecuteAsync(null);
                 }
-
-                ResetForm();
-                await RefreshAsync();
+                else
+                {
+                    ErrorMessage = result.Message;
+                }
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex);
-                StatusMessage = "Couldn't save the category.";
+                ErrorMessage = "Couldn't add the category. Please try again.";
             }
         }
 
+        // Rename a category through a popup
         [RelayCommand]
-        private void Edit(Category? category)
+        private async Task EditAsync(Category? category)
         {
             if (category is null)
             {
                 return;
             }
 
-            _editingId = category.Id;
-            TitleInput = category.Title;
-            SaveButtonText = "Save changes";
-            IsEditing = true;
-            StatusMessage = string.Empty;
-        }
+            ErrorMessage = string.Empty;
 
-        [RelayCommand]
-        private void CancelEdit()
-        {
-            ResetForm();
-            StatusMessage = string.Empty;
+            var title = await PromptForTitleAsync("Edit Category", "Save", category.Title);
+
+            if (title is null || title.Trim() == category.Title)
+            {
+                return;
+            }
+
+            try
+            {
+                var result = await _categoryService.UpdateCategoryAsync(category.Id, title);
+
+                if (result.Success)
+                {
+                    await LoadCommand.ExecuteAsync(null);
+                }
+                else
+                {
+                    ErrorMessage = result.Message;
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex);
+                ErrorMessage = "Couldn't update the category. Please try again.";
+            }
         }
 
         [RelayCommand]
         private async Task DeleteAsync(Category? category)
         {
-            if (category is null || !await EnsureAdminAsync())
+            if (category is null)
             {
                 return;
             }
 
-            var confirmed = await Shell.Current.DisplayAlertAsync(
-                "Delete category",
+            ErrorMessage = string.Empty;
+
+            bool confirmed = await Shell.Current.DisplayAlertAsync(
+                "Delete Category",
                 $"Delete \"{category.Title}\"? This can't be undone.",
                 "Delete",
                 "Cancel");
@@ -115,51 +128,36 @@ namespace CapstoneProjectPUSH.ViewModels.Admin
 
             try
             {
-                var (success, message) = await _categoryService.DeleteCategoryAsync(category.Id);
-                StatusMessage = message;
+                var result = await _categoryService.DeleteCategoryAsync(category.Id);
 
-                if (!success)
+                if (result.Success)
                 {
-                    return;
+                    await LoadCommand.ExecuteAsync(null);
                 }
-
-                if (_editingId == category.Id)
+                else
                 {
-                    ResetForm();
+                    ErrorMessage = result.Message;
                 }
-
-                await RefreshAsync();
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex);
-                StatusMessage = "Couldn't delete the category.";
+                ErrorMessage = "Couldn't delete the category. Please try again.";
             }
         }
-
         private async Task RefreshAsync()
         {
             IsBusy = true;
 
             try
             {
-                if (!await EnsureAdminAsync())
-                {
-                    return;
-                }
-
-                var categories = await _categoryService.GetCategoriesAsync();
-
-                Categories.Clear();
-                foreach (var category in categories)
-                {
-                    Categories.Add(category);
-                }
+                _allCategories = await _categoryService.GetCategoriesAsync();
+                ApplyFilter();
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex);
-                StatusMessage = "Couldn't load categories. Pull down to try again.";
+                ErrorMessage = "Couldn't load categories. Pull down to try again.";
             }
             finally
             {
@@ -167,33 +165,56 @@ namespace CapstoneProjectPUSH.ViewModels.Admin
             }
         }
 
-        private void ResetForm()
+        private void ApplyFilter()
         {
-            _editingId = null;
-            TitleInput = string.Empty;
-            SaveButtonText = "Add category";
-            IsEditing = false;
+            string term = string.Empty;
+
+            if (SearchText is not null)
+            {
+                term = SearchText.Trim();
+            }
+
+            List<Category> filtered;
+
+            if (term.Length == 0)
+            {
+                filtered = _allCategories;
+            }
+            else
+            {
+                filtered = _allCategories
+                    .Where(c => c.Title.Contains(term, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+            }
+
+            Categories.Clear();
+
+            foreach (var category in filtered)
+            {
+                Categories.Add(category);
+            }
+
+            if (filtered.Count == 1)
+            {
+                StatusMessage = "Showing 1 category.";
+            }
+            else
+            {
+                StatusMessage = $"Showing {filtered.Count} categories.";
+            }
         }
 
-        // Same access rules as the dashboard
-        private async Task<bool> EnsureAdminAsync()
+        // Shared popup for add and edit
+        private static async Task<string?> PromptForTitleAsync(string title, string accept, string initialValue)
         {
-            var user = _userService.CurrentUser;
-
-            if (user is null)
-            {
-                await NavigateAsync("//LandingPage");
-                return false;
-            }
-
-            if (!user.IsAdmin)
-            {
-                await Shell.Current.DisplayAlertAsync("Access denied", "This page is for administrators only.", "OK");
-                await NavigateAsync("..");
-                return false;
-            }
-
-            return true;
+            return await Shell.Current.DisplayPromptAsync(
+                title,
+                "Category title (2 to 50 characters)",
+                accept: accept,
+                cancel: "Cancel",
+                placeholder: "Enter category title here...",
+                maxLength: 50,
+                initialValue: initialValue);
         }
     }
 }

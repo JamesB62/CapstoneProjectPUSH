@@ -10,7 +10,7 @@
         MaximumWidthRequest="500"
         Padding="30,15"
         RowDefinitions="Auto,Auto,*,Auto"
-        RowSpacing="15">
+        RowSpacing="20">
 
         <!-- Workout title and timer -->
         <VerticalStackLayout
@@ -103,7 +103,7 @@
 
                             <VerticalStackLayout
                                 Grid.Column="1"
-                                Spacing="5">
+                                Spacing="3">
 
                                 <Label
                                     FontAttributes="Bold"
@@ -112,8 +112,6 @@
                                     Text="{Binding WorkoutExercise.ExerciseTitle}"/>
 
                                 <Label
-                                    FontAttributes="Italic"
-                                    FontSize="12"
                                     Text="{Binding WorkoutExercise.TargetText}"/>
 
                             </VerticalStackLayout>
@@ -139,12 +137,11 @@
             Grid.Row="3"
             Spacing="10">
 
+            <!-- Error message -->
             <Label
-                FontAttributes="Italic"
-                FontSize="12"
-                HorizontalTextAlignment="Center"
-                IsVisible="{Binding HasStatusMessage}"
-                Text="{Binding StatusMessage}"/>
+                IsVisible="{Binding HasErrorMessage}"
+                Text="{Binding ErrorMessage}"
+                TextColor="Red"/>
 
             <Button
                 Command="{Binding FinishWorkoutCommand}"

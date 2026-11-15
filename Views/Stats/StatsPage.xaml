@@ -15,8 +15,8 @@
 
             <VerticalStackLayout
                 MaximumWidthRequest="500"
-                Padding="30,15"
-                Spacing="15">
+                Padding="30"
+                Spacing="20">
 
                 <!-- Time filters -->
                 <Grid
@@ -263,6 +263,12 @@
                     </VerticalStackLayout>
 
                 </Border>
+
+                <!-- Error message -->
+                <Label
+                    IsVisible="{Binding HasErrorMessage}"
+                    Text="{Binding ErrorMessage}"
+                    TextColor="Red"/>
 
                 <Button
                     Command="{Binding AddWeighInCommand}"

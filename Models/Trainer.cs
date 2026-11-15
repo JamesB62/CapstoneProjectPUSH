@@ -53,8 +53,13 @@
         [Ignore]
         public string GymFullAddress => $"{GymAddress}, {GymCity}";
 
-        // True when this trainer's gym is one the signed-in user has linked (set by TrainerService.GetTrainersForUserAsync)
         [Ignore]
-        public bool IsAtLinkedGym { get; set; }
+        public string GymLabel => string.IsNullOrEmpty(GymCity) ? GymName : $"{GymName}, {GymCity}";
+
+        [Ignore]
+        public string GymDetailsLabel => string.IsNullOrEmpty(GymAddress) ? GymName : $"{GymName} – {GymFullAddress}";
+
+        [Ignore]
+        public bool IsAtFavouriteGym { get; set; }
     }
 }

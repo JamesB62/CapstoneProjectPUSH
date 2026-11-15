@@ -22,9 +22,9 @@
         {
             var db = await _databaseService.GetConnectionAsync();
 
-            return await db.Table<Category>()
-                .OrderBy(c => c.Title)
-                .ToListAsync();
+            var categories = await db.Table<Category>().ToListAsync();
+
+            return categories.OrderBy(c => c.Title, StringComparer.OrdinalIgnoreCase).ToList();
         }
 
         // Get category by Id
@@ -113,16 +113,28 @@
                 return (false, "Category could not be found.");
             }
 
-            // Don't leave articles, exercises, trainers or workouts pointing at a missing category
-            var itemsUsingCategory =
-                await db.Table<Article>().Where(a => a.CategoryId == categoryId).CountAsync()
-                + await db.Table<Exercise>().Where(e => e.CategoryId == categoryId).CountAsync()
-                + await db.Table<Trainer>().Where(t => t.CategoryId == categoryId).CountAsync()
-                + await db.Table<Workout>().Where(w => w.CategoryId == categoryId).CountAsync();
+            var exercises = await db.Table<Exercise>().Where(e => e.CategoryId == categoryId).ToListAsync();
 
-            if (itemsUsingCategory > 0)
+            foreach (var exercise in exercises)
             {
-                return (false, $"\"{category.Title}\" can't be deleted because {itemsUsingCategory} item(s) still use it.");
+                exercise.CategoryId = 0;
+                await db.UpdateAsync(exercise);
+            }
+
+            var trainers = await db.Table<Trainer>().Where(t => t.CategoryId == categoryId).ToListAsync();
+
+            foreach (var trainer in trainers)
+            {
+                trainer.CategoryId = 0;
+                await db.UpdateAsync(trainer);
+            }
+
+            var workouts = await db.Table<Workout>().Where(w => w.CategoryId == categoryId).ToListAsync();
+
+            foreach (var workout in workouts)
+            {
+                workout.CategoryId = 0;
+                await db.UpdateAsync(workout);
             }
 
             await db.DeleteAsync(category);

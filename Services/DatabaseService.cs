@@ -1,6 +1,4 @@
-﻿using Android.Icu.Math;
-
-namespace CapstoneProjectPUSH.Services
+﻿namespace CapstoneProjectPUSH.Services
 {
     public class DatabaseService
     {
@@ -37,10 +35,8 @@ namespace CapstoneProjectPUSH.Services
                     await connection.CreateTableAsync<Exercise>();
                     await connection.CreateTableAsync<Gym>();
                     await connection.CreateTableAsync<Note>();
-                    await connection.CreateTableAsync<Stats>();
                     await connection.CreateTableAsync<Trainer>();
                     await connection.CreateTableAsync<User>();
-                    await connection.CreateTableAsync<UserGym>();
                     await connection.CreateTableAsync<WeightLog>();
                     await connection.CreateTableAsync<Workout>();
                     await connection.CreateTableAsync<WorkoutExercise>();
@@ -54,13 +50,13 @@ namespace CapstoneProjectPUSH.Services
                     await SeedAdminAsync();
                     await SeedGuestAsync();
                     await SeedTrainersAsync();
-                    await SeedWorkoutsAsync();
                     await SeedExercisesAsync();
-                    await SeedArticlesAsync();
-                    // await SeedWorkoutExercisesAsync();
-                    await SeedWorkoutLogsAsync();
+                    await SeedWorkoutsAsync();
+                    await SeedWorkoutExercisesAsync();
                     await SeedNotesAsync();
+                    await SeedWorkoutLogsAsync();
                     await SeedWeightLogsAsync();
+                    await SeedArticlesAsync();
                 }
             }
             finally
@@ -140,6 +136,7 @@ namespace CapstoneProjectPUSH.Services
                 IsAdmin = true
             });
         }
+
         // Categories seed
         private async Task SeedCategoriesAsync()
         {
@@ -158,9 +155,9 @@ namespace CapstoneProjectPUSH.Services
                 "HIIT",                     // 3
                 "Yoga",                     // 4
                 "Flexibility & Mobility",   // 5
-                "Weight Loss",              // 6
-                "Muscle Building",          // 7
-                "Nutrition",                // 8
+                "Core",                     // 6
+                "Bodyweight",               // 7
+                "Pilates",                  // 8
                 "Recovery"                  // 9
             };
 
@@ -182,59 +179,59 @@ namespace CapstoneProjectPUSH.Services
             {
                 // Auckland
                 new Gym {
-                    Name = "ALLFIT",
-                    Address = "32 Manukau Road, Epsom",
+                    Name = "Iron Fitness",
+                    Address = "14 Kauri Lane, Epsom",
                     City = "Auckland"
                 },
 
                 new Gym {
-                    Name = "Les Mills",
-                    Address = "269 Khyber Pass Road, Newmarket",
+                    Name = "Harbour Strength Co.",
+                    Address = "89 Wharf Street, Newmarket",
                     City = "Auckland"
                 },
 
                 new Gym {
-                    Name = "Lift Club",
-                    Address = "24 Minnie Street, Eden Terrace",
+                    Name = "Summit Lift Club",
+                    Address = "5 Totara Avenue, Eden Terrace",
                     City = "Auckland"
                 },
 
                 // Hamilton
                 new Gym {
-                    Name = "Les Mills",
-                    Address = "747 Victoria Street, Hamilton Central",
+                    Name = "Iron Fitness",
+                    Address = "210 River Road, Hamilton Central",
                     City = "Hamilton"
                 },
 
                 // Wellington
                 new Gym {
-                    Name = "Flex Fitness",
-                    Address = "222a Willis Street, Te Aro",
+                    Name = "Peak Performance",
+                    Address = "41 Rimu Street, Te Aro",
                     City = "Wellington"
                 },
 
                 new Gym {
-                    Name = "Jetts",
-                    Address = "James Smith Corner 49 First Floor/61 Cuba Street, Te Aro",
+                    Name = "Foundry Gym",
+                    Address = "12 Harbour View Road, Te Aro",
                     City = "Wellington"
                 },
 
                 new Gym {
-                    Name = "Les Mills",
-                    Address = "52/70 Taranaki Street, Te Aro",
+                    Name = "Iron Fitness",
+                    Address = "73 Southern Cross Lane, Te Aro",
                     City = "Wellington"
                 },
 
                 // Christchurch
                 new Gym {
-                    Name = "Flex Fitness",
-                    Address = "4 Bellewood Avenue, Belfast",
+                    Name = "Peak Performance",
+                    Address = "9 Matai Crescent, Belfast",
                     City = "Christchurch"
                 },
 
                 new Gym {
-                    Name = "Inception Gym",
-                    Address = "65 Blenheim Road, Addington",
+                    Name = "Southern Core Studio",
+                    Address = "150 Plains Road, Addington",
                     City = "Christchurch"
                 }
             };
@@ -256,46 +253,47 @@ namespace CapstoneProjectPUSH.Services
             var trainers = new List<Trainer>
             {
                 new Trainer {
-                    FirstName = "John",
-                    LastName = "Doe",
-                    Email = "jdoe123@example.com",
+                    FirstName = "Liam",
+                    LastName = "Walker",
+                    Email = "liam.walker@example.com",
                     PhoneNumber = "123-456-7890",
                     CategoryId = 1,
-                    Description = "Certified personal trainer with 8 years of experience in strength training. John focuses on proper technique and progressive overload, helping clients build lasting strength safely, whether they're picking up a barbell for the first time or working toward a new personal best.",
+                    Description = "Certified personal trainer with 8 years of experience in strength training. Liam focuses on proper technique and progressive overload, helping clients build lasting strength safely, whether they're picking up a barbell for the first time or working toward a new personal best.",
                     Available = true,
                     GymId = 1
                 },
 
                 new Trainer {
-                    FirstName = "Jane",
-                    LastName = "Doe",
-                    Email = "jdoe456@example.com",
-                    PhoneNumber = "098-765-4321",
+                    FirstName = "Aroha",
+                    LastName = "Ngata",
+                    Email = "aroha.ngata@example.com",
+                    PhoneNumber = "123-456-7890",
                     CategoryId = 3,
-                    Description = "Certified personal trainer with 5 years of experience specialising in high-intensity interval training. Jane designs fast-paced, varied sessions that build endurance and burn calories efficiently, and scales every workout to suit beginners through to experienced athletes.",
+                    Description = "Certified personal trainer with 5 years of experience specialising in high-intensity interval training. Aroha designs fast-paced, varied sessions that build endurance and burn calories efficiently, and scales every workout to suit beginners through to experienced athletes.",
                     Available = false,
-                    GymId = 3
+                    GymId = 4
                 },
 
                 new Trainer {
-                    FirstName = "Daniel",
-                    LastName = "Doe",
-                    Email = "ddoe123@example.com",
+                    FirstName = "Sam",
+                    LastName = "Patel",
+                    Email = string.Empty,
                     PhoneNumber = "123-456-7890",
                     CategoryId = 2,
-                    Description = "Certified personal trainer with 3 years of experience in cardio training. Daniel focuses on proper technique and progressive overload, helping clients build lasting strength safely, whether they're picking up a barbell for the first time or working toward a new personal best.",
+                    Description = "Cardio and endurance coach with 3 years of experience. Sam helps clients improve their heart health and stamina through running, rowing and cycling plans, building up gradually so progress lasts.",
                     Available = true,
-                    GymId = 2
+                    GymId = 6
                 },
+
                 new Trainer {
-                    FirstName = "Alex",
-                    LastName = "Dane",
-                    Email = "adane123@example.com",
-                    PhoneNumber = "123-456-7890",
+                    FirstName = "Mei",
+                    LastName = "Chen",
+                    Email = "mei.chen@example.com",
+                    PhoneNumber = string.Empty,
                     CategoryId = 4,
-                    Description = "Certified personal trainer with 8 years of experience in yoga instructing. Alex focuses on proper technique and progressive overload, helping clients build lasting strength safely, whether they're picking up a barbell for the first time or working toward a new personal best.",
+                    Description = "Registered yoga instructor with 8 years of teaching experience. Mei runs calm, beginner-friendly classes that build flexibility, balance and breathing control, with options to progress for more experienced students.",
                     Available = true,
-                    GymId = 5
+                    GymId = 8
                 }
             };
 
@@ -318,16 +316,16 @@ namespace CapstoneProjectPUSH.Services
                 // 1 - Strength Training
                 new Exercise
                 {
-                    Title = "Bodyweight Squat",
-                    Description = "Stand with feet shoulder-width apart. Push your hips back and bend your knees to lower down, keeping your chest up and heels flat. Drive through your feet to return to standing.",
-                    Difficulty = 2,
+                    Title = "Dumbbell Bench Press",
+                    Description = "Lie on a bench with a dumbbell in each hand at chest level. Press the weights up until your arms are extended, then lower them under control.",
+                    Difficulty = 3,
                     CategoryId = 1
                 },
                 new Exercise
                 {
-                    Title = "Push-Up",
-                    Description = "Start in a high plank with hands slightly wider than your shoulders. Lower your chest toward the floor while keeping your body in a straight line, then press back up.",
-                    Difficulty = 3,
+                    Title = "Barbell Back Squat",
+                    Description = "Set the bar across your upper back and step out from the rack. Squat down until your thighs are at least parallel to the floor, keeping your chest up and knees tracking over your toes, then drive back up.",
+                    Difficulty = 5,
                     CategoryId = 1
                 },
 
@@ -378,20 +376,39 @@ namespace CapstoneProjectPUSH.Services
                     CategoryId = 5
                 },
 
-                // 7 - Muscle Building
+                // 6 - Core
                 new Exercise
                 {
-                    Title = "Dumbbell Bench Press",
-                    Description = "Lie on a bench with a dumbbell in each hand at chest level. Press the weights up until your arms are extended, then lower them under control.",
-                    Difficulty = 3,
+                    Title = "Plank",
+                    Description = "Rest on your forearms and toes with your elbows under your shoulders. Keep your body in a straight line from head to heels, brace your stomach and avoid letting your hips sag or lift.",
+                    Difficulty = 2,
+                    IsTimed = true,
+                    CategoryId = 6
+                },
+
+                // 7 - Bodyweight
+                new Exercise
+                {
+                    Title = "Bodyweight Squat",
+                    Description = "Stand with feet shoulder-width apart. Push your hips back and bend your knees to lower down, keeping your chest up and heels flat. Drive through your feet to return to standing.",
+                    Difficulty = 2,
                     CategoryId = 7
                 },
                 new Exercise
                 {
-                    Title = "Barbell Back Squat",
-                    Description = "Set the bar across your upper back and step out from the rack. Squat down until your thighs are at least parallel to the floor, keeping your chest up and knees tracking over your toes, then drive back up.",
-                    Difficulty = 5,
+                    Title = "Push-Up",
+                    Description = "Start in a high plank with hands slightly wider than your shoulders. Lower your chest toward the floor while keeping your body in a straight line, then press back up.",
+                    Difficulty = 3,
                     CategoryId = 7
+                },
+
+                // 8 - Pilates
+                new Exercise
+                {
+                    Title = "Pilates Hundred",
+                    Description = "Lie on your back with your legs raised and your head and shoulders lifted. Keep your arms straight by your sides and pump them up and down, breathing in for five pumps and out for five.",
+                    Difficulty = 3,
+                    CategoryId = 8
                 },
 
                 // 9 - Recovery
@@ -406,74 +423,9 @@ namespace CapstoneProjectPUSH.Services
             };
 
             await db.InsertAllAsync(exercises);
-
-            //line with workout 
-            var exerciseIds = exercises.ToDictionary(e => e.Title, e => e.Id);
-
-            var guest = await db.Table<User>().Where(u => u.IsGuest ==true).FirstOrDefaultAsync();
-            var workouts = await db.Table<Workout>().ToListAsync();
-            var items = new List<WorkoutExercise>();
-            
-            void Add(int userId, string workout, string exercise, int order, int sets, int reps)
-            {
-                var w = workouts.FirstOrDefault(x => x.UserId == userId && x.Title == workout);
-
-                if (w is null || !exerciseIds.TryGetValue(exercise, out var eId))
-                {
-                    System.Diagnostics.Debug.WriteLine($"Seed skipped: {workout} / {exercise}");
-                    return;
-                }
-
-                items.Add(new WorkoutExercise { WorkoutId = w.Id, ExerciseId = eId, SortOrder = order, Sets = sets, Reps = reps });
-            }
-
-            //amdin see workout
-            const int demo = 1;
-            Add(demo, "Push Day", "Dumbbell Bench Press", 1, 4, 8);
-            Add(demo, "Push Day", "Push-Up",              2, 3, 15);
-
-            Add(demo, "Leg Day", "Barbell Back Squat", 1, 4, 8);
-            Add(demo, "Leg Day", "Bodyweight Squat",   2, 3, 15);
-
-            Add(demo, "Yoga Flow", "Downward-Facing Dog",      1, 3, 8);
-            Add(demo, "Yoga Flow", "Seated Hamstring Stretch", 2, 2, 3);
-
-            Add(demo, "Morning HIIT", "Burpee",           1, 4, 15);
-            Add(demo, "Morning HIIT", "Jump Rope",        2, 4, 50);
-            Add(demo, "Morning HIIT", "Bodyweight Squat", 3, 3, 20);
-
-            Add(demo, "Cardio Burn", "Jump Rope",  1, 3, 100);
-            Add(demo, "Cardio Burn", "Brisk Walk", 2, 1, 20);
-
-            Add(demo, "Cool Down", "Seated Hamstring Stretch", 1, 2, 3);
-            Add(demo, "Cool Down", "Foam Rolling",             2, 1, 10);
-
-            if (guest is not null)
-            {
-                var g = guest.Id;
-
-                Add(g, "Beginner Full Body", "Bodyweight Squat", 1, 3, 12);
-                Add(g, "Beginner Full Body", "Push-Up",          2, 3, 8);
-                Add(g, "Beginner Full Body", "Foam Rolling",     3, 1, 10);
-
-                Add(g, "Quick Cardio", "Jump Rope",  1, 3, 100);
-                Add(g, "Quick Cardio", "Burpee",     2, 3, 10);
-                Add(g, "Quick Cardio", "Brisk Walk", 3, 1, 20);
-
-                Add(g, "Gentle Stretch", "Downward-Facing Dog",      1, 3, 8);
-                Add(g, "Gentle Stretch", "Seated Hamstring Stretch", 2, 2, 3);
-                Add(g, "Gentle Stretch", "Foam Rolling",             3, 1, 10);
-            }
-            
-            if (items.Count > 0)
-            {
-                await db.InsertAllAsync(items);
-            }
-
-    
         }
 
-        // Articles seed -- find better sources with usage rights
+        // Articles seed
         private async Task SeedArticlesAsync()
         {
             var db = await GetConnectionAsync();
@@ -488,39 +440,166 @@ namespace CapstoneProjectPUSH.Services
             {
                 new Article
                 {
-                    Title = "How Much Cardio Do You Need Each Week?",
-                    Content = "Adults should aim for at least 150 minutes of moderate-intensity aerobic activity a week, or 75 minutes of vigorous activity, or a mix of both, ideally spread through the week. At a moderate pace your heart beats faster and you breathe harder, but you can still talk. Think brisk walking, water aerobics, dancing or easy cycling. At a vigorous pace you'll warm up, sweat and struggle to talk, as with running, swimming laps or jumping rope. If you can't reach 150 minutes yet, that's fine. Walking is the simplest way to start, and brisk five- or ten-minute walks a few times a day add up. Increase your time and intensity gradually, and know that reaching 300 minutes a week brings even more benefits.",
-                    Citation = "American Heart Association",
-                    CitationUrl = "https://www.heart.org/en/healthy-living/fitness/fitness-basics/aha-recs-for-physical-activity-in-adults",
-                    Image = "american_heart_association.jpg",
-                    DateTimePublished = new DateTime(2024, 1, 19),
-                    CategoryId = 2
+                    Title = "Meal Prep Basics for a Busy Week",
+                    Content = "Spending an hour or two on the weekend preparing meals can make healthy eating much easier during a busy week. Start by choosing two or three simple recipes you enjoy and cook them in larger batches. A good meal prep container has a protein such as chicken, tofu or eggs, a carbohydrate such as rice, pasta or potatoes, and plenty of vegetables. Store meals in the fridge for up to three days and freeze the rest. Keep a few quick snacks on hand, like yoghurt, fruit or nuts, so you're not caught out between meals. Don't aim for perfect. A few prepared meals each week is a great start.",
+                    Citation = "PUSH Team",
+                    CitationUrl = string.Empty,
+                    Image = "article_placeholder.png",
+                    DateTimePublished = new DateTime(2026, 9, 14),
+                    Topic = "Meal Prep"
                 },
 
                 new Article
                 {
-                    Title = "Strength Training: How Often and How Hard?",
-                    Content = "On top of your cardio, adults need muscle-strengthening activity on at least two days a week, working all the major muscle groups: legs, hips, back, chest, abdomen, shoulders and arms. To get the benefit, work each muscle until it's hard to complete another repetition without help. A good target is 8 to 12 repetitions per set. One set per exercise is a solid start, and two or three sets bring extra benefit. Lifting weights, using resistance bands and doing bodyweight exercises like push-ups and sit-ups all count.",
-                    Citation = "Centers for Disease Control and Prevention",
-                    CitationUrl = "https://www.cdc.gov/physical-activity-basics/adding-adults/what-counts.html",
-                    Image = "centers_for_disease_control_and_prevention.jpg",
-                    DateTimePublished = new DateTime(2023, 12, 6),
-                    CategoryId = 1
+                    Title = "What to Eat Before and After a Workout",
+                    Content = "What you eat around your workouts can help you train better and recover faster. Around one to three hours before training, have a light meal with carbohydrates for energy and a little protein, such as toast with peanut butter, a banana with yoghurt or a bowl of oats. Avoid heavy, greasy food right before exercising, as it can leave you feeling sluggish. After your workout, aim for a meal with protein to help your muscles recover and carbohydrates to refuel, such as a chicken wrap, eggs on toast or a smoothie with milk and fruit. Drink water throughout the day, not just during your session.",
+                    Citation = "PUSH Team",
+                    CitationUrl = string.Empty,
+                    Image = "article_placeholder.png",
+                    DateTimePublished = new DateTime(2026, 10, 5),
+                    Topic = "Nutrition"
                 },
 
                 new Article
                 {
-                    Title = "A Simple Guide to Stretching",
-                    Content = "Stretching won't reliably prevent soreness or injury, but it does improve flexibility, the ability to move your joints and muscles through their full range, which makes everyday tasks easier. Before a workout, do a few minutes of dynamic stretching by gently mimicking your activity at lower intensity, such as marching in place before a run or arm circles before swimming. Save static stretches, where you hold a position, for after exercise when your muscles are warm. Hold each for 10 to 30 seconds, with the biggest gains around 30. Target the major muscle groups, with calves, hamstrings and chest and shoulders a good place to start. Stretch only to mild tension, never pain, and try to fit in a few minutes most days.",
-                    Citation = "Julie Corliss, Harvard Health Publishing",
-                    CitationUrl = "https://www.health.harvard.edu/healthy-aging-and-longevity/take-time-to-stretch",
-                    Image = "harvard_health_publishing.jpg",
-                    DateTimePublished = new DateTime(2024, 8, 1),
-                    CategoryId = 5
+                    Title = "Building a Balanced Plate",
+                    Content = "A simple way to plan meals without counting anything is to picture your plate in sections. Fill about half with vegetables or salad, a quarter with a protein such as fish, meat, beans or tofu, and a quarter with a carbohydrate such as rice, wholegrain bread or kumara. Add a small amount of healthy fat, like olive oil, avocado or nuts. This approach works for breakfast, lunch and dinner, and it's easy to adjust. Add more carbohydrates on heavy training days and more vegetables on rest days. Try planning your meals a few days ahead so shopping is quicker and you waste less food.",
+                    Citation = "PUSH Team",
+                    CitationUrl = string.Empty,
+                    Image = "article_placeholder.png",
+                    DateTimePublished = new DateTime(2026, 10, 26),
+                    Topic = "Meal Planning"
                 }
             };
 
             await db.InsertAllAsync(articles);
+        }
+
+        // Workouts seed
+        private async Task SeedWorkoutsAsync()
+        {
+            var db = await GetConnectionAsync();
+
+            var count = await db.Table<Workout>().CountAsync();
+            if (count > 0)
+            {
+                return;
+            }
+
+            var admin = await db.Table<User>().Where(u => u.Email == SeedAdminEmail).FirstOrDefaultAsync();
+            var guest = await db.Table<User>().Where(u => u.IsGuest).FirstOrDefaultAsync();
+
+            var workouts = new List<Workout>();
+
+            if (admin is not null)
+            {
+                // Must stay private
+                workouts.Add(new Workout { Title = "Strength Day", UserId = admin.Id, CategoryId = 1, IsPrivate = true });
+                workouts.Add(new Workout { Title = "Morning HIIT", UserId = admin.Id, CategoryId = 3, IsPrivate = true });
+                workouts.Add(new Workout { Title = "Yoga Flow", UserId = admin.Id, CategoryId = 4, IsPrivate = true });
+            }
+
+            if (guest is not null)
+            {
+                // Must stay private
+                workouts.Add(new Workout { Title = "Beginner Full Body", UserId = guest.Id, CategoryId = 7, IsPrivate = true });
+                workouts.Add(new Workout { Title = "Quick Cardio", UserId = guest.Id, CategoryId = 2, IsPrivate = true });
+                workouts.Add(new Workout { Title = "Gentle Stretch", UserId = guest.Id, CategoryId = 5, IsPrivate = true });
+            }
+
+            await db.InsertAllAsync(workouts);
+        }
+
+        // Workout exercises seed
+        private async Task SeedWorkoutExercisesAsync()
+        {
+            var db = await GetConnectionAsync();
+
+            var count = await db.Table<WorkoutExercise>().CountAsync();
+            if (count > 0)
+            {
+                return;
+            }
+
+            var workoutIds = new Dictionary<string, int>();
+            foreach (var workout in await db.Table<Workout>().ToListAsync())
+            {
+                workoutIds[workout.Title] = workout.Id;
+            }
+
+            var exerciseIds = new Dictionary<string, int>();
+            foreach (var exercise in await db.Table<Exercise>().ToListAsync())
+            {
+                exerciseIds[exercise.Title] = exercise.Id;
+            }
+
+            var workoutExercises = new List<WorkoutExercise>();
+
+            void Add(string workoutTitle, string exerciseTitle, int sortOrder, int sets, int reps)
+            {
+                if (!workoutIds.TryGetValue(workoutTitle, out var workoutId) || !exerciseIds.TryGetValue(exerciseTitle, out var exerciseId))
+                {
+                    System.Diagnostics.Debug.WriteLine($"Seed skipped: {workoutTitle} / {exerciseTitle}");
+                    return;
+                }
+
+                workoutExercises.Add(new WorkoutExercise
+                {
+                    WorkoutId = workoutId,
+                    ExerciseId = exerciseId,
+                    SortOrder = sortOrder,
+                    Sets = sets,
+                    Reps = reps
+                });
+            }
+
+            void AddTimed(string workoutTitle, string exerciseTitle, int sortOrder, int minutes)
+            {
+                if (!workoutIds.TryGetValue(workoutTitle, out var workoutId) || !exerciseIds.TryGetValue(exerciseTitle, out var exerciseId))
+                {
+                    System.Diagnostics.Debug.WriteLine($"Seed skipped: {workoutTitle} / {exerciseTitle}");
+                    return;
+                }
+
+                workoutExercises.Add(new WorkoutExercise
+                {
+                    WorkoutId = workoutId,
+                    ExerciseId = exerciseId,
+                    SortOrder = sortOrder,
+                    DurationMinutes = minutes
+                });
+            }
+
+            // Admin workouts
+            Add("Strength Day", "Barbell Back Squat", 1, 4, 8);
+            Add("Strength Day", "Dumbbell Bench Press", 2, 4, 8);
+            Add("Strength Day", "Push-Up", 3, 3, 12);
+
+            Add("Morning HIIT", "Burpee", 1, 4, 10);
+            AddTimed("Morning HIIT", "Jump Rope", 2, 5);
+            Add("Morning HIIT", "Bodyweight Squat", 3, 3, 20);
+
+            AddTimed("Yoga Flow", "Downward-Facing Dog", 1, 5);
+            Add("Yoga Flow", "Pilates Hundred", 2, 1, 100);
+            AddTimed("Yoga Flow", "Seated Hamstring Stretch", 3, 5);
+
+            // Guest workouts
+            Add("Beginner Full Body", "Bodyweight Squat", 1, 3, 12);
+            Add("Beginner Full Body", "Push-Up", 2, 3, 8);
+            AddTimed("Beginner Full Body", "Plank", 3, 3);
+
+            AddTimed("Quick Cardio", "Brisk Walk", 1, 10);
+            AddTimed("Quick Cardio", "Jump Rope", 2, 5);
+            Add("Quick Cardio", "Burpee", 3, 3, 8);
+
+            AddTimed("Gentle Stretch", "Seated Hamstring Stretch", 1, 5);
+            AddTimed("Gentle Stretch", "Downward-Facing Dog", 2, 5);
+            AddTimed("Gentle Stretch", "Foam Rolling", 3, 10);
+
+            if (workoutExercises.Count > 0)
+            {
+                await db.InsertAllAsync(workoutExercises);
+            }
         }
 
         // Notes seed
@@ -534,127 +613,60 @@ namespace CapstoneProjectPUSH.Services
                 return;
             }
 
-            var notes = new List<Note>
+            var workouts = await db.Table<Workout>().ToListAsync();
+            var notes = new List<Note>();
+
+            void Add(string workoutTitle, string title, string content, int daysAgo, int hour)
             {
-                new Note {
-                    Title = "My First Note",
-                    Content = "Got through my first logged workout today and it felt good to finally get started. I took it slowly to focus on my form, and a few of the movements felt awkward at first, but they got easier as I warmed up. I was out of breath sooner than I expected, so I'll keep the pace comfortable next time and build up gradually. Goal for the next session: stay consistent and pay attention to how my body feels the day after.",
-                    DateTimeCreated = DateTime.Today.AddDays(-12).AddHours(19),
-                    UserId = 1,
-                    WorkoutId = 1
-                },
-                new Note {
-                    Title = "Workout Thoughts",
-                    Content = "I felt great after today's workout! My energy was high from the start and I was able to push a bit harder than last time. My legs were tired by the end, but in a good way. I noticed my breathing recovered faster between efforts, which tells me the earlier sessions are paying off. I want to keep this momentum going, so next time I'll try adding a little more challenge while keeping my form clean. Remember to drink more water before the session.",
-                    DateTimeCreated = DateTime.Today.AddDays(-8).AddHours(3),
-                    UserId = 1,
-                    WorkoutId = 2
-                },
-                new Note {
-                    Title = "Yoga Reflection",
-                    Content = "The yoga session really helped me relax. My shoulders and lower back were tight when I started, and by the end they felt looser and my mind was a lot calmer. Slowing down and focusing on my breathing made the biggest difference, and holding the poses a little longer helped me notice where I'm stiffest. Balance poses were the hardest part, so I want to keep practising those. I'd like to make this a regular part of my week, especially after harder workouts.",
-                    DateTimeCreated = DateTime.Today.AddDays(-4).AddHours(12),
-                    UserId = 1,
-                    WorkoutId = 3
-                },
-                new Note {
-                    Title = "Tough Workout",
-                    Content = "This is a test note.",
-                    DateTimeCreated = DateTime.Today.AddDays(-2).AddHours(4),
-                    UserId = 2,
-                    WorkoutId = 2
+                var workout = workouts.FirstOrDefault(w => w.Title == workoutTitle);
+
+                if (workout is null)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Seed skipped: note {title} / {workoutTitle}");
+                    return;
                 }
-            };
 
-            await db.InsertAllAsync(notes);
-        }
-
-        // ================================================ DOUBLE CHECK =================================
-        // Workouts seed
-        private async Task SeedWorkoutsAsync()
-        {
-            var db = await GetConnectionAsync();
-            if(await db.Table<Workout>().CountAsync() > 0) return;
-
-            await db.InsertAllAsync(new[]
-            {
-                
-                new Workout { Title = "Push Day",     UserId = 1, CategoryId = 1 },
-                new Workout { Title = "Leg Day",      UserId = 1, CategoryId = 1 },
-                new Workout { Title = "Morning HIIT", UserId = 1, CategoryId = 3 },
-                new Workout { Title = "Cardio Burn",  UserId = 1, CategoryId = 2 },
-                new Workout { Title = "Yoga Flow",    UserId = 1, CategoryId = 4 },
-                new Workout { Title = "Cool Down",    UserId = 1, CategoryId = 9 },
-            });
-
-            var guest = await db.Table<User>().Where(u => u.IsGuest == true).FirstOrDefaultAsync();
-            if(guest is null) return;
-            if(await db.Table<Workout>().Where(w => w.UserId == guest.Id).CountAsync() > 0) return;
-
-            var exerciseIds = (await db.Table<Exercise>().ToListAsync())
-                .GroupBy(e => e.Title).ToDictionary(e => e.Key, e => e.First().Id);
-            var workoutIds = (await db.Table<Workout>().ToListAsync())
-            .GroupBy(w => w.Title).ToDictionary(w => w.Key, w => w.First().Id);
-
-            var items = new List<WorkoutExercise>();
-
-            await db.InsertAllAsync(new[]
-            {
-                new Workout {Title ="Beginner Full Boday", UserId = guest.Id, CategoryId = 1},
-                new Workout { Title = "Quick Cardio",       UserId = guest.Id, CategoryId = 2 },
-                new Workout { Title = "Gentle Stretch",     UserId = guest.Id, CategoryId = 5 },
-            });
-
-            var count = await db.Table<Workout>().CountAsync();
-            if (count > 0)
-            {
-                return;
+                notes.Add(new Note
+                {
+                    Title = title,
+                    Content = content,
+                    DateTimeCreated = DateTime.Today.AddDays(-daysAgo).AddHours(hour),
+                    UserId = workout.UserId,
+                    WorkoutId = workout.Id
+                });
             }
 
-            var workouts = new List<Workout>
+            // Admin notes
+            Add("Strength Day", "New Squat Weight",
+                "Moved up 2.5 kg on the back squat today and all four sets felt solid. My depth was good on every rep, but the last set slowed down, so I'll stay at this weight next session before going up again. Bench felt strong too.",
+                12, 7);
+
+            Add("Morning HIIT", "Energy Was High",
+                "Felt great this morning and pushed harder than last time. My breathing recovered faster between the burpee sets, which tells me the earlier sessions are paying off. Remember to drink more water before the session.",
+                6, 6);
+
+            Add("Yoga Flow", "Yoga Reflection",
+                "This session really helped me relax. My shoulders and lower back were tight when I started and felt looser by the end. Holding downward dog a little longer showed me where I'm stiffest. I'd like to make this a regular part of my week after harder workouts.",
+                3, 18);
+
+            // Guest notes
+            Add("Beginner Full Body", "My First Workout",
+                "Got through my first workout today and it felt good to finally get started. I took it slowly to focus on my form. The plank was harder than I expected, so I'll aim to hold it a little longer each time.",
+                10, 17);
+
+            Add("Quick Cardio", "Short but Tough",
+                "Only twenty minutes but I was out of breath by the end of the burpees. The brisk walk was a good warm-up. Next time I'll try to keep the jump rope going without stopping.",
+                5, 12);
+
+            Add("Gentle Stretch", "Rest Day Stretch",
+                "Did this on my rest day after my legs were sore from the full body workout. The hamstring stretch and foam rolling helped a lot, and I felt less stiff the next morning.",
+                1, 20);
+
+            if (notes.Count > 0)
             {
-                new Workout { Title = "Full Body Strength", UserId = 1, CategoryId = 1, IsPrivate = true },
-                new Workout { Title = "Cardio Burn", UserId = 1, CategoryId = 2, IsPrivate = false },
-                new Workout { Title = "Yoga & Recovery", UserId = 1, CategoryId = 4, IsPrivate = true }
-            };
-
-            await db.InsertAllAsync(workouts);
-
-
+                await db.InsertAllAsync(notes);
+            }
         }
-
-        //put those data in the *SeedWorkoutsAsync* 
-        // Workout exercises seed
-//         private async Task SeedWorkoutExercisesAsync()
-//         {
-//             var db = await GetConnectionAsync();
-
-//             var count = await db.Table<WorkoutExercise>().CountAsync();
-//             if (count > 0)
-//             {
-//                 return;
-//             }
-
-//             var workoutExercises = new List<WorkoutExercise>
-//             {
-//                 // Full Body Strength
-//                 new WorkoutExercise { WorkoutId = 1, ExerciseId = 9, SortOrder = 1, Sets = 4, Reps = 8 },
-//                 new WorkoutExercise { WorkoutId = 1, ExerciseId = 8, SortOrder = 2, Sets = 4, Reps = 8 },
-//                 new WorkoutExercise { WorkoutId = 1, ExerciseId = 2, SortOrder = 3, Sets = 3, Reps = 15 },
-
-//                 // Cardio Burn
-//                 new WorkoutExercise { WorkoutId = 2, ExerciseId = 3, SortOrder = 1, DurationMinutes = 20 },
-//                 new WorkoutExercise { WorkoutId = 2, ExerciseId = 4, SortOrder = 2, DurationMinutes = 10 },
-//                 new WorkoutExercise { WorkoutId = 2, ExerciseId = 5, SortOrder = 3, Sets = 3, Reps = 10 },
-
-//                 // Yoga & Recovery
-//                 new WorkoutExercise { WorkoutId = 3, ExerciseId = 6, SortOrder = 1, DurationMinutes = 5 },
-//                 new WorkoutExercise { WorkoutId = 3, ExerciseId = 7, SortOrder = 2, DurationMinutes = 5 },
-//                 new WorkoutExercise { WorkoutId = 3, ExerciseId = 10, SortOrder = 3, DurationMinutes = 10 }
-//             };
-
-//             await db.InsertAllAsync(workoutExercises);
-//         }
 
         // Workout logs seed
         private async Task SeedWorkoutLogsAsync()
@@ -667,46 +679,90 @@ namespace CapstoneProjectPUSH.Services
                 return;
             }
 
+            var workouts = await db.Table<Workout>().ToListAsync();
+
+            // Admin workouts
+            var strengthDay = workouts.FirstOrDefault(w => w.Title == "Strength Day");
+            var morningHiit = workouts.FirstOrDefault(w => w.Title == "Morning HIIT");
+            var yogaFlow = workouts.FirstOrDefault(w => w.Title == "Yoga Flow");
+
+            // Guest workouts
+            var beginnerFullBody = workouts.FirstOrDefault(w => w.Title == "Beginner Full Body");
+            var quickCardio = workouts.FirstOrDefault(w => w.Title == "Quick Cardio");
+            var gentleStretch = workouts.FirstOrDefault(w => w.Title == "Gentle Stretch");
+
+            if (strengthDay is null || morningHiit is null || yogaFlow is null
+                || beginnerFullBody is null || quickCardio is null || gentleStretch is null)
+            {
+                System.Diagnostics.Debug.WriteLine("Workout log seed skipped: seeded workouts not found");
+                return;
+            }
+
             var workoutLogs = new List<WorkoutLog>
             {
-                // Week
-                CreateWorkoutLog(1, 0, 45),
-                CreateWorkoutLog(2, 1, 30),
-                CreateWorkoutLog(3, 2, 60),
-                CreateWorkoutLog(1, 3, 40),
-                CreateWorkoutLog(2, 5, 35),
+                // Admin - Week
+                CreateWorkoutLog(strengthDay, 0, 45),
+                CreateWorkoutLog(morningHiit, 1, 30),
+                CreateWorkoutLog(yogaFlow, 2, 60),
+                CreateWorkoutLog(strengthDay, 3, 40),
+                CreateWorkoutLog(morningHiit, 5, 35),
 
-                // Month
-                CreateWorkoutLog(1, 8, 45),
-                CreateWorkoutLog(3, 10, 30),
-                CreateWorkoutLog(2, 13, 60),
-                CreateWorkoutLog(1, 15, 40),
-                CreateWorkoutLog(2, 20, 50),
-                CreateWorkoutLog(3, 24, 35),
-                CreateWorkoutLog(1, 27, 45),
+                // Admin - Month
+                CreateWorkoutLog(strengthDay, 8, 45),
+                CreateWorkoutLog(yogaFlow, 10, 30),
+                CreateWorkoutLog(morningHiit, 13, 60),
+                CreateWorkoutLog(strengthDay, 15, 40),
+                CreateWorkoutLog(morningHiit, 20, 50),
+                CreateWorkoutLog(yogaFlow, 24, 35),
+                CreateWorkoutLog(strengthDay, 27, 45),
 
-                // Year
-                CreateWorkoutLog(1, 40, 50),
-                CreateWorkoutLog(2, 70, 45),
-                CreateWorkoutLog(3, 100, 60),
-                CreateWorkoutLog(1, 130, 30),
-                CreateWorkoutLog(2, 160, 55),
-                CreateWorkoutLog(3, 200, 40),
-                CreateWorkoutLog(1, 250, 70),
-                CreateWorkoutLog(2, 300, 45)
+                // Admin - Year
+                CreateWorkoutLog(strengthDay, 40, 50),
+                CreateWorkoutLog(morningHiit, 70, 45),
+                CreateWorkoutLog(yogaFlow, 100, 60),
+                CreateWorkoutLog(strengthDay, 130, 30),
+                CreateWorkoutLog(morningHiit, 160, 55),
+                CreateWorkoutLog(yogaFlow, 200, 40),
+                CreateWorkoutLog(strengthDay, 250, 70),
+                CreateWorkoutLog(morningHiit, 300, 45),
+
+                // Guest - Week
+                CreateWorkoutLog(beginnerFullBody, 0, 30),
+                CreateWorkoutLog(quickCardio, 1, 20),
+                CreateWorkoutLog(gentleStretch, 2, 20),
+                CreateWorkoutLog(beginnerFullBody, 3, 35),
+                CreateWorkoutLog(quickCardio, 5, 25),
+
+                // Guest - Month
+                CreateWorkoutLog(beginnerFullBody, 8, 30),
+                CreateWorkoutLog(gentleStretch, 10, 20),
+                CreateWorkoutLog(quickCardio, 13, 25),
+                CreateWorkoutLog(beginnerFullBody, 15, 35),
+                CreateWorkoutLog(quickCardio, 20, 20),
+                CreateWorkoutLog(gentleStretch, 24, 15),
+                CreateWorkoutLog(beginnerFullBody, 27, 30),
+
+                // Guest - Year
+                CreateWorkoutLog(beginnerFullBody, 40, 30),
+                CreateWorkoutLog(quickCardio, 70, 20),
+                CreateWorkoutLog(gentleStretch, 100, 20),
+                CreateWorkoutLog(beginnerFullBody, 130, 25),
+                CreateWorkoutLog(quickCardio, 160, 25),
+                CreateWorkoutLog(gentleStretch, 200, 15),
+                CreateWorkoutLog(beginnerFullBody, 250, 30),
+                CreateWorkoutLog(quickCardio, 300, 20)
             };
 
             await db.InsertAllAsync(workoutLogs);
-            
-
         }
 
-        private static WorkoutLog CreateWorkoutLog(int workoutId, int daysAgo, int minutes)
+        // The log belongs to the workout's owner
+        private static WorkoutLog CreateWorkoutLog(Workout workout, int daysAgo, int minutes)
         {
             return new WorkoutLog
             {
-                WorkoutId = workoutId,
-                UserId = 1,
+                WorkoutId = workout.Id,
+                UserId = workout.UserId,
                 DateTimeCompleted = DateTime.Today.AddDays(-daysAgo).AddHours(7),
                 DurationSeconds = minutes * 60
             };
@@ -723,43 +779,78 @@ namespace CapstoneProjectPUSH.Services
                 return;
             }
 
+            var admin = await db.Table<User>().Where(u => u.Email == SeedAdminEmail).FirstOrDefaultAsync();
+            var guest = await db.Table<User>().Where(u => u.IsGuest).FirstOrDefaultAsync();
+
+            if (admin is null || guest is null)
+            {
+                System.Diagnostics.Debug.WriteLine("Seed skipped: weight logs (admin or guest not found)");
+                return;
+            }
+
             var weightLogs = new List<WeightLog>
             {
-                // Week
-                CreateWeightLog(0, 80.5),
-                CreateWeightLog(1, 80.2),
-                CreateWeightLog(2, 80.0),
-                CreateWeightLog(3, 79.8),
-                CreateWeightLog(5, 79.5),
+                // Admin - Week
+                CreateWeightLog(admin.Id, 0, 80.5),
+                CreateWeightLog(admin.Id, 1, 80.2),
+                CreateWeightLog(admin.Id, 2, 80.0),
+                CreateWeightLog(admin.Id, 3, 79.8),
+                CreateWeightLog(admin.Id, 5, 79.5),
 
-                // Month
-                CreateWeightLog(8, 79.3),
-                CreateWeightLog(10, 79.0),
-                CreateWeightLog(13, 78.8),
-                CreateWeightLog(15, 78.5),
-                CreateWeightLog(20, 78.3),
-                CreateWeightLog(24, 78.0),
-                CreateWeightLog(27, 77.8),
+                // Admin - Month
+                CreateWeightLog(admin.Id, 8, 79.3),
+                CreateWeightLog(admin.Id, 10, 79.0),
+                CreateWeightLog(admin.Id, 13, 78.8),
+                CreateWeightLog(admin.Id, 15, 78.5),
+                CreateWeightLog(admin.Id, 20, 78.3),
+                CreateWeightLog(admin.Id, 24, 78.0),
+                CreateWeightLog(admin.Id, 27, 77.8),
 
-                // Year
-                CreateWeightLog(40, 77.5),
-                CreateWeightLog(70, 77.3),
-                CreateWeightLog(100, 77.0),
-                CreateWeightLog(130, 76.8),
-                CreateWeightLog(160, 76.5),
-                CreateWeightLog(200, 76.3),
-                CreateWeightLog(250, 76.0),
-                CreateWeightLog(300, 75.8)
+                // Admin - Year
+                CreateWeightLog(admin.Id, 40, 77.5),
+                CreateWeightLog(admin.Id, 70, 77.3),
+                CreateWeightLog(admin.Id, 100, 77.0),
+                CreateWeightLog(admin.Id, 130, 76.8),
+                CreateWeightLog(admin.Id, 160, 76.5),
+                CreateWeightLog(admin.Id, 200, 76.3),
+                CreateWeightLog(admin.Id, 250, 76.0),
+                CreateWeightLog(admin.Id, 300, 75.8),
+
+                // Guest - Week
+                CreateWeightLog(guest.Id, 0, 68.0),
+                CreateWeightLog(guest.Id, 1, 68.2),
+                CreateWeightLog(guest.Id, 2, 68.3),
+                CreateWeightLog(guest.Id, 3, 68.5),
+                CreateWeightLog(guest.Id, 5, 68.6),
+
+                // Guest - Month
+                CreateWeightLog(guest.Id, 8, 68.8),
+                CreateWeightLog(guest.Id, 10, 69.0),
+                CreateWeightLog(guest.Id, 13, 69.3),
+                CreateWeightLog(guest.Id, 15, 69.5),
+                CreateWeightLog(guest.Id, 20, 69.8),
+                CreateWeightLog(guest.Id, 24, 70.0),
+                CreateWeightLog(guest.Id, 27, 70.2),
+
+                // Guest - Year
+                CreateWeightLog(guest.Id, 40, 70.5),
+                CreateWeightLog(guest.Id, 70, 71.0),
+                CreateWeightLog(guest.Id, 100, 71.4),
+                CreateWeightLog(guest.Id, 130, 71.8),
+                CreateWeightLog(guest.Id, 160, 72.1),
+                CreateWeightLog(guest.Id, 200, 72.5),
+                CreateWeightLog(guest.Id, 250, 72.8),
+                CreateWeightLog(guest.Id, 300, 73.0)
             };
 
             await db.InsertAllAsync(weightLogs);
         }
 
-        private static WeightLog CreateWeightLog(int daysAgo, double weightKg)
+        private static WeightLog CreateWeightLog(int userId, int daysAgo, double weightKg)
         {
             return new WeightLog
             {
-                UserId = 1,
+                UserId = userId,
                 DateTimeLogged = DateTime.Today.AddDays(-daysAgo).AddHours(7),
                 WeightKg = weightKg
             };

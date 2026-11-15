@@ -1,120 +1,69 @@
-﻿using System.Collections.ObjectModel;
-using CapstoneProjectPUSH.Models;
-using CapstoneProjectPUSH.Services;
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-
-namespace CapstoneProjectPUSH.ViewModels.Admin
+﻿namespace CapstoneProjectPUSH.ViewModels.Admin
 {
     public partial class GymsManagementViewModel : BaseViewModel
     {
         private readonly GymService _gymService;
-        private readonly UserService _userService;
 
-        // Id of the gym being edited, or null when adding a new one
-        private int? _editingId;
-
-        public GymsManagementViewModel(GymService gymService, UserService userService)
+        public GymsManagementViewModel(GymService gymService, UserService userService) : base(userService)
         {
             _gymService = gymService;
-            _userService = userService;
-
-            NameInput = string.Empty;
-            AddressInput = string.Empty;
-            CityInput = string.Empty;
-            SaveButtonText = "Add gym";
         }
+
+        private List<Gym> _allGyms = new();
 
         public ObservableCollection<Gym> Gyms { get; } = new();
 
         [ObservableProperty]
-        public partial string NameInput { get; set; }
+        public partial string SearchText { get; set; } = string.Empty;
 
-        [ObservableProperty]
-        public partial string AddressInput { get; set; }
-
-        [ObservableProperty]
-        public partial string CityInput { get; set; }
-
-        [ObservableProperty]
-        public partial string SaveButtonText { get; set; }
-
-        [ObservableProperty]
-        public partial bool IsEditing { get; set; }
+        partial void OnSearchTextChanged(string value)
+        {
+            ApplyFilter();
+        }
 
         [RelayCommand]
         private async Task LoadAsync()
         {
-            StatusMessage = string.Empty;
-            await RefreshAsync();
-        }
+            ErrorMessage = string.Empty;
 
-        [RelayCommand]
-        private async Task SaveAsync()
-        {
-            if (!await EnsureAdminAsync())
+            if (!await RequireAdminAsync())
             {
                 return;
             }
 
-            try
-            {
-                var (success, message) = _editingId is int id
-                    ? await _gymService.UpdateGymAsync(id, NameInput, AddressInput, CityInput)
-                    : await _gymService.AddGymAsync(NameInput, AddressInput, CityInput);
-
-                StatusMessage = message;
-
-                if (!success)
-                {
-                    return;
-                }
-
-                ResetForm();
-                await RefreshAsync();
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine(ex);
-                StatusMessage = "Couldn't save the gym.";
-            }
+            await RefreshAsync();
         }
 
         [RelayCommand]
-        private void Edit(Gym? gym)
+        private async Task AddAsync()
+        {
+            await NavigateAsync(nameof(CreateGymPage));
+        }
+
+        [RelayCommand]
+        private async Task EditAsync(Gym? gym)
         {
             if (gym is null)
             {
                 return;
             }
 
-            _editingId = gym.Id;
-            NameInput = gym.Name;
-            AddressInput = gym.Address;
-            CityInput = gym.City;
-            SaveButtonText = "Save changes";
-            IsEditing = true;
-            StatusMessage = string.Empty;
-        }
-
-        [RelayCommand]
-        private void CancelEdit()
-        {
-            ResetForm();
-            StatusMessage = string.Empty;
+            await NavigateAsync($"{nameof(CreateGymPage)}?GymId={gym.Id}");
         }
 
         [RelayCommand]
         private async Task DeleteAsync(Gym? gym)
         {
-            if (gym is null || !await EnsureAdminAsync())
+            if (gym is null)
             {
                 return;
             }
 
-            var confirmed = await Shell.Current.DisplayAlertAsync(
-                "Delete gym",
-                $"Delete {gym.Name} ({gym.City})? This can't be undone.",
+            ErrorMessage = string.Empty;
+
+            bool confirmed = await Shell.Current.DisplayAlertAsync(
+                "Delete Gym",
+                $"Delete {gym.NameAndCity}? This can't be undone.",
                 "Delete",
                 "Cancel");
 
@@ -125,25 +74,21 @@ namespace CapstoneProjectPUSH.ViewModels.Admin
 
             try
             {
-                var (success, message) = await _gymService.DeleteGymAsync(gym.Id);
-                StatusMessage = message;
+                var result = await _gymService.DeleteGymAsync(gym.Id);
 
-                if (!success)
+                if (result.Success)
                 {
-                    return;
+                    await LoadCommand.ExecuteAsync(null);
                 }
-
-                if (_editingId == gym.Id)
+                else
                 {
-                    ResetForm();
+                    ErrorMessage = result.Message;
                 }
-
-                await RefreshAsync();
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex);
-                StatusMessage = "Couldn't delete the gym.";
+                ErrorMessage = "Couldn't delete the gym. Please try again.";
             }
         }
 
@@ -153,23 +98,13 @@ namespace CapstoneProjectPUSH.ViewModels.Admin
 
             try
             {
-                if (!await EnsureAdminAsync())
-                {
-                    return;
-                }
-
-                var gyms = await _gymService.GetGymsAsync();
-
-                Gyms.Clear();
-                foreach (var gym in gyms)
-                {
-                    Gyms.Add(gym);
-                }
+                _allGyms = await _gymService.GetGymsAsync();
+                ApplyFilter();
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex);
-                StatusMessage = "Couldn't load gyms. Pull down to try again.";
+                ErrorMessage = "Couldn't load gyms. Pull down to try again.";
             }
             finally
             {
@@ -177,35 +112,44 @@ namespace CapstoneProjectPUSH.ViewModels.Admin
             }
         }
 
-        private void ResetForm()
+        private void ApplyFilter()
         {
-            _editingId = null;
-            NameInput = string.Empty;
-            AddressInput = string.Empty;
-            CityInput = string.Empty;
-            SaveButtonText = "Add gym";
-            IsEditing = false;
-        }
+            string term = string.Empty;
 
-        // Same access rules as the dashboard
-        private async Task<bool> EnsureAdminAsync()
-        {
-            var user = _userService.CurrentUser;
-
-            if (user is null)
+            if (SearchText is not null)
             {
-                await NavigateAsync("//LandingPage");
-                return false;
+                term = SearchText.Trim();
             }
 
-            if (!user.IsAdmin)
+            List<Gym> filtered;
+
+            if (term.Length == 0)
             {
-                await Shell.Current.DisplayAlertAsync("Access denied", "This page is for administrators only.", "OK");
-                await NavigateAsync("..");
-                return false;
+                filtered = _allGyms;
+            }
+            else
+            {
+                filtered = _allGyms
+                    .Where(g => g.Name.Contains(term, StringComparison.OrdinalIgnoreCase)
+                             || g.City.Contains(term, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
             }
 
-            return true;
+            Gyms.Clear();
+
+            foreach (var gym in filtered)
+            {
+                Gyms.Add(gym);
+            }
+
+            if (filtered.Count == 1)
+            {
+                StatusMessage = "Showing 1 gym.";
+            }
+            else
+            {
+                StatusMessage = $"Showing {filtered.Count} gyms.";
+            }
         }
     }
 }

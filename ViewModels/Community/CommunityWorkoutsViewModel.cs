@@ -6,7 +6,6 @@
 
         public CommunityWorkoutsViewModel(UserService userService, WorkoutService workoutService) : base(userService)
         {
-
             _workoutService = workoutService;
         }
 
@@ -23,21 +22,20 @@
         [RelayCommand]
         private async Task LoadWorkoutsAsync()
         {
+            ErrorMessage = string.Empty;
+
+            var user = _userService.CurrentUser;
+
+            // AppShell sends signed-out users to the landing page
+            if (user is null)
+            {
+                return;
+            }
+
             IsBusy = true;
 
             try
             {
-                var user = _userService.CurrentUser;
-
-                if (user is null)
-                {
-                    // Comment out to disable redirect
-                    await NavigateAsync("//LandingPage");
-                    return;
-                }
-
-                StatusMessage = "Loading workouts...";
-
                 _allWorkouts = await _workoutService.GetPublicWorkoutsAsync();
 
                 ApplyFilter();
@@ -45,7 +43,7 @@
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex);
-                StatusMessage = "Something went wrong. Please try again.";
+                ErrorMessage = "Couldn't load community workouts. Pull down to try again.";
             }
             finally
             {
@@ -60,27 +58,25 @@
 
         private void ApplyFilter()
         {
-            string searchTerm;
+            string term = string.Empty;
 
-            if (string.IsNullOrWhiteSpace(SearchText))
+            if (SearchText is not null)
             {
-                searchTerm = string.Empty;
-            }
-            else
-            {
-                searchTerm = SearchText.Trim();
+                term = SearchText.Trim();
             }
 
             List<Workout> filtered;
 
-            if (searchTerm.Length == 0)
+            if (term.Length == 0)
             {
                 filtered = _allWorkouts;
             }
             else
             {
                 filtered = _allWorkouts
-                    .Where(w => w.Title.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
+                    .Where(w => w.Title.Contains(term, StringComparison.OrdinalIgnoreCase)
+                             || w.CategoryTitle.Contains(term, StringComparison.OrdinalIgnoreCase)
+                             || w.UserDisplayName.Contains(term, StringComparison.OrdinalIgnoreCase))
                     .ToList();
             }
 
@@ -91,13 +87,13 @@
                 Workouts.Add(workout);
             }
 
-            if (Workouts.Count == 1)
+            if (filtered.Count == 1)
             {
                 StatusMessage = "Showing 1 workout.";
             }
             else
             {
-                StatusMessage = $"Showing {Workouts.Count} workouts.";
+                StatusMessage = $"Showing {filtered.Count} workouts.";
             }
         }
 

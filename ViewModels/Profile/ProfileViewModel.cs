@@ -1,25 +1,15 @@
-﻿using System.Collections.ObjectModel;
-using CapstoneProjectPUSH.Models;
-using CapstoneProjectPUSH.Services;
-
-namespace CapstoneProjectPUSH.ViewModels.Profile
+﻿namespace CapstoneProjectPUSH.ViewModels.Profile
 {
     public partial class ProfileViewModel : BaseViewModel
     {
-        private readonly GymService _gymService;
+        private const string PlaceholderImage = "profile_picture_placeholder.png";
 
-        // Gyms the user hasn't linked yet, in the same order as GymChoices (the picker items)
-        private List<Gym> _availableGyms = new();
+        private readonly GymService _gymService;
 
         public ProfileViewModel(GymService gymService, UserService userService) : base(userService)
         {
             _gymService = gymService;
-
-            MyGyms.CollectionChanged += (_, _) => OnPropertyChanged(nameof(HasNoGyms));
-            GymChoices.CollectionChanged += (_, _) => OnPropertyChanged(nameof(HasGymChoices));
         }
-
-        private const string PlaceholderImage = "profile_picture_placeholder.png";
 
         [ObservableProperty]
         public partial string DisplayName { get; set; } = string.Empty;
@@ -33,48 +23,66 @@ namespace CapstoneProjectPUSH.ViewModels.Profile
         [ObservableProperty]
         public partial bool IsAdmin { get; set; }
 
-        // Gyms the user has linked
-        public ObservableCollection<Gym> MyGyms { get; } = new();
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(HasFavouriteGym))]
+        public partial string FavouriteGymText { get; set; } = string.Empty;
 
-        // Picker items: the gyms the user hasn't linked yet
-        public ObservableCollection<string> GymChoices { get; } = new();
+        public bool HasFavouriteGym => !string.IsNullOrEmpty(FavouriteGymText);
 
         [ObservableProperty]
-        public partial int SelectedGymIndex { get; set; } = -1;
-
-        public bool HasNoGyms => MyGyms.Count == 0;
-
-        public bool HasGymChoices => GymChoices.Count > 0;
+        private bool canDeleteAccount;
 
         [RelayCommand]
         private async Task LoadProfileAsync()
         {
+            RefreshUserState();
             StatusMessage = string.Empty;
 
             var user = _userService.CurrentUser;
 
-            if (user != null)
+            if (user is null)
             {
-                DisplayName = user.DisplayName;
-                Email = user.Email;
-                IsAdmin = user.IsAdmin;
-                ProfileImage = GetProfileImageOrPlaceholder(user.ProfileImage);
+                return;
+            }
 
-                await LoadGymsAsync(user.Id);
+            DisplayName = user.DisplayName;
+            Email = user.Email;
+            IsAdmin = user.IsAdmin;
+            ProfileImage = GetProfileImageOrPlaceholder(user.ProfileImage);
+
+            if (IsLoggedIn && !IsCurrentUserAdmin)
+            {
+                CanDeleteAccount = true;
             }
             else
             {
-                DisplayName = "Guest";
-                Email = "Not signed in";
-                IsAdmin = false;
-                ProfileImage = PlaceholderImage;
+                CanDeleteAccount = false;
+            }
 
-                _availableGyms.Clear();
-                MyGyms.Clear();
-                GymChoices.Clear();
+            await LoadFavouriteGymAsync(user.GymId);
+        }
 
-                // Comment out to disable redirect
-                await NavigateAsync("//LandingPage");
+        private async Task LoadFavouriteGymAsync(int? gymId)
+        {
+            FavouriteGymText = string.Empty;
+
+            if (gymId is null)
+            {
+                return;
+            }
+
+            try
+            {
+                var gym = await _gymService.GetGymByIdAsync(gymId.Value);
+
+                if (gym is not null)
+                {
+                    FavouriteGymText = gym.NameAndCity;
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex);
             }
         }
 
@@ -97,7 +105,9 @@ namespace CapstoneProjectPUSH.ViewModels.Profile
         private async Task GoToUpdateDetailsAsync()
         {
             if (!await RequireLoginAsync())
-            return;
+            {
+                return;
+            }
 
             await NavigateAsync(nameof(UpdateProfilePage));
         }
@@ -105,18 +115,12 @@ namespace CapstoneProjectPUSH.ViewModels.Profile
         [RelayCommand]
         private async Task GoToMyWorkoutsAsync()
         {
-            if (!await RequireLoginAsync())
-            return;
-
             await NavigateAsync(nameof(MyWorkoutsPage));
         }
 
         [RelayCommand]
         private async Task GoToMyNotesAsync()
         {
-            if (!await RequireLoginAsync())
-            return;
-
             await NavigateAsync(nameof(MyNotesPage));
         }
 
@@ -124,9 +128,65 @@ namespace CapstoneProjectPUSH.ViewModels.Profile
         private async Task GoToAdminDashboardAsync()
         {
             if (!await RequireLoginAsync())
-            return;
+            {
+                return;
+            }
+
+            if (!IsAdmin)
+            {
+                return;
+            }
 
             await NavigateAsync(nameof(AdminDashboardPage));
+        }
+
+        [RelayCommand]
+        private async Task DeleteAccountAsync()
+        {
+            if (IsBusy)
+            {
+                return;
+            }
+
+            var confirmed = await Shell.Current.DisplayAlertAsync(
+                "Delete Account?",
+                "This will permanently delete your account, workouts, notes and stats. This can't be undone.",
+                "Delete",
+                "Cancel");
+
+            if (!confirmed)
+            {
+                return;
+            }
+
+            ErrorMessage = string.Empty;
+            IsBusy = true;
+
+            AuthResult result;
+
+            try
+            {
+                result = await _userService.DeleteAccountAsync();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex);
+                ErrorMessage = "Your account couldn't be deleted. Please try again.";
+                return;
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+
+            if (!result.Success)
+            {
+                ErrorMessage = result.Message;
+                return;
+            }
+
+            await Shell.Current.DisplayAlertAsync("Account Deleted", "Your account and all your data has been deleted.", "OK");
+            await LogoutAndRedirectAsync();
         }
 
         [RelayCommand]
@@ -144,110 +204,13 @@ namespace CapstoneProjectPUSH.ViewModels.Profile
                 return;
             }
 
-            _userService.Logout();
-            await NavigateAsync("//LandingPage");
+            await LogoutAndRedirectAsync();
         }
 
         [RelayCommand]
         private async Task GoToPrivacyAsync()
         {
             await NavigateAsync(nameof(PrivacyPage));
-        }
-
-        // Link the gym chosen in the picker to the user's account
-        [RelayCommand]
-        private async Task AddGymAsync()
-        {
-            var user = _userService.CurrentUser;
-
-            if (user is null)
-            {
-                await NavigateAsync("//LandingPage");
-                return;
-            }
-
-            if (SelectedGymIndex < 0 || SelectedGymIndex >= _availableGyms.Count)
-            {
-                StatusMessage = "Choose a gym to add first.";
-                return;
-            }
-
-            var gym = _availableGyms[SelectedGymIndex];
-
-            try
-            {
-                var result = await _gymService.LinkGymAsync(user.Id, gym.Id);
-                StatusMessage = result.Message;
-
-                if (result.Success)
-                {
-                    await LoadGymsAsync(user.Id);
-                }
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine(ex);
-                StatusMessage = "Couldn't add that gym. Please try again.";
-            }
-        }
-
-        // Remove a gym from the user's account
-        [RelayCommand]
-        private async Task RemoveGymAsync(Gym? gym)
-        {
-            var user = _userService.CurrentUser;
-
-            if (gym is null || user is null)
-            {
-                return;
-            }
-
-            try
-            {
-                var result = await _gymService.UnlinkGymAsync(user.Id, gym.Id);
-                StatusMessage = result.Message;
-
-                if (result.Success)
-                {
-                    await LoadGymsAsync(user.Id);
-                }
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine(ex);
-                StatusMessage = "Couldn't remove that gym. Please try again.";
-            }
-        }
-
-        // Linked gyms go in the list, every other gym goes in the picker
-        private async Task LoadGymsAsync(int userId)
-        {
-            try
-            {
-                // Linked gyms come first, but every gym is returned
-                var gyms = await _gymService.GetGymsForUserAsync(userId);
-
-                _availableGyms = gyms.Where(g => !g.IsLinked).ToList();
-
-                MyGyms.Clear();
-                foreach (var gym in gyms.Where(g => g.IsLinked))
-                {
-                    MyGyms.Add(gym);
-                }
-
-                GymChoices.Clear();
-                foreach (var gym in _availableGyms)
-                {
-                    GymChoices.Add($"{gym.Name} ({gym.City})");
-                }
-
-                SelectedGymIndex = -1;
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine(ex);
-                StatusMessage = "Couldn't load your gyms.";
-            }
         }
     }
 }
