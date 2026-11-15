@@ -22,13 +22,7 @@ namespace CapstoneProjectPUSH.ViewModels.Auth
 
         public bool IsEmailStep => !IsCodeStep;
 
-        [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(HasErrorMessage))]
-        public partial string? ErrorMessage { get; set; } = string.Empty;
-
-        public bool HasErrorMessage => !string.IsNullOrEmpty(ErrorMessage);
-
-        public ForgotPasswordViewModel(PasswordResetService passwordResetService)
+        public ForgotPasswordViewModel(PasswordResetService passwordResetService, UserService userService) : base(userService)
         {
             _passwordResetService = passwordResetService;
             Email = string.Empty;

@@ -11,7 +11,8 @@ namespace CapstoneProjectPUSH
             nameof(LandingPage),
             nameof(LoginPage),
             nameof(RegisterPage),
-            nameof(PrivacyPage)
+            nameof(PrivacyPage),
+            nameof(ForgotPasswordPage)
         };
 
         // Guest restricted pages

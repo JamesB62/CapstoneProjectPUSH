@@ -171,7 +171,7 @@
                 return new AuthResult(false, "Guest access is currently disabled.");
             }
 
-            // Login user
+            // Login as guest user
             CurrentUser = guestUser;
 
             return new AuthResult(true, "Welcome back, Guest!", guestUser);
