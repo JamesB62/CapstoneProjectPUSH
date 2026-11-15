@@ -2,17 +2,10 @@
 {
     public partial class LandingViewModel : BaseViewModel
     {
-
-        [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(HasErrorMessage))]
-        public partial string? ErrorMessage { get; set; } = string.Empty;
-
-        public bool HasErrorMessage => !string.IsNullOrEmpty(ErrorMessage);
-
         public LandingViewModel(UserService userService) : base(userService)
         {
-            
         }
+
         // Login command
         [RelayCommand]
         private async Task GoToLoginAsync()
@@ -34,6 +27,7 @@
             await NavigateAsync(nameof(PrivacyPage));
         }
 
+        // Sign in with the seeded guest account
         [RelayCommand]
         private async Task GuestLoginAsync()
         {
@@ -42,11 +36,11 @@
                 return;
             }
 
+            ErrorMessage = string.Empty;
+            IsBusy = true;
+
             try
             {
-                IsBusy = true;
-                ErrorMessage = string.Empty;
-
                 var result = await _userService.GuestLoginAsync();
 
                 if (!result.Success)
@@ -55,14 +49,12 @@
                     return;
                 }
 
-                IsBusy = false;
-
                 await NavigateAsync("//HomePage");
             }
             catch (Exception ex)
             {
-                ErrorMessage = "Something went wrong, please try again.";
                 System.Diagnostics.Debug.WriteLine(ex);
+                ErrorMessage = "Something went wrong. Please try again.";
             }
             finally
             {

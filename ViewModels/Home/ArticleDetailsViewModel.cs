@@ -5,18 +5,22 @@
     {
         private readonly ArticleService _articleService;
 
-
         public ArticleDetailsViewModel(ArticleService articleService, UserService userService) : base(userService)
         {
             _articleService = articleService;
-
         }
 
         [ObservableProperty]
         public partial int ArticleId { get; set; }
 
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(HasSourceLink))]
+        [NotifyPropertyChangedFor(nameof(HasNoSourceLink))]
         public partial Article? Article { get; set; }
+
+        public bool HasSourceLink => Article is not null && !string.IsNullOrWhiteSpace(Article.CitationUrl);
+
+        public bool HasNoSourceLink => !HasSourceLink;
 
         partial void OnArticleIdChanged(int value)
         {
@@ -31,19 +35,20 @@
         [RelayCommand]
         private async Task LoadArticleAsync()
         {
+            ErrorMessage = string.Empty;
+
+            var user = _userService.CurrentUser;
+
+            // AppShell sends signed-out users to the landing page
+            if (user is null)
+            {
+                return;
+            }
+
             IsBusy = true;
 
             try
             {
-                var user = _userService.CurrentUser;
-
-                if (user is null)
-                {
-                    // Comment out to disable redirect
-                    await NavigateAsync("//LandingPage");
-                    return;
-                }
-
                 Article = await _articleService.GetArticleByIdAsync(ArticleId);
             }
             catch (Exception ex)
@@ -55,9 +60,13 @@
                 IsBusy = false;
             }
 
-            if (Article is null && _userService.CurrentUser is not null)
+            if (Article is null)
             {
-                await Shell.Current.DisplayAlertAsync("Article not found", "This PUSH article could not be loaded.", "OK");
+                await Shell.Current.DisplayAlertAsync(
+                    "Article Not Found",
+                    "This PUSH article could not be loaded.",
+                    "OK");
+
                 await NavigateAsync("..");
             }
         }
@@ -65,14 +74,16 @@
         [RelayCommand]
         private async Task OpenSourceAsync()
         {
-            if (Article is null || string.IsNullOrWhiteSpace(Article.CitationUrl))
+            ErrorMessage = string.Empty;
+
+            if (!HasSourceLink)
             {
                 return;
             }
 
-            if (!Uri.TryCreate(Article.CitationUrl, UriKind.Absolute, out Uri? uri))
+            if (!Uri.TryCreate(Article!.CitationUrl, UriKind.Absolute, out Uri? uri))
             {
-                await Shell.Current.DisplayAlertAsync("Invalid link", "This source link could not be opened.", "OK");
+                ErrorMessage = "This source link isn't valid.";
                 return;
             }
 
@@ -83,7 +94,7 @@
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex);
-                await Shell.Current.DisplayAlertAsync("Unable to open link", "Something went wrong opening the source.", "OK");
+                ErrorMessage = "Couldn't open the source link.";
             }
         }
     }

@@ -9,43 +9,48 @@
 
     <Grid
         MaximumWidthRequest="500"
-        Padding="30,15"
+        Padding="30,15,30,0"
         RowDefinitions="Auto,Auto,Auto,*"
-        RowSpacing="15">
+        RowSpacing="20">
 
-        <Border IsVisible="{Binding IsGuest}" Padding="15" StrokeShape="RoundRectangle 10">
-            <VerticalStackLayout Spacing="10">
-                <Label Text="You're browsing as a guest. Log in to see and create your own workouts." />
-                <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
-                    <Button Grid.Column="0" Text="Log In" Command="{Binding GoToLoginCommand}" />
-                    <Button Grid.Column="1" Text="Register" Command="{Binding GoToRegisterCommand}" />
-                </Grid>
-            </VerticalStackLayout>
-        </Border>
-
-        <Label
+        <VerticalStackLayout
             Grid.Row="0"
-            FontAttributes="Bold"
-            FontSize="16"
-            Text="Your Workouts"
-            IsVisible="{Binding IsLoggedIn}"/>
+            Spacing="15">
+
+            <!-- Error message -->
+            <Label
+                IsVisible="{Binding HasErrorMessage}"
+                Text="{Binding ErrorMessage}"
+                TextColor="Red"/>
+
+            <!-- Featured workouts -->
+            <Label
+                FontAttributes="Bold"
+                FontSize="16"
+                Text="Your Workouts"/>
+
+        </VerticalStackLayout>
 
         <CollectionView
             Grid.Row="1"
             HeightRequest="150"
             ItemsSource="{Binding FeaturedWorkouts}"
             SelectionMode="Single"
-            SelectedItem="{Binding SelectedWorkout, Mode=TwoWay}"
-            IsVisible="{Binding IsLoggedIn}">
+            SelectedItem="{Binding SelectedWorkout, Mode=TwoWay}">
 
             <!-- Empty view -->
             <CollectionView.EmptyView>
 
-                <Label
-                    FontAttributes="Italic"
-                    HorizontalTextAlignment="Center"
-                    Text="No workouts found."
-                    VerticalTextAlignment="Center"/>
+                <VerticalStackLayout
+                    HorizontalOptions="Center"
+                    VerticalOptions="Center">
+
+                    <Label
+                        FontAttributes="Italic"
+                        HorizontalTextAlignment="Center"
+                        Text="No workouts yet."/>
+
+                </VerticalStackLayout>
 
             </CollectionView.EmptyView>
 
@@ -115,6 +120,7 @@
             SelectionMode="Single"
             SelectedItem="{Binding SelectedArticle, Mode=TwoWay}">
 
+            <!-- Empty view -->
             <CollectionView.EmptyView>
                 
                 <Label
@@ -124,6 +130,7 @@
                 
             </CollectionView.EmptyView>
 
+            <!-- Item layout -->
             <CollectionView.ItemsLayout>
                 
                 <LinearItemsLayout
@@ -132,6 +139,7 @@
                 
             </CollectionView.ItemsLayout>
 
+            <!-- Item template -->
             <CollectionView.ItemTemplate>
                 
                 <DataTemplate
@@ -162,6 +170,7 @@
 
                                     <Label
                                         FontSize="12"
+                                        LineBreakMode="TailTruncation"
                                         Text="{Binding CategoryTitle}"/>
 
                                 </Border>
@@ -172,21 +181,18 @@
                                 Spacing="3">
 
                                 <Label
-                                    FontAttributes="Italic"
-                                    FontSize="12"
                                     Text="{Binding ReadingTime, StringFormat='• Reading time: {0}min'}"/>
 
                                 <Label
-                                    FontAttributes="Italic"
-                                    FontSize="12"
+                                    LineBreakMode="TailTruncation"
                                     Text="{Binding Citation, StringFormat='• Written by: {0}'}"/>
 
-                                <Label
-                                    FontAttributes="Italic"
-                                    FontSize="12"
-                                    Text="{Binding DateTimePublished, StringFormat='• Date published: {0:d MMMM yyyy}'}"/>
-
                             </VerticalStackLayout>
+
+                            <Label
+                                FontAttributes="Italic"
+                                FontSize="12"
+                                Text="{Binding DateTimePublished, StringFormat='Published on {0:d MMM yyyy}'}"/>
 
                         </VerticalStackLayout>
 

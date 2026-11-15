@@ -10,8 +10,8 @@
 
         <VerticalStackLayout
             MaximumWidthRequest="500"
-            Padding="30,15"
-            Spacing="15">
+            Padding="30"
+            Spacing="20">
 
             <Border
                 StrokeShape="RoundRectangle 12"
@@ -48,17 +48,15 @@
 
             </Grid>
 
-            <!-- Reading time and date -->
+            <!-- Info -->
             <VerticalStackLayout
-                Spacing="5">
+                Spacing="3">
 
                 <Label
-                    FontAttributes="Italic"
-                    Text="{Binding Article.ReadingTime, StringFormat='• Reading time: {0}min'}"/>
+                    Text="{Binding Article.ReadingTime, StringFormat='• Reading time: {0} min'}"/>
 
                 <Label
-                    FontAttributes="Italic"
-                    Text="{Binding Article.DateTimePublished, StringFormat='•  Date published: {0:dd MMMM yyyy}'}"/>
+                    Text="{Binding Article.DateTimePublished, StringFormat='• Published: {0:d MMM yyyy}'}"/>
 
             </VerticalStackLayout>
 
@@ -71,13 +69,15 @@
             <Label
                 Text="{Binding Article.Content}"/>
 
-            <!-- Citation -->
+            <!-- Source -->
             <Label
                 FontAttributes="Bold"
                 FontSize="16"
                 Text="Source"/>
 
+            <!-- Tappable when there's a link -->
             <Label
+                IsVisible="{Binding HasSourceLink}"
                 Text="{Binding Article.Citation}"
                 TextDecorations="Underline">
 
@@ -89,6 +89,17 @@
                 </Label.GestureRecognizers>
 
             </Label>
+
+            <!-- Plain text when there's no link -->
+            <Label
+                IsVisible="{Binding HasNoSourceLink}"
+                Text="{Binding Article.Citation}"/>
+
+            <!-- Error message -->
+            <Label
+                IsVisible="{Binding HasErrorMessage}"
+                Text="{Binding ErrorMessage}"
+                TextColor="Red"/>
 
         </VerticalStackLayout>
 
