@@ -17,5 +17,8 @@
 
         [Ignore]
         public string FullAddress => $"{Address}, {City}";
+
+        [Ignore]
+        public string NameAndCity => $"{Name} ({City})";
     }
 }

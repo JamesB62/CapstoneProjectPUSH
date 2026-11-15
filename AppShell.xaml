@@ -8,6 +8,7 @@
     xmlns:admin="clr-namespace:CapstoneProjectPUSH.Views.Admin"
     xmlns:auth="clr-namespace:CapstoneProjectPUSH.Views.Auth"
     xmlns:base="clr-namespace:CapstoneProjectPUSH.Views.Base"
+    xmlns:community="clr-namespace:CapstoneProjectPUSH.Views.Community"
     xmlns:exercises="clr-namespace:CapstoneProjectPUSH.Views.Exercises"
     xmlns:home="clr-namespace:CapstoneProjectPUSH.Views.Home"
     xmlns:profile="clr-namespace:CapstoneProjectPUSH.Views.Profile"
@@ -53,6 +54,20 @@
             <ShellContent
                 ContentTemplate="{DataTemplate workouts:WorkoutsPage}"
                 Route="WorkoutsPage"/>
+
+        </Tab>
+
+    </FlyoutItem>
+
+    <FlyoutItem
+        Icon="people.svg"
+        Title="Community Workouts">
+
+        <Tab>
+
+            <ShellContent
+                ContentTemplate="{DataTemplate community:CommunityWorkoutsPage}"
+                Route="CommunityWorkoutsPage"/>
 
         </Tab>
 

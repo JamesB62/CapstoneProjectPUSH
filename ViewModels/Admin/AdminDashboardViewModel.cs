@@ -6,20 +6,18 @@
         private readonly ExerciseService _exerciseService;
         private readonly GymService _gymService;
         private readonly TrainerService _trainerService;
-        private readonly UserService _userService;
 
         public AdminDashboardViewModel(
             CategoryService categoryService,
             ExerciseService exerciseService,
             GymService gymService,
             TrainerService trainerService,
-            UserService userService)
+            UserService userService) : base(userService)
         {
             _categoryService = categoryService;
             _exerciseService = exerciseService;
             _gymService = gymService;
             _trainerService = trainerService;
-            _userService = userService;
         }
 
         [ObservableProperty]
@@ -46,27 +44,15 @@
         [RelayCommand]
         private async Task LoadDashboardAsync()
         {
+            if (!await RequireAdminAsync())
+            {
+                return;
+            }
+
             IsBusy = true;
 
             try
             {
-                var user = _userService.CurrentUser;
-
-                if (user is null)
-                {
-                    // Comment out to disable redirect
-                    await NavigateAsync("//LandingPage");
-                    return;
-                }
-
-                if (!user.IsAdmin)
-                {
-                    await Shell.Current.DisplayAlertAsync("Access denied", "This page is for administrators only.", "OK");
-                    // Comment out to disable redirect
-                    await NavigateAsync("..");
-                    return;
-                }
-
                 TotalCategories = await _categoryService.GetCategoryCountAsync();
                 TotalExercises = await _exerciseService.GetExerciseCountAsync();
                 TotalGyms = await _gymService.GetGymCountAsync();
@@ -91,19 +77,19 @@
         [RelayCommand]
         private async Task GoToUserManagementAsync()
         {
-            //await NavigateAsync(nameof(UserManagementPage));
+            await NavigateAsync(nameof(UserManagementPage));
         }
 
         [RelayCommand]
         private async Task GoToCategoryManagementAsync()
         {
-            //await NavigateAsync(nameof(CategoriesManagementPage));
+            await NavigateAsync(nameof(CategoriesManagementPage));
         }
 
         [RelayCommand]
         private async Task GoToGymManagementAsync()
         {
-            //await NavigateAsync(nameof(GymsManagementPage));
+            await NavigateAsync(nameof(GymsManagementPage));
         }
     }
 }

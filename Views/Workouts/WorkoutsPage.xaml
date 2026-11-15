@@ -7,48 +7,39 @@
              x:DataType="vm:WorkoutsViewModel"
              Title="PUSH Workouts">
 
+    <ContentPage.ToolbarItems>
+
+        <ToolbarItem
+            Command="{Binding AddWorkoutCommand}"
+            Text="+ Add"/>
+
+    </ContentPage.ToolbarItems>
+
     <Grid
         MaximumWidthRequest="500"
-        Padding="30,15"
+        Padding="30,15,30,0"
         RowDefinitions="Auto,Auto,*"
-        RowSpacing="15">
+        RowSpacing="20">
 
-        <Grid
-            ColumnDefinitions="*,Auto"
-            ColumnSpacing="10"
-            Grid.Row="0">
+        <!-- Search bar -->
+        <SearchBar
+            Grid.Row="0"
+            Placeholder="Search by title or category..."
+            Text="{Binding SearchText}"/>
 
-            <Label
-                FontAttributes="Bold"
-                FontSize="16"
-                Grid.Column="0"
-                Text="My Workout Plans"
-                VerticalOptions="Center"/>
-
-            <!-- Replace? -->
-            <Button
-                Command="{Binding AddWorkoutCommand}"
-                Grid.Column="1"
-                HeightRequest="20"
-                Padding="5"
-                Text="+"
-                WidthRequest="20"/>
-
-        </Grid>
-
-        <!-- Keep? -->
-        <!-- Search -->
         <VerticalStackLayout
             Grid.Row="1"
-            Spacing="10">
+            Spacing="15">
 
-            <SearchBar
-                Placeholder="Search workouts"
-                Text="{Binding SearchText}"/>
-
+            <!-- Status message -->
             <Label
-                FontAttributes="Italic"
                 Text="{Binding StatusMessage}"/>
+
+            <!-- Error message -->
+            <Label
+                IsVisible="{Binding HasErrorMessage}"
+                Text="{Binding ErrorMessage}"
+                TextColor="Red"/>
 
         </VerticalStackLayout>
 
@@ -59,8 +50,8 @@
 
             <CollectionView
                 ItemsSource="{Binding Workouts}"
-                SelectionMode="Single"
-                SelectedItem="{Binding SelectedWorkout, Mode=TwoWay}">
+                SelectedItem="{Binding SelectedWorkout, Mode=TwoWay}"
+                SelectionMode="Single">
 
                 <!-- Empty view -->
                 <CollectionView.EmptyView>
@@ -77,7 +68,7 @@
                         <Label
                             FontAttributes="Italic"
                             HorizontalTextAlignment="Center"
-                            Text="Tap + to create one."/>
+                            Text="Tap + Add to create one, or pull down to try again."/>
 
                     </VerticalStackLayout>
 
@@ -101,6 +92,22 @@
                         <!-- Keep? -->
                         <SwipeView>
 
+                            <!-- Swipe actions -->
+                            <SwipeView.LeftItems>
+
+                                <SwipeItems>
+
+                                    <SwipeItem
+                                        BackgroundColor="#6B7280"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:WorkoutsViewModel}}, Path=EditWorkoutCommand}"
+                                        CommandParameter="{Binding .}"
+                                        IsVisible="{Binding Source={RelativeSource AncestorType={x:Type vm:WorkoutsViewModel}}, Path=IsLoggedIn}"
+                                        Text="Edit"/>
+
+                                </SwipeItems>
+
+                            </SwipeView.LeftItems>
+
                             <SwipeView.RightItems>
 
                                 <SwipeItems>
@@ -109,12 +116,14 @@
                                         BackgroundColor="Red"
                                         Command="{Binding Source={RelativeSource AncestorType={x:Type vm:WorkoutsViewModel}}, Path=DeleteWorkoutCommand}"
                                         CommandParameter="{Binding .}"
+                                        IsVisible="{Binding Source={RelativeSource AncestorType={x:Type vm:WorkoutsViewModel}}, Path=IsLoggedIn}"
                                         Text="Delete"/>
 
                                 </SwipeItems>
 
                             </SwipeView.RightItems>
 
+                            <!-- Card -->
                             <Border
                                 Style="{StaticResource Card}">
 
@@ -146,26 +155,28 @@
 
                                     </Grid>
 
+                                    <!-- Info -->
                                     <VerticalStackLayout
-                                        Spacing="10">
-
-                                        <VerticalStackLayout
-                                            Spacing="0">
-
-                                            <Label
-                                                Text="{Binding ExerciseCount, StringFormat='• Exercises: {0}'}"/>
-
-                                            <Label
-                                                Text="{Binding SetCount, StringFormat='• Sets: {0}'}"/>
-
-                                        </VerticalStackLayout>
+                                        Spacing="3">
 
                                         <Label
-                                            FontAttributes="Italic"
-                                            FontSize="12"
-                                            Text="{Binding DateTimeCreated, StringFormat='Date created: {0:d MMMM yyyy}'}"/>
+                                            Text="{Binding ExerciseCount, StringFormat='• Exercises: {0}'}"/>
+
+                                        <Label
+                                            IsVisible="{Binding HasSets}"
+                                            Text="{Binding SetCount, StringFormat='• Sets: {0}'}"/>
+
+                                        <Label
+                                            IsVisible="{Binding HasMinutes}"
+                                            Text="{Binding TotalMinutes, StringFormat='• Time: {0} min'}"/>
 
                                     </VerticalStackLayout>
+
+                                    <!-- Date time created -->
+                                    <Label
+                                        FontAttributes="Italic"
+                                        FontSize="12"
+                                        Text="{Binding DateTimeCreated, StringFormat='Created on {0:d MMM yyyy}'}"/>
 
                                 </VerticalStackLayout>
 

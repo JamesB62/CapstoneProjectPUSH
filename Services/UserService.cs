@@ -22,6 +22,16 @@
 
         public User? CurrentUser { get; private set; }
 
+        // No one is signed in
+        public bool IsUnauthenticated => CurrentUser == null;
+
+        // Signed in with the seeded guest account
+        public bool IsGuest => CurrentUser != null && CurrentUser.IsGuest;
+
+        // Signed in with a registered account
+        public bool IsLoggedIn => CurrentUser != null && !CurrentUser.IsGuest;
+
+
         // Registration
         public async Task<AuthResult> RegisterAsync(string displayName, string email, string password, string confirmPassword, bool hasAcceptedPrivacy)
         {
@@ -100,7 +110,7 @@
         }
 
         // Login
-        public async Task<AuthResult> LoginAsync(string email, string password, bool requireAdmin = false)
+        public async Task<AuthResult> LoginAsync(string email, string password)
         {
             email = NormaliseEmail(email);
 
@@ -143,6 +153,31 @@
             return new AuthResult(true, $"Welcome back, {user.DisplayName}!", user);
         }
 
+        // Login guest
+        public async Task<AuthResult> GuestLoginAsync()
+        {
+            // Database check
+            var db = await _databaseService.GetConnectionAsync();
+
+            var guestUser = await db.Table<User>().Where(u => u.IsGuest).FirstOrDefaultAsync();
+
+            if (guestUser is null)
+            {
+                return new AuthResult(false, "Guest account not found.");
+            }
+
+            if (!guestUser.IsActive)
+            {
+                return new AuthResult(false, "Guest access is currently disabled.");
+            }
+
+            // Login user
+            CurrentUser = guestUser;
+
+            return new AuthResult(true, "Welcome back, Guest!", guestUser);
+        }
+
+
         // Logout
         public void Logout()
         {
@@ -150,11 +185,16 @@
         }
 
         // Update details
-        public async Task<AuthResult> UpdateDetailsAsync(string displayName, string email, string currentPassword, string newPassword, string confirmPassword)
+        public async Task<AuthResult> UpdateDetailsAsync(string displayName, string email, string currentPassword, string newPassword, string confirmPassword, int? gymId)
         {
             if (CurrentUser is null)
             {
                 return new AuthResult(false, "You must be signed in to update your details.");
+            }
+
+            if (CurrentUser.IsGuest)
+            {
+                return new AuthResult(false, "Guest accounts can't update details. Register to create your own account.");
             }
 
             if (!CurrentUser.IsActive)
@@ -219,11 +259,23 @@
                 return new AuthResult(false, "An account with that email already exists.");
             }
 
-            var nameTaken = await db.Table<User>().Where(u => u.DisplayName == displayName && u.Id != user.Id).FirstOrDefaultAsync();
+            var nameTaken = await db.Table<User>().Where(u => u.DisplayName.ToLower() == displayName.ToLower() && u.Id != user.Id).FirstOrDefaultAsync();
 
             if (nameTaken is not null)
             {
                 return new AuthResult(false, "An account with that display name already exists.");
+            }
+
+            if (gymId is not null)
+            {
+                int favouriteGymId = gymId.Value;
+
+                var gym = await db.Table<Gym>().Where(g => g.Id == favouriteGymId).FirstOrDefaultAsync();
+
+                if (gym is null)
+                {
+                    return new AuthResult(false, "That gym could not be found.");
+                }
             }
 
             if (changingPassword)
@@ -241,6 +293,7 @@
             // Update details
             user.DisplayName = displayName;
             user.Email = email;
+            user.GymId = gymId;
 
             try
             {
@@ -248,12 +301,53 @@
             }
             catch (SQLiteException)
             {
-                return new AuthResult(false, "An account with that email already exists.");
+                return new AuthResult(false, "An account with that email or display name already exists.");
             }
 
             CurrentUser = user;
 
             return new AuthResult(true, "Details updated successfully.", user);
+        }
+
+        // Delete account
+        public async Task<AuthResult> DeleteAccountAsync()
+        {
+            if (CurrentUser is null)
+            {
+                return new AuthResult(false, "You must be logged in to delete your account.");
+            }
+
+            if (CurrentUser.IsGuest)
+            {
+                return new AuthResult(false, "The guest account can't be deleted.");
+            }
+
+            if (CurrentUser.IsAdmin)
+            {
+                return new AuthResult(false, "Admin accounts can't be deleted.");
+            }
+
+            var userId = CurrentUser.Id;
+            var db = await _databaseService.GetConnectionAsync();
+
+            await db.RunInTransactionAsync(conn =>
+            {
+                var workouts = conn.Table<Workout>().Where(w => w.UserId == userId).ToList();
+
+                foreach (var workout in workouts)
+                {
+                    var workoutId = workout.Id;
+                    conn.Table<WorkoutExercise>().Delete(we => we.WorkoutId == workoutId);
+                }
+
+                conn.Table<Workout>().Delete(w => w.UserId == userId);
+                conn.Table<Note>().Delete(n => n.UserId == userId);
+                conn.Table<WorkoutLog>().Delete(l => l.UserId == userId);
+                conn.Table<WeightLog>().Delete(l => l.UserId == userId);
+                conn.Table<User>().Delete(u => u.Id == userId);
+            });
+
+            return new AuthResult(true, "Your account has been deleted.");
         }
 
         // Get user count
@@ -289,26 +383,14 @@
             return users;
         }
 
-        // Get user by Id
-        public async Task<User?> GetUserByIdAsync(int userId)
+        // Get all display names
+        public async Task<Dictionary<int, string>> GetDisplayNamesByIdAsync()
         {
-            if (!IsCurrentUserAdmin())
-            {
-                return null;
-            }
-
             var db = await _databaseService.GetConnectionAsync();
 
-            var user = await db.Table<User>()
-                .Where(u => u.Id == userId)
-                .FirstOrDefaultAsync();
+            var users = await db.Table<User>().ToListAsync();
 
-            if (user is null)
-            {
-                return null;
-            }
-
-            return user;
+            return users.ToDictionary(u => u.Id, u => u.DisplayName);
         }
 
         // Set user active status

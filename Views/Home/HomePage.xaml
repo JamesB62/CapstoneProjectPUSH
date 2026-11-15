@@ -9,15 +9,27 @@
 
     <Grid
         MaximumWidthRequest="500"
-        Padding="30,15"
+        Padding="30,15,30,0"
         RowDefinitions="Auto,Auto,Auto,*"
-        RowSpacing="15">
+        RowSpacing="20">
 
-        <Label
+        <VerticalStackLayout
             Grid.Row="0"
-            FontAttributes="Bold"
-            FontSize="16"
-            Text="Your Workouts"/>
+            Spacing="15">
+
+            <!-- Error message -->
+            <Label
+                IsVisible="{Binding HasErrorMessage}"
+                Text="{Binding ErrorMessage}"
+                TextColor="Red"/>
+
+            <!-- Featured workouts -->
+            <Label
+                FontAttributes="Bold"
+                FontSize="16"
+                Text="Your Workouts"/>
+
+        </VerticalStackLayout>
 
         <CollectionView
             Grid.Row="1"
@@ -29,11 +41,16 @@
             <!-- Empty view -->
             <CollectionView.EmptyView>
 
-                <Label
-                    FontAttributes="Italic"
-                    HorizontalTextAlignment="Center"
-                    Text="No workouts found."
-                    VerticalTextAlignment="Center"/>
+                <VerticalStackLayout
+                    HorizontalOptions="Center"
+                    VerticalOptions="Center">
+
+                    <Label
+                        FontAttributes="Italic"
+                        HorizontalTextAlignment="Center"
+                        Text="No workouts yet."/>
+
+                </VerticalStackLayout>
 
             </CollectionView.EmptyView>
 
@@ -103,6 +120,7 @@
             SelectionMode="Single"
             SelectedItem="{Binding SelectedArticle, Mode=TwoWay}">
 
+            <!-- Empty view -->
             <CollectionView.EmptyView>
                 
                 <Label
@@ -112,6 +130,7 @@
                 
             </CollectionView.EmptyView>
 
+            <!-- Item layout -->
             <CollectionView.ItemsLayout>
                 
                 <LinearItemsLayout
@@ -120,6 +139,7 @@
                 
             </CollectionView.ItemsLayout>
 
+            <!-- Item template -->
             <CollectionView.ItemTemplate>
                 
                 <DataTemplate
@@ -150,7 +170,8 @@
 
                                     <Label
                                         FontSize="12"
-                                        Text="{Binding CategoryTitle}"/>
+                                        LineBreakMode="TailTruncation"
+                                        Text="{Binding Topic}"/>
 
                                 </Border>
 
@@ -160,21 +181,18 @@
                                 Spacing="3">
 
                                 <Label
-                                    FontAttributes="Italic"
-                                    FontSize="12"
                                     Text="{Binding ReadingTime, StringFormat='• Reading time: {0}min'}"/>
 
                                 <Label
-                                    FontAttributes="Italic"
-                                    FontSize="12"
+                                    LineBreakMode="TailTruncation"
                                     Text="{Binding Citation, StringFormat='• Written by: {0}'}"/>
 
-                                <Label
-                                    FontAttributes="Italic"
-                                    FontSize="12"
-                                    Text="{Binding DateTimePublished, StringFormat='• Date published: {0:d MMMM yyyy}'}"/>
-
                             </VerticalStackLayout>
+
+                            <Label
+                                FontAttributes="Italic"
+                                FontSize="12"
+                                Text="{Binding DateTimePublished, StringFormat='Published on {0:d MMM yyyy}'}"/>
 
                         </VerticalStackLayout>
 

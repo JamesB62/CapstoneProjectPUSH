@@ -52,5 +52,14 @@
 
         [Ignore]
         public string GymFullAddress => $"{GymAddress}, {GymCity}";
+
+        [Ignore]
+        public string GymLabel => string.IsNullOrEmpty(GymCity) ? GymName : $"{GymName}, {GymCity}";
+
+        [Ignore]
+        public string GymDetailsLabel => string.IsNullOrEmpty(GymAddress) ? GymName : $"{GymName} – {GymFullAddress}";
+
+        [Ignore]
+        public bool IsAtFavouriteGym { get; set; }
     }
 }
