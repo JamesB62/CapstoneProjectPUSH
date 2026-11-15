@@ -13,6 +13,7 @@
             _userService = userService;
         }
 
+        // Get a user's workouts
         public async Task<List<Workout>> GetWorkoutsForUserAsync(int userId)
         {
             var db = await _databaseService.GetConnectionAsync();
@@ -22,11 +23,29 @@
                 .OrderByDescending(w => w.DateTimeCreated)
                 .ToListAsync();
 
+            if (workouts.Count == 0)
+            {
+                return workouts;
+            }
+
+            // Load every exercise for these workouts in one query, then group them by workout
+            var workoutIds = workouts.Select(w => w.Id).ToList();
+
+            var workoutExercises = await db.Table<WorkoutExercise>()
+                .Where(we => workoutIds.Contains(we.WorkoutId))
+                .ToListAsync();
+
+            var exercisesByWorkout = workoutExercises.ToLookup(we => we.WorkoutId);
             var categoryTitles = await _categoryService.GetCategoryTitlesAsync();
 
             foreach (var workout in workouts)
             {
+                var exercises = exercisesByWorkout[workout.Id];
+
                 workout.CategoryTitle = categoryTitles.GetValueOrDefault(workout.CategoryId, "Uncategorised");
+                workout.ExerciseCount = exercises.Count();
+                workout.SetCount = exercises.Sum(e => e.Sets);
+                workout.TotalMinutes = exercises.Sum(e => e.DurationMinutes);
             }
 
             return workouts;

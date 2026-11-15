@@ -11,7 +11,6 @@
 
         public ActiveWorkoutViewModel(UserService userService, WorkoutLogService workoutLogService, WorkoutService workoutService) :base(userService)
         {
-
             _workoutLogService = workoutLogService;
             _workoutService = workoutService;
         }
@@ -46,19 +45,20 @@
         [RelayCommand]
         private async Task LoadWorkoutAsync()
         {
+            ErrorMessage = string.Empty;
+
+            var user = _userService.CurrentUser;
+
+            // AppShell sends signed-out users to the landing page
+            if (user is null)
+            {
+                return;
+            }
+
             IsBusy = true;
 
             try
             {
-                var user = _userService.CurrentUser;
-
-                if (user is null)
-                {
-                    // Comment out to disable redirect
-                    await NavigateAsync("//LandingPage");
-                    return;
-                }
-
                 Workout = await _workoutService.GetWorkoutByIdAsync(WorkoutId, user.Id);
 
                 if (Workout is null)
@@ -70,15 +70,11 @@
                 {
                     var exercises = await _workoutService.GetExercisesForWorkoutAsync(WorkoutId);
 
-                    List<WorkoutExercise> orderedExercises = exercises
-                        .OrderBy(e => e.SortOrder)
-                        .ToList();
-
                     Exercises.Clear();
 
                     int number = 1;
 
-                    foreach (var exercise in orderedExercises)
+                    foreach (var exercise in exercises)
                     {
                         exercise.DisplayNumber = number;
                         Exercises.Add(new ActiveExercise(exercise));
@@ -98,9 +94,13 @@
                 IsBusy = false;
             }
 
-            if (Workout is null && _userService.CurrentUser is not null)
+            if (Workout is null)
             {
-                await Shell.Current.DisplayAlertAsync("Workout not found", "This PUSH workout could not be loaded.", "OK");
+                await Shell.Current.DisplayAlertAsync(
+                    "Workout Not Found",
+                    "This PUSH workout could not be loaded.",
+                    "OK");
+
                 await NavigateAsync("..");
             }
         }
@@ -166,18 +166,16 @@
         [RelayCommand]
         private async Task FinishWorkoutAsync()
         {
-            StatusMessage = string.Empty;
-
-            var user = _userService.CurrentUser;
-
-            if (user is null)
+            if (IsBusy)
             {
-                // Comment out to disable redirect
-                await NavigateAsync("//LandingPage");
                 return;
             }
 
-            if (Workout is null)
+            ErrorMessage = string.Empty;
+
+            var user = _userService.CurrentUser;
+
+            if (user is null || Workout is null)
             {
                 return;
             }
@@ -187,21 +185,33 @@
 
             if (completed == Exercises.Count)
             {
-                message = "Save this workout?";
+                message = "Finish this workout?";
             }
             else
             {
-                message = $"You've completed {completed} of {Exercises.Count} exercises. Finish and save anyway?";
+                message = $"You've completed {completed} of {Exercises.Count} exercises. Finish anyway?";
             }
 
-            bool confirm = await Shell.Current.DisplayAlertAsync("Finish Workout", message, "Finish", "Keep going");
+            bool confirmed = await Shell.Current.DisplayAlertAsync("Finish Workout", message, "Finish", "Keep Going");
 
-            if (!confirm)
+            if (!confirmed)
             {
                 return;
             }
 
             StopTimer();
+
+            // Guest runs aren't saved
+            if (user.IsGuest)
+            {
+                await Shell.Current.DisplayAlertAsync(
+                    "Workout Finished",
+                    $"Nice work! You finished in {ElapsedText}. Guest workouts aren't saved. Log in or register to track your progress.",
+                    "OK");
+
+                await NavigateAsync("..");
+                return;
+            }
 
             var workoutLog = new WorkoutLog
             {
@@ -216,12 +226,18 @@
             try
             {
                 await _workoutLogService.AddWorkoutLogAsync(workoutLog);
+
+                await Shell.Current.DisplayAlertAsync(
+                    "Workout Saved",
+                    $"{Workout.Title} has been saved to your stats ({ElapsedText}).",
+                    "OK");
+
                 await NavigateAsync("..");
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex);
-                StatusMessage = "Could not save the workout. Please try again.";
+                ErrorMessage = "Couldn't save the workout. Please try again.";
 
                 // Resume timing so the session isn't lost
                 StartTimer();
@@ -235,9 +251,13 @@
         [RelayCommand]
         private async Task DiscardWorkoutAsync()
         {
-            bool confirm = await Shell.Current.DisplayAlertAsync("Discard workout?", "This workout won't be saved.", "Discard", "Keep going");
+            bool confirmed = await Shell.Current.DisplayAlertAsync(
+                "Discard Workout",
+                "This workout won't be saved.",
+                "Discard",
+                "Keep Going");
 
-            if (!confirm)
+            if (!confirmed)
             {
                 return;
             }

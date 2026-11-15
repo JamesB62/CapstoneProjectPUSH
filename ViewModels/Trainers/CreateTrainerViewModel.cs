@@ -63,6 +63,8 @@
             {
                 PageTitle = "Edit PUSH Trainer";
                 SaveButtonText = "Save Changes";
+
+                LoadCommand.Execute(null);
             }
         }
 

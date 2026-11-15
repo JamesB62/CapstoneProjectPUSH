@@ -6,20 +6,24 @@
     {
         private readonly NoteService _noteService;
 
-
-        public NoteFormViewModel(NoteService noteService, UserService userService) :base(userService)
+        public NoteFormViewModel(NoteService noteService, UserService userService) : base(userService)
         {
             _noteService = noteService;
         }
+
+        private bool _hasLoadedNote;
 
         [ObservableProperty]
         public partial int WorkoutId { get; set; }
 
         [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(IsEditMode))]
-        [NotifyPropertyChangedFor(nameof(PageTitle))]
-        [NotifyPropertyChangedFor(nameof(SaveButtonText))]
         public partial int NoteId { get; set; }
+
+        [ObservableProperty]
+        public partial string PageTitle { get; set; } = "Add PUSH Note";
+
+        [ObservableProperty]
+        public partial string SaveButtonText { get; set; } = "Save Note";
 
         [ObservableProperty]
         public partial string NoteTitle { get; set; } = string.Empty;
@@ -27,91 +31,63 @@
         [ObservableProperty]
         public partial string NoteContent { get; set; } = string.Empty;
 
-        [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(HasError))]
-        public partial string ErrorMessage { get; set; } = string.Empty;
-
-        public bool IsEditMode
-        {
-            get
-            {
-                return NoteId > 0;
-            }
-        }
-
-        public bool HasError
-        {
-            get
-            {
-                return !string.IsNullOrEmpty(ErrorMessage);
-            }
-        }
-
-        public string PageTitle
-        {
-            get
-            {
-                if (IsEditMode)
-                {
-                    return "Edit Note";
-                }
-                else
-                {
-                    return "Add Note";
-                }
-            }
-        }
-
-        public string SaveButtonText
-        {
-            get
-            {
-                if (IsEditMode)
-                {
-                    return "Save Changes";
-                }
-                else
-                {
-                    return "Add Note";
-                }
-            }
-        }
-
         partial void OnNoteIdChanged(int value)
         {
-            if (value <= 0)
+            if (value > 0)
             {
-                return;
-            }
+                PageTitle = "Edit PUSH Note";
+                SaveButtonText = "Save Changes";
 
-            LoadNoteCommand.Execute(null);
+                LoadCommand.Execute(null);
+            }
         }
 
         [RelayCommand]
-        private async Task LoadNoteAsync()
+        private async Task LoadAsync()
         {
+            ErrorMessage = string.Empty;
+
             var user = _userService.CurrentUser;
 
-            if (user is null)
+            if (user is null || user.IsGuest)
             {
-                await NavigateAsync("//LandingPage");
-                return;
-            }
-
-            var note = await _noteService.GetNoteByIdAsync(NoteId, user.Id);
-
-            if (note is null)
-            {
-                await Shell.Current.DisplayAlertAsync("Note not found", "This note could not be loaded.", "OK");
                 await NavigateAsync("..");
                 return;
             }
 
-            WorkoutId = note.WorkoutId;
-            NoteTitle = note.Title;
-            NoteContent = note.Content;
-        }
+            // Add mode, or already filled in
+            if (NoteId <= 0 || _hasLoadedNote)
+            {
+                return;
+            }
 
+            try
+            {
+                var note = await _noteService.GetNoteByIdAsync(NoteId, user.Id);
+
+                if (note is null)
+                {
+                    await Shell.Current.DisplayAlertAsync(
+                        "Note Not Found",
+                        "This note could not be loaded.",
+                        "OK");
+
+                    await NavigateAsync("..");
+                    return;
+                }
+
+                WorkoutId = note.WorkoutId;
+                NoteTitle = note.Title;
+                NoteContent = note.Content;
+
+                _hasLoadedNote = true;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex);
+                ErrorMessage = "Couldn't load the note. Please try again.";
+            }
+        }
 
         [RelayCommand]
         private async Task SaveNoteAsync()
@@ -127,34 +103,33 @@
 
             if (user is null)
             {
-                await NavigateAsync("//LandingPage");
                 return;
             }
 
             string title = (NoteTitle ?? string.Empty).Trim();
             string content = (NoteContent ?? string.Empty).Trim();
 
-            if (string.IsNullOrEmpty(title))
+            if (title.Length == 0)
             {
-                ErrorMessage = "Title is required.";
+                ErrorMessage = "Please give your note a title.";
                 return;
             }
 
             if (title.Length > 100)
             {
-                ErrorMessage = "Title must be 100 characters or less.";
+                ErrorMessage = "Please keep the title to 100 characters or less.";
                 return;
             }
 
-            if (string.IsNullOrEmpty(content))
+            if (content.Length == 0)
             {
-                ErrorMessage = "Content is required.";
+                ErrorMessage = "Please write something in your note.";
                 return;
             }
 
             if (content.Length > 5000)
             {
-                ErrorMessage = "Content must be 5000 characters or less.";
+                ErrorMessage = "Please keep the note to 5000 characters or less.";
                 return;
             }
 
@@ -162,7 +137,9 @@
 
             try
             {
-                if (IsEditMode)
+                bool isEditing = NoteId > 0;
+
+                if (isEditing)
                 {
                     var updatedNote = new Note
                     {
@@ -175,15 +152,17 @@
 
                     if (rowsUpdated == 0)
                     {
-                        ErrorMessage = "This note could not be updated.";
+                        ErrorMessage = "This note could not be found.";
                         return;
                     }
+
+                    await Shell.Current.DisplayAlertAsync("Note Updated", "Your note has been updated.", "OK");
                 }
                 else
                 {
                     if (WorkoutId <= 0)
                     {
-                        ErrorMessage = "No workout selected for this note.";
+                        ErrorMessage = "This note isn't linked to a workout. Please go back and try again.";
                         return;
                     }
 
@@ -197,6 +176,8 @@
                     };
 
                     await _noteService.AddNoteAsync(newNote);
+
+                    await Shell.Current.DisplayAlertAsync("Note Created", "Your note has been created.", "OK");
                 }
 
                 await NavigateAsync("..");
@@ -204,7 +185,7 @@
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex);
-                ErrorMessage = "Something went wrong saving this note.";
+                ErrorMessage = "Couldn't save the note. Please try again.";
             }
             finally
             {

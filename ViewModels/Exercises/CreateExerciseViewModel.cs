@@ -56,6 +56,8 @@
             {
                 PageTitle = "Edit PUSH Exercise";
                 SaveButtonText = "Save Changes";
+
+                LoadCommand.Execute(null);
             }
         }
 

@@ -112,6 +112,7 @@
 
                                 </Grid>
 
+                                <!-- Info -->
                                 <VerticalStackLayout
                                     Spacing="3">
 
@@ -119,7 +120,12 @@
                                         Text="{Binding ExerciseCount, StringFormat='• Exercises: {0}'}"/>
 
                                     <Label
+                                        IsVisible="{Binding HasSets}"
                                         Text="{Binding SetCount, StringFormat='• Sets: {0}'}"/>
+
+                                    <Label
+                                        IsVisible="{Binding HasMinutes}"
+                                        Text="{Binding TotalMinutes, StringFormat='• Time: {0} min'}"/>
 
                                 </VerticalStackLayout>
 

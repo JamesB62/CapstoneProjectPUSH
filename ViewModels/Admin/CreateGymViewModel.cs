@@ -36,6 +36,8 @@
             {
                 PageTitle = "Edit PUSH Gym";
                 SaveButtonText = "Save Changes";
+
+                LoadCommand.Execute(null);
             }
         }
 
