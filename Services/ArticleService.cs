@@ -2,16 +2,14 @@
 {
     public class ArticleService
     {
-        private readonly CategoryService _categoryService;
         private readonly DatabaseService _databaseService;
 
-        public ArticleService(CategoryService categoryService, DatabaseService databaseService)
+        public ArticleService(DatabaseService databaseService)
         {
-            _categoryService = categoryService;
             _databaseService = databaseService;
         }
 
-        // Get article count
+        // Get article count -- add to admin dashboard?
         public async Task<int> GetArticleCountAsync()
         {
             var db = await _databaseService.GetConnectionAsync();
@@ -28,13 +26,6 @@
                 .OrderByDescending(a => a.DateTimePublished)
                 .ToListAsync();
 
-            var categoryTitles = await _categoryService.GetCategoryTitlesAsync();
-
-            foreach (var article in articles)
-            {
-                article.CategoryTitle = categoryTitles.GetValueOrDefault(article.CategoryId, "Uncategorised");
-            }
-
             return articles;
         }
 
@@ -43,20 +34,9 @@
         {
             var db = await _databaseService.GetConnectionAsync();
 
-            var article = await db.Table<Article>()
+            return await db.Table<Article>()
                 .Where(a => a.Id == articleId)
                 .FirstOrDefaultAsync();
-
-            if (article is null)
-            {
-                return null;
-            }
-
-            var categoryTitle = await _categoryService.GetCategoryTitlesAsync();
-
-            article.CategoryTitle = categoryTitle.GetValueOrDefault(article.CategoryId, "Uncategorised");
-
-            return article;
         }
     }
 }

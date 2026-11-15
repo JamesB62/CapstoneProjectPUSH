@@ -20,16 +20,6 @@
                 .ToListAsync();
         }
 
-        // Get weight log by Id for user Id
-        public async Task<WeightLog?> GetWeightLogByIdAsync(int weightLogId, int userId)
-        {
-            var db = await _databaseService.GetConnectionAsync();
-
-            return await db.Table<WeightLog>()
-                .Where(wl => wl.Id == weightLogId && wl.UserId == userId)
-                .FirstOrDefaultAsync();
-        }
-
         // Save weight for today for user Id
         public async Task SaveWeightForTodayAsync(int userId, double weightKg)
         {
@@ -45,7 +35,7 @@
                 .FirstOrDefaultAsync();
 
             // Updates the existing weight log or...
-            if (existingLog != null)
+            if (existingLog is not null)
             {
                 existingLog.WeightKg = weightKg;
                 existingLog.DateTimeLogged = DateTime.Now;

@@ -9,29 +9,37 @@
     <Grid
         MaximumWidthRequest="500"
         Padding="30,15"
-        RowDefinitions="Auto,*,Auto"
-        RowSpacing="15">
+        RowDefinitions="Auto,Auto,*,Auto"
+        RowSpacing="20">
+
+        <!-- Search bar -->
+        <SearchBar
+            Grid.Row="0"
+            Placeholder="Search by title or category..."
+            Text="{Binding SearchText}"/>
 
         <!-- Search -->
         <VerticalStackLayout
-            Grid.Row="0"
-            Spacing="10">
+            Grid.Row="1"
+            Spacing="15">
 
-            <SearchBar
-                Placeholder="Search exercises"
-                Text="{Binding SearchText}"/>
-
+            <!-- Status message -->
             <Label
-                FontAttributes="Italic"
                 Text="{Binding StatusMessage}"/>
+
+            <!-- Error message -->
+            <Label
+                IsVisible="{Binding HasErrorMessage}"
+                Text="{Binding ErrorMessage}"
+                TextColor="Red"/>
 
         </VerticalStackLayout>
 
         <CollectionView
-            Grid.Row="1"
+            Grid.Row="2"
             ItemsSource="{Binding Exercises}"
-            SelectionMode="Single"
-            SelectedItem="{Binding SelectedExercise, Mode=TwoWay}">
+            SelectedItem="{Binding SelectedExercise, Mode=TwoWay}"
+            SelectionMode="Single">
 
             <!-- Empty view -->
             <CollectionView.EmptyView>
@@ -59,6 +67,7 @@
                 <DataTemplate
                     x:DataType="vm:SelectableExercise">
 
+                    <!-- Card -->
                     <Border
                         Style="{StaticResource Card}">
 
@@ -74,6 +83,7 @@
                                     ColumnDefinitions="*,Auto"
                                     ColumnSpacing="10">
 
+                                    <!-- Title -->
                                     <Label
                                         FontAttributes="Bold"
                                         FontSize="16"
@@ -82,23 +92,30 @@
                                         Text="{Binding Exercise.Title}"
                                         VerticalOptions="Center"/>
 
+                                    <!-- Category -->
                                     <Border
                                         Grid.Column="1"
                                         Style="{StaticResource Pill}">
 
                                         <Label
                                             FontSize="12"
+                                            LineBreakMode="TailTruncation"
                                             Text="{Binding Exercise.CategoryTitle}"/>
 
                                     </Border>
 
                                 </Grid>
 
+                                <!-- Description -->
                                 <Label
                                     LineBreakMode="TailTruncation"
                                     MaxLines="2"
                                     Text="{Binding Exercise.Description}"/>
 
+                                <!-- Info -->
+                                <Label
+                                    Text="{Binding Exercise.DifficultyLabel, StringFormat='• Difficulty: {0}'}"/>
+                                
                             </VerticalStackLayout>
 
                             <CheckBox
@@ -119,7 +136,7 @@
 
         <Button
             Command="{Binding DoneCommand}"
-            Grid.Row="2"
+            Grid.Row="3"
             Text="{Binding SelectedCount, StringFormat='Done ({0})'}"/>
 
     </Grid>

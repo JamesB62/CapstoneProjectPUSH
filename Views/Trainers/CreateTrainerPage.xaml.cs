@@ -1,5 +1,3 @@
-using CapstoneProjectPUSH.ViewModels.Trainers;
-
 namespace CapstoneProjectPUSH.Views.Trainers;
 
 public partial class CreateTrainerPage : ContentPage

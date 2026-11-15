@@ -4,94 +4,51 @@
     {
 
         private readonly NoteService _noteService;
-        private readonly WorkoutService _workoutService;
 
-        public MyNotesViewModel(UserService userService, NoteService noteService, WorkoutService workoutService) : base(userService)
+        public MyNotesViewModel(UserService userService, NoteService noteService) : base(userService)
         {
-
             _noteService = noteService;
-            _workoutService = workoutService;
         }
 
         public ObservableCollection<Note> Notes { get; } = new();
 
         private List<Note> _allNotes = new();
 
-        private static readonly Workout AllWorkout = new() { Id = 0, Title = "All" };
-
-        public ObservableCollection<Workout> Workouts { get; } = new();
-
         [ObservableProperty]
-        public partial Workout? SelectedWorkout { get; set; }
+        public partial string SearchText { get; set; } = string.Empty;
 
         [ObservableProperty]
         public partial Note? SelectedNote { get; set; }
 
+        partial void OnSearchTextChanged(string value)
+        {
+            ApplyFilter();
+        }
+
         [RelayCommand]
         private async Task LoadMyNotesAsync()
         {
+            ErrorMessage = string.Empty;
+
+            var user = _userService.CurrentUser;
+
+            if (user is null)
+            {
+                return;
+            }
+
             IsBusy = true;
 
             try
             {
-                var user = _userService.CurrentUser;
-
-                if (user is null)
-                {
-                    // Comment out to disable redirect
-                    await NavigateAsync("//LandingPage");
-                    return;
-                }
-
-                StatusMessage = "Loading notes...";
-
-                var notes = await _noteService.GetNotesForUserAsync(user.Id);
-                var workouts = await _workoutService.GetWorkoutsForUserAsync(user.Id);
-
-                int selectedId = 0;
-                if (SelectedWorkout is not null)
-                {
-                    selectedId = SelectedWorkout.Id;
-                }
-
-                _allNotes = notes;
-
-                Workouts.Clear();
-                Workouts.Add(AllWorkout);
-
-                var sortedWorkouts = workouts.OrderBy(w => w.Title, StringComparer.OrdinalIgnoreCase).ToList();
-
-                foreach (var workout in sortedWorkouts)
-                {
-                    Workouts.Add(workout);
-                }
-
-                Workout? match = null;
-
-                foreach (var workout in Workouts)
-                {
-                    if (workout.Id == selectedId)
-                    {
-                        match = workout;
-                        break;
-                    }
-                }
-
-                if (match != null)
-                {
-                    SelectedWorkout = match;
-                }
-                else
-                {
-                    SelectedWorkout = AllWorkout;
-                }
+                _allNotes = await _noteService.GetNotesForUserAsync(user.Id);
 
                 ApplyFilter();
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex);
-                StatusMessage = "Something went wrong. Please try again.";
+                ErrorMessage = "Couldn't load your notes. Pull down to try again.";
             }
             finally
             {
@@ -99,48 +56,44 @@
             }
         }
 
-        partial void OnSelectedWorkoutChanged(Workout? value)
-        {
-            ApplyFilter();
-        }
-
         private void ApplyFilter()
         {
-            int workoutId;
+            string term = string.Empty;
 
-            if (SelectedWorkout is null)
+            if (SearchText is not null)
             {
-                workoutId = 0;
-            }
-            else
-            {
-                workoutId = SelectedWorkout.Id;
+                term = SearchText.Trim();
             }
 
             List<Note> filtered;
 
-            if (workoutId == 0)
+            if (term.Length == 0)
             {
                 filtered = _allNotes;
             }
             else
             {
-                filtered = _allNotes.Where(n => n.WorkoutId == workoutId).ToList();
+                filtered = _allNotes
+                    .Where(n => n.Title.Contains(term, StringComparison.OrdinalIgnoreCase)
+                             || n.Content.Contains(term, StringComparison.OrdinalIgnoreCase)
+                             || n.WorkoutTitle.Contains(term, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
             }
 
             Notes.Clear();
+
             foreach (var note in filtered)
             {
                 Notes.Add(note);
             }
 
-            if (Notes.Count == 1)
+            if (filtered.Count == 1)
             {
                 StatusMessage = "Showing 1 note.";
             }
             else
             {
-                StatusMessage = $"Showing {Notes.Count} notes.";
+                StatusMessage = $"Showing {filtered.Count} notes.";
             }
         }
 

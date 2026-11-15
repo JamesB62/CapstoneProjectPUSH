@@ -9,37 +9,41 @@
 
     <Grid
         MaximumWidthRequest="500"
-        Padding="30,15"
-        RowDefinitions="Auto,*"
-        RowSpacing="15">
+        Padding="30,15,30,0"
+        RowDefinitions="Auto,Auto,*"
+        RowSpacing="20">
+
+        <!-- Search bar -->
+        <SearchBar
+            Grid.Row="0"
+            Placeholder="Search by title, content or workout..."
+            Text="{Binding SearchText}"/>
 
         <VerticalStackLayout
-            Grid.Row="0"
-            Spacing="10">
+            Grid.Row="1"
+            Spacing="15">
 
-            <!-- Workout picker -->
-            <Picker
-                ItemDisplayBinding="{Binding Title, x:DataType=models:Workout}"
-                ItemsSource="{Binding Workouts}"
-                Margin="0,0,0,-4"
-                SelectedItem="{Binding SelectedWorkout}"
-                Title="Filter by workout"/>
-
+            <!-- Status message -->
             <Label
-                FontAttributes="Italic"
                 Text="{Binding StatusMessage}"/>
+
+            <!-- Error message -->
+            <Label
+                IsVisible="{Binding HasErrorMessage}"
+                Text="{Binding ErrorMessage}"
+                TextColor="Red"/>
 
         </VerticalStackLayout>
 
         <RefreshView
             Command="{Binding LoadMyNotesCommand}"
-            Grid.Row="1"
+            Grid.Row="2"
             IsRefreshing="{Binding IsBusy}">
 
             <CollectionView
                 ItemsSource="{Binding Notes}"
-                SelectionMode="Single"
-                SelectedItem="{Binding SelectedNote, Mode=TwoWay}">
+                SelectedItem="{Binding SelectedNote, Mode=TwoWay}"
+                SelectionMode="Single">
 
                 <!-- Empty view -->
                 <CollectionView.EmptyView>
@@ -108,20 +112,15 @@
 
                                 </Grid>
 
-                                <VerticalStackLayout
-                                    Spacing="10">
+                                <Label
+                                    LineBreakMode="TailTruncation"
+                                    MaxLines="2"
+                                    Text="{Binding Content}"/>
 
-                                    <Label
-                                        LineBreakMode="TailTruncation"
-                                        MaxLines="2"
-                                        Text="{Binding Content}"/>
-
-                                    <Label
-                                        FontAttributes="Italic"
-                                        FontSize="12"
-                                        Text="{Binding DateTimeCreated, StringFormat='Date created: {0:d MMMM yyyy}'}"/>
-
-                                </VerticalStackLayout>
+                                <Label
+                                    FontAttributes="Italic"
+                                    FontSize="12"
+                                    Text="{Binding DateTimeCreated, StringFormat='Created on {0:d MMM yyyy}'}"/>
 
                             </VerticalStackLayout>
 

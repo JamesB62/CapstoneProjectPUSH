@@ -44,11 +44,6 @@
                 .ToListAsync();
         }
 
-
-
-
-
-        // Keep?
         // Get note by Id for a user
         public async Task<Note?> GetNoteByIdAsync(int noteId, int userId)
         {
@@ -78,8 +73,6 @@
 
             return note;
         }
-
-        // ===================================
 
         // Add
         public async Task<int> AddNoteAsync(Note note)

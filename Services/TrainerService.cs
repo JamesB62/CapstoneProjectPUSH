@@ -37,28 +37,7 @@
                 .ThenBy(t => t.FirstName)
                 .ToListAsync();
 
-            var gyms = await db.Table<Gym>().ToListAsync();
-            var gymLookup = gyms.ToDictionary(g => g.Id);
-
-            var categoryTitles = await _categoryService.GetCategoryTitlesAsync();
-
-            foreach (var trainer in trainers)
-            {
-                if (gymLookup.TryGetValue(trainer.GymId, out var gym))
-                {
-                    trainer.GymName = gym.Name;
-                    trainer.GymAddress = gym.Address;
-                    trainer.GymCity = gym.City;
-                }
-                else
-                {
-                    trainer.GymName = "Unknown Gym";
-                    trainer.GymAddress = string.Empty;
-                    trainer.GymCity = string.Empty;
-                }
-
-                trainer.CategoryTitle = categoryTitles.GetValueOrDefault(trainer.CategoryId, "Uncategorised");
-            }
+            await FillGymAndCategoryAsync(trainers);
 
             return trainers;
         }
@@ -77,50 +56,29 @@
                 return null;
             }
 
-            var gym = await db.Table<Gym>()
-                .Where(g => g.Id == trainer.GymId)
-                .FirstOrDefaultAsync();
-
-            if (gym is null)
-            {
-                trainer.GymName = "Unknown Gym";
-                trainer.GymAddress = string.Empty;
-                trainer.GymCity = string.Empty;
-            }
-            else
-            {
-                trainer.GymName = gym.Name;
-                trainer.GymAddress = gym.Address;
-                trainer.GymCity = gym.City;
-            }
-
-            var categoryTitle = await _categoryService.GetCategoryTitlesAsync();
-
-            trainer.CategoryTitle = categoryTitle.GetValueOrDefault(trainer.CategoryId, "Uncategorised");
+            await FillGymAndCategoryAsync(new List<Trainer> { trainer });
 
             return trainer;
         }
 
-        // Get all trainers for user Id, with trainers at the user's linked gyms first (every trainer is still included)
-        public async Task<List<Trainer>> GetTrainersForUserAsync(int userId)
+        // Get all trainers, with trainers at the favourite gym first
+        public async Task<List<Trainer>> GetTrainersFavouriteGymFirstAsync(int? favouriteGymId)
         {
-            var db = await _databaseService.GetConnectionAsync();
-
             var trainers = await GetTrainersAsync();
-
-            var links = await db.Table<UserGym>()
-                .Where(ug => ug.UserId == userId)
-                .ToListAsync();
-
-            var linkedGymIds = links.Select(ug => ug.GymId).ToHashSet();
 
             foreach (var trainer in trainers)
             {
-                trainer.IsAtLinkedGym = linkedGymIds.Contains(trainer.GymId);
+                if (favouriteGymId is not null && trainer.GymId == favouriteGymId.Value)
+                {
+                    trainer.IsAtFavouriteGym = true;
+                }
+                else
+                {
+                    trainer.IsAtFavouriteGym = false;
+                }
             }
 
-            // OrderBy is stable, so each group keeps the last name / first name order from GetTrainersAsync
-            return trainers.OrderByDescending(t => t.IsAtLinkedGym).ToList();
+            return trainers.OrderByDescending(t => t.IsAtFavouriteGym).ToList();
         }
 
         // Add trainer
@@ -159,7 +117,6 @@
                 return (false, error);
             }
 
-            // Copy the editable details across (the profile image is left as it is)
             existing.FirstName = trainer.FirstName;
             existing.LastName = trainer.LastName;
             existing.Email = trainer.Email;
@@ -172,27 +129,6 @@
             await db.UpdateAsync(existing);
 
             return (true, $"{existing.FullName} was updated.");
-        }
-
-        // Set trainer availability
-        public async Task<(bool Success, string Message)> SetTrainerAvailabilityAsync(int trainerId, bool available)
-        {
-            var db = await _databaseService.GetConnectionAsync();
-
-            var trainer = await db.Table<Trainer>().Where(t => t.Id == trainerId).FirstOrDefaultAsync();
-
-            if (trainer is null)
-            {
-                return (false, "Trainer could not be found.");
-            }
-
-            trainer.Available = available;
-
-            await db.UpdateAsync(trainer);
-
-            return (true, available
-                ? $"{trainer.FullName} is now available."
-                : $"{trainer.FullName} is now unavailable.");
         }
 
         // Delete trainer
@@ -213,7 +149,36 @@
         }
 
         // Helpers
-        // Trim and validate trainer details, returns an error message or null when valid
+        // Fill in each trainer's gym and category details
+        private async Task FillGymAndCategoryAsync(List<Trainer> trainers)
+        {
+            var db = await _databaseService.GetConnectionAsync();
+
+            var gyms = await db.Table<Gym>().ToListAsync();
+            var gymLookup = gyms.ToDictionary(g => g.Id);
+
+            var categoryTitles = await _categoryService.GetCategoryTitlesAsync();
+
+            foreach (var trainer in trainers)
+            {
+                if (gymLookup.TryGetValue(trainer.GymId, out var gym))
+                {
+                    trainer.GymName = gym.Name;
+                    trainer.GymAddress = gym.Address;
+                    trainer.GymCity = gym.City;
+                }
+                else
+                {
+                    trainer.GymName = "Unknown Gym";
+                    trainer.GymAddress = string.Empty;
+                    trainer.GymCity = string.Empty;
+                }
+
+                trainer.CategoryTitle = categoryTitles.GetValueOrDefault(trainer.CategoryId, "Uncategorised");
+            }
+        }
+
+        // Trim and validate trainer details
         private async Task<string?> NormaliseAndValidateAsync(Trainer trainer, int? existingTrainerId)
         {
             trainer.FirstName = (trainer.FirstName ?? string.Empty).Trim();
@@ -242,6 +207,11 @@
             if (trainer.PhoneNumber.Length > 20)
             {
                 return "Phone number must be 20 characters or fewer.";
+            }
+
+            if (trainer.Email.Length == 0 && trainer.PhoneNumber.Length == 0)
+            {
+                return "Please enter an email address or phone number (or both).";
             }
 
             if (trainer.Description.Length > 1000)

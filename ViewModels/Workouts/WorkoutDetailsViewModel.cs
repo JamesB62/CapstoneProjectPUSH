@@ -6,7 +6,7 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
         private readonly WorkoutService _workoutService;
         private readonly NoteService _noteService;
 
-        public WorkoutDetailsViewModel(NoteService noteService,UserService userService, WorkoutService workoutService) : base(userService)
+        public WorkoutDetailsViewModel(NoteService noteService, UserService userService, WorkoutService workoutService) : base(userService)
         {
             _noteService = noteService;
             _workoutService = workoutService;
@@ -34,6 +34,18 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
             }
         }
 
+        [ObservableProperty]
+        public partial bool CanEdit { get; set; }
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(HasNoExercises))]
+        public partial bool HasExercises { get; set; }
+
+        public bool HasNoExercises => !HasExercises;
+
+        [ObservableProperty]
+        public partial string PrivacyText { get; set; } = string.Empty;
+
         partial void OnWorkoutIdChanged(int value)
         {
             if (value <= 0)
@@ -57,19 +69,21 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
         [RelayCommand]
         private async Task LoadWorkoutAsync()
         {
+            ErrorMessage = string.Empty;
+            RefreshUserState();
+
+            var user = _userService.CurrentUser;
+
+            // AppShell sends signed-out users to the landing page
+            if (user is null)
+            {
+                return;
+            }
+
             IsBusy = true;
 
             try
             {
-                var user = _userService.CurrentUser;
-
-                if (user is null)
-                {
-                    // Comment out to disable redirect
-                    await NavigateAsync("//LandingPage");
-                    return;
-                }
-
                 Workout = await _workoutService.GetWorkoutByIdAsync(WorkoutId, user.Id);
 
                 if (Workout is not null)
@@ -84,22 +98,31 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
 
                 if (Workout is not null)
                 {
-                    var exercises = await _workoutService.GetExercisesForWorkoutAsync(WorkoutId);
+                    CanEdit = IsOwner && IsLoggedIn;
 
-                    List<WorkoutExercise> orderedExercises = exercises
-                        .OrderBy(e => e.SortOrder)
-                        .ToList();
+                    if (Workout.IsPrivate)
+                    {
+                        PrivacyText = "Private";
+                    }
+                    else
+                    {
+                        PrivacyText = "Shared";
+                    }
+
+                    var exercises = await _workoutService.GetExercisesForWorkoutAsync(WorkoutId);
 
                     Exercises.Clear();
 
                     int number = 1;
 
-                    foreach (var exercise in orderedExercises)
+                    foreach (var exercise in exercises)
                     {
                         exercise.DisplayNumber = number;
                         Exercises.Add(exercise);
                         number++;
                     }
+
+                    HasExercises = Exercises.Count > 0;
 
                     var notes = await _noteService.GetNoteForWorkoutAsync(WorkoutId, user.Id);
 
@@ -120,9 +143,13 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
                 IsBusy = false;
             }
 
-            if (Workout is null && _userService.CurrentUser is not null)
+            if (Workout is null)
             {
-                await Shell.Current.DisplayAlertAsync("Workout not found", "This PUSH workout could not be loaded.", "OK");
+                await Shell.Current.DisplayAlertAsync(
+                    "Workout Not Found",
+                    "This PUSH workout could not be loaded.",
+                    "OK");
+
                 await NavigateAsync("..");
             }
         }
@@ -130,13 +157,10 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
         [RelayCommand]
         private async Task EditWorkoutAsync()
         {
-            
-            if (Workout is null || !IsOwner)
+            if (Workout is null || !CanEdit)
             {
                 return;
             }
-            if (!await RequireLoginAsync())
-            return;
 
             var parameters = new ShellNavigationQueryParameters
             {
@@ -149,18 +173,13 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
         [RelayCommand]
         private async Task StartWorkoutAsync()
         {
-            
-            if (Workout is null)
+            if (Workout is null || !HasExercises)
             {
                 return;
             }
-            if (!await RequireLoginAsync())
-            return;
 
             await NavigateAsync($"{nameof(ActiveWorkoutPage)}?WorkoutId={Workout.Id}");
         }
-
-        // =====================================
 
         [RelayCommand]
         private async Task AddNoteAsync()
@@ -169,8 +188,11 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
             {
                 return;
             }
+
             if (!await RequireLoginAsync())
-            return;
+            {
+                return;
+            }
 
             var parameters = new ShellNavigationQueryParameters
             {
@@ -183,12 +205,10 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
         [RelayCommand]
         private async Task EditNoteAsync(Note? note)
         {
-            if (note is null)
+            if (note is null || !IsLoggedIn)
             {
                 return;
             }
-            if (!await RequireLoginAsync())
-            return;
 
             var parameters = new ShellNavigationQueryParameters
             {
@@ -201,12 +221,10 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
         [RelayCommand]
         private async Task DeleteNoteAsync(Note? note)
         {
-            if (note is null)
+            if (note is null || !IsLoggedIn)
             {
                 return;
             }
-            if (!await RequireLoginAsync())
-            return;
 
             var user = _userService.CurrentUser;
 
@@ -215,9 +233,11 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
                 return;
             }
 
+            ErrorMessage = string.Empty;
+
             bool confirmed = await Shell.Current.DisplayAlertAsync(
-                "Delete note",
-                $"Delete \"{note.Title}\"? This can't be undone.",
+                "Delete Note",
+                $"Delete {note.Title}? This can't be undone.",
                 "Delete",
                 "Cancel");
 
@@ -226,11 +246,23 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
                 return;
             }
 
-            int rowsDeleted = await _noteService.DeleteNoteAsync(note.Id, user.Id);
-
-            if (rowsDeleted > 0)
+            try
             {
-                Notes.Remove(note);
+                int rowsDeleted = await _noteService.DeleteNoteAsync(note.Id, user.Id);
+
+                if (rowsDeleted > 0)
+                {
+                    Notes.Remove(note);
+                }
+                else
+                {
+                    ErrorMessage = "That note could not be found.";
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex);
+                ErrorMessage = "Couldn't delete the note. Please try again.";
             }
         }
     }

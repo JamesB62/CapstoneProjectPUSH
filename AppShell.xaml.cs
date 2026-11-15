@@ -1,15 +1,37 @@
 namespace CapstoneProjectPUSH
 {
-    public partial class AppShell : Shell 
+    public partial class AppShell : Shell
     {
+        private readonly UserService _userService;
+
+        // Public pages
+        private readonly string[] _publicRoutes =
+        {
+            nameof(FirstLoadingPage),
+            nameof(LandingPage),
+            nameof(LoginPage),
+            nameof(RegisterPage),
+            nameof(PrivacyPage)
+        };
+
+        // Guest restricted pages
+        private readonly string[] _guestRestrictedRoutes =
+        {
+            nameof(TrainersPage),
+            nameof(TrainerDetailsPage),
+            nameof(CreateTrainerPage),
+            nameof(CommunityWorkoutsPage)
+        };
 
         public AppShell(UserService userService)
         {
-            InitializeComponent();
             _userService = userService;
 
-            //Admin
+            InitializeComponent();
+
+            // Admin
             Routing.RegisterRoute(nameof(AdminDashboardPage), typeof(AdminDashboardPage));
+            Routing.RegisterRoute(nameof(CreateGymPage), typeof(CreateGymPage));
             Routing.RegisterRoute(nameof(UserManagementPage), typeof(UserManagementPage));
             Routing.RegisterRoute(nameof(CategoriesManagementPage), typeof(CategoriesManagementPage));
             Routing.RegisterRoute(nameof(GymsManagementPage), typeof(GymsManagementPage));
@@ -22,6 +44,7 @@ namespace CapstoneProjectPUSH
             Routing.RegisterRoute(nameof(PrivacyPage), typeof(PrivacyPage));
 
             // Exercises
+            Routing.RegisterRoute(nameof(CreateExercisePage), typeof(CreateExercisePage));
             Routing.RegisterRoute(nameof(ExerciseDetailsPage), typeof(ExerciseDetailsPage));
 
             // Home
@@ -44,47 +67,65 @@ namespace CapstoneProjectPUSH
             Routing.RegisterRoute(nameof(WorkoutDetailsPage), typeof(WorkoutDetailsPage));
         }
 
-        //guest nav bar blocker
-        private readonly UserService _userService;
-        private readonly string[] _restrictedRoutes = {"TrainersPage", "CommunityWorkoutsPage"};
-
-        protected override async void OnNavigating(ShellNavigatingEventArgs args)
+        // Runs every time the user navigates between pages
+        protected override void OnNavigating(ShellNavigatingEventArgs args)
         {
             base.OnNavigating(args);
 
-            if (args.Target?.Location == null || _userService == null)
-            return;
+            if (args.Target?.Location == null)
+            {
+                return;
+            }
 
             if (_userService.IsLoggedIn)
-            return;
+            {
+                return;
+            }
 
             string targetRoute = args.Target.Location.OriginalString;
 
-            bool isRestricted = _restrictedRoutes.Any(route => targetRoute.Contains(route));
-
-            if(isRestricted)
+            // Handles signed out users
+            if (_userService.IsUnauthenticated)
             {
-                args.Cancel();
+                bool isPublic = _publicRoutes.Any(route => targetRoute.Contains(route));
 
-                FlyoutIsPresented = false;
-
-                string title = _userService.IsGuest ? "Guest mode is restricted" : "Login required";
-                string message = _userService.IsGuest
-                ? "You are currently browsing using a guest account. Log in to your registered account to view your personal profile and data."
-                : "Please log in to your account to continue.";
-
-                bool goToLogin = await MainThread.InvokeOnMainThreadAsync(() =>
-                DisplayAlertAsync(title, message, "Log in", "Cancel"));
-
-                 if (goToLogin)
+                if (!isPublic)
                 {
-                    await Shell.Current.GoToAsync(nameof(LoginPage));
+                    args.Cancel();
+                    FlyoutIsPresented = false;
+
+                    Dispatcher.Dispatch(async () => await GoToAsync("//LandingPage"));
                 }
 
+                return;
             }
 
+            // Handles guest users
+            bool isRestricted = _guestRestrictedRoutes.Any(route => targetRoute.Contains(route));
+
+            if (isRestricted)
+            {
+                args.Cancel();
+                FlyoutIsPresented = false;
+
+                Dispatcher.Dispatch(async () => await ShowGuestRestrictedAlertAsync());
+            }
         }
 
+        // Guest prompt for restricted pages
+        private async Task ShowGuestRestrictedAlertAsync()
+        {
+            bool goToLanding = await DisplayAlertAsync(
+                "Account Required",
+                "You are browsing as a guest. Log in or register to gain access to the complete application.",
+                "Log In or Register",
+                "Cancel");
 
+            if (goToLanding)
+            {
+                _userService.Logout();
+                await GoToAsync("//LandingPage");
+            }
+        }
     }
 }

@@ -9,32 +9,28 @@
 
     <Grid
         MaximumWidthRequest="500"
-        Padding="30,15"
+        Padding="30,15,30,0"
         RowDefinitions="Auto,Auto,*"
-        RowSpacing="15">
+        RowSpacing="20">
 
-        <!-- Remove title -->
-        <Label
+        <!-- Search bar -->
+        <SearchBar
             Grid.Row="0"
-            FontAttributes="Bold"
-            FontSize="16"
-            Grid.Column="0"
-            Text="PUSH Community Workout Plans"
-            VerticalOptions="Center"/>
+            Placeholder="Search by title, category or creator..."
+            Text="{Binding SearchText}"/>
 
-        <!-- Keep? -->
-        <!-- Search -->
         <VerticalStackLayout
             Grid.Row="1"
-            Spacing="10">
-
-            <SearchBar
-                Placeholder="Search workouts"
-                Text="{Binding SearchText}"/>
+            Spacing="15">
 
             <Label
-                FontAttributes="Italic"
                 Text="{Binding StatusMessage}"/>
+
+            <!-- Error message -->
+            <Label
+                IsVisible="{Binding HasErrorMessage}"
+                Text="{Binding ErrorMessage}"
+                TextColor="Red"/>
 
         </VerticalStackLayout>
 
@@ -45,8 +41,8 @@
 
             <CollectionView
                 ItemsSource="{Binding Workouts}"
-                SelectionMode="Single"
-                SelectedItem="{Binding SelectedWorkout, Mode=TwoWay}">
+                SelectedItem="{Binding SelectedWorkout, Mode=TwoWay}"
+                SelectionMode="Single">
 
                 <!-- Empty view -->
                 <CollectionView.EmptyView>
@@ -115,38 +111,45 @@
 
                                 </Grid>
 
+                                <!-- Info -->
                                 <VerticalStackLayout
-                                    Spacing="10">
+                                    Spacing="3">
 
-                                    <VerticalStackLayout
-                                        Spacing="0">
+                                    <Label
+                                        Text="{Binding ExerciseCount, StringFormat='• Exercises: {0}'}"/>
 
-                                        <Label
-                                            IsVisible="{Binding HasSets}"
-                                            Text="{Binding SetCount, StringFormat='• Sets: {0}'}"/>
+                                    <Label
+                                        IsVisible="{Binding HasSets}"
+                                        Text="{Binding SetCount, StringFormat='• Sets: {0}'}"/>
 
-                                        <Label
-                                            IsVisible="{Binding HasMinutes}"
-                                            Text="{Binding TotalMinutes, StringFormat='• Time: {0} min'}"/>
-
-                                    </VerticalStackLayout>
-
-                                    <VerticalStackLayout
-                                        Spacing="0">
-
-                                        <Label
-                                            FontAttributes="Italic"
-                                            FontSize="12"
-                                            Text="{Binding UserDisplayName, StringFormat='Created by: {0}'}"/>
-
-                                        <Label
-                                            FontAttributes="Italic"
-                                            FontSize="12"
-                                            Text="{Binding DateTimeCreated, StringFormat='Date created: {0:d MMMM yyyy}'}"/>
-
-                                    </VerticalStackLayout>
+                                    <Label
+                                        IsVisible="{Binding HasMinutes}"
+                                        Text="{Binding TotalMinutes, StringFormat='• Time: {0} min'}"/>
 
                                 </VerticalStackLayout>
+
+                                <!-- Credit -->
+                                <Label
+                                    FontAttributes="Italic"
+                                    FontSize="12"
+                                    LineBreakMode="TailTruncation">
+
+                                    <Label.Text>
+
+                                        <MultiBinding
+                                            StringFormat="Created by {0} on {1:d MMM yyyy}">
+
+                                            <Binding
+                                                Path="UserDisplayName"/>
+
+                                            <Binding
+                                                Path="DateTimeCreated"/>
+
+                                        </MultiBinding>
+
+                                    </Label.Text>
+
+                                </Label>
 
                             </VerticalStackLayout>
 

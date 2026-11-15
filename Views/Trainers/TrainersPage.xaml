@@ -7,33 +7,45 @@
              x:DataType="vm:TrainersViewModel"
              Title="PUSH Trainers">
 
+    <ContentPage.ToolbarItems>
+
+        <ToolbarItem
+            x:Name="AddTrainerToolbarItem"
+            Command="{Binding AddTrainerCommand}"
+            Text="+ Add"/>
+
+    </ContentPage.ToolbarItems>
+
     <Grid
         MaximumWidthRequest="500"
-        Padding="30,15"
-        RowDefinitions="Auto,*"
-        RowSpacing="15">
+        Padding="30,15,30,0"
+        RowDefinitions="Auto,Auto,*"
+        RowSpacing="20">
+
+        <!-- Search bar -->
+        <SearchBar
+            Grid.Row="0"
+            Placeholder="Search by name, specialty or gym..."
+            Text="{Binding SearchText}"/>
 
         <VerticalStackLayout
-            Grid.Row="0"
-            Spacing="10">
+            Grid.Row="1"
+            Spacing="15">
 
             <Grid
                 ColumnDefinitions="*,Auto"
-                ColumnSpacing="10"
-                Margin="0,0,0,-4">
+                ColumnSpacing="10">
 
-                <!-- Category picker -->
-                <Picker
+                <!-- Status message -->
+                <Label
                     Grid.Column="0"
-                    ItemDisplayBinding="{Binding Title, x:DataType=models:Category}"
-                    ItemsSource="{Binding Categories}"
-                    SelectedItem="{Binding SelectedCategory}"
-                    Title="Filter by category"
+                    Text="{Binding StatusMessage}"
                     VerticalOptions="Center"/>
 
                 <!-- Availability toggle -->
                 <HorizontalStackLayout
                     Grid.Column="1"
+                    Margin="0,-15,0,-15"
                     Spacing="5">
 
                     <Label
@@ -48,22 +60,24 @@
                 </HorizontalStackLayout>
 
             </Grid>
-                        
+
+            <!-- Error message -->
             <Label
-                FontAttributes="Italic"
-                Text="{Binding StatusMessage}"/>
+                IsVisible="{Binding HasErrorMessage}"
+                Text="{Binding ErrorMessage}"
+                TextColor="Red"/>
 
         </VerticalStackLayout>
 
         <RefreshView
             Command="{Binding LoadTrainersCommand}"
-            Grid.Row="1"
+            Grid.Row="2"
             IsRefreshing="{Binding IsBusy}">
             
             <CollectionView
                 ItemsSource="{Binding Trainers}"
-                SelectionMode="Single"
-                SelectedItem="{Binding SelectedTrainer, Mode=TwoWay}">
+                SelectedItem="{Binding SelectedTrainer, Mode=TwoWay}"
+                SelectionMode="Single">
 
                 <!-- Empty view -->
                 <CollectionView.EmptyView>
@@ -101,58 +115,88 @@
                     <DataTemplate
                         x:DataType="models:Trainer">
 
-                        <Border
-                            Style="{StaticResource Card}">
+                        <SwipeView>
 
-                            <Grid
-                                ColumnDefinitions="Auto,*"
-                                ColumnSpacing="15">
+                            <!-- Swipe actions (admins only) -->
+                            <SwipeView.LeftItems>
 
-                                <Border
-                                    Grid.Column="0"
-                                    HeightRequest="50"
-                                    HorizontalOptions="Center"
-                                    StrokeShape="Ellipse"
-                                    StrokeThickness="0"
-                                    WidthRequest="50">
+                                <SwipeItems>
 
-                                    <Image
-                                        Aspect="AspectFill"
-                                        Source="{Binding ProfileImage}"/>
+                                    <SwipeItem
+                                        BackgroundColor="#6B7280"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TrainersViewModel}}, Path=EditTrainerCommand}"
+                                        CommandParameter="{Binding .}"
+                                        IsVisible="{Binding Source={RelativeSource AncestorType={x:Type vm:TrainersViewModel}}, Path=IsCurrentUserAdmin}"
+                                        Text="Edit"/>
 
-                                </Border>
+                                </SwipeItems>
 
-                                <VerticalStackLayout
-                                    Grid.Column="1"
-                                    Spacing="10">
+                            </SwipeView.LeftItems>
 
-                                    <Grid
-                                        ColumnDefinitions="*,Auto"
-                                        ColumnSpacing="10">
+                            <SwipeView.RightItems>
 
-                                        <Label
-                                            Grid.Column="0"
-                                            FontAttributes="Bold"
-                                            FontSize="16"
-                                            LineBreakMode="TailTruncation"
-                                            Text="{Binding FullName}"
-                                            VerticalOptions="Center"/>
+                                <SwipeItems>
 
-                                        <Border
-                                            Grid.Column="1"
-                                            Style="{StaticResource Pill}">
+                                    <SwipeItem
+                                        BackgroundColor="Red"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TrainersViewModel}}, Path=DeleteTrainerCommand}"
+                                        CommandParameter="{Binding .}"
+                                        IsVisible="{Binding Source={RelativeSource AncestorType={x:Type vm:TrainersViewModel}}, Path=IsCurrentUserAdmin}"
+                                        Text="Delete"/>
 
-                                            <Label
-                                                FontSize="12"
-                                                LineBreakMode="TailTruncation"
-                                                Text="{Binding AvailableText}"/>
+                                </SwipeItems>
 
-                                        </Border>
+                            </SwipeView.RightItems>
 
-                                    </Grid>
+                            <Border
+                                Style="{StaticResource Card}">
+
+                                <Grid
+                                    ColumnDefinitions="Auto,*"
+                                    ColumnSpacing="15">
+
+                                    <Border
+                                        Grid.Column="0"
+                                        HeightRequest="50"
+                                        HorizontalOptions="Center"
+                                        StrokeShape="Ellipse"
+                                        StrokeThickness="0"
+                                        WidthRequest="50">
+
+                                        <Image
+                                            Aspect="AspectFill"
+                                            Source="{Binding ProfileImage}"/>
+
+                                    </Border>
 
                                     <VerticalStackLayout
+                                        Grid.Column="1"
                                         Spacing="10">
+
+                                        <Grid
+                                            ColumnDefinitions="*,Auto"
+                                            ColumnSpacing="10">
+
+                                            <Label
+                                                Grid.Column="0"
+                                                FontAttributes="Bold"
+                                                FontSize="16"
+                                                LineBreakMode="TailTruncation"
+                                                Text="{Binding FullName}"
+                                                VerticalOptions="Center"/>
+
+                                            <Border
+                                                Grid.Column="1"
+                                                Style="{StaticResource Pill}">
+
+                                                <Label
+                                                    FontSize="12"
+                                                    LineBreakMode="TailTruncation"
+                                                    Text="{Binding AvailableText}"/>
+
+                                            </Border>
+
+                                        </Grid>
 
                                         <Label
                                             MaxLines="2"
@@ -163,40 +207,29 @@
                                             Spacing="3">
 
                                             <Label
-                                                FontAttributes="Italic"
-                                                FontSize="12"
+                                                LineBreakMode="TailTruncation"
                                                 Text="{Binding CategoryTitle, StringFormat='• Specialty: {0}'}"/>
 
                                             <Label
-                                                FontAttributes="Italic"
-                                                FontSize="12">
-
-                                                <Label.Text>
-
-                                                    <MultiBinding
-                                                        StringFormat="• Gym: {0}, {1}">
-
-                                                        <Binding
-                                                            Path="GymName"/>
-
-                                                        <Binding
-                                                            Path="GymCity"/>
-
-                                                    </MultiBinding>
-
-                                                </Label.Text>
-
-                                            </Label>
+                                                LineBreakMode="TailTruncation"
+                                                Text="{Binding GymLabel, StringFormat='• Gym: {0}'}"/>
 
                                         </VerticalStackLayout>
 
+                                        <!-- Favourite gym -->
+                                        <Label
+                                            FontAttributes="Italic"
+                                            FontSize="12"
+                                            IsVisible="{Binding IsAtFavouriteGym}"
+                                            Text="At your favourite gym"/>
+
                                     </VerticalStackLayout>
 
-                                </VerticalStackLayout>
+                                </Grid>
 
-                            </Grid>
-
-                        </Border>
+                            </Border>
+                            
+                        </SwipeView>
 
                     </DataTemplate>
 

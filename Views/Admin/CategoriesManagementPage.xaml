@@ -5,94 +5,136 @@
              xmlns:models="clr-namespace:CapstoneProjectPUSH.Models"
              x:Class="CapstoneProjectPUSH.Views.Admin.CategoriesManagementPage"
              x:DataType="vm:CategoriesManagementViewModel"
-             Title="Manage Categories">
+             Title="Manage PUSH Categories">
+
+    <ContentPage.ToolbarItems>
+
+        <ToolbarItem
+            Command="{Binding AddCommand}"
+            Text="+ Add"/>
+
+    </ContentPage.ToolbarItems>
 
     <Grid
         MaximumWidthRequest="500"
-        Padding="30,15"
+        Padding="30,15,30,0"
         RowDefinitions="Auto,Auto,*"
-        RowSpacing="10">
+        RowSpacing="20">
 
-        <!-- Add / rename form -->
-        <VerticalStackLayout Grid.Row="0" Spacing="10">
+        <!-- Search bar -->
+        <SearchBar
+            Grid.Row="0"
+            Placeholder="Search by title..."
+            Text="{Binding SearchText}"/>
 
-            <Entry
-                MaxLength="50"
-                Placeholder="Category title"
-                ReturnCommand="{Binding SaveCommand}"
-                ReturnType="Done"
-                Text="{Binding TitleInput}"/>
+        <VerticalStackLayout
+            Grid.Row="1"
+            Spacing="15">
 
-            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+            <!-- Category count -->
+            <Label
+                Text="{Binding StatusMessage}"/>
 
-                <Button
-                    Grid.Column="0"
-                    Command="{Binding SaveCommand}"
-                    Text="{Binding SaveButtonText}"/>
-
-                <Button
-                    Grid.Column="1"
-                    Command="{Binding CancelEditCommand}"
-                    IsVisible="{Binding IsEditing}"
-                    Text="Cancel"/>
-
-            </Grid>
+            <!-- Error message -->
+            <Label
+                IsVisible="{Binding HasErrorMessage}"
+                Text="{Binding ErrorMessage}"
+                TextColor="Red"/>
 
         </VerticalStackLayout>
-
-        <Label
-            Grid.Row="1"
-            HorizontalOptions="Center"
-            IsVisible="{Binding HasStatusMessage}"
-            Text="{Binding StatusMessage}"/>
 
         <RefreshView
             Grid.Row="2"
             Command="{Binding LoadCommand}"
             IsRefreshing="{Binding IsBusy}">
 
-            <CollectionView ItemsSource="{Binding Categories}">
+            <CollectionView
+                ItemsSource="{Binding Categories}">
 
-                <CollectionView.ItemsLayout>
-                    <LinearItemsLayout Orientation="Vertical" ItemSpacing="10"/>
-                </CollectionView.ItemsLayout>
-
+                <!-- Empty view -->
                 <CollectionView.EmptyView>
-                    <Label HorizontalOptions="Center" Text="No categories yet."/>
+
+                    <VerticalStackLayout
+                        HorizontalOptions="Center"
+                        VerticalOptions="Center">
+
+                        <Label
+                            FontAttributes="Italic"
+                            HorizontalTextAlignment="Center"
+                            Text="No categories found."/>
+
+                        <Label
+                            FontAttributes="Italic"
+                            HorizontalTextAlignment="Center"
+                            Text="Pull down to try again."/>
+
+                    </VerticalStackLayout>
+
                 </CollectionView.EmptyView>
 
+                <!-- Item layout -->
+                <CollectionView.ItemsLayout>
+
+                    <LinearItemsLayout
+                        ItemSpacing="10"
+                        Orientation="Vertical"/>
+
+                </CollectionView.ItemsLayout>
+
+                <!-- Item template -->
                 <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="models:Category">
 
-                        <Border Style="{StaticResource Card}">
+                    <DataTemplate
+                        x:DataType="models:Category">
 
-                            <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+                        <SwipeView>
 
+                            <!-- Swipe actions -->
+                            <SwipeView.LeftItems>
+
+                                <SwipeItems>
+
+                                    <SwipeItem
+                                        BackgroundColor="#6B7280"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CategoriesManagementViewModel}}, Path=EditCommand}"
+                                        CommandParameter="{Binding .}"
+                                        Text="Edit"/>
+
+                                </SwipeItems>
+
+                            </SwipeView.LeftItems>
+
+                            <SwipeView.RightItems>
+
+                                <SwipeItems>
+
+                                    <SwipeItem
+                                        BackgroundColor="Red"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CategoriesManagementViewModel}}, Path=DeleteCommand}"
+                                        CommandParameter="{Binding .}"
+                                        Text="Delete"/>
+
+                                </SwipeItems>
+
+                            </SwipeView.RightItems>
+
+                            <!-- Card -->
+                            <Border
+                                Style="{StaticResource Card}">
+
+                                <!-- Header -->
                                 <Label
-                                    Grid.Column="0"
+                                    FontAttributes="Bold"
                                     FontSize="16"
-                                    Text="{Binding Title}"
-                                    VerticalOptions="Center"/>
+                                    LineBreakMode="TailTruncation"
+                                    Text="{Binding Title}"/>
 
-                                <Button
-                                    Grid.Column="1"
-                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CategoriesManagementViewModel}}, Path=EditCommand}"
-                                    CommandParameter="{Binding .}"
-                                    Text="Edit"/>
+                            </Border>
 
-                                <Button
-                                    Grid.Column="2"
-                                    BackgroundColor="Firebrick"
-                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CategoriesManagementViewModel}}, Path=DeleteCommand}"
-                                    CommandParameter="{Binding .}"
-                                    Text="Delete"
-                                    TextColor="White"/>
-
-                            </Grid>
-
-                        </Border>
+                        </SwipeView>
 
                     </DataTemplate>
+
                 </CollectionView.ItemTemplate>
 
             </CollectionView>

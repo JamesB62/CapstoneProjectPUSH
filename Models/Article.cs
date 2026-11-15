@@ -9,6 +9,9 @@
         [NotNull, MaxLength(100)]
         public string Title { get; set; } = string.Empty;
 
+        [NotNull, MaxLength(50)]
+        public string Topic { get; set; } = string.Empty;
+
         [NotNull, MaxLength(5000)]
         public string Content { get; set; } = string.Empty;
 
@@ -25,11 +28,5 @@
 
         [Ignore]
         public int ReadingTime => Math.Max(1, Content.Split(" ", StringSplitOptions.RemoveEmptyEntries).Length / 200);
-
-        [Indexed]
-        public int CategoryId { get; set; }
-
-        [Ignore]
-        public string CategoryTitle { get; set; } = string.Empty;
     }
 }

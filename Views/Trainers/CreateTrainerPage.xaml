@@ -7,93 +7,164 @@
              x:DataType="vm:CreateTrainerViewModel"
              Title="{Binding PageTitle}">
 
-    <Grid
-        MaximumWidthRequest="500"
-        Padding="30,15"
-        RowDefinitions="*,Auto"
-        RowSpacing="15">
+    <ScrollView>
 
-        <ScrollView
-            Grid.Row="0">
+        <VerticalStackLayout
+            MaximumWidthRequest="500"
+            Padding="30"
+            Spacing="20">
 
-            <VerticalStackLayout
-                Spacing="10">
+            <!-- Trainer form -->
+            <VerticalStackLayout>
+
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="18"
+                    Text="First Name"/>
 
                 <Entry
                     MaxLength="60"
-                    Placeholder="First name"
+                    Placeholder="Enter the trainer's first name here"
                     Text="{Binding FirstName}"/>
 
+            </VerticalStackLayout>
+
+            <VerticalStackLayout>
+
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="18"
+                    Text="Last Name"/>
+
                 <Entry
                     MaxLength="60"
-                    Placeholder="Last name"
+                    Placeholder="Enter the trainer's last name here"
                     Text="{Binding LastName}"/>
 
-                <Entry
-                    Keyboard="Email"
-                    MaxLength="250"
-                    Placeholder="Email (optional)"
-                    Text="{Binding Email}"/>
+            </VerticalStackLayout>
 
-                <Entry
-                    Keyboard="Telephone"
-                    MaxLength="20"
-                    Placeholder="Phone number (optional)"
-                    Text="{Binding PhoneNumber}"/>
+            <!-- Contact (at least one required) -->
+            <VerticalStackLayout>
+
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="18"
+                    Text="Contact Details"/>
+
+                <Label
+                    FontSize="14"
+                    Margin="0,10,0,0"
+                    Text="Enter an email address, a phone number, or both."/>
+
+                <VerticalStackLayout
+                    Spacing="5">
+
+                    <Entry
+                        Keyboard="Email"
+                        MaxLength="250"
+                        Placeholder="Enter the trainer's email address here"
+                        Text="{Binding Email}"/>
+
+                    <Entry
+                        Keyboard="Telephone"
+                        MaxLength="20"
+                        Placeholder="Enter the trainer's phone number here"
+                        Text="{Binding PhoneNumber}"/>
+
+                </VerticalStackLayout>
+
+            </VerticalStackLayout>
+
+            <VerticalStackLayout>
+
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="18"
+                    Text="Specialty"/>
 
                 <Picker
                     ItemDisplayBinding="{Binding Title, x:DataType=models:Category}"
                     ItemsSource="{Binding Categories}"
                     SelectedItem="{Binding SelectedCategory}"
-                    Title="Category"/>
-
-                <Picker
-                    ItemsSource="{Binding GymChoices}"
-                    SelectedIndex="{Binding SelectedGymIndex}"
-                    Title="Gym"/>
-
-                <Editor
-                    HeightRequest="100"
-                    MaxLength="1000"
-                    Placeholder="Description (optional)"
-                    Text="{Binding Description}"/>
-
-                <Grid
-                    ColumnDefinitions="*,Auto"
-                    ColumnSpacing="10">
-
-                    <Label
-                        Grid.Column="0"
-                        Text="Available for new clients"
-                        VerticalOptions="Center"/>
-
-                    <Switch
-                        Grid.Column="1"
-                        IsToggled="{Binding Available}"/>
-
-                </Grid>
+                    Title="Choose a specialty"/>
 
             </VerticalStackLayout>
 
-        </ScrollView>
+            <VerticalStackLayout>
 
-        <VerticalStackLayout
-            Grid.Row="1"
-            Spacing="10">
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="18"
+                    Text="Gym"/>
 
+                <Picker
+                    ItemDisplayBinding="{Binding NameAndCity, x:DataType=models:Gym}"
+                    ItemsSource="{Binding Gyms}"
+                    SelectedItem="{Binding SelectedGym}"
+                    Title="Choose a gym"/>
+
+            </VerticalStackLayout>
+
+            <VerticalStackLayout>
+
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="18"
+                    Text="About"/>
+
+                <Editor
+                    AutoSize="TextChanges"
+                    MaxLength="1000"
+                    MinimumHeightRequest="100"
+                    Placeholder="Write a short description (optional)"
+                    Text="{Binding Description}"/>
+
+            </VerticalStackLayout>
+
+            <!-- Availability -->
+            <Grid
+                ColumnDefinitions="*,Auto"
+                ColumnSpacing="10"
+                Margin="0,-15">
+
+                <Label
+                    Grid.Column="0"
+                    FontSize="14"
+                    Text="Available for new clients"
+                    VerticalOptions="Center"/>
+
+                <Switch
+                    Grid.Column="1"
+                    IsToggled="{Binding Available}"
+                    VerticalOptions="Center"/>
+
+            </Grid>
+
+            <!-- Error message -->
             <Label
-                FontAttributes="Italic"
-                FontSize="12"
-                HorizontalTextAlignment="Center"
-                IsVisible="{Binding HasStatusMessage}"
-                Text="{Binding StatusMessage}"/>
+                IsVisible="{Binding HasErrorMessage}"
+                Text="{Binding ErrorMessage}"
+                TextColor="Red"/>
 
-            <Button
-                Command="{Binding SaveCommand}"
-                Text="{Binding SaveButtonText}"/>
+            <!-- Buttons -->
+            <VerticalStackLayout
+                Margin="0,5,0,0"
+                Spacing="10">
+
+                <Button
+                    Command="{Binding SaveCommand}"
+                    IsEnabled="{Binding IsNotBusy}"
+                    Text="{Binding SaveButtonText}"/>
+
+                <Button
+                    Command="{Binding CancelCommand}"
+                    IsEnabled="{Binding IsNotBusy}"
+                    Text="Cancel"/>
+
+            </VerticalStackLayout>
 
         </VerticalStackLayout>
 
-    </Grid>
+    </ScrollView>
 
 </ContentPage>

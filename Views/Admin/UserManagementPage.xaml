@@ -5,98 +5,181 @@
              xmlns:models="clr-namespace:CapstoneProjectPUSH.Models"
              x:Class="CapstoneProjectPUSH.Views.Admin.UserManagementPage"
              x:DataType="vm:UserManagementViewModel"
-             Title="Manage Users">
+             Title="Manage PUSH Users">
 
     <Grid
         MaximumWidthRequest="500"
-        Padding="30,15"
-        RowDefinitions="Auto,Auto,Auto,*"
-        RowSpacing="10">
+        Padding="30,15,30,0"
+        RowDefinitions="Auto,Auto,*"
+        RowSpacing="20">
 
-        <Entry
+        <!-- Search bar -->
+        <SearchBar
             Grid.Row="0"
-            Placeholder="Search by name or email"
+            Placeholder="Search by display name or email..."
             Text="{Binding SearchText}"/>
 
-        <Label
+        <VerticalStackLayout
             Grid.Row="1"
-            FontAttributes="Bold"
-            Text="{Binding CountText}"/>
+            Spacing="15">
 
-        <Label
-            Grid.Row="2"
-            HorizontalOptions="Center"
-            IsVisible="{Binding HasStatusMessage}"
-            Text="{Binding StatusMessage}"/>
+            <Grid
+                ColumnDefinitions="*,Auto"
+                ColumnSpacing="10">
+
+                <!-- User count -->
+                <Label
+                    Grid.Column="0"
+                    Text="{Binding StatusMessage}"
+                    VerticalOptions="Center"/>
+
+                <HorizontalStackLayout
+                    Grid.Column="1"
+                    Margin="0,-15,0,-15"
+                    Spacing="5">
+
+                    <Label
+                        Text="Active Only"
+                        VerticalOptions="Center"/>
+
+                    <Switch
+                        IsToggled="{Binding ShowActiveOnly}"
+                        VerticalOptions="Center"/>
+
+                </HorizontalStackLayout>
+
+            </Grid>
+
+            <!-- Error message -->
+            <Label
+                IsVisible="{Binding HasErrorMessage}"
+                Text="{Binding ErrorMessage}"
+                TextColor="Red"/>
+
+        </VerticalStackLayout>
 
         <RefreshView
-            Grid.Row="3"
+            Grid.Row="2"
             Command="{Binding LoadCommand}"
             IsRefreshing="{Binding IsBusy}">
 
-            <CollectionView ItemsSource="{Binding Users}">
+            <CollectionView
+                ItemsSource="{Binding Users}">
 
-                <CollectionView.ItemsLayout>
-                    <LinearItemsLayout Orientation="Vertical" ItemSpacing="10"/>
-                </CollectionView.ItemsLayout>
-
+                <!-- Empty view -->
                 <CollectionView.EmptyView>
-                    <Label HorizontalOptions="Center" Text="No users found."/>
+
+                    <VerticalStackLayout
+                        HorizontalOptions="Center"
+                        VerticalOptions="Center">
+
+                        <Label
+                            FontAttributes="Italic"
+                            HorizontalTextAlignment="Center"
+                            Text="No users found."/>
+
+                        <Label
+                            FontAttributes="Italic"
+                            HorizontalTextAlignment="Center"
+                            Text="Pull down to try again."/>
+
+                    </VerticalStackLayout>
+
                 </CollectionView.EmptyView>
 
+                <!-- Item layout -->
+                <CollectionView.ItemsLayout>
+
+                    <LinearItemsLayout
+                        ItemSpacing="10"
+                        Orientation="Vertical"/>
+
+                </CollectionView.ItemsLayout>
+
+                <!-- Item template -->
                 <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="models:User">
 
-                        <Border Style="{StaticResource Card}">
+                    <DataTemplate
+                        x:DataType="models:User">
 
-                            <VerticalStackLayout Spacing="4">
+                        <SwipeView>
 
-                                <HorizontalStackLayout Spacing="8">
-                                    <Label
-                                        FontAttributes="Bold"
-                                        FontSize="16"
-                                        Text="{Binding DisplayName}"/>
+                            <!-- Swipe actions -->
+                            <SwipeView.RightItems>
+
+                                <SwipeItems>
+
+                                    <SwipeItem
+                                        BackgroundColor="#6B7280"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:UserManagementViewModel}}, Path=ToggleActiveCommand}"
+                                        CommandParameter="{Binding .}"
+                                        Text="{Binding ActionLabel}"/>
+
+                                </SwipeItems>
+
+                            </SwipeView.RightItems>
+
+                            <!-- Card -->
+                            <Border
+                                Style="{StaticResource Card}">
+
+                                <VerticalStackLayout
+                                    Spacing="10">
+
+                                    <Grid
+                                        ColumnDefinitions="*,Auto"
+                                        ColumnSpacing="10">
+
+                                        <!-- Header -->
+                                        <Label
+                                            Grid.Column="0"
+                                            FontAttributes="Bold"
+                                            FontSize="16"
+                                            LineBreakMode="TailTruncation"
+                                            Text="{Binding DisplayName}"
+                                            VerticalOptions="Center"/>
+
+                                        <!-- Status -->
+                                        <Border
+                                            Grid.Column="1"
+                                            Style="{StaticResource Pill}">
+
+                                            <Label
+                                                FontSize="12"
+                                                LineBreakMode="TailTruncation"
+                                                Text="{Binding StatusLabel}"/>
+
+                                        </Border>
+
+                                    </Grid>
+
+                                    <!-- Info -->
+                                    <VerticalStackLayout
+                                        Spacing="3">
+
+                                        <Label
+                                            LineBreakMode="TailTruncation"
+                                            Text="{Binding Email, StringFormat='• Email: {0}'}"/>
+
+                                        <Label
+                                            Text="{Binding RoleLabel, StringFormat='• Role: {0}'}"/>
+
+                                    </VerticalStackLayout>
+
+                                    <!-- Date time created -->
                                     <Label
                                         FontAttributes="Italic"
-                                        IsVisible="{Binding IsAdmin}"
-                                        Text="Admin"
-                                        TextColor="{AppThemeBinding Light=#2563EB, Dark=#60A5FA}"
-                                        VerticalOptions="Center"/>
-                                </HorizontalStackLayout>
+                                        FontSize="12"
+                                        Text="{Binding DateTimeCreated, StringFormat='Joined on {0:d MMM yyyy}'}"/>
 
-                                <Label Text="{Binding Email}"/>
+                                </VerticalStackLayout>
 
-                                <Label Text="{Binding StatusLabel}">
-                                    <Label.Triggers>
-                                        <DataTrigger TargetType="Label" Binding="{Binding IsActive}" Value="False">
-                                            <Setter Property="TextColor" Value="Red"/>
-                                        </DataTrigger>
-                                    </Label.Triggers>
-                                </Label>
+                            </Border>
 
-                                <Label
-                                    FontSize="12"
-                                    Text="{Binding DateTimeCreated, StringFormat='Joined {0:d MMM yyyy}'}"/>
-
-                                <Button
-                                    BackgroundColor="Firebrick"
-                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:UserManagementViewModel}}, Path=ToggleActiveCommand}"
-                                    CommandParameter="{Binding .}"
-                                    Margin="0,8,0,0"
-                                    Text="{Binding ActionLabel}"
-                                    TextColor="White">
-                                    <Button.Triggers>
-                                        <DataTrigger TargetType="Button" Binding="{Binding IsActive}" Value="False">
-                                            <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#2563EB, Dark=#3B82F6}"/>
-                                        </DataTrigger>
-                                    </Button.Triggers>
-                                </Button>
-
-                            </VerticalStackLayout>
-
-                        </Border>
+                        </SwipeView>
 
                     </DataTemplate>
+
                 </CollectionView.ItemTemplate>
 
             </CollectionView>

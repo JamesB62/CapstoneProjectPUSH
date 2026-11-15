@@ -5,112 +5,146 @@
              xmlns:models="clr-namespace:CapstoneProjectPUSH.Models"
              x:Class="CapstoneProjectPUSH.Views.Admin.GymsManagementPage"
              x:DataType="vm:GymsManagementViewModel"
-             Title="Manage Gyms">
+             Title="Manage PUSH Gyms">
+
+    <ContentPage.ToolbarItems>
+
+        <ToolbarItem
+            Command="{Binding AddCommand}"
+            Text="+ Add"/>
+
+    </ContentPage.ToolbarItems>
 
     <Grid
         MaximumWidthRequest="500"
-        Padding="30,15"
+        Padding="30,15,30,0"
         RowDefinitions="Auto,Auto,*"
-        RowSpacing="10">
+        RowSpacing="20">
 
-        <!-- Add / edit form -->
-        <VerticalStackLayout Grid.Row="0" Spacing="10">
+        <!-- Search bar -->
+        <SearchBar
+            Grid.Row="0"
+            Placeholder="Search by name or city..."
+            Text="{Binding SearchText}"/>
 
-            <Entry
-                MaxLength="250"
-                Placeholder="Gym name"
-                Text="{Binding NameInput}"/>
+        <VerticalStackLayout
+            Grid.Row="1"
+            Spacing="15">
 
-            <Entry
-                MaxLength="250"
-                Placeholder="Address"
-                Text="{Binding AddressInput}"/>
+            <!-- Gym count -->
+            <Label
+                Text="{Binding StatusMessage}"/>
 
-            <Entry
-                MaxLength="100"
-                Placeholder="City"
-                ReturnCommand="{Binding SaveCommand}"
-                ReturnType="Done"
-                Text="{Binding CityInput}"/>
-
-            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
-
-                <Button
-                    Grid.Column="0"
-                    Command="{Binding SaveCommand}"
-                    Text="{Binding SaveButtonText}"/>
-
-                <Button
-                    Grid.Column="1"
-                    Command="{Binding CancelEditCommand}"
-                    IsVisible="{Binding IsEditing}"
-                    Text="Cancel"/>
-
-            </Grid>
+            <!-- Error message -->
+            <Label
+                IsVisible="{Binding HasErrorMessage}"
+                Text="{Binding ErrorMessage}"
+                TextColor="Red"/>
 
         </VerticalStackLayout>
-
-        <Label
-            Grid.Row="1"
-            HorizontalOptions="Center"
-            IsVisible="{Binding HasStatusMessage}"
-            Text="{Binding StatusMessage}"/>
 
         <RefreshView
             Grid.Row="2"
             Command="{Binding LoadCommand}"
             IsRefreshing="{Binding IsBusy}">
 
-            <CollectionView ItemsSource="{Binding Gyms}">
+            <CollectionView
+                ItemsSource="{Binding Gyms}">
 
-                <CollectionView.ItemsLayout>
-                    <LinearItemsLayout Orientation="Vertical" ItemSpacing="10"/>
-                </CollectionView.ItemsLayout>
-
+                <!-- Empty view -->
                 <CollectionView.EmptyView>
-                    <Label HorizontalOptions="Center" Text="No gyms yet."/>
+
+                    <VerticalStackLayout
+                        HorizontalOptions="Center"
+                        VerticalOptions="Center">
+
+                        <Label
+                            FontAttributes="Italic"
+                            HorizontalTextAlignment="Center"
+                            Text="No gyms found."/>
+
+                        <Label
+                            FontAttributes="Italic"
+                            HorizontalTextAlignment="Center"
+                            Text="Pull down to try again."/>
+
+                    </VerticalStackLayout>
+
                 </CollectionView.EmptyView>
 
+                <!-- Item layout -->
+                <CollectionView.ItemsLayout>
+
+                    <LinearItemsLayout
+                        ItemSpacing="10"
+                        Orientation="Vertical"/>
+
+                </CollectionView.ItemsLayout>
+
+                <!-- Item template -->
                 <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="models:Gym">
 
-                        <Border Style="{StaticResource Card}">
+                    <DataTemplate
+                        x:DataType="models:Gym">
 
-                            <VerticalStackLayout Spacing="4">
+                        <SwipeView>
 
-                                <Label
-                                    FontAttributes="Bold"
-                                    FontSize="16"
-                                    Text="{Binding Name}"/>
+                            <!-- Swipe actions -->
+                            <SwipeView.LeftItems>
 
-                                <Label Text="{Binding FullAddress}"/>
+                                <SwipeItems>
 
-                                <Grid
-                                    ColumnDefinitions="*,*"
-                                    ColumnSpacing="8"
-                                    Margin="0,8,0,0">
-
-                                    <Button
-                                        Grid.Column="0"
+                                    <SwipeItem
+                                        BackgroundColor="#6B7280"
                                         Command="{Binding Source={RelativeSource AncestorType={x:Type vm:GymsManagementViewModel}}, Path=EditCommand}"
                                         CommandParameter="{Binding .}"
                                         Text="Edit"/>
 
-                                    <Button
-                                        Grid.Column="1"
-                                        BackgroundColor="Firebrick"
+                                </SwipeItems>
+
+                            </SwipeView.LeftItems>
+
+                            <SwipeView.RightItems>
+
+                                <SwipeItems>
+
+                                    <SwipeItem
+                                        BackgroundColor="Red"
                                         Command="{Binding Source={RelativeSource AncestorType={x:Type vm:GymsManagementViewModel}}, Path=DeleteCommand}"
                                         CommandParameter="{Binding .}"
-                                        Text="Delete"
-                                        TextColor="White"/>
+                                        Text="Delete"/>
 
-                                </Grid>
+                                </SwipeItems>
 
-                            </VerticalStackLayout>
+                            </SwipeView.RightItems>
 
-                        </Border>
+                            <!-- Card -->
+                            <Border
+                                Style="{StaticResource Card}">
+
+                                <VerticalStackLayout
+                                    Spacing="10">
+
+                                    <!-- Header -->
+                                    <Label
+                                        FontAttributes="Bold"
+                                        FontSize="16"
+                                        LineBreakMode="TailTruncation"
+                                        Text="{Binding Name}"/>
+
+                                    <!-- Info -->
+                                    <Label
+                                        LineBreakMode="TailTruncation"
+                                        Text="{Binding FullAddress}"/>
+
+                                </VerticalStackLayout>
+
+                            </Border>
+
+                        </SwipeView>
 
                     </DataTemplate>
+
                 </CollectionView.ItemTemplate>
 
             </CollectionView>

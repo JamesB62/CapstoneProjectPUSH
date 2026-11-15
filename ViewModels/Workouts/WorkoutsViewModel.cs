@@ -4,7 +4,7 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
     {
         private readonly WorkoutService _workoutService;
 
-        public WorkoutsViewModel(UserService userService, WorkoutService workoutService) : base (userService)
+        public WorkoutsViewModel(UserService userService, WorkoutService workoutService) : base(userService)
         {
             _workoutService = workoutService;
         }
@@ -22,41 +22,29 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
         [RelayCommand]
         private async Task LoadWorkoutsAsync()
         {
+            ErrorMessage = string.Empty;
             RefreshUserState();
+
+            var user = _userService.CurrentUser;
+
+            // AppShell sends signed-out users to the landing page
+            if (user is null)
+            {
+                return;
+            }
 
             IsBusy = true;
 
             try
             {
-                var user = _userService.CurrentUser;
-
-                if (user is null)
-                {
-                    // Comment out to disable redirect
-                    await NavigateAsync("//LandingPage");
-                    return;
-                }
-
-                StatusMessage = "Loading workouts...";
-
-                var workouts = await _workoutService.GetWorkoutsForUserAsync(user.Id);
-
-                foreach (var workout in workouts)
-                {
-                    var exercises = await _workoutService.GetExercisesForWorkoutAsync(workout.Id);
-
-                    workout.ExerciseCount = exercises.Count;
-                    workout.SetCount = exercises.Sum(e => e.Sets);
-                }
-
-                _allWorkouts = workouts;
+                _allWorkouts = await _workoutService.GetWorkoutsForUserAsync(user.Id);
 
                 ApplyFilter();
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex);
-                StatusMessage = "Something went wrong. Please try again.";
+                ErrorMessage = "Couldn't load your workouts. Pull down to try again.";
             }
             finally
             {
@@ -71,27 +59,24 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
 
         private void ApplyFilter()
         {
-            string searchTerm;
+            string term = string.Empty;
 
-            if (string.IsNullOrWhiteSpace(SearchText))
+            if (SearchText is not null)
             {
-                searchTerm = string.Empty;
-            }
-            else
-            {
-                searchTerm = SearchText.Trim();
+                term = SearchText.Trim();
             }
 
             List<Workout> filtered;
 
-            if (searchTerm.Length == 0)
+            if (term.Length == 0)
             {
                 filtered = _allWorkouts;
             }
             else
             {
                 filtered = _allWorkouts
-                    .Where(w => w.Title.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
+                    .Where(w => w.Title.Contains(term, StringComparison.OrdinalIgnoreCase)
+                             || w.CategoryTitle.Contains(term, StringComparison.OrdinalIgnoreCase))
                     .ToList();
             }
 
@@ -102,19 +87,18 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
                 Workouts.Add(workout);
             }
 
-            if (Workouts.Count == 1)
+            if (filtered.Count == 1)
             {
                 StatusMessage = "Showing 1 workout.";
             }
             else
             {
-                StatusMessage = $"Showing {Workouts.Count} workouts.";
+                StatusMessage = $"Showing {filtered.Count} workouts.";
             }
         }
 
         partial void OnSelectedWorkoutChanged(Workout? value)
         {
-            
             if (value is null)
             {
                 return;
@@ -127,10 +111,6 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
         [RelayCommand]
         private async Task ViewWorkoutAsync(Workout? workout)
         {
-            //guest abvv
-            // if (!await RequireLoginAsync())
-            // return;
-
             if (workout is null)
             {
                 return;
@@ -139,22 +119,34 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
             await NavigateAsync($"{nameof(WorkoutDetailsPage)}?WorkoutId={workout.Id}");
         }
 
+        // Guests get the log in or register prompt
         [RelayCommand]
         private async Task AddWorkoutAsync()
         {
             if (!await RequireLoginAsync())
-            return;
+            {
+                return;
+            }
 
             await NavigateAsync(nameof(CreateWorkoutPage));
+        }
+
+        // Opens the create workout page in edit mode
+        [RelayCommand]
+        private async Task EditWorkoutAsync(Workout? workout)
+        {
+            if (workout is null || !IsLoggedIn)
+            {
+                return;
+            }
+
+            await NavigateAsync($"{nameof(CreateWorkoutPage)}?WorkoutId={workout.Id}");
         }
 
         [RelayCommand]
         private async Task DeleteWorkoutAsync(Workout? workout)
         {
-            if (!await RequireLoginAsync())
-            return;
-
-            if (workout is null)
+            if (workout is null || !IsLoggedIn)
             {
                 return;
             }
@@ -166,9 +158,15 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
                 return;
             }
 
-            bool confirm = await Shell.Current.DisplayAlertAsync("Delete workout", $"Delete \"{workout.Title}\"?", "Delete", "Cancel");
+            ErrorMessage = string.Empty;
 
-            if (!confirm)
+            bool confirmed = await Shell.Current.DisplayAlertAsync(
+                "Delete Workout",
+                $"Delete {workout.Title}? This can't be undone.",
+                "Delete",
+                "Cancel");
+
+            if (!confirmed)
             {
                 return;
             }
@@ -176,14 +174,12 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
             try
             {
                 await _workoutService.DeleteWorkoutAsync(workout.Id, user.Id);
-
-                _allWorkouts.Remove(workout);
-                ApplyFilter();
+                await LoadWorkoutsCommand.ExecuteAsync(null);
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex);
-                StatusMessage = "Something went wrong. Please try again.";
+                ErrorMessage = "Couldn't delete the workout. Please try again.";
             }
         }
     }

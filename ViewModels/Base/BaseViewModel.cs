@@ -2,6 +2,15 @@
 {
     public abstract partial class BaseViewModel : ObservableObject
     {
+        // Injections
+        protected readonly UserService _userService;
+
+        public BaseViewModel(UserService userService)
+        {
+            _userService = userService;
+        }
+
+        // Reusable properties
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(IsNotBusy))]
         public partial bool IsBusy { get; set; }
@@ -14,52 +23,90 @@
 
         public bool HasStatusMessage => !string.IsNullOrEmpty(StatusMessage);
 
-        private bool _isNavigating;
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(HasErrorMessage))]
+        public partial string ErrorMessage { get; set; } = string.Empty;
 
-        protected readonly UserService _userService;
+        public bool HasErrorMessage => !string.IsNullOrEmpty(ErrorMessage);
 
-        public BaseViewModel(UserService userService)
-        {
-            _userService = userService;
-        }
-
+        // Signed-in state
         public bool IsUnauthenticated => _userService.IsUnauthenticated;
-
-        //guest
         public bool IsGuest => _userService.IsGuest;
-        public bool IsLoggedIn => !IsGuest;
+        public bool IsLoggedIn => _userService.IsLoggedIn;
+        public bool IsCurrentUserAdmin => _userService.CurrentUser?.IsAdmin == true;
 
         public void RefreshUserState()
         {
             OnPropertyChanged(nameof(IsUnauthenticated));
             OnPropertyChanged(nameof(IsGuest));
             OnPropertyChanged(nameof(IsLoggedIn));
+            OnPropertyChanged(nameof(IsCurrentUserAdmin));
         }
 
-        //User login require if guest
+        // Registered account check -- login/register prompt for guests
         protected async Task<bool> RequireLoginAsync()
         {
-            if (!IsGuest)
+            if (IsLoggedIn)
             {
-                return true; 
+                return true;
             }
 
-            bool goToLogin = await Shell.Current.DisplayAlertAsync(
-                "Login Required",
-                "You are currently browsing as a guest. Please log in to use this feature.",
-                "Log In",
+            if (IsUnauthenticated)
+            {
+                await NavigateAsync("//LandingPage");
+                return false;
+            }
+
+            bool goToLanding = await Shell.Current.DisplayAlertAsync(
+                "Account Required",
+                "You are browsing as a guest. Log in or register to use this feature.",
+                "Log In or Register",
                 "Cancel");
 
-            if (goToLogin)
+            if (goToLanding)
             {
+                await LogoutAndRedirectAsync();
+            }
 
-            await Shell.Current.GoToAsync($"{nameof(LoginPage)}?returnToPrevious=true");            }
-
-            return false; //block user
+            return false;
         }
 
+        // Admin account check
+        protected async Task<bool> RequireAdminAsync()
+        {
+            var user = _userService.CurrentUser;
 
-        //guest
+            if (user is null)
+            {
+                await NavigateAsync("//LandingPage");
+                return false;
+            }
+
+            if (user.IsAdmin)
+            {
+                return true;
+            }
+
+            await Shell.Current.DisplayAlertAsync(
+                "Access Denied",
+                "This page is for administrators only.",
+                "OK");
+
+            await NavigateAsync("..");
+            return false;
+        }
+
+        // Signs out the current user
+        protected async Task LogoutAndRedirectAsync()
+        {
+            _userService.Logout();
+            RefreshUserState();
+
+            await NavigateAsync("//LandingPage");
+        }
+
+        // Navigation
+        private bool _isNavigating;
 
         protected async Task NavigateAsync(string route)
         {
@@ -80,6 +127,7 @@
             }
         }
 
+        // Navigation with parameters
         protected async Task NavigateAsync(string route, ShellNavigationQueryParameters parameters)
         {
             if (_isNavigating)
