@@ -50,9 +50,9 @@
                 return null;
             }
 
-            var categoryTitle = await _categoryService.GetCategoryTitlesAsync();
+            var categoryTitles = await _categoryService.GetCategoryTitlesAsync();
 
-            exercise.CategoryTitle = categoryTitle.GetValueOrDefault(exercise.CategoryId, "Uncategorised");
+            exercise.CategoryTitle = categoryTitles.GetValueOrDefault(exercise.CategoryId, "Uncategorised");
 
             return exercise;
         }

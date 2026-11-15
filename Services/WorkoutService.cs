@@ -51,6 +51,7 @@
             return workouts;
         }
 
+        // Get one of the user's own workouts
         public async Task<Workout?> GetWorkoutByIdAsync(int workoutId, int userId)
         {
             var db = await _databaseService.GetConnectionAsync();
@@ -64,13 +65,13 @@
                 return null;
             }
 
-            var categoryTitle = await _categoryService.GetCategoryTitlesAsync();
-            workout.CategoryTitle = categoryTitle.GetValueOrDefault(workout.CategoryId, "Uncategorised");
+            var categoryTitles = await _categoryService.GetCategoryTitlesAsync();
+            workout.CategoryTitle = categoryTitles.GetValueOrDefault(workout.CategoryId, "Uncategorised");
 
             return workout;
         }
 
-        // TEST ==================================================================================
+        // Gets every shared workout
         public async Task<List<Workout>> GetPublicWorkoutsAsync()
         {
             var db = await _databaseService.GetConnectionAsync();
@@ -109,6 +110,7 @@
             return workouts;
         }
 
+        // Get one shared workout by Id
         public async Task<Workout?> GetPublicWorkoutByIdAsync(int workoutId)
         {
             var db = await _databaseService.GetConnectionAsync();
@@ -122,8 +124,8 @@
                 return null;
             }
 
-            var categoryTitle = await _categoryService.GetCategoryTitlesAsync();
-            workout.CategoryTitle = categoryTitle.GetValueOrDefault(workout.CategoryId, "Uncategorised");
+            var categoryTitles = await _categoryService.GetCategoryTitlesAsync();
+            workout.CategoryTitle = categoryTitles.GetValueOrDefault(workout.CategoryId, "Uncategorised");
 
             var displayNames = await _userService.GetDisplayNamesByIdAsync();
             workout.UserDisplayName = displayNames.GetValueOrDefault(workout.UserId, "Unknown");
@@ -131,6 +133,7 @@
             return workout;
         }
 
+        // Update a workout and replace its exercises (all or nothing)
         public async Task<bool> UpdateWorkoutWithExercisesAsync(Workout workout, int userId, IEnumerable<WorkoutExercise> items)
         {
             var db = await _databaseService.GetConnectionAsync();
@@ -144,27 +147,27 @@
                 return false;
             }
 
+            // Copy the editable details across
             existing.Title = workout.Title;
             existing.CategoryId = workout.CategoryId;
             existing.IsPrivate = workout.IsPrivate;
 
-            await db.UpdateAsync(existing);
-
-            await db.Table<WorkoutExercise>().DeleteAsync(we => we.WorkoutId == workout.Id);
-
             foreach (var item in items)
             {
-                item.WorkoutId = workout.Id;
+                item.WorkoutId = existing.Id;
             }
 
-            await db.InsertAllAsync(items);
+            await db.RunInTransactionAsync(conn =>
+            {
+                conn.Update(existing);
+                conn.Table<WorkoutExercise>().Delete(we => we.WorkoutId == existing.Id);
+                conn.InsertAll(items);
+            });
 
             return true;
         }
 
-        // TEST ==================================================================================
-
-        //workout exercisese 
+        // Gets a workout's exercises
         public async Task<List<WorkoutExercise>> GetExercisesForWorkoutAsync(int workoutId)
         {
             var db = await _databaseService.GetConnectionAsync();
@@ -174,42 +177,30 @@
                 .OrderBy(we => we.SortOrder)
                 .ToListAsync();
 
-                var exercises = await db.Table<Exercise>().ToListAsync();
-                var titles = exercises.ToDictionary(e => e.Id, e => e.Title);
+            var exercises = await db.Table<Exercise>().ToListAsync();
+            var titles = exercises.ToDictionary(e => e.Id, e => e.Title);
 
-                foreach(var item in items)
-                {
-                    item.ExerciseTitle = titles.GetValueOrDefault(item.ExerciseId, "Unknown exercise");
+            foreach (var item in items)
+            {
+                item.ExerciseTitle = titles.GetValueOrDefault(item.ExerciseId, "Unknown exercise");
+            }
 
-                }
-                return items;
+            return items;
         }
 
-        // Add other functions as needed, CRUD
-        //------------------------------------//
-
-        // Add
-        public async Task<int> AddWorkoutAsync(Workout workout)
-        {
-            var db = await _databaseService.GetConnectionAsync();
-            return await db.InsertAsync(workout);
-        }
-
-        // Delete
+        // Delete a workout
         public async Task DeleteWorkoutAsync(int workoutId, int userId)
         {
             var db = await _databaseService.GetConnectionAsync();
-            await db.Table<WorkoutExercise>().DeleteAsync(we => we.WorkoutId == workoutId);
-            await db.Table<Workout>().DeleteAsync(w => w.Id == workoutId && w.UserId == userId);
-        }
-        // Update
-        public async Task<int> UpdateWorkoutAsync(Workout workout)
-        {
-            var db = await _databaseService.GetConnectionAsync();
-            return await db.UpdateAsync(workout);
+
+            await db.RunInTransactionAsync(conn =>
+            {
+                conn.Table<WorkoutExercise>().Delete(we => we.WorkoutId == workoutId);
+                conn.Table<Workout>().Delete(w => w.Id == workoutId && w.UserId == userId);
+            });
         }
 
-        //add workout with exercises
+        // Add workout with exercises
         public async Task<int> AddWorkoutWithExercisesAsync(Workout workout, IEnumerable<WorkoutExercise> items)
         {
             var db = await _databaseService.GetConnectionAsync();
@@ -218,7 +209,7 @@
             {
                 conn.Insert(workout);
 
-                foreach(var item in items)
+                foreach (var item in items)
                 {
                     item.WorkoutId = workout.Id;
                     conn.Insert(item);

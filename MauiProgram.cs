@@ -24,7 +24,6 @@ namespace CapstoneProjectPUSH
             builder.Services.AddSingleton<ExerciseService>(); 
             builder.Services.AddSingleton<GymService>();
             builder.Services.AddSingleton<NoteService>();
-            builder.Services.AddSingleton<StatsService>();
             builder.Services.AddSingleton<TrainerService>();
             builder.Services.AddSingleton<UserService>();
             builder.Services.AddSingleton<WeightLogService>();

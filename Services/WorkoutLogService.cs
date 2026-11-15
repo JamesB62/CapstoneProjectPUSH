@@ -20,17 +20,7 @@
                 .ToListAsync();
         }
 
-        // Get workout log by Id for user Id
-        public async Task<WorkoutLog?> GetWorkoutLogByIdAsync(int workoutLogId, int userId)
-        {
-            var db = await _databaseService.GetConnectionAsync();
-
-            return await db.Table<WorkoutLog>()
-                .Where(wl => wl.Id == workoutLogId && wl.UserId == userId)
-                .FirstOrDefaultAsync();
-        }
-
-        // Add workot log
+        // Add workout log
         public async Task AddWorkoutLogAsync(WorkoutLog workoutLog)
         {
             var db = await _databaseService.GetConnectionAsync();

@@ -42,7 +42,7 @@
 
                     <Label
                         FontSize="12"
-                        Text="{Binding Article.CategoryTitle}"/>
+                        Text="{Binding Article.Topic}"/>
 
                 </Border>
 
@@ -64,7 +64,7 @@
             <Label
                 FontAttributes="Bold"
                 FontSize="16"
-                Text="About This Article"/>
+                Text="Article Content"/>
 
             <Label
                 Text="{Binding Article.Content}"/>

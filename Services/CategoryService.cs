@@ -113,14 +113,6 @@
                 return (false, "Category could not be found.");
             }
 
-            var articles = await db.Table<Article>().Where(a => a.CategoryId == categoryId).ToListAsync();
-
-            foreach (var article in articles)
-            {
-                article.CategoryId = 0;
-                await db.UpdateAsync(article);
-            }
-
             var exercises = await db.Table<Exercise>().Where(e => e.CategoryId == categoryId).ToListAsync();
 
             foreach (var exercise in exercises)

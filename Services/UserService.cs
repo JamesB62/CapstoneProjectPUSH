@@ -22,13 +22,13 @@
 
         public User? CurrentUser { get; private set; }
 
-        //define null nser
+        // No one is signed in
         public bool IsUnauthenticated => CurrentUser == null;
-        
-        //definr guest user
+
+        // Signed in with the seeded guest account
         public bool IsGuest => CurrentUser != null && CurrentUser.IsGuest;
 
-        //define login user
+        // Signed in with a registered account
         public bool IsLoggedIn => CurrentUser != null && !CurrentUser.IsGuest;
 
 
@@ -110,7 +110,7 @@
         }
 
         // Login
-        public async Task<AuthResult> LoginAsync(string email, string password, bool requireAdmin = false)
+        public async Task<AuthResult> LoginAsync(string email, string password)
         {
             email = NormaliseEmail(email);
 
@@ -342,28 +342,6 @@
             return users;
         }
 
-        // Get user by Id
-        public async Task<User?> GetUserByIdAsync(int userId)
-        {
-            if (!IsCurrentUserAdmin())
-            {
-                return null;
-            }
-
-            var db = await _databaseService.GetConnectionAsync();
-
-            var user = await db.Table<User>()
-                .Where(u => u.Id == userId)
-                .FirstOrDefaultAsync();
-
-            if (user is null)
-            {
-                return null;
-            }
-
-            return user;
-        }
-
         // Get all display names
         public async Task<Dictionary<int, string>> GetDisplayNamesByIdAsync()
         {
@@ -372,25 +350,6 @@
             var users = await db.Table<User>().ToListAsync();
 
             return users.ToDictionary(u => u.Id, u => u.DisplayName);
-        }
-
-        // Get user's display name by Id
-        public async Task<string?> GetUserDisplayNameByIdAsync(int userId)
-        {
-            var db = await _databaseService.GetConnectionAsync();
-
-            var user = await db.Table<User>()
-                .Where(u => u.Id == userId)
-                .FirstOrDefaultAsync();
-
-            if (user is null)
-            {
-                return null;
-            }
-            else
-            {
-                return user.DisplayName;
-            }
         }
 
         // Set user active status

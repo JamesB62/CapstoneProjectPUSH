@@ -10,7 +10,7 @@
             _exerciseService = exerciseService;
         }
 
-        private const string PlaceholderImage = "exercise_placeholder.jpg";
+        private const string PlaceholderImage = "exercise_placeholder.png";
 
         [ObservableProperty]
         public partial int ExerciseId { get; set; }
