@@ -39,6 +39,7 @@ namespace CapstoneProjectPUSH
             // Auth
             Routing.RegisterRoute(nameof(LoginPage), typeof(LoginPage));
             Routing.RegisterRoute(nameof(RegisterPage), typeof(RegisterPage));
+            Routing.RegisterRoute(nameof(ForgotPasswordPage), typeof(ForgotPasswordPage));
 
             // Base
             Routing.RegisterRoute(nameof(PrivacyPage), typeof(PrivacyPage));

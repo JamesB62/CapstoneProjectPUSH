@@ -34,6 +34,7 @@
                     await connection.CreateTableAsync<Category>();
                     await connection.CreateTableAsync<Exercise>();
                     await connection.CreateTableAsync<Gym>();
+                    await connection.CreateTableAsync<PasswordReset>();
                     await connection.CreateTableAsync<Note>();
                     await connection.CreateTableAsync<Trainer>();
                     await connection.CreateTableAsync<User>();

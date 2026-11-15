@@ -515,6 +515,33 @@
             }
 
             return CurrentUser.IsAdmin;
-        }        
+        }
+
+        //reset user account password
+        public async Task<AuthResult> SetNewPasswordAsync(int userId, string newPassword, string confirmPassword)
+        {
+            if(!IsStrongPassword(newPassword))
+            {
+                return new AuthResult(false, PasswordRequirementsText);
+            }
+
+            if(newPassword != confirmPassword)
+            {
+                return new AuthResult(false, "Password do not match.");
+            }
+
+            var db = await _databaseService.GetConnectionAsync();
+            var user = await db.Table<User>().Where(u => u.Id == userId).FirstOrDefaultAsync();
+
+            if(user is null)
+            {
+                return new AuthResult(false, "Account could not found.");
+            }
+
+            user.PasswordHash = await Task.Run(() => HashPassword(newPassword));
+            await db.UpdateAsync(user);
+
+            return new AuthResult(true, "Password updated, You can log in now.");
+        }
     }
 }
