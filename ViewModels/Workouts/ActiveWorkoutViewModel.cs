@@ -206,7 +206,7 @@
             {
                 await Shell.Current.DisplayAlertAsync(
                     "Workout Finished",
-                    $"Nice work! You finished in {ElapsedText}. Guest workouts aren't saved. Log in or register to track your progress.",
+                    $"Nice work! Guest workouts aren't saved. Log in or register to track your progress.",
                     "OK");
 
                 await NavigateAsync("..");
@@ -229,7 +229,7 @@
 
                 await Shell.Current.DisplayAlertAsync(
                     "Workout Saved",
-                    $"{Workout.Title} has been saved to your stats ({ElapsedText}).",
+                    $"{Workout.Title} has been saved to your stats.",
                     "OK");
 
                 await NavigateAsync("..");

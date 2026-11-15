@@ -309,6 +309,47 @@
             return new AuthResult(true, "Details updated successfully.", user);
         }
 
+        // Delete account
+        public async Task<AuthResult> DeleteAccountAsync()
+        {
+            if (CurrentUser is null)
+            {
+                return new AuthResult(false, "You must be logged in to delete your account.");
+            }
+
+            if (CurrentUser.IsGuest)
+            {
+                return new AuthResult(false, "The guest account can't be deleted.");
+            }
+
+            if (CurrentUser.IsAdmin)
+            {
+                return new AuthResult(false, "Admin accounts can't be deleted.");
+            }
+
+            var userId = CurrentUser.Id;
+            var db = await _databaseService.GetConnectionAsync();
+
+            await db.RunInTransactionAsync(conn =>
+            {
+                var workouts = conn.Table<Workout>().Where(w => w.UserId == userId).ToList();
+
+                foreach (var workout in workouts)
+                {
+                    var workoutId = workout.Id;
+                    conn.Table<WorkoutExercise>().Delete(we => we.WorkoutId == workoutId);
+                }
+
+                conn.Table<Workout>().Delete(w => w.UserId == userId);
+                conn.Table<Note>().Delete(n => n.UserId == userId);
+                conn.Table<WorkoutLog>().Delete(l => l.UserId == userId);
+                conn.Table<WeightLog>().Delete(l => l.UserId == userId);
+                conn.Table<User>().Delete(u => u.Id == userId);
+            });
+
+            return new AuthResult(true, "Your account has been deleted.");
+        }
+
         // Get user count
         public async Task<int> GetUserCountAsync()
         {

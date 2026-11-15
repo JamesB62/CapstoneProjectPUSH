@@ -73,10 +73,22 @@
                     Text="Admin Dashboard"/>
 
                 <Button
+                    Command="{Binding DeleteAccountCommand}"
+                    IsEnabled="{Binding IsNotBusy}"
+                    IsVisible="{Binding CanDeleteAccount}"
+                    Text="Delete Account"/>
+
+                <Button
                     Command="{Binding LogoutCommand}"
                     Text="Logout"/>
 
             </VerticalStackLayout>
+
+            <!-- Error message -->
+            <Label
+                IsVisible="{Binding HasErrorMessage}"
+                Text="{Binding ErrorMessage}"
+                TextColor="Red"/>
 
             <!-- Privacy statement link -->
             <Label
@@ -84,7 +96,7 @@
                 TextDecorations="Underline">
 
                 <Label.GestureRecognizers>
-                    
+
                     <TapGestureRecognizer
                         Command="{Binding GoToPrivacyCommand}"/>
 

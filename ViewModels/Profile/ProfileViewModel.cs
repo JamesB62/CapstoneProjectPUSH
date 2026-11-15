@@ -29,6 +29,9 @@
 
         public bool HasFavouriteGym => !string.IsNullOrEmpty(FavouriteGymText);
 
+        [ObservableProperty]
+        private bool canDeleteAccount;
+
         [RelayCommand]
         private async Task LoadProfileAsync()
         {
@@ -46,6 +49,15 @@
             Email = user.Email;
             IsAdmin = user.IsAdmin;
             ProfileImage = GetProfileImageOrPlaceholder(user.ProfileImage);
+
+            if (IsLoggedIn && !IsCurrentUserAdmin)
+            {
+                CanDeleteAccount = true;
+            }
+            else
+            {
+                CanDeleteAccount = false;
+            }
 
             await LoadFavouriteGymAsync(user.GymId);
         }
@@ -126,6 +138,55 @@
             }
 
             await NavigateAsync(nameof(AdminDashboardPage));
+        }
+
+        [RelayCommand]
+        private async Task DeleteAccountAsync()
+        {
+            if (IsBusy)
+            {
+                return;
+            }
+
+            var confirmed = await Shell.Current.DisplayAlertAsync(
+                "Delete Account?",
+                "This will permanently delete your account, workouts, notes and stats. This can't be undone.",
+                "Delete",
+                "Cancel");
+
+            if (!confirmed)
+            {
+                return;
+            }
+
+            ErrorMessage = string.Empty;
+            IsBusy = true;
+
+            AuthResult result;
+
+            try
+            {
+                result = await _userService.DeleteAccountAsync();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex);
+                ErrorMessage = "Your account couldn't be deleted. Please try again.";
+                return;
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+
+            if (!result.Success)
+            {
+                ErrorMessage = result.Message;
+                return;
+            }
+
+            await Shell.Current.DisplayAlertAsync("Account Deleted", "Your account and all your data has been deleted.", "OK");
+            await LogoutAndRedirectAsync();
         }
 
         [RelayCommand]
