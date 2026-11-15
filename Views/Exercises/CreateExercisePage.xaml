@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:CapstoneProjectPUSH.Models"
+             xmlns:vm="clr-namespace:CapstoneProjectPUSH.ViewModels.Exercises"
+             x:Class="CapstoneProjectPUSH.Views.Exercises.CreateExercisePage"
+             x:DataType="vm:CreateExerciseViewModel"
+             Title="{Binding PageTitle}">
+
+    <ScrollView>
+
+        <VerticalStackLayout
+            MaximumWidthRequest="500"
+            Padding="30"
+            Spacing="20">
+
+            <!-- Exercise form -->
+            <VerticalStackLayout>
+
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="18"
+                    Text="Title"/>
+
+                <Entry
+                    MaxLength="100"
+                    Placeholder="Enter the exercise's title here"
+                    Text="{Binding Title}"/>
+
+            </VerticalStackLayout>
+
+            <VerticalStackLayout>
+
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="18"
+                    Text="Category"/>
+
+                <Picker
+                    ItemDisplayBinding="{Binding Title, x:DataType=models:Category}"
+                    ItemsSource="{Binding Categories}"
+                    SelectedItem="{Binding SelectedCategory}"
+                    Title="Choose a category"/>
+
+            </VerticalStackLayout>
+
+            <VerticalStackLayout>
+
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="18"
+                    Text="Difficulty"/>
+
+                <Picker
+                    ItemsSource="{Binding DifficultyOptions}"
+                    SelectedIndex="{Binding SelectedDifficultyIndex}"
+                    Title="Choose a difficulty"/>
+
+            </VerticalStackLayout>
+
+            <VerticalStackLayout>
+
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="18"
+                    Text="Description"/>
+
+                <Editor
+                    AutoSize="TextChanges"
+                    MaxLength="1000"
+                    MinimumHeightRequest="100"
+                    Placeholder="Explain how to do the exercise"
+                    Text="{Binding Description}"/>
+
+            </VerticalStackLayout>
+
+            <!-- Timed -->
+            <VerticalStackLayout>
+
+                <Grid
+                    ColumnDefinitions="*,Auto"
+                    ColumnSpacing="10">
+
+                    <Label
+                        Grid.Column="0"
+                        FontAttributes="Bold"
+                        FontSize="18"
+                        Text="Timed exercise"
+                        VerticalOptions="Center"/>
+
+                    <Switch
+                        Grid.Column="1"
+                        IsToggled="{Binding IsTimed}"
+                        VerticalOptions="Center"/>
+
+                </Grid>
+
+                <Label
+                    FontSize="14"
+                    Text="Turn on for exercises done for a length of time instead of reps."/>
+
+            </VerticalStackLayout>
+
+            <!-- Error message -->
+            <Label
+                IsVisible="{Binding HasErrorMessage}"
+                Text="{Binding ErrorMessage}"
+                TextColor="Red"/>
+
+            <!-- Buttons -->
+            <VerticalStackLayout
+                Margin="0,5,0,0"
+                Spacing="10">
+
+                <Button
+                    Command="{Binding SaveCommand}"
+                    IsEnabled="{Binding IsNotBusy}"
+                    Text="{Binding SaveButtonText}"/>
+
+                <Button
+                    Command="{Binding CancelCommand}"
+                    IsEnabled="{Binding IsNotBusy}"
+                    Text="Cancel"/>
+
+            </VerticalStackLayout>
+
+        </VerticalStackLayout>
+
+    </ScrollView>
+
+</ContentPage>
