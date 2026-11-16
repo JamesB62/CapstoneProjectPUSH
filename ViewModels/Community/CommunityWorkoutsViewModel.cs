@@ -23,6 +23,7 @@
         private async Task LoadWorkoutsAsync()
         {
             ErrorMessage = string.Empty;
+            RefreshUserState();
 
             var user = _userService.CurrentUser;
 
@@ -36,7 +37,7 @@
 
             try
             {
-                _allWorkouts = await _workoutService.GetPublicWorkoutsAsync();
+                _allWorkouts = await _workoutService.GetPublicWorkoutsAsync(user.Id);
 
                 ApplyFilter();
             }

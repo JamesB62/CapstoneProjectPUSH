@@ -51,6 +51,12 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
         [ObservableProperty]
         public partial string PrivacyText { get; set; } = string.Empty;
 
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(FavouriteIcon))]
+        public partial bool IsFavourite { get; set; }
+
+        public string FavouriteIcon => IsFavourite ? "★" : "☆";
+
         partial void OnWorkoutIdChanged(int value)
         {
             if (value <= 0)
@@ -105,6 +111,8 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
                 {
                     CanEdit = IsOwner && IsLoggedIn;
 
+                    IsFavourite = await _workoutService.IsFavouriteAsync(WorkoutId, user.Id);
+                    
                     if (!IsOwner && !Workout.IsPrivate && IsLoggedIn && !IsCurrentUserAdmin)
                     {
                         CanReport = true;
@@ -182,6 +190,44 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
             };
 
             await NavigateAsync(nameof(CreateWorkoutPage), parameters);
+        }
+
+        // Star button next to the workout title
+        [RelayCommand]
+        private async Task ToggleFavouriteAsync()
+        {
+            if (Workout is null || !IsLoggedIn)
+            {
+                return;
+            }
+
+            var user = _userService.CurrentUser;
+
+            if (user is null)
+            {
+                return;
+            }
+
+            ErrorMessage = string.Empty;
+
+            try
+            {
+                var result = await _workoutService.ToggleFavouriteAsync(Workout.Id, user.Id);
+
+                if (result.Success)
+                {
+                    IsFavourite = result.IsFavourite;
+                }
+                else
+                {
+                    ErrorMessage = result.Message;
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex);
+                ErrorMessage = "Couldn't update your favourites. Please try again.";
+            }
         }
 
         [RelayCommand]

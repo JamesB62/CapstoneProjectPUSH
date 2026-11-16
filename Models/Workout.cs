@@ -31,6 +31,13 @@
         [Ignore]
         public string VisibilityText => IsPrivate ? "Private" : "Public";
 
+        // Set per user by WorkoutService (not stored on the workout)
+        [Ignore]
+        public bool IsFavourite { get; set; }
+
+        [Ignore]
+        public string FavouriteIcon => IsFavourite ? "★" : "☆";
+
         [Indexed]
         public int UserId { get; set; }
 

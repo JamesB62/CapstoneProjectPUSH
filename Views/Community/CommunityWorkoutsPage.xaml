@@ -87,7 +87,7 @@
                                 Spacing="10">
 
                                 <Grid
-                                    ColumnDefinitions="*,Auto"
+                                    ColumnDefinitions="*,Auto,Auto"
                                     ColumnSpacing="10">
 
                                     <Label
@@ -108,6 +108,16 @@
                                             Text="{Binding CategoryTitle}"/>
 
                                     </Border>
+
+                                    <!-- Favourite star (registered accounts only) -->
+                                    <Label
+                                        FontSize="21"
+                                        Grid.Column="2"
+                                        IsVisible="{Binding Source={RelativeSource AncestorType={x:Type vm:CommunityWorkoutsViewModel}}, Path=IsLoggedIn}"
+                                        Margin="0,-4,0,0"
+                                        Text="{Binding FavouriteIcon}"
+                                        TextColor="Goldenrod"
+                                        VerticalOptions="Center"/>
 
                                 </Grid>
 
