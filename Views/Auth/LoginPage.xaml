@@ -77,6 +77,11 @@
                 IsEnabled="{Binding IsNotBusy}"
                 Text="Log In"/>
 
+               <Button Text="Forgot password?"
+                Command="{Binding GoToForgotPasswordCommand}"
+                FontAttributes="Bold"
+                IsEnabled="{Binding IsNotBusy}"/> 
+
             <!-- Register link -->
             <Label
                 Text="Don't have an account? Tap here to register"

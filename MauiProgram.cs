@@ -18,6 +18,10 @@ namespace CapstoneProjectPUSH
 
             // ========================= Services =========================
 
+            //reset password
+            builder.Services.AddSingleton<IEmailSender, DebugEmailSender>();
+            builder.Services.AddSingleton<PasswordResetService>();
+
             builder.Services.AddSingleton<ArticleService>();
             builder.Services.AddSingleton<CategoryService>();
             builder.Services.AddSingleton<DatabaseService>();
@@ -46,6 +50,7 @@ namespace CapstoneProjectPUSH
             // Auth
             builder.Services.AddTransient<LoginViewModel>();
             builder.Services.AddTransient<RegisterViewModel>();
+            builder.Services.AddTransient<ForgotPasswordViewModel>();
 
             // Base
             builder.Services.AddTransient<LandingViewModel>();
@@ -98,6 +103,7 @@ namespace CapstoneProjectPUSH
             // Auth
             builder.Services.AddTransient<LoginPage>();
             builder.Services.AddTransient<RegisterPage>();
+            builder.Services.AddTransient<ForgotPasswordPage>();
 
             // Base
             builder.Services.AddTransient<LandingPage>();

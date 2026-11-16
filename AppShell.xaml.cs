@@ -11,7 +11,8 @@ namespace CapstoneProjectPUSH
             nameof(LandingPage),
             nameof(LoginPage),
             nameof(RegisterPage),
-            nameof(PrivacyPage)
+            nameof(PrivacyPage),
+            nameof(ForgotPasswordPage)
         };
 
         // Guest restricted pages
@@ -41,6 +42,7 @@ namespace CapstoneProjectPUSH
             // Auth
             Routing.RegisterRoute(nameof(LoginPage), typeof(LoginPage));
             Routing.RegisterRoute(nameof(RegisterPage), typeof(RegisterPage));
+            Routing.RegisterRoute(nameof(ForgotPasswordPage), typeof(ForgotPasswordPage));
 
             // Base
             Routing.RegisterRoute(nameof(PrivacyPage), typeof(PrivacyPage));
