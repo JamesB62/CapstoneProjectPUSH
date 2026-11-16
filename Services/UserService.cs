@@ -507,7 +507,7 @@
         }
 
         // Admin check
-        private bool IsCurrentUserAdmin()
+        public bool IsCurrentUserAdmin()
         {
             if (CurrentUser == null)
             {
@@ -517,6 +517,15 @@
             return CurrentUser.IsAdmin;
         }
 
+        // Valid user check
+        public User? GetCurrentMember()
+        {
+            if (CurrentUser == null || CurrentUser.IsGuest)
+            {
+                return null;
+            }
+
+            return CurrentUser;
         //reset user account password
         public async Task<AuthResult> SetNewPasswordAsync(int userId, string newPassword, string confirmPassword)
         {
