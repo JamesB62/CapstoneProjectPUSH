@@ -39,11 +39,19 @@ namespace CapstoneProjectPUSH.Services
                 ExpiresAt = DateTime.UtcNow.AddMinutes(CodeMinutes)
             });
 
-            await _emailSender.SendAsync(
-                user.Email,
-                "PUSH Password reset",
-                $"Your reset code is {code}. It expires in {CodeMinutes} minutes."
-            );
+            try
+            {
+                await _emailSender.SendAsync(
+                    user.Email,
+                    "PUSH Password reset",
+                    $"Your reset code is {code}. It expires in {CodeMinutes} minutes."
+                );
+            }
+            catch(Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex);
+            }
+
         }
 
         public async Task<AuthResult> ResetPasswordAsync(string email, string code, string newPassword, string confirmPassword)

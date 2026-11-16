@@ -524,8 +524,8 @@
             {
                 return null;
             }
-
             return CurrentUser;
+        }
         //reset user account password
         public async Task<AuthResult> SetNewPasswordAsync(int userId, string newPassword, string confirmPassword)
         {

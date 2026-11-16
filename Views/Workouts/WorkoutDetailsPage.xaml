@@ -30,7 +30,7 @@
 
                 <!-- Title and category -->
                 <Grid
-                    ColumnDefinitions="*,Auto,Auto"
+                    ColumnDefinitions="*,Auto,Auto,Auto"
                     ColumnSpacing="10">
 
                     <Label
@@ -64,6 +64,14 @@
                             Text="{Binding PrivacyText}"/>
 
                     </Border>
+
+                    <!-- Favourite star (registered accounts only) -->
+                    <Button
+                        Command="{Binding ToggleFavouriteCommand}"
+                        Grid.Column="3"
+                        IsVisible="{Binding IsLoggedIn}"
+                        Style="{StaticResource FavouriteStar}"
+                        Text="{Binding FavouriteIcon}"/>
 
                 </Grid>
 
@@ -301,7 +309,7 @@
                 Text="Start Workout"/>
 
         </VerticalStackLayout>
-        
+
     </Grid>
 
 </ContentPage>
