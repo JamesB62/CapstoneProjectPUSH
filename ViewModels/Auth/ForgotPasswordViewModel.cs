@@ -4,6 +4,8 @@ namespace CapstoneProjectPUSH.ViewModels.Auth
     {
         private readonly PasswordResetService _passwordResetService;
 
+        private readonly NotificationService _notifications;
+    
         [ObservableProperty]
         public partial string Email { get; set; }
 
@@ -22,9 +24,10 @@ namespace CapstoneProjectPUSH.ViewModels.Auth
 
         public bool IsEmailStep => !IsCodeStep;
 
-        public ForgotPasswordViewModel(PasswordResetService passwordResetService, UserService userService) : base(userService)
+        public ForgotPasswordViewModel(PasswordResetService passwordResetService, UserService userService, NotificationService notificationService) : base(userService)
         {
             _passwordResetService = passwordResetService;
+            _notifications = notificationService;
             Email = string.Empty;
             Code = string.Empty;
             NewPassword = string.Empty;
@@ -93,6 +96,7 @@ namespace CapstoneProjectPUSH.ViewModels.Auth
                 NewPassword = string.Empty;
                 ConfirmPassword = string.Empty;
 
+                _=_notifications.SendWelcomeAsync(result.User!);
                 await Shell.Current.DisplayAlertAsync("Done", result.Message, "OK");
                 await Shell.Current.GoToAsync("..");
             }
