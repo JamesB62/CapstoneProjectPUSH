@@ -4,11 +4,13 @@
     {
         private readonly CategoryService _categoryService;
         private readonly DatabaseService _databaseService;
+        private readonly UserService _userService;
 
-        public ExerciseService(CategoryService categoryService, DatabaseService databaseService)
+        public ExerciseService(CategoryService categoryService, DatabaseService databaseService, UserService userService)
         {
             _categoryService = categoryService;
             _databaseService = databaseService;
+            _userService = userService;
         }
 
         // Get exercise count
@@ -60,6 +62,11 @@
         // Add an exercise
         public async Task<(bool Success, string Message)> AddExerciseAsync(Exercise exercise)
         {
+            if (!_userService.IsCurrentUserAdmin())
+            {
+                return (false, "Only admins can add exercises.");
+            }
+
             var error = await NormaliseAndValidateAsync(exercise, null);
 
             if (error is not null)
@@ -77,6 +84,11 @@
         // Update an exercise
         public async Task<(bool Success, string Message)> UpdateExerciseAsync(Exercise exercise)
         {
+            if (!_userService.IsCurrentUserAdmin())
+            {
+                return (false, "Only admins can edit exercises.");
+            }
+
             var db = await _databaseService.GetConnectionAsync();
 
             var existing = await db.Table<Exercise>()
@@ -109,6 +121,11 @@
         // Delete an exercise
         public async Task<(bool Success, string Message)> DeleteExerciseAsync(int exerciseId)
         {
+            if (!_userService.IsCurrentUserAdmin())
+            {
+                return (false, "Only admins can delete exercises.");
+            }
+
             var db = await _databaseService.GetConnectionAsync();
 
             var exercise = await db.Table<Exercise>()

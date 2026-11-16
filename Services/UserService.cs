@@ -517,7 +517,29 @@
             return CurrentUser.IsAdmin;
         }
 
-        // Valid user check
+        // Signed-in user check
+        public bool IsCurrentUser(int userId)
+        {
+            if (CurrentUser == null)
+            {
+                return false;
+            }
+
+            return CurrentUser.Id == userId;
+        }
+
+        // Registered user check
+        public bool IsCurrentMember(int userId)
+        {
+            if (CurrentUser == null || CurrentUser.IsGuest)
+            {
+                return false;
+            }
+
+            return CurrentUser.Id == userId;
+        }
+
+        // Valid user get check
         public User? GetCurrentMember()
         {
             if (CurrentUser == null || CurrentUser.IsGuest)
@@ -526,6 +548,7 @@
             }
             return CurrentUser;
         }
+
         //reset user account password
         public async Task<AuthResult> SetNewPasswordAsync(int userId, string newPassword, string confirmPassword)
         {

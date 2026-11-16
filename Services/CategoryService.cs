@@ -3,10 +3,12 @@
     public class CategoryService
     {
         private readonly DatabaseService _databaseService;
+        private readonly UserService _userService;
 
-        public CategoryService(DatabaseService databaseService)
+        public CategoryService(DatabaseService databaseService, UserService userService)
         {
             _databaseService = databaseService;
+            _userService = userService;
         }
 
         // Get category count
@@ -47,6 +49,11 @@
         // Add category
         public async Task<(bool Success, string Message)> AddCategoryAsync(string title)
         {
+            if (!_userService.IsCurrentUserAdmin())
+            {
+                return (false, "Only admins can add categories.");
+            }
+
             title = (title ?? string.Empty).Trim();
 
             if (title.Length < 2 || title.Length > 50)
@@ -71,6 +78,11 @@
         // Update category
         public async Task<(bool Success, string Message)> UpdateCategoryAsync(int categoryId, string title)
         {
+            if (!_userService.IsCurrentUserAdmin())
+            {
+                return (false, "Only admins can edit categories.");
+            }
+
             title = (title ?? string.Empty).Trim();
 
             if (title.Length < 2 || title.Length > 50)
@@ -104,6 +116,11 @@
         // Delete category
         public async Task<(bool Success, string Message)> DeleteCategoryAsync(int categoryId)
         {
+            if (!_userService.IsCurrentUserAdmin())
+            {
+                return (false, "Only admins can delete categories.");
+            }
+
             var db = await _databaseService.GetConnectionAsync();
 
             var category = await GetCategoryByIdAsync(categoryId);

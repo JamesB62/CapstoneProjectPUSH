@@ -70,18 +70,24 @@
                 Text="{Binding ErrorMessage}"
                 TextColor="Red"/>
 
-            <!-- Login button -->
-            <Button
-                Command="{Binding LoginCommand}"
-                FontAttributes="Bold"
-                IsEnabled="{Binding IsNotBusy}"
-                Text="Log In"/>
+            <VerticalStackLayout
+                Spacing="10">
 
-               <Button Text="Forgot password?"
-                Command="{Binding GoToForgotPasswordCommand}"
-                FontAttributes="Bold"
-                IsEnabled="{Binding IsNotBusy}"/> 
+                <!-- Login button -->
+                <Button
+                    Command="{Binding LoginCommand}"
+                    FontAttributes="Bold"
+                    IsEnabled="{Binding IsNotBusy}"
+                    Text="Log In"/>
 
+                <Button
+                    Text="Forgot password?"
+                    Command="{Binding GoToForgotPasswordCommand}"
+                    FontAttributes="Bold"
+                    IsEnabled="{Binding IsNotBusy}"/>
+
+            </VerticalStackLayout>
+            
             <!-- Register link -->
             <Label
                 Text="Don't have an account? Tap here to register"

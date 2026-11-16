@@ -3,10 +3,12 @@
     public class GymService
     {
         private readonly DatabaseService _databaseService;
+        private readonly UserService _userService;
 
-        public GymService(DatabaseService databaseService)
+        public GymService(DatabaseService databaseService, UserService userService)
         {
             _databaseService = databaseService;
+            _userService = userService;
         }
 
         // Get gym count
@@ -43,6 +45,11 @@
         // Add gym
         public async Task<(bool Success, string Message)> AddGymAsync(string name, string address, string city)
         {
+            if (!_userService.IsCurrentUserAdmin())
+            {
+                return (false, "Only admins can add gyms.");
+            }
+
             name = (name ?? string.Empty).Trim();
             address = (address ?? string.Empty).Trim();
             city = (city ?? string.Empty).Trim();
@@ -70,6 +77,11 @@
         // Update gym
         public async Task<(bool Success, string Message)> UpdateGymAsync(int gymId, string name, string address, string city)
         {
+            if (!_userService.IsCurrentUserAdmin())
+            {
+                return (false, "Only admins can edit gyms.");
+            }
+
             name = (name ?? string.Empty).Trim();
             address = (address ?? string.Empty).Trim();
             city = (city ?? string.Empty).Trim();
@@ -109,6 +121,11 @@
         // Delete gym
         public async Task<(bool Success, string Message)> DeleteGymAsync(int gymId)
         {
+            if (!_userService.IsCurrentUserAdmin())
+            {
+                return (false, "Only admins can delete gyms.");
+            }
+
             var db = await _databaseService.GetConnectionAsync();
 
             var gym = await GetGymByIdAsync(gymId);
