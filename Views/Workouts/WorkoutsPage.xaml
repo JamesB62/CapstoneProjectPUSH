@@ -131,7 +131,7 @@
                                     Spacing="10">
 
                                     <Grid
-                                        ColumnDefinitions="*,Auto"
+                                        ColumnDefinitions="*,Auto,Auto"
                                         ColumnSpacing="10">
 
                                         <Label
@@ -152,6 +152,21 @@
                                                 Text="{Binding CategoryTitle}"/>
 
                                         </Border>
+
+                                        <!-- Favourite star (registered accounts only) -->
+                                        <Button
+                                            BackgroundColor="Transparent"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:WorkoutsViewModel}}, Path=ToggleFavouriteCommand}"
+                                            CommandParameter="{Binding .}"
+                                            FontSize="22"
+                                            Grid.Column="2"
+                                            HeightRequest="36"
+                                            IsVisible="{Binding Source={RelativeSource AncestorType={x:Type vm:WorkoutsViewModel}}, Path=IsLoggedIn}"
+                                            Padding="0"
+                                            Text="{Binding FavouriteIcon}"
+                                            TextColor="Goldenrod"
+                                            VerticalOptions="Center"
+                                            WidthRequest="36"/>
 
                                     </Grid>
 

@@ -48,7 +48,15 @@
                 workout.TotalMinutes = exercises.Sum(e => e.DurationMinutes);
             }
 
-            return workouts;
+            // Mark the user's favourites and put them first (newest first is kept within each group)
+            var favouriteIds = await GetFavouriteWorkoutIdsAsync(userId);
+
+            foreach (var workout in workouts)
+            {
+                workout.IsFavourite = favouriteIds.Contains(workout.Id);
+            }
+
+            return workouts.OrderByDescending(w => w.IsFavourite).ToList();
         }
 
         // Get one of the user's own workouts
@@ -133,6 +141,61 @@
             return workout;
         }
 
+        // Get the Ids of the workouts favourited by user Id
+        public async Task<HashSet<int>> GetFavouriteWorkoutIdsAsync(int userId)
+        {
+            var db = await _databaseService.GetConnectionAsync();
+
+            var favourites = await db.Table<WorkoutFavourite>()
+                .Where(f => f.UserId == userId)
+                .ToListAsync();
+
+            return favourites.Select(f => f.WorkoutId).ToHashSet();
+        }
+
+        // Check if a workout is a favourite of user Id
+        public async Task<bool> IsFavouriteAsync(int workoutId, int userId)
+        {
+            var db = await _databaseService.GetConnectionAsync();
+
+            var favourite = await db.Table<WorkoutFavourite>()
+                .Where(f => f.WorkoutId == workoutId && f.UserId == userId)
+                .FirstOrDefaultAsync();
+
+            return favourite is not null;
+        }
+
+        // Add the workout to the user's favourites, or remove it if it is already there
+        public async Task<(bool Success, bool IsFavourite, string Message)> ToggleFavouriteAsync(int workoutId, int userId)
+        {
+            var db = await _databaseService.GetConnectionAsync();
+
+            // Users can favourite their own workouts and shared workouts
+            var workout = await db.Table<Workout>()
+                .Where(w => w.Id == workoutId && (w.UserId == userId || w.IsPrivate == false))
+                .FirstOrDefaultAsync();
+
+            if (workout is null)
+            {
+                return (false, false, "Workout could not be found.");
+            }
+
+            var existing = await db.Table<WorkoutFavourite>()
+                .Where(f => f.WorkoutId == workoutId && f.UserId == userId)
+                .FirstOrDefaultAsync();
+
+            if (existing is not null)
+            {
+                await db.DeleteAsync(existing);
+
+                return (true, false, $"{workout.Title} removed from your favourites.");
+            }
+
+            await db.InsertAsync(new WorkoutFavourite { UserId = userId, WorkoutId = workoutId });
+
+            return (true, true, $"{workout.Title} added to your favourites.");
+        }
+
         // Update a workout and replace its exercises (all or nothing)
         public async Task<bool> UpdateWorkoutWithExercisesAsync(Workout workout, int userId, IEnumerable<WorkoutExercise> items)
         {
@@ -196,6 +259,7 @@
             await db.RunInTransactionAsync(conn =>
             {
                 conn.Table<WorkoutExercise>().Delete(we => we.WorkoutId == workoutId);
+                conn.Table<WorkoutFavourite>().Delete(f => f.WorkoutId == workoutId);
                 conn.Table<Workout>().Delete(w => w.Id == workoutId && w.UserId == userId);
             });
         }
