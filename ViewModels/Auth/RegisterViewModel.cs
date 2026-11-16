@@ -2,8 +2,10 @@
 {
     public partial class RegisterViewModel : BaseViewModel
     {
-        public RegisterViewModel(UserService userService) : base(userService)
+        private readonly NotificationService _notifications;
+        public RegisterViewModel(UserService userService, NotificationService notificationService) : base(userService)
         {
+            _notifications = notificationService;
         }
 
         [ObservableProperty]
@@ -51,6 +53,7 @@
                 HasAcceptedPrivacy = false;
 
                 await Shell.Current.DisplayAlertAsync("Account Created", "Your PUSH account has been created.", "OK");
+                _=_notifications.SendWelcomeAsync(result.User!);
                 await NavigateAsync("//HomePage");
             }
             catch (Exception ex)
