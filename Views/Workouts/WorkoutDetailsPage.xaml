@@ -7,6 +7,16 @@
              x:DataType="vm:WorkoutDetailsViewModel"
              Title="PUSH Workout Details">
 
+    <ContentPage.ToolbarItems>
+
+        <ToolbarItem
+            x:Name="ReportToolbarItem"
+            Command="{Binding ReportWorkoutCommand}"
+            Order="Secondary"
+            Text="Report Workout"/>
+        
+    </ContentPage.ToolbarItems>
+
     <Grid
         RowDefinitions="*,Auto">
 
@@ -70,6 +80,7 @@
                     FontAttributes="Italic"
                     FontSize="12"
                     IsVisible="{Binding IsNotOwner}"
+                    Margin="0,-3,0,0"
                     Text="{Binding Workout.UserDisplayName, StringFormat='Created by {0}'}"/>
 
                 <!-- Exercises -->

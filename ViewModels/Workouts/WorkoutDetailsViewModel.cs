@@ -3,12 +3,14 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
     [QueryProperty(nameof(WorkoutId), "WorkoutId")]
     public partial class WorkoutDetailsViewModel : BaseViewModel
     {
-        private readonly WorkoutService _workoutService;
         private readonly NoteService _noteService;
+        private readonly ReportService _reportService;
+        private readonly WorkoutService _workoutService;
 
-        public WorkoutDetailsViewModel(NoteService noteService, UserService userService, WorkoutService workoutService) : base(userService)
+        public WorkoutDetailsViewModel(NoteService noteService, ReportService reportService, UserService userService, WorkoutService workoutService) : base(userService)
         {
             _noteService = noteService;
+            _reportService = reportService;
             _workoutService = workoutService;
         }
 
@@ -36,6 +38,9 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
 
         [ObservableProperty]
         public partial bool CanEdit { get; set; }
+
+        [ObservableProperty]
+        public partial bool CanReport { get; set; }
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(HasNoExercises))]
@@ -107,6 +112,15 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
                     CanEdit = IsOwner && IsLoggedIn;
 
                     IsFavourite = await _workoutService.IsFavouriteAsync(WorkoutId, user.Id);
+                    
+                    if (!IsOwner && !Workout.IsPrivate && IsLoggedIn && !IsCurrentUserAdmin)
+                    {
+                        CanReport = true;
+                    }
+                    else
+                    {
+                        CanReport = false;
+                    }
 
                     if (Workout.IsPrivate)
                     {
@@ -309,6 +323,54 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
             {
                 System.Diagnostics.Debug.WriteLine(ex);
                 ErrorMessage = "Couldn't delete the note. Please try again.";
+            }
+        }
+
+        [RelayCommand]
+        private async Task ReportWorkoutAsync()
+        {
+            if (Workout is null || !CanReport || IsBusy)
+            {
+                return;
+            }
+
+            ErrorMessage = string.Empty;
+
+            string? reason = await Shell.Current.DisplayPromptAsync(
+                "Report Workout",
+                $"Tell us what's wrong with this workout.",
+                "Submit",
+                "Cancel",
+                placeholder: "Reason",
+                maxLength: 500);
+
+            if (reason is null)
+            {
+                return;
+            }
+
+            IsBusy = true;
+
+            try
+            {
+                var result = await _reportService.AddReportAsync(Workout.Id, reason);
+
+                if (!result.Success)
+                {
+                    ErrorMessage = result.Message;
+                    return;
+                }
+
+                await Shell.Current.DisplayAlertAsync("Report Submitted", result.Message, "OK");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex);
+                ErrorMessage = "Couldn't submit the report. Please try again.";
+            }
+            finally
+            {
+                IsBusy = false;
             }
         }
     }

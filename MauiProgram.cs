@@ -18,12 +18,17 @@ namespace CapstoneProjectPUSH
 
             // ========================= Services =========================
 
+            //reset password
+            builder.Services.AddSingleton<IEmailSender, DebugEmailSender>();
+            builder.Services.AddSingleton<PasswordResetService>();
+
             builder.Services.AddSingleton<ArticleService>();
             builder.Services.AddSingleton<CategoryService>();
             builder.Services.AddSingleton<DatabaseService>();
             builder.Services.AddSingleton<ExerciseService>(); 
             builder.Services.AddSingleton<GymService>();
             builder.Services.AddSingleton<NoteService>();
+            builder.Services.AddSingleton<ReportService>();
             builder.Services.AddSingleton<TrainerService>();
             builder.Services.AddSingleton<UserService>();
             builder.Services.AddSingleton<WeightLogService>();
@@ -39,10 +44,13 @@ namespace CapstoneProjectPUSH
             builder.Services.AddTransient<UserManagementViewModel>();
             builder.Services.AddTransient<CategoriesManagementViewModel>();
             builder.Services.AddTransient<GymsManagementViewModel>();
+            builder.Services.AddTransient<ReportManagementViewModel>();
+            builder.Services.AddTransient<ReportDetailsViewModel>();
 
             // Auth
             builder.Services.AddTransient<LoginViewModel>();
             builder.Services.AddTransient<RegisterViewModel>();
+            builder.Services.AddTransient<ForgotPasswordViewModel>();
 
             // Base
             builder.Services.AddTransient<LandingViewModel>();
@@ -89,10 +97,13 @@ namespace CapstoneProjectPUSH
             builder.Services.AddTransient<UserManagementPage>();
             builder.Services.AddTransient<CategoriesManagementPage>();
             builder.Services.AddTransient<GymsManagementPage>();
+            builder.Services.AddTransient<ReportManagementPage>();
+            builder.Services.AddTransient<ReportDetailsPage>();
 
             // Auth
             builder.Services.AddTransient<LoginPage>();
             builder.Services.AddTransient<RegisterPage>();
+            builder.Services.AddTransient<ForgotPasswordPage>();
 
             // Base
             builder.Services.AddTransient<LandingPage>();

@@ -5,17 +5,20 @@
         private readonly CategoryService _categoryService;
         private readonly ExerciseService _exerciseService;
         private readonly GymService _gymService;
+        private readonly ReportService _reportService;
         private readonly TrainerService _trainerService;
 
         public AdminDashboardViewModel(
             CategoryService categoryService,
             ExerciseService exerciseService,
             GymService gymService,
+            ReportService reportService,
             TrainerService trainerService,
             UserService userService) : base(userService)
         {
             _categoryService = categoryService;
             _exerciseService = exerciseService;
+            _reportService = reportService;
             _gymService = gymService;
             _trainerService = trainerService;
         }
@@ -41,6 +44,9 @@
         [ObservableProperty]
         public partial int TotalActiveUsers { get; set; }
 
+        [ObservableProperty]
+        public partial int PendingReports { get; set; }
+
         [RelayCommand]
         private async Task LoadDashboardAsync()
         {
@@ -60,6 +66,7 @@
                 AvailableTrainers = await _trainerService.GetAvailableTrainerCountAsync();
                 TotalUsers = await _userService.GetUserCountAsync();
                 TotalActiveUsers = await _userService.GetActiveUserCountAsync();
+                PendingReports = await _reportService.GetPendingReportCountAsync();
 
                 StatusMessage = string.Empty;
             }
@@ -90,6 +97,12 @@
         private async Task GoToGymManagementAsync()
         {
             await NavigateAsync(nameof(GymsManagementPage));
+        }
+
+        [RelayCommand]
+        private async Task GoToReportsAsync()
+        {
+            await NavigateAsync(nameof(ReportManagementPage));
         }
     }
 }
