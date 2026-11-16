@@ -4,11 +4,13 @@
     {
         private readonly CategoryService _categoryService;
         private readonly DatabaseService _databaseService;
+        private readonly UserService _userService;
 
-        public TrainerService(CategoryService categoryService, DatabaseService databaseService)
+        public TrainerService(CategoryService categoryService, DatabaseService databaseService, UserService userService)
         {
             _categoryService = categoryService;
             _databaseService = databaseService;
+            _userService = userService;
         }
 
         // Get trainer count
@@ -84,6 +86,11 @@
         // Add trainer
         public async Task<(bool Success, string Message)> AddTrainerAsync(Trainer trainer)
         {
+            if (!_userService.IsCurrentUserAdmin())
+            {
+                return (false, "Only admins can add trainers.");
+            }
+
             var error = await NormaliseAndValidateAsync(trainer, null);
 
             if (error is not null)
@@ -101,6 +108,11 @@
         // Update trainer details
         public async Task<(bool Success, string Message)> UpdateTrainerAsync(Trainer trainer)
         {
+            if (!_userService.IsCurrentUserAdmin())
+            {
+                return (false, "Only admins can edit trainers.");
+            }
+
             var db = await _databaseService.GetConnectionAsync();
 
             var existing = await db.Table<Trainer>().Where(t => t.Id == trainer.Id).FirstOrDefaultAsync();
@@ -134,6 +146,11 @@
         // Delete trainer
         public async Task<(bool Success, string Message)> DeleteTrainerAsync(int trainerId)
         {
+            if (!_userService.IsCurrentUserAdmin())
+            {
+                return (false, "Only admins can delete trainers.");
+            }
+
             var db = await _databaseService.GetConnectionAsync();
 
             var trainer = await db.Table<Trainer>().Where(t => t.Id == trainerId).FirstOrDefaultAsync();

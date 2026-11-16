@@ -16,6 +16,11 @@
         // Get a user's workouts
         public async Task<List<Workout>> GetWorkoutsForUserAsync(int userId)
         {
+            if (!_userService.IsCurrentUser(userId))
+            {
+                return new List<Workout>();
+            }
+
             var db = await _databaseService.GetConnectionAsync();
 
             var workouts = await db.Table<Workout>()
@@ -59,6 +64,11 @@
         // Get one of the user's own workouts
         public async Task<Workout?> GetWorkoutByIdAsync(int workoutId, int userId)
         {
+            if (!_userService.IsCurrentUser(userId))
+            {
+                return null;
+            }
+
             var db = await _databaseService.GetConnectionAsync();
 
             var workout = await db.Table<Workout>()
@@ -79,6 +89,12 @@
         // Gets every shared workout
         public async Task<List<Workout>> GetPublicWorkoutsAsync(int userId)
         {
+            // Guests can't see community workouts
+            if (!_userService.IsCurrentMember(userId))
+            {
+                return new List<Workout>();
+            }
+
             var db = await _databaseService.GetConnectionAsync();
 
             var workouts = await db.Table<Workout>()
@@ -120,6 +136,11 @@
         // Get one shared workout by Id
         public async Task<Workout?> GetPublicWorkoutByIdAsync(int workoutId)
         {
+            if (_userService.GetCurrentMember() is null)
+            {
+                return null;
+            }
+
             var db = await _databaseService.GetConnectionAsync();
 
             var workout = await db.Table<Workout>()
@@ -143,6 +164,11 @@
         // Get the Ids of the workouts favourited by user Id
         public async Task<HashSet<int>> GetFavouriteWorkoutIdsAsync(int userId)
         {
+            if (!_userService.IsCurrentUser(userId))
+            {
+                return new HashSet<int>();
+            }
+
             var db = await _databaseService.GetConnectionAsync();
 
             var favourites = await db.Table<WorkoutFavourite>()
@@ -155,6 +181,11 @@
         // Check if a workout is a favourite of user Id
         public async Task<bool> IsFavouriteAsync(int workoutId, int userId)
         {
+            if (!_userService.IsCurrentUser(userId))
+            {
+                return false;
+            }
+
             var db = await _databaseService.GetConnectionAsync();
 
             var favourite = await db.Table<WorkoutFavourite>()
@@ -167,6 +198,11 @@
         // Add the workout to the user's favourites, or remove it if it is already there
         public async Task<(bool Success, bool IsFavourite, string Message)> ToggleFavouriteAsync(int workoutId, int userId)
         {
+            if (!_userService.IsCurrentMember(userId))
+            {
+                return (false, false, "Register an account to favourite workouts.");
+            }
+
             var db = await _databaseService.GetConnectionAsync();
 
             // Users can favourite their own workouts and shared workouts
@@ -198,6 +234,11 @@
         // Update a workout and replace its exercises (all or nothing)
         public async Task<bool> UpdateWorkoutWithExercisesAsync(Workout workout, int userId, IEnumerable<WorkoutExercise> items)
         {
+            if (!_userService.IsCurrentMember(userId))
+            {
+                return false;
+            }
+
             var db = await _databaseService.GetConnectionAsync();
 
             var existing = await db.Table<Workout>()
@@ -234,6 +275,13 @@
         {
             var db = await _databaseService.GetConnectionAsync();
 
+            var workout = await db.Table<Workout>().Where(w => w.Id == workoutId).FirstOrDefaultAsync();
+
+            if (workout is null || !CanViewWorkout(workout))
+            {
+                return new List<WorkoutExercise>();
+            }
+
             var items = await db.Table<WorkoutExercise>()
                 .Where(we => we.WorkoutId == workoutId)
                 .OrderBy(we => we.SortOrder)
@@ -253,6 +301,11 @@
         // Delete a workout
         public async Task DeleteWorkoutAsync(int workoutId, int userId)
         {
+            if (!_userService.IsCurrentMember(userId))
+            {
+                return;
+            }
+
             var db = await _databaseService.GetConnectionAsync();
 
             var workout = await db.Table<Workout>()
@@ -275,6 +328,11 @@
         // Add workout with exercises
         public async Task<int> AddWorkoutWithExercisesAsync(Workout workout, IEnumerable<WorkoutExercise> items)
         {
+            if (!_userService.IsCurrentMember(workout.UserId))
+            {
+                return 0;
+            }
+
             var db = await _databaseService.GetConnectionAsync();
 
             await db.RunInTransactionAsync(conn =>
@@ -289,6 +347,27 @@
             });
 
             return workout.Id;
+        }
+
+        // Helpers
+        private bool CanViewWorkout(Workout workout)
+        {
+            if (_userService.IsCurrentUserAdmin())
+            {
+                return true;
+            }
+
+            if (_userService.IsCurrentUser(workout.UserId))
+            {
+                return true;
+            }
+
+            if (!workout.IsPrivate && _userService.GetCurrentMember() is not null)
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }
