@@ -35,6 +35,7 @@
                     await connection.CreateTableAsync<Exercise>();
                     await connection.CreateTableAsync<Gym>();
                     await connection.CreateTableAsync<Note>();
+                    await connection.CreateTableAsync<Report>();
                     await connection.CreateTableAsync<Trainer>();
                     await connection.CreateTableAsync<User>();
                     await connection.CreateTableAsync<WeightLog>();
