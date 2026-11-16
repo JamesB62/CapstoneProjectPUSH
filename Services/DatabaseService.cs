@@ -42,6 +42,8 @@
                     await connection.CreateTableAsync<WorkoutExercise>();
                     await connection.CreateTableAsync<WorkoutFavourite>();
                     await connection.CreateTableAsync<WorkoutLog>();
+                    await connection.CreateTableAsync<WorkoutFavourite>();
+
 
                     _connection = connection;
 
