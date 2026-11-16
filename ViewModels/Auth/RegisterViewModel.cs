@@ -51,9 +51,9 @@
                 Password = string.Empty;
                 ConfirmPassword = string.Empty;
                 HasAcceptedPrivacy = false;
-
-                await Shell.Current.DisplayAlertAsync("Account Created", "Your PUSH account has been created.", "OK");
+                
                 _=_notifications.SendWelcomeAsync(result.User!);
+                await Shell.Current.DisplayAlertAsync("Account Created", "Your PUSH account has been created.", "OK");
                 await NavigateAsync("//HomePage");
             }
             catch (Exception ex)
