@@ -37,6 +37,7 @@
 
             var exercisesByWorkout = workoutExercises.ToLookup(we => we.WorkoutId);
             var categoryTitles = await _categoryService.GetCategoryTitlesAsync();
+            var favouriteIds = await GetFavouriteWorkoutIdsAsync(userId);
 
             foreach (var workout in workouts)
             {
@@ -46,17 +47,13 @@
                 workout.ExerciseCount = exercises.Count();
                 workout.SetCount = exercises.Sum(e => e.Sets);
                 workout.TotalMinutes = exercises.Sum(e => e.DurationMinutes);
-            }
-
-            // Mark the user's favourites and put them first (newest first is kept within each group)
-            var favouriteIds = await GetFavouriteWorkoutIdsAsync(userId);
-
-            foreach (var workout in workouts)
-            {
                 workout.IsFavourite = favouriteIds.Contains(workout.Id);
             }
 
-            return workouts.OrderByDescending(w => w.IsFavourite).ToList();
+            return workouts
+                .OrderByDescending(w => w.IsFavourite)
+                .ThenByDescending(w => w.DateTimeCreated)
+                .ToList();
         }
 
         // Get one of the user's own workouts
@@ -80,7 +77,7 @@
         }
 
         // Gets every shared workout
-        public async Task<List<Workout>> GetPublicWorkoutsAsync()
+        public async Task<List<Workout>> GetPublicWorkoutsAsync(int userId)
         {
             var db = await _databaseService.GetConnectionAsync();
 
@@ -103,6 +100,7 @@
             var exercisesByWorkout = workoutExercises.ToLookup(we => we.WorkoutId);
             var categoryTitles = await _categoryService.GetCategoryTitlesAsync();
             var displayNames = await _userService.GetDisplayNamesByIdAsync();
+            var favouriteIds = await GetFavouriteWorkoutIdsAsync(userId);
 
             foreach (var workout in workouts)
             {
@@ -113,9 +111,10 @@
                 workout.ExerciseCount = exercises.Count();
                 workout.SetCount = exercises.Sum(e => e.Sets);
                 workout.TotalMinutes = exercises.Sum(e => e.DurationMinutes);
+                workout.IsFavourite = favouriteIds.Contains(workout.Id);
             }
 
-            return workouts;
+            return workouts.OrderByDescending(w => w.IsFavourite).ToList();
         }
 
         // Get one shared workout by Id
@@ -255,6 +254,15 @@
         public async Task DeleteWorkoutAsync(int workoutId, int userId)
         {
             var db = await _databaseService.GetConnectionAsync();
+
+            var workout = await db.Table<Workout>()
+                .Where(w => w.Id == workoutId && w.UserId == userId)
+                .FirstOrDefaultAsync();
+
+            if (workout is null)
+            {
+                return;
+            }
 
             await db.RunInTransactionAsync(conn =>
             {

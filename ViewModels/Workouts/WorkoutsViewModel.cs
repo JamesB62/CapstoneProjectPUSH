@@ -143,43 +143,6 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
             await NavigateAsync($"{nameof(CreateWorkoutPage)}?WorkoutId={workout.Id}");
         }
 
-        // Star button on a workout card, then reload so the favourites move to the top
-        [RelayCommand]
-        private async Task ToggleFavouriteAsync(Workout? workout)
-        {
-            if (workout is null || !IsLoggedIn)
-            {
-                return;
-            }
-
-            var user = _userService.CurrentUser;
-
-            if (user is null)
-            {
-                return;
-            }
-
-            ErrorMessage = string.Empty;
-
-            try
-            {
-                var result = await _workoutService.ToggleFavouriteAsync(workout.Id, user.Id);
-
-                if (!result.Success)
-                {
-                    ErrorMessage = result.Message;
-                    return;
-                }
-
-                await LoadWorkoutsCommand.ExecuteAsync(null);
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine(ex);
-                ErrorMessage = "Couldn't update your favourites. Please try again.";
-            }
-        }
-
         [RelayCommand]
         private async Task DeleteWorkoutAsync(Workout? workout)
         {

@@ -154,19 +154,14 @@
                                         </Border>
 
                                         <!-- Favourite star (registered accounts only) -->
-                                        <Button
-                                            BackgroundColor="Transparent"
-                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:WorkoutsViewModel}}, Path=ToggleFavouriteCommand}"
-                                            CommandParameter="{Binding .}"
-                                            FontSize="22"
+                                        <Label
+                                            FontSize="21"
                                             Grid.Column="2"
-                                            HeightRequest="36"
                                             IsVisible="{Binding Source={RelativeSource AncestorType={x:Type vm:WorkoutsViewModel}}, Path=IsLoggedIn}"
-                                            Padding="0"
+                                            Margin="0,-4,0,0"
                                             Text="{Binding FavouriteIcon}"
                                             TextColor="Goldenrod"
-                                            VerticalOptions="Center"
-                                            WidthRequest="36"/>
+                                            VerticalOptions="Center"/>
 
                                     </Grid>
 
