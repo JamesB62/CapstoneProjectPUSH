@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:CapstoneProjectPUSH.ViewModels.Workouts"
+             x:Class="CapstoneProjectPUSH.Views.Workouts.ActiveWorkoutPage"
+             x:DataType="vm:ActiveWorkoutViewModel"
+             Title="Active Workout">
+
+    <Grid
+        MaximumWidthRequest="500"
+        Padding="30,15"
+        RowDefinitions="Auto,Auto,*,Auto"
+        RowSpacing="20">
+
+        <!-- Workout title and timer -->
+        <VerticalStackLayout
+            Grid.Row="0"
+            Spacing="5">
+
+            <Label
+                FontAttributes="Bold"
+                FontSize="18"
+                HorizontalTextAlignment="Center"
+                Text="{Binding Workout.Title}"/>
+
+            <Label
+                FontAttributes="Bold"
+                FontSize="40"
+                HorizontalTextAlignment="Center"
+                Text="{Binding ElapsedText}"/>
+
+        </VerticalStackLayout>
+
+        <!-- Exercises heading and progress -->
+        <Grid
+            ColumnDefinitions="*,Auto"
+            Grid.Row="1">
+
+            <Label
+                FontAttributes="Bold"
+                FontSize="16"
+                Grid.Column="0"
+                Text="Exercises"
+                VerticalOptions="Center"/>
+
+            <Label
+                FontAttributes="Italic"
+                FontSize="14"
+                Grid.Column="1"
+                Text="{Binding CompletedText}"
+                VerticalOptions="Center"/>
+
+        </Grid>
+
+        <!-- Checklist -->
+        <CollectionView
+            Grid.Row="2"
+            ItemsSource="{Binding Exercises}"
+            SelectionMode="Single"
+            SelectedItem="{Binding SelectedExercise, Mode=TwoWay}">
+
+            <CollectionView.ItemsLayout>
+
+                <LinearItemsLayout
+                    ItemSpacing="10"
+                    Orientation="Vertical"/>
+
+            </CollectionView.ItemsLayout>
+
+            <CollectionView.ItemTemplate>
+
+                <DataTemplate
+                    x:DataType="vm:ActiveExercise">
+
+                    <Border
+                        Style="{StaticResource Card}">
+
+                        <Border.Triggers>
+
+                            <DataTrigger
+                                Binding="{Binding IsCompleted}"
+                                TargetType="Border"
+                                Value="True">
+
+                                <Setter
+                                    Property="Opacity"
+                                    Value="0.5"/>
+
+                            </DataTrigger>
+
+                        </Border.Triggers>
+
+                        <Grid
+                            ColumnDefinitions="Auto,*,Auto"
+                            ColumnSpacing="15">
+
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="18"
+                                Grid.Column="0"
+                                Text="{Binding WorkoutExercise.DisplayNumber}"
+                                VerticalOptions="Center"/>
+
+                            <VerticalStackLayout
+                                Grid.Column="1"
+                                Spacing="3">
+
+                                <Label
+                                    FontAttributes="Bold"
+                                    FontSize="16"
+                                    LineBreakMode="TailTruncation"
+                                    Text="{Binding WorkoutExercise.ExerciseTitle}"/>
+
+                                <Label
+                                    Text="{Binding WorkoutExercise.TargetText}"/>
+
+                            </VerticalStackLayout>
+
+                            <CheckBox
+                                Grid.Column="2"
+                                InputTransparent="True"
+                                IsChecked="{Binding IsCompleted, Mode=OneWay}"
+                                VerticalOptions="Center"/>
+
+                        </Grid>
+
+                    </Border>
+
+                </DataTemplate>
+
+            </CollectionView.ItemTemplate>
+
+        </CollectionView>
+
+        <!-- Status and finish -->
+        <VerticalStackLayout
+            Grid.Row="3"
+            Spacing="10">
+
+            <!-- Error message -->
+            <Label
+                IsVisible="{Binding HasErrorMessage}"
+                Text="{Binding ErrorMessage}"
+                TextColor="Red"/>
+
+            <Button
+                Command="{Binding FinishWorkoutCommand}"
+                Text="Finish Workout"/>
+
+        </VerticalStackLayout>
+
+    </Grid>
+
+</ContentPage>

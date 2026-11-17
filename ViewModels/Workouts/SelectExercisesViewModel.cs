@@ -3,12 +3,10 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
     public partial class SelectExercisesViewModel : BaseViewModel
     {
         private readonly ExerciseService _exerciseService;
-        private readonly UserService _userService;
 
-        public SelectExercisesViewModel(ExerciseService exerciseService, UserService userService)
+        public SelectExercisesViewModel(ExerciseService exerciseService, UserService userService) : base(userService)
         {
             _exerciseService = exerciseService;
-            _userService = userService;
         }
 
         public ObservableCollection<SelectableExercise> Exercises { get; } = new();
@@ -27,30 +25,18 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
         [RelayCommand]
         private async Task LoadExercisesAsync()
         {
+            ErrorMessage = string.Empty;
+
+            if (_allExercises.Count > 0)
+            {
+                return;
+            }
+
             IsBusy = true;
 
             try
             {
-                var user = _userService.CurrentUser;
-
-                if (user is null)
-                {
-                    // Comment out to disable redirect
-                    await NavigateAsync("//LandingPage");
-                    return;
-                }
-
-                // Keeps selections when returning from Create Workout
-                if (_allExercises.Count > 0)
-                {
-                    return;
-                }
-
-                StatusMessage = "Loading exercises...";
-
                 var exercises = await _exerciseService.GetExercisesAsync();
-
-                _allExercises.Clear();
 
                 foreach (var exercise in exercises)
                 {
@@ -62,7 +48,7 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex);
-                StatusMessage = "Something went wrong. Please try again.";
+                ErrorMessage = "Couldn't load exercises. Please go back and try again.";
             }
             finally
             {
@@ -77,27 +63,24 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
 
         private void ApplyFilter()
         {
-            string searchTerm;
+            string term = string.Empty;
 
-            if (string.IsNullOrWhiteSpace(SearchText))
+            if (SearchText is not null)
             {
-                searchTerm = string.Empty;
-            }
-            else
-            {
-                searchTerm = SearchText.Trim();
+                term = SearchText.Trim();
             }
 
             List<SelectableExercise> filtered;
 
-            if (searchTerm.Length == 0)
+            if (term.Length == 0)
             {
                 filtered = _allExercises;
             }
             else
             {
                 filtered = _allExercises
-                    .Where(e => e.Exercise.Title.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
+                    .Where(e => e.Exercise.Title.Contains(term, StringComparison.OrdinalIgnoreCase)
+                             || e.Exercise.CategoryTitle.Contains(term, StringComparison.OrdinalIgnoreCase))
                     .ToList();
             }
 
@@ -108,13 +91,13 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
                 Exercises.Add(exercise);
             }
 
-            if (Exercises.Count == 1)
+            if (filtered.Count == 1)
             {
                 StatusMessage = "Showing 1 exercise.";
             }
             else
             {
-                StatusMessage = $"Showing {Exercises.Count} exercises.";
+                StatusMessage = $"Showing {filtered.Count} exercises.";
             }
         }
 
@@ -133,6 +116,8 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
         [RelayCommand]
         private async Task DoneAsync()
         {
+            ErrorMessage = string.Empty;
+
             List<Exercise> selected = _allExercises
                 .Where(e => e.IsSelected)
                 .Select(e => e.Exercise)
@@ -140,7 +125,7 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
 
             if (selected.Count == 0)
             {
-                await Shell.Current.DisplayAlertAsync("Nothing selected", "Pick at least one exercise.", "OK");
+                ErrorMessage = "Please pick at least one exercise.";
                 return;
             }
 
@@ -149,7 +134,7 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
                 { "Exercises", selected }
             };
 
-            await NavigateAsync(nameof(CreateWorkoutPage), parameters);
+            await NavigateAsync("..", parameters);
         }
     }
 }

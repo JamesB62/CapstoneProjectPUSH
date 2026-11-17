@@ -8,13 +8,11 @@ namespace CapstoneProjectPUSH.ViewModels.Stats
         private const double MinWeightKg = 20;
         private const double MaxWeightKg = 400;
 
-        private readonly UserService _userService;
         private readonly WeightLogService _weightLogService;
         private readonly WorkoutLogService _workoutLogService;
 
-        public StatsViewModel(UserService userService, WeightLogService weightLogService, WorkoutLogService workoutLogService)
+        public StatsViewModel(UserService userService, WeightLogService weightLogService, WorkoutLogService workoutLogService) : base(userService)
         {
-            _userService = userService;
             _weightLogService = weightLogService;
             _workoutLogService = workoutLogService;
         }
@@ -49,25 +47,26 @@ namespace CapstoneProjectPUSH.ViewModels.Stats
         private async Task SelectFilterAsync(string filter)
         {
             SelectedFilter = filter;
-            await LoadStatsAsync();
+            await LoadStatsCommand.ExecuteAsync(null);
         }
 
         [RelayCommand]
         private async Task LoadStatsAsync()
         {
+            ErrorMessage = string.Empty;
+
+            var user = _userService.CurrentUser;
+
+            // AppShell sends signed-out users to the landing page
+            if (user is null)
+            {
+                return;
+            }
+
             IsBusy = true;
 
             try
             {
-                var user = _userService.CurrentUser;
-
-                if (user is null)
-                {
-                    // Comment out to disable redirect
-                    await NavigateAsync("//LandingPage");
-                    return;
-                }
-
                 // Builds buckets for selected filter
                 var buckets = BuildBuckets();
 
@@ -82,7 +81,7 @@ namespace CapstoneProjectPUSH.ViewModels.Stats
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex);
-                StatusMessage = "Something went wrong. Please try again.";
+                ErrorMessage = "Couldn't load your stats. Pull down to try again.";
             }
             finally
             {
@@ -237,23 +236,30 @@ namespace CapstoneProjectPUSH.ViewModels.Stats
         [RelayCommand]
         private async Task AddWeighInAsync()
         {
+            ErrorMessage = string.Empty;
+
+            if (!await RequireLoginAsync())
+            {
+                return;
+            }
+
             var user = _userService.CurrentUser;
 
             if (user is null)
             {
-                await NavigateAsync("//LandingPage");
                 return;
             }
 
             // Value prompt
             string? result = await Shell.Current.DisplayPromptAsync(
-                "Weigh-in",
+                "Add Weigh-In",
                 "Enter today's weight in kg. This replaces any weigh-in already saved today.",
                 "Save",
                 "Cancel",
                 maxLength: 6,
                 keyboard: Keyboard.Numeric);
 
+            // Cancelled
             if (result is null)
             {
                 return;
@@ -261,25 +267,25 @@ namespace CapstoneProjectPUSH.ViewModels.Stats
 
             if (!double.TryParse(result.Trim(), out double weightKg))
             {
-                await Shell.Current.DisplayAlertAsync("Invalid weight", "Please enter a number, e.g. 72.5", "OK");
+                ErrorMessage = "Please enter your weight as a number, e.g. 72.5.";
                 return;
             }
 
             if (weightKg < MinWeightKg || weightKg > MaxWeightKg)
             {
-                await Shell.Current.DisplayAlertAsync("Invalid weight", $"Weight must be between {MinWeightKg} and {MaxWeightKg} kg.", "OK");
+                ErrorMessage = $"Please enter a weight between {MinWeightKg} and {MaxWeightKg} kg.";
                 return;
             }
 
             try
             {
                 await _weightLogService.SaveWeightForTodayAsync(user.Id, Math.Round(weightKg, 1));
-                await LoadStatsAsync();
+                await LoadStatsCommand.ExecuteAsync(null);
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex);
-                await Shell.Current.DisplayAlertAsync("Weigh-in failed", "Your weigh-in could not be saved. Please try again.", "OK");
+                ErrorMessage = "Couldn't save your weigh-in. Please try again.";
             }
         }
 

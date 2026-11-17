@@ -69,20 +69,34 @@
 
 	<ItemGroup>
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+		<PackageReference Include="MailKit" Version="4.17.0" />
 		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
 		<PackageReference Include="sqlite-net-pcl" Version="1.11.285" />
+		<PackageReference Include="System.Security.Cryptography.Pkcs" Version="10.0.13" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <Compile Update="Views\Admin\AdminDashboardPage.xaml.cs">
 	    <DependentUpon>AdminDashboardPage.xaml</DependentUpon>
 	  </Compile>
+	  <Compile Update="Views\Admin\CategoriesManagementPage.xaml.cs">
+	    <DependentUpon>CategoriesManagementPage.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Admin\GymsManagementPage.xaml.cs">
+	    <DependentUpon>GymsManagementPage.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Admin\UserManagementPage.xaml.cs">
+	    <DependentUpon>UserManagementPage.xaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Views\Base\FirstLoadingPage.xaml.cs">
 	    <DependentUpon>FirstLoadingPage.xaml</DependentUpon>
 	  </Compile>
 	  <Compile Update="Views\Home\HomePage.xaml.cs">
 	    <DependentUpon>HomePage.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Trainers\CreateTrainerPage.xaml.cs">
+	    <DependentUpon>CreateTrainerPage.xaml</DependentUpon>
 	  </Compile>
 	  <Compile Update="Views\Workouts\WorkoutDetailsPage.xaml.cs">
 	    <DependentUpon>WorkoutDetailsPage.xaml</DependentUpon>
@@ -105,6 +119,24 @@
 	  <MauiXaml Update="Views\Admin\AdminDashboardPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="Views\Admin\CategoriesManagementPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\Admin\CreateGymPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\Admin\GymsManagementPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\Admin\ReportDetailsPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\Admin\ReportManagementPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\Admin\UserManagementPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Views\Auth\LoginPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
@@ -121,6 +153,12 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\Base\PrivacyPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\Community\CommunityWorkoutsPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\Exercises\CreateExercisePage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\Exercises\ExerciseDetailsPage.xaml">
@@ -142,6 +180,15 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\Profile\UpdateProfilePage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\Trainers\CreateTrainerPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\Workouts\ActiveWorkoutPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\Workouts\NoteFormPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\Workouts\WorkoutsPage.xaml">

@@ -24,10 +24,18 @@
 
         public bool IsActive { get; set; } = true;
 
+        public bool IsGuest { get; set; } = false;
+
         [Ignore]
         public string StatusLabel => IsActive ? "Active" : "Deactivated";
 
         [Ignore]
         public string ActionLabel => IsActive ? "Deactivate" : "Reactivate";
+
+        [Ignore]
+        public string RoleLabel => IsAdmin ? "Admin" : IsGuest ? "Guest" : "Member";
+
+        [Indexed]
+        public int? GymId { get; set; }
     }
 }

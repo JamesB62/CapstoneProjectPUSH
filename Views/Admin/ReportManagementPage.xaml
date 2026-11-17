@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:CapstoneProjectPUSH.ViewModels.Admin"
+             xmlns:models="clr-namespace:CapstoneProjectPUSH.Models"
+             x:Class="CapstoneProjectPUSH.Views.Admin.ReportManagementPage"
+             x:DataType="vm:ReportManagementViewModel"
+             Title="Manage PUSH Reports">
+
+    <Grid
+        Padding="30,15,30,0"
+        RowDefinitions="Auto,Auto,*"
+        RowSpacing="20">
+
+        <!-- Search -->
+        <SearchBar
+            Grid.Row="0"
+            Placeholder="Search by workout, reporter or reason"
+            Text="{Binding SearchText}"/>
+
+        <VerticalStackLayout
+            Grid.Row="1"
+            Spacing="15">
+
+            <Grid
+                ColumnDefinitions="*,Auto"
+                ColumnSpacing="10">
+
+                <!-- Status message -->
+                <Label
+                    Grid.Column="0"
+                    Text="{Binding StatusMessage}"
+                    VerticalOptions="Center"/>
+
+                <!-- Availability toggle -->
+                <HorizontalStackLayout
+                    Grid.Column="1"
+                    Margin="0,-15,0,-15"
+                    Spacing="5">
+
+                    <Label
+                        Text="Pending Only"
+                        VerticalOptions="Center"/>
+
+                    <Switch
+                        IsToggled="{Binding ShowPendingOnly}"
+                        VerticalOptions="Center"/>
+
+
+                </HorizontalStackLayout>
+
+            </Grid>
+
+            <Label
+                Text="{Binding ErrorMessage}"
+                TextColor="Red"
+                IsVisible="{Binding HasErrorMessage}"/>
+            
+        </VerticalStackLayout>
+
+        <RefreshView
+            Grid.Row="2"
+            IsRefreshing="{Binding IsBusy}"
+            Command="{Binding LoadCommand}">
+
+            <CollectionView
+                ItemsSource="{Binding Reports}"
+                SelectionMode="Single"
+                SelectedItem="{Binding SelectedReport}">
+
+                <!-- Empty view -->
+                <CollectionView.EmptyView>
+                    
+                    <VerticalStackLayout
+                        Padding="0,20">
+                        
+                        <Label
+                            Text="No reports to show."
+                            FontAttributes="Italic"
+                            HorizontalOptions="Center"/>
+                        
+                        <Label
+                            Text="Pull down to try again."
+                            FontAttributes="Italic"
+                            HorizontalOptions="Center"/>
+                        
+                    </VerticalStackLayout>
+                    
+                </CollectionView.EmptyView>
+
+                <!-- Item layout -->
+                <CollectionView.ItemsLayout>
+                    
+                    <LinearItemsLayout
+                        Orientation="Vertical"
+                        ItemSpacing="10"/>
+                    
+                </CollectionView.ItemsLayout>
+
+                <!-- Item template -->
+                <CollectionView.ItemTemplate>
+                    
+                    <DataTemplate
+                        x:DataType="models:Report">
+                        
+                        <Border
+                            Style="{StaticResource Card}">
+
+                            <VerticalStackLayout
+                                Spacing="10">
+
+                                <Grid
+                                    ColumnDefinitions="*,Auto"
+                                    ColumnSpacing="10">
+                                    
+                                    <Label
+                                        FontAttributes="Bold"
+                                        FontSize="16"
+                                        Grid.Column="0"
+                                        LineBreakMode="TailTruncation"
+                                        Text="{Binding Id, StringFormat='Report ID: {0}'}"
+                                        VerticalOptions="Center"/>
+
+                                    <Border
+                                        Grid.Column="1"
+                                        Style="{StaticResource Pill}">
+                                                                               
+                                        <Label
+                                            FontSize="12"
+                                            LineBreakMode="TailTruncation"
+                                            Text="{Binding StatusLabel}"/>
+                                        
+                                    </Border>
+                                    
+                                </Grid>
+
+                                <!-- Content -->
+                                <Label
+                                    LineBreakMode="TailTruncation"
+                                    MaxLines="2"
+                                    Text="{Binding Reason}"/>
+
+                                <VerticalStackLayout
+                                    Spacing="3">
+
+                                    <!-- Footer -->
+                                    <Label
+                                        FontSize="12"
+                                        FontAttributes="Italic"
+                                        Margin="0,3,0,0">
+
+                                        <Label.Text>
+
+                                            <MultiBinding
+                                                StringFormat="Reported by {0} on {1:d MMM yyyy}">
+
+                                                <Binding
+                                                    Path="UserDisplayName"/>
+
+                                                <Binding
+                                                    Path="DateTimeCreated"/>
+
+                                            </MultiBinding>
+
+                                        </Label.Text>
+
+                                    </Label>
+
+                                    <Label
+                                        FontAttributes="Italic"
+                                        FontSize="12"
+                                        IsVisible="{Binding IsResolved}"
+                                        Text="{Binding ResolvedText}"/>
+
+                                </VerticalStackLayout>
+                                
+                            </VerticalStackLayout>
+                            
+                        </Border>
+
+                    </DataTemplate>
+                    
+                </CollectionView.ItemTemplate>
+                
+            </CollectionView>
+            
+        </RefreshView>
+        
+    </Grid>
+    
+</ContentPage>

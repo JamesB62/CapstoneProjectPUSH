@@ -15,6 +15,23 @@ public partial class ExercisesPage : ContentPage
     protected override void OnAppearing()
     {
         base.OnAppearing();
+
+        UpdateToolbar();
+
         _exercisesViewModel.LoadExercisesCommand.Execute(null);
+    }
+
+    private void UpdateToolbar()
+    {
+        bool isAdmin = _exercisesViewModel.IsCurrentUserAdmin;
+
+        if (isAdmin && !ToolbarItems.Contains(AddExerciseToolbarItem))
+        {
+            ToolbarItems.Add(AddExerciseToolbarItem);
+        }
+        else if (!isAdmin)
+        {
+            ToolbarItems.Remove(AddExerciseToolbarItem);
+        }
     }
 }
