@@ -185,7 +185,7 @@
         }
 
         // Update details
-        public async Task<AuthResult> UpdateDetailsAsync(string displayName, string email, string currentPassword, string newPassword, string confirmPassword, int? gymId)
+        public async Task<AuthResult> UpdateDetailsAsync(string displayName, string email, string currentPassword, string newPassword, string confirmPassword, int? gymId, string? profileImage = null)
         {
             if (CurrentUser is null)
             {
@@ -266,6 +266,16 @@
                 return new AuthResult(false, "An account with that display name already exists.");
             }
 
+            if (profileImage is not null)
+            {
+                profileImage = profileImage.Trim();
+
+                if (profileImage.Length > 0 && profileImage != user.ProfileImage && !ImageService.IsAppImage(profileImage))
+                {
+                    return new AuthResult(false, "That photo couldn't be used. Please choose another.");
+                }
+            }
+
             if (gymId is not null)
             {
                 int favouriteGymId = gymId.Value;
@@ -295,6 +305,13 @@
             user.Email = email;
             user.GymId = gymId;
 
+            string oldProfileImage = user.ProfileImage;
+
+            if (profileImage is not null)
+            {
+                user.ProfileImage = profileImage;
+            }
+
             try
             {
                 await db.UpdateAsync(user);
@@ -302,6 +319,11 @@
             catch (SQLiteException)
             {
                 return new AuthResult(false, "An account with that email or display name already exists.");
+            }
+
+            if (profileImage is not null && oldProfileImage != profileImage)
+            {
+                ImageService.DeleteImage(oldProfileImage);
             }
 
             CurrentUser = user;
@@ -328,6 +350,8 @@
             }
 
             var userId = CurrentUser.Id;
+            var profileImage = CurrentUser.ProfileImage;
+
             var db = await _databaseService.GetConnectionAsync();
 
             await db.RunInTransactionAsync(conn =>
@@ -346,6 +370,8 @@
                 conn.Table<WeightLog>().Delete(l => l.UserId == userId);
                 conn.Table<User>().Delete(u => u.Id == userId);
             });
+
+            ImageService.DeleteImage(profileImage);
 
             return new AuthResult(true, "Your account has been deleted.");
         }

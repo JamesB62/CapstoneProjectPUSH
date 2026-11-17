@@ -20,6 +20,38 @@
                 <Label
                     FontAttributes="Bold"
                     FontSize="18"
+                    Text="Photo"/>
+
+                <Grid
+                    ColumnDefinitions="*,Auto,Auto"
+                    ColumnSpacing="10">
+
+                    <Label
+                        Grid.Column="0"
+                        FontSize="14"
+                        Text="{Binding PhotoStatusText}"
+                        VerticalOptions="Center"/>
+
+                    <Button
+                        Grid.Column="1"
+                        Command="{Binding ChangePhotoCommand}"
+                        Text="Change"/>
+
+                    <Button
+                        Grid.Column="2"
+                        Command="{Binding RemovePhotoCommand}"
+                        IsVisible="{Binding HasProfileImage}"
+                        Text="Remove"/>
+
+                </Grid>
+
+            </VerticalStackLayout>
+
+            <VerticalStackLayout>
+
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="18"
                     Text="First Name"/>
 
                 <Entry
