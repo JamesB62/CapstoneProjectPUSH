@@ -2,11 +2,16 @@
 {
     public partial class UpdateProfileViewModel : BaseViewModel
     {
-        private readonly GymService _gymService;
+        private string _savedProfileImage = string.Empty;
+        private bool _hasLoadedProfile;
 
-        public UpdateProfileViewModel(GymService gymService, UserService userService) : base(userService)
+        private readonly GymService _gymService;
+        private readonly ImageService _imageService;
+
+        public UpdateProfileViewModel(GymService gymService, ImageService imageService, UserService userService) : base(userService)
         {
             _gymService = gymService;
+            _imageService = imageService;
         }
 
         [ObservableProperty]
@@ -33,6 +38,26 @@
 
         public bool HasSelectedGym => SelectedGym is not null;
 
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(HasProfileImage))]
+        [NotifyPropertyChangedFor(nameof(PhotoStatusText))]
+        public partial string ProfileImage { get; set; } = string.Empty;
+
+        public bool HasProfileImage => !string.IsNullOrWhiteSpace(ProfileImage);
+
+        public string PhotoStatusText
+        {
+            get
+            {
+                if (HasProfileImage)
+                {
+                    return "Photo selected";
+                }
+
+                return "No photo";
+            }
+        }
+
         public string PasswordRequirements => UserService.PasswordRequirementsText;
 
         [RelayCommand]
@@ -46,6 +71,11 @@
                 return;
             }
 
+            if (_hasLoadedProfile)
+            {
+                return;
+            }
+
             DisplayName = user.DisplayName;
             Email = user.Email;
             CurrentPassword = string.Empty;
@@ -53,7 +83,20 @@
             ConfirmPassword = string.Empty;
             ErrorMessage = string.Empty;
 
+            if (user.ProfileImage is null)
+            {
+                _savedProfileImage = string.Empty;
+            }
+            else
+            {
+                _savedProfileImage = user.ProfileImage;
+            }
+
+            ProfileImage = _savedProfileImage;
+
             await LoadGymsAsync(user.GymId);
+
+            _hasLoadedProfile = true;
         }
 
         [RelayCommand]
@@ -76,13 +119,15 @@
                     gymId = SelectedGym.Id;
                 }
 
-                var result = await _userService.UpdateDetailsAsync(DisplayName, Email, CurrentPassword, NewPassword, ConfirmPassword, gymId);
+                var result = await _userService.UpdateDetailsAsync(DisplayName, Email, CurrentPassword, NewPassword, ConfirmPassword, gymId, ProfileImage);
 
                 if (!result.Success)
                 {
                     ErrorMessage = result.Message;
                     return;
                 }
+
+                _savedProfileImage = ProfileImage;
 
                 CurrentPassword = string.Empty;
                 NewPassword = string.Empty;
@@ -111,6 +156,8 @@
             {
                 return;
             }
+
+            DiscardUnsavedPhoto();
 
             await NavigateAsync("..");
         }
@@ -141,6 +188,55 @@
             {
                 System.Diagnostics.Debug.WriteLine(ex);
                 StatusMessage = "Couldn't load gyms. Please try again.";
+            }
+        }
+
+        [RelayCommand]
+        private async Task ChangePhotoAsync()
+        {
+            if (IsBusy)
+            {
+                return;
+            }
+
+            ErrorMessage = string.Empty;
+
+            try
+            {
+                string? newImage = await _imageService.PickImageAsync();
+
+                if (newImage is null)
+                {
+                    return;
+                }
+
+                DiscardUnsavedPhoto();
+                ProfileImage = newImage;
+            }
+            catch (PermissionException)
+            {
+                ErrorMessage = "PUSH needs permission to access your photos.";
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex);
+                ErrorMessage = "Couldn't load that photo. Please try another.";
+            }
+        }
+
+        [RelayCommand]
+        private void RemovePhoto()
+        {
+            DiscardUnsavedPhoto();
+            ProfileImage = string.Empty;
+        }
+
+        // Deletes a picked photo that hasn't been saved to the account
+        private void DiscardUnsavedPhoto()
+        {
+            if (ProfileImage != _savedProfileImage)
+            {
+                ImageService.DeleteImage(ProfileImage);
             }
         }
     }

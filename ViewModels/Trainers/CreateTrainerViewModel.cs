@@ -5,14 +5,18 @@
     {
         private readonly CategoryService _categoryService;
         private readonly GymService _gymService;
+        private readonly ImageService _imageService;
         private readonly TrainerService _trainerService;
 
-        public CreateTrainerViewModel(CategoryService categoryService, GymService gymService, TrainerService trainerService, UserService userService) : base(userService)
+        public CreateTrainerViewModel(CategoryService categoryService, GymService gymService, ImageService imageService, TrainerService trainerService, UserService userService) : base(userService)
         {
             _categoryService = categoryService;
             _gymService = gymService;
+            _imageService = imageService;
             _trainerService = trainerService;
         }
+
+        private string _savedProfileImage = string.Empty;
 
         // Set when the page is opened to edit an existing trainer
         private bool _hasLoadedTrainer;
@@ -55,6 +59,26 @@
 
         [ObservableProperty]
         public partial Gym? SelectedGym { get; set; }
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(HasProfileImage))]
+        [NotifyPropertyChangedFor(nameof(PhotoStatusText))]
+        public partial string ProfileImage { get; set; } = string.Empty;
+
+        public bool HasProfileImage => !string.IsNullOrWhiteSpace(ProfileImage);
+
+        public string PhotoStatusText
+        {
+            get
+            {
+                if (HasProfileImage)
+                {
+                    return "Photo selected";
+                }
+
+                return "No photo";
+            }
+        }
 
         // Switch the page into edit mode when a trainer Id arrives
         partial void OnTrainerIdChanged(int value)
@@ -129,6 +153,17 @@
                 SelectedCategory = Categories.FirstOrDefault(c => c.Id == trainer.CategoryId);
                 SelectedGym = Gyms.FirstOrDefault(g => g.Id == trainer.GymId);
 
+                if (trainer.ProfileImage is null)
+                {
+                    _savedProfileImage = string.Empty;
+                }
+                else
+                {
+                    _savedProfileImage = trainer.ProfileImage;
+                }
+
+                ProfileImage = _savedProfileImage;
+
                 _hasLoadedTrainer = true;
             }
             catch (Exception ex)
@@ -176,7 +211,8 @@
                     Description = Description,
                     Available = Available,
                     CategoryId = SelectedCategory.Id,
-                    GymId = SelectedGym.Id
+                    GymId = SelectedGym.Id,
+                    ProfileImage = ProfileImage
                 };
 
                 (bool Success, string Message) result;
@@ -195,6 +231,8 @@
                     ErrorMessage = result.Message;
                     return;
                 }
+
+                _savedProfileImage = ProfileImage;
 
                 string trainerName = $"{FirstName.Trim()} {LastName.Trim()}";
 
@@ -223,7 +261,58 @@
         [RelayCommand]
         private async Task CancelAsync()
         {
+            DiscardUnsavedPhoto();
+
             await NavigateAsync("..");
+        }
+
+        [RelayCommand]
+        private async Task ChangePhotoAsync()
+        {
+            if (IsBusy)
+            {
+                return;
+            }
+
+            ErrorMessage = string.Empty;
+
+            try
+            {
+                string? newImage = await _imageService.PickImageAsync();
+
+                if (newImage is null)
+                {
+                    return;
+                }
+
+                DiscardUnsavedPhoto();
+                ProfileImage = newImage;
+            }
+            catch (PermissionException)
+            {
+                ErrorMessage = "PUSH needs permission to access your photos.";
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex);
+                ErrorMessage = "Couldn't load that photo. Please try another.";
+            }
+        }
+
+        [RelayCommand]
+        private void RemovePhoto()
+        {
+            DiscardUnsavedPhoto();
+            ProfileImage = string.Empty;
+        }
+
+        // Deletes unused photo
+        private void DiscardUnsavedPhoto()
+        {
+            if (ProfileImage != _savedProfileImage)
+            {
+                ImageService.DeleteImage(ProfileImage);
+            }
         }
     }
 }

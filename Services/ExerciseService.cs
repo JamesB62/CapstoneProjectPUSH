@@ -74,6 +74,18 @@
                 return (false, error);
             }
 
+            if (exercise.Image is null)
+            {
+                exercise.Image = string.Empty;
+            }
+
+            exercise.Image = exercise.Image.Trim();
+
+            if (exercise.Image.Length > 0 && !ImageService.IsAppImage(exercise.Image))
+            {
+                return (false, "That photo couldn't be used. Please choose another.");
+            }
+
             var db = await _databaseService.GetConnectionAsync();
 
             await db.InsertAsync(exercise);
@@ -107,13 +119,33 @@
                 return (false, error);
             }
 
+            if (exercise.Image is null)
+            {
+                exercise.Image = string.Empty;
+            }
+
+            exercise.Image = exercise.Image.Trim();
+
+            if (exercise.Image.Length > 0 && exercise.Image != existing.Image && !ImageService.IsAppImage(exercise.Image))
+            {
+                return (false, "That photo couldn't be used. Please choose another.");
+            }
+
             existing.Title = exercise.Title;
             existing.Description = exercise.Description;
             existing.IsTimed = exercise.IsTimed;
             existing.Difficulty = exercise.Difficulty;
             existing.CategoryId = exercise.CategoryId;
 
+            string oldImage = existing.Image;
+            existing.Image = exercise.Image;
+
             await db.UpdateAsync(existing);
+
+            if (oldImage != existing.Image)
+            {
+                ImageService.DeleteImage(oldImage);
+            }
 
             return (true, $"{existing.Title} was updated.");
         }
@@ -148,6 +180,8 @@
             }
 
             await db.DeleteAsync(exercise);
+
+            ImageService.DeleteImage(exercise.Image);
 
             return (true, "Exercise deleted.");
         }

@@ -5,12 +5,16 @@
     {
         private readonly CategoryService _categoryService;
         private readonly ExerciseService _exerciseService;
+        private readonly ImageService _imageService;
 
-        public CreateExerciseViewModel(CategoryService categoryService, ExerciseService exerciseService, UserService userService) : base(userService)
+        public CreateExerciseViewModel(CategoryService categoryService, ExerciseService exerciseService, ImageService imageService, UserService userService) : base(userService)
         {
             _categoryService = categoryService;
             _exerciseService = exerciseService;
+            _imageService = imageService;
         }
+
+        private string _savedExerciseImage = string.Empty;
 
         private bool _hasLoadedExercise;
 
@@ -49,6 +53,26 @@
 
         [ObservableProperty]
         public partial int SelectedDifficultyIndex { get; set; } = -1;
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(HasExerciseImage))]
+        [NotifyPropertyChangedFor(nameof(PhotoStatusText))]
+        public partial string ExerciseImage { get; set; } = string.Empty;
+
+        public bool HasExerciseImage => !string.IsNullOrWhiteSpace(ExerciseImage);
+
+        public string PhotoStatusText
+        {
+            get
+            {
+                if (HasExerciseImage)
+                {
+                    return "Photo selected";
+                }
+
+                return "No photo";
+            }
+        }
 
         partial void OnExerciseIdChanged(int value)
         {
@@ -108,6 +132,17 @@
                 SelectedCategory = Categories.FirstOrDefault(c => c.Id == exercise.CategoryId);
                 SelectedDifficultyIndex = exercise.Difficulty - 1;
 
+                if (exercise.Image is null)
+                {
+                    _savedExerciseImage = string.Empty;
+                }
+                else
+                {
+                    _savedExerciseImage = exercise.Image;
+                }
+
+                ExerciseImage = _savedExerciseImage;
+
                 _hasLoadedExercise = true;
             }
             catch (Exception ex)
@@ -152,7 +187,8 @@
                     Description = Description,
                     IsTimed = IsTimed,
                     Difficulty = SelectedDifficultyIndex + 1,
-                    CategoryId = SelectedCategory.Id
+                    CategoryId = SelectedCategory.Id,
+                    Image = ExerciseImage
                 };
 
                 (bool Success, string Message) result;
@@ -171,6 +207,8 @@
                     ErrorMessage = result.Message;
                     return;
                 }
+
+                _savedExerciseImage = ExerciseImage;
 
                 string exerciseTitle = Title.Trim();
 
@@ -199,7 +237,58 @@
         [RelayCommand]
         private async Task CancelAsync()
         {
+            DiscardUnsavedPhoto();
+
             await NavigateAsync("..");
+        }
+
+        [RelayCommand]
+        private async Task ChangePhotoAsync()
+        {
+            if (IsBusy)
+            {
+                return;
+            }
+
+            ErrorMessage = string.Empty;
+
+            try
+            {
+                string? newImage = await _imageService.PickImageAsync();
+
+                if (newImage is null)
+                {
+                    return;
+                }
+
+                DiscardUnsavedPhoto();
+                ExerciseImage = newImage;
+            }
+            catch (PermissionException)
+            {
+                ErrorMessage = "PUSH needs permission to access your photos.";
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex);
+                ErrorMessage = "Couldn't load that photo. Please try another.";
+            }
+        }
+
+        [RelayCommand]
+        private void RemovePhoto()
+        {
+            DiscardUnsavedPhoto();
+            ExerciseImage = string.Empty;
+        }
+
+        // Deletes unused photo
+        private void DiscardUnsavedPhoto()
+        {
+            if (ExerciseImage != _savedExerciseImage)
+            {
+                ImageService.DeleteImage(ExerciseImage);
+            }
         }
     }
 }

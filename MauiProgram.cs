@@ -13,21 +13,23 @@ namespace CapstoneProjectPUSH
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
 
-            //app shell
+            // AppShell
             builder.Services.AddSingleton<AppShell>();
 
             // ========================= Services =========================
 
-            //reset password
+            // Reset Password
             builder.Services.AddSingleton<IEmailSender, GmailEmailSender>();
             builder.Services.AddSingleton<PasswordResetService>();
             builder.Services.AddSingleton<NotificationService>();
 
+            // Core Services
             builder.Services.AddSingleton<ArticleService>();
             builder.Services.AddSingleton<CategoryService>();
             builder.Services.AddSingleton<DatabaseService>();
             builder.Services.AddSingleton<ExerciseService>(); 
             builder.Services.AddSingleton<GymService>();
+            builder.Services.AddSingleton<ImageService>();
             builder.Services.AddSingleton<NoteService>();
             builder.Services.AddSingleton<ReportService>();
             builder.Services.AddSingleton<TrainerService>();

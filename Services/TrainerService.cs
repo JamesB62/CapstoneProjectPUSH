@@ -98,6 +98,18 @@
                 return (false, error);
             }
 
+            if (trainer.ProfileImage is null)
+            {
+                trainer.ProfileImage = string.Empty;
+            }
+
+            trainer.ProfileImage = trainer.ProfileImage.Trim();
+
+            if (trainer.ProfileImage.Length > 0 && !ImageService.IsAppImage(trainer.ProfileImage))
+            {
+                return (false, "That photo couldn't be used. Please choose another.");
+            }
+
             var db = await _databaseService.GetConnectionAsync();
 
             await db.InsertAsync(trainer);
@@ -129,6 +141,18 @@
                 return (false, error);
             }
 
+            if (trainer.ProfileImage is null)
+            {
+                trainer.ProfileImage = string.Empty;
+            }
+
+            trainer.ProfileImage = trainer.ProfileImage.Trim();
+
+            if (trainer.ProfileImage.Length > 0 && trainer.ProfileImage != existing.ProfileImage && !ImageService.IsAppImage(trainer.ProfileImage))
+            {
+                return (false, "That photo couldn't be used. Please choose another.");
+            }
+
             existing.FirstName = trainer.FirstName;
             existing.LastName = trainer.LastName;
             existing.Email = trainer.Email;
@@ -138,7 +162,15 @@
             existing.CategoryId = trainer.CategoryId;
             existing.GymId = trainer.GymId;
 
+            string oldProfileImage = existing.ProfileImage;
+            existing.ProfileImage = trainer.ProfileImage;
+
             await db.UpdateAsync(existing);
+
+            if (oldProfileImage != existing.ProfileImage)
+            {
+                ImageService.DeleteImage(oldProfileImage);
+            }
 
             return (true, $"{existing.FullName} was updated.");
         }
@@ -161,6 +193,8 @@
             }
 
             await db.DeleteAsync(trainer);
+
+            ImageService.DeleteImage(trainer.ProfileImage);
 
             return (true, $"{trainer.FullName} was deleted.");
         }
