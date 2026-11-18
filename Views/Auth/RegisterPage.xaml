@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:CapstoneProjectPUSH.ViewModels.Auth"
              x:Class="CapstoneProjectPUSH.Views.Auth.RegisterPage"
+             x:DataType="vm:RegisterViewModel"
              Title="">
 
     <ScrollView>
@@ -9,7 +11,7 @@
         <VerticalStackLayout
             MaximumWidthRequest="500"
             Padding="30,0,30,30"
-            Spacing="15"
+            Spacing="20"
             VerticalOptions="Center">
 
             <!-- Branding -->
@@ -72,13 +74,12 @@
                     Text="{Binding ConfirmPassword}"/>
 
                 <Label
-                    FontAttributes="Italic"
                     FontSize="14"
                     Text="{Binding PasswordRequirements}"/>
 
                 <!-- Privacy consent check -->
                 <HorizontalStackLayout
-                    Margin="0,0,0,-5"
+                    Margin="0,0,0,-10"
                     Spacing="-5">
 
                     <CheckBox
@@ -131,7 +132,6 @@
 
             </Label>
 
-            <!-- Adjust margin value? -->
             <!-- Loading circle -->
             <ActivityIndicator
                 IsRunning="{Binding IsBusy}"

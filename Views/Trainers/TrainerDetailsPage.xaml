@@ -10,11 +10,10 @@
 
         <VerticalStackLayout
             MaximumWidthRequest="500"
-            Padding="30,15"
+            Padding="30"
             Spacing="15">
 
             <Border
-                Grid.Column="0"
                 HeightRequest="100"
                 HorizontalOptions="Center"
                 StrokeShape="Ellipse"
@@ -64,24 +63,8 @@
                 <Label
                     Text="{Binding Trainer.CategoryTitle, StringFormat='• Specialty: {0}'}"/>
 
-                <Label>
-
-                    <Label.Text>
-
-                        <MultiBinding
-                            StringFormat="• Gym: {0} – {1}">
-
-                            <Binding
-                                Path="Trainer.GymName"/>
-
-                            <Binding
-                                Path="Trainer.GymFullAddress"/>
-
-                        </MultiBinding>
-
-                    </Label.Text>
-
-                </Label>
+                <Label
+                    Text="{Binding Trainer.GymDetailsLabel, StringFormat='• Gym: {0}'}"/>
 
             </VerticalStackLayout>
 
@@ -109,9 +92,15 @@
                     Text="Email"/>
 
             </VerticalStackLayout>
-            
+
+            <!-- Error message -->
+            <Label
+                IsVisible="{Binding HasErrorMessage}"
+                Text="{Binding ErrorMessage}"
+                TextColor="Red"/>
+
         </VerticalStackLayout>
-        
+
     </ScrollView>
 
 </ContentPage>

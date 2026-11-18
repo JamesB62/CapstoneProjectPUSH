@@ -3,15 +3,22 @@
     public class WeightLogService
     {
         private readonly DatabaseService _databaseService;
+        private readonly UserService _userService;
 
-        public WeightLogService(DatabaseService databaseService)
+        public WeightLogService(DatabaseService databaseService, UserService userService)
         {
             _databaseService = databaseService;
+            _userService = userService;
         }
 
         // Get all weight logs for user Id
         public async Task<List<WeightLog>> GetWeightLogsAsync(int userId)
         {
+            if (!_userService.IsCurrentUser(userId))
+            {
+                return new List<WeightLog>();
+            }
+
             var db = await _databaseService.GetConnectionAsync();
 
             return await db.Table<WeightLog>()
@@ -20,19 +27,14 @@
                 .ToListAsync();
         }
 
-        // Get weight log by Id for user Id
-        public async Task<WeightLog?> GetWeightLogByIdAsync(int weightLogId, int userId)
-        {
-            var db = await _databaseService.GetConnectionAsync();
-
-            return await db.Table<WeightLog>()
-                .Where(wl => wl.Id == weightLogId && wl.UserId == userId)
-                .FirstOrDefaultAsync();
-        }
-
         // Save weight for today for user Id
         public async Task SaveWeightForTodayAsync(int userId, double weightKg)
         {
+            if (!_userService.IsCurrentMember(userId))
+            {
+                return;
+            }
+
             var db = await _databaseService.GetConnectionAsync();
 
             // Used to create a date range for today
@@ -45,7 +47,7 @@
                 .FirstOrDefaultAsync();
 
             // Updates the existing weight log or...
-            if (existingLog != null)
+            if (existingLog is not null)
             {
                 existingLog.WeightKg = weightKg;
                 existingLog.DateTimeLogged = DateTime.Now;

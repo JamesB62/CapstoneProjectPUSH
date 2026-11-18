@@ -2,14 +2,10 @@
 {
     public partial class MyWorkoutsViewModel : BaseViewModel
     {
-        private readonly CategoryService _categoryService;
-        private readonly UserService _userService;
         private readonly WorkoutService _workoutService;
 
-        public MyWorkoutsViewModel(CategoryService categoryService, UserService userService, WorkoutService workoutService)
+        public MyWorkoutsViewModel(UserService userService, WorkoutService workoutService) : base(userService)
         {
-            _categoryService = categoryService;
-            _userService = userService;
             _workoutService = workoutService;
         }
 
@@ -17,51 +13,33 @@
 
         private List<Workout> _allWorkouts = new();
 
-        private static readonly Category AllCategory = new() { Id = 0, Title = "All" };
-
-        public ObservableCollection<Category> Categories { get; } = new();
-
         [ObservableProperty]
-        public partial Category? SelectedCategory { get; set; }
+        public partial string SearchText { get; set; } = string.Empty;
 
         [ObservableProperty]
         public partial Workout? SelectedWorkout { get; set; }
 
+        partial void OnSearchTextChanged(string value)
+        {
+            ApplyFilter();
+        }
+
         [RelayCommand]
         private async Task LoadMyWorkoutsAsync()
         {
+            ErrorMessage = string.Empty;
+
+            var user = _userService.CurrentUser;
+
+            if (user is null)
+            {
+                return;
+            }
+
             IsBusy = true;
 
             try
             {
-                var user = _userService.CurrentUser;
-
-                if (user is null)
-                {
-                    // Comment out to disable redirect
-                    await NavigateAsync("//LandingPage");
-                    return;
-                }
-
-                StatusMessage = "Loading workouts...";
-
-                if (Categories.Count == 0)
-                {
-                    var categories = await _categoryService.GetCategoriesAsync();
-
-                    var sortedCategories = categories.OrderBy(c => c.Title, StringComparer.OrdinalIgnoreCase).ToList();
-
-                    Categories.Clear();
-                    Categories.Add(AllCategory);
-
-                    foreach (var category in sortedCategories)
-                    {
-                        Categories.Add(category);
-                    }
-
-                    SelectedCategory = AllCategory;
-                }
-
                 var workouts = await _workoutService.GetWorkoutsForUserAsync(user.Id);
 
                 foreach (var workout in workouts)
@@ -79,7 +57,7 @@
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex);
-                StatusMessage = "Something went wrong. Please try again.";
+                ErrorMessage = "Couldn't load your workouts. Pull down to try again.";
             }
             finally
             {
@@ -87,48 +65,43 @@
             }
         }
 
-        partial void OnSelectedCategoryChanged(Category? value)
-        {
-            ApplyFilter();
-        }
-
         private void ApplyFilter()
         {
-            int categoryId;
+            string term = string.Empty;
 
-            if (SelectedCategory is null)
+            if (SearchText is not null)
             {
-                categoryId = 0;
-            }
-            else
-            {
-                categoryId = SelectedCategory.Id;
+                term = SearchText.Trim();
             }
 
             List<Workout> filtered;
 
-            if (categoryId == 0)
+            if (term.Length == 0)
             {
                 filtered = _allWorkouts;
             }
             else
             {
-                filtered = _allWorkouts.Where(w => w.CategoryId == categoryId).ToList();
+                filtered = _allWorkouts
+                    .Where(w => w.Title.Contains(term, StringComparison.OrdinalIgnoreCase)
+                             || w.CategoryTitle.Contains(term, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
             }
 
             Workouts.Clear();
+
             foreach (var workout in filtered)
             {
                 Workouts.Add(workout);
             }
 
-            if (Workouts.Count == 1)
+            if (filtered.Count == 1)
             {
                 StatusMessage = "Showing 1 workout.";
             }
             else
             {
-                StatusMessage = $"Showing {Workouts.Count} workouts.";
+                StatusMessage = $"Showing {filtered.Count} workouts.";
             }
         }
 
@@ -151,8 +124,7 @@
                 return;
             }
 
-            // Link to workout details page when built
-            //await NavigateAsync($"{nameof(WorkoutDetailsPage)}?WorkoutId={workout.Id}");
+            await NavigateAsync($"{nameof(WorkoutDetailsPage)}?WorkoutId={workout.Id}");
         }
     }
 }

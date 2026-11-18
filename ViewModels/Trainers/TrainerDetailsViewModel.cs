@@ -4,12 +4,10 @@
     public partial class TrainerDetailsViewModel : BaseViewModel
     {
         private readonly TrainerService _trainerService;
-        private readonly UserService _userService;
 
-        public TrainerDetailsViewModel(TrainerService trainerService, UserService userService)
+        public TrainerDetailsViewModel(TrainerService trainerService, UserService userService) : base(userService)
         {
             _trainerService = trainerService;
-            _userService = userService;
         }
 
         private const string PlaceholderImage = "profile_picture_placeholder.png";
@@ -44,10 +42,9 @@
         {
             var user = _userService.CurrentUser;
 
+            // AppShell sends signed-out users to the landing page
             if (user is null)
             {
-                // Comment out to disable redirect
-                await NavigateAsync("//LandingPage");
                 return;
             }
 
@@ -75,7 +72,7 @@
 
             if (Trainer is null)
             {
-                await Shell.Current.DisplayAlertAsync("Trainer not found", "This PUSH trainer could not be loaded.", "OK");
+                await Shell.Current.DisplayAlertAsync("Trainer Not Found", "This PUSH trainer could not be loaded.", "OK");
                 await NavigateAsync("..");
             }
         }
@@ -105,7 +102,7 @@
 
             if (!Email.Default.IsComposeSupported)
             {
-                await Shell.Current.DisplayAlertAsync("Email unavailable", "No email app was found on this device.", "OK");
+                ErrorMessage = "No email app was found on this device. Please try again.";
                 return;
             }
 
@@ -121,7 +118,7 @@
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex);
-                await Shell.Current.DisplayAlertAsync("Email unavailable", "Could not open the email app.", "OK");
+                ErrorMessage = "Couldn't open the email app. Please try again.";
             }
         }
 
@@ -135,7 +132,7 @@
 
             if (!PhoneDialer.Default.IsSupported)
             {
-                await Shell.Current.DisplayAlertAsync("Calling unavailable", "This device can't make phone calls.", "OK");
+                ErrorMessage = "This device can't make phone calls.";
                 return;
             }
 
@@ -146,7 +143,7 @@
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex);
-                await Shell.Current.DisplayAlertAsync("Calling unavailable", "Could not open the phone dialer.", "OK");
+                ErrorMessage = "Couldn't open the phone dialer. Please try again.";
             }
         }
     }

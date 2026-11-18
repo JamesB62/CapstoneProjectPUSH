@@ -2,73 +2,53 @@ namespace CapstoneProjectPUSH.ViewModels.Exercises
 {
     public partial class ExercisesViewModel : BaseViewModel
     {
-        private readonly CategoryService _categoryService;
         private readonly ExerciseService _exerciseService;
-        private readonly UserService _userService;
 
-        public ExercisesViewModel(CategoryService categoryService, ExerciseService exerciseService, UserService userService)
+        public ExercisesViewModel(ExerciseService exerciseService, UserService userService) : base(userService)
         {
-            _categoryService = categoryService;
             _exerciseService = exerciseService;
-            _userService = userService;
         }
 
         public ObservableCollection<Exercise> Exercises { get; } = new();
 
         private List<Exercise> _allExercises = new();
 
-        private static readonly Category AllCategory = new() { Id = 0, Title = "All" };
-
-        public ObservableCollection<Category> Categories { get; } = new();
-
         [ObservableProperty]
-        public partial Category? SelectedCategory { get; set; }
+        public partial string SearchText { get; set; } = string.Empty;
 
         [ObservableProperty]
         public partial Exercise? SelectedExercise { get; set; }
 
+        partial void OnSearchTextChanged(string value)
+        {
+            ApplyFilter();
+        }
+
         [RelayCommand]
         private async Task LoadExercisesAsync()
         {
+            ErrorMessage = string.Empty;
+            RefreshUserState();
+
+            var user = _userService.CurrentUser;
+
+            if (user is null)
+            {
+                return;
+            }
+
             IsBusy = true;
 
             try
             {
-                var user = _userService.CurrentUser;
-
-                if (user is null)
-                {
-                    // Comment out to disable redirect
-                    await NavigateAsync("//LandingPage");
-                    return;
-                }
-
-                StatusMessage = "Loading exercises...";
-
-                if (Categories.Count == 0)
-                {
-                    var categories = await _categoryService.GetCategoriesAsync();
-
-                    Categories.Clear();
-                    Categories.Add(AllCategory);
-
-                    foreach (var category in categories)
-                    {
-                        Categories.Add(category);
-                    }
-
-                    SelectedCategory = AllCategory;
-                }
-
-                var exercises = await _exerciseService.GetExercisesAsync();
-                _allExercises = exercises.ToList();
+                _allExercises = await _exerciseService.GetExercisesAsync();
 
                 ApplyFilter();
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex);
-                StatusMessage = "Something went wrong. Please try again.";
+                ErrorMessage = "Couldn't load exercises. Pull down to try again.";
             }
             finally
             {
@@ -76,48 +56,43 @@ namespace CapstoneProjectPUSH.ViewModels.Exercises
             }
         }
 
-        partial void OnSelectedCategoryChanged(Category? value)
-        {
-            ApplyFilter();
-        }
-
         private void ApplyFilter()
         {
-            int categoryId;
+            string term = string.Empty;
 
-            if (SelectedCategory is null)
+            if (SearchText is not null)
             {
-                categoryId = 0;
-            }
-            else
-            {
-                categoryId = SelectedCategory.Id;
+                term = SearchText.Trim();
             }
 
             List<Exercise> filtered;
 
-            if (categoryId == 0)
+            if (term.Length == 0)
             {
                 filtered = _allExercises;
             }
             else
             {
-                filtered = _allExercises.Where(e => e.CategoryId == categoryId).ToList();
+                filtered = _allExercises
+                    .Where(e => e.Title.Contains(term, StringComparison.OrdinalIgnoreCase)
+                             || e.CategoryTitle.Contains(term, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
             }
 
             Exercises.Clear();
+
             foreach (var exercise in filtered)
             {
                 Exercises.Add(exercise);
             }
 
-            if (Exercises.Count == 1)
+            if (filtered.Count == 1)
             {
                 StatusMessage = "Showing 1 exercise.";
             }
             else
             {
-                StatusMessage = $"Showing {Exercises.Count} exercises.";
+                StatusMessage = $"Showing {filtered.Count} exercises.";
             }
         }
 
@@ -141,6 +116,65 @@ namespace CapstoneProjectPUSH.ViewModels.Exercises
             }
 
             await NavigateAsync($"{nameof(ExerciseDetailsPage)}?ExerciseId={exercise.Id}");
+        }
+
+        [RelayCommand]
+        private async Task AddExerciseAsync()
+        {
+            await NavigateAsync(nameof(CreateExercisePage));
+        }
+
+        // Opens the create exercise page in edit mode
+        [RelayCommand]
+        private async Task EditExerciseAsync(Exercise? exercise)
+        {
+            if (exercise is null || !IsCurrentUserAdmin)
+            {
+                return;
+            }
+
+            await NavigateAsync($"{nameof(CreateExercisePage)}?ExerciseId={exercise.Id}");
+        }
+
+        [RelayCommand]
+        private async Task DeleteExerciseAsync(Exercise? exercise)
+        {
+            if (exercise is null || !IsCurrentUserAdmin)
+            {
+                return;
+            }
+
+            ErrorMessage = string.Empty;
+
+            bool confirmed = await Shell.Current.DisplayAlertAsync(
+                "Delete Exercise",
+                $"Delete {exercise.Title}? This can't be undone.",
+                "Delete",
+                "Cancel");
+
+            if (!confirmed)
+            {
+                return;
+            }
+
+            try
+            {
+                var result = await _exerciseService.DeleteExerciseAsync(exercise.Id);
+
+                if (result.Success)
+                {
+                    await LoadExercisesCommand.ExecuteAsync(null);
+                }
+                else
+                {
+                    ErrorMessage = result.Message;
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex);
+                ErrorMessage = "Couldn't delete the exercise. Please try again.";
+            }
         }
     }
 }

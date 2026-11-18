@@ -4,15 +4,13 @@
     public partial class ExerciseDetailsViewModel : BaseViewModel
     {
         private readonly ExerciseService _exerciseService;
-        private readonly UserService _userService;
 
-        public ExerciseDetailsViewModel(ExerciseService exerciseService, UserService userService)
+        public ExerciseDetailsViewModel(ExerciseService exerciseService, UserService userService) : base(userService)
         {
             _exerciseService = exerciseService;
-            _userService = userService;
         }
 
-        private const string PlaceholderImage = "exercise_placeholder.jpg";
+        private const string PlaceholderImage = "exercise_placeholder.png";
 
         [ObservableProperty]
         public partial int ExerciseId { get; set; }
@@ -35,10 +33,9 @@
         {
             var user = _userService.CurrentUser;
 
+            // AppShell sends signed-out users to the landing page
             if (user is null)
             {
-                // Comment out to disable redirect
-                await NavigateAsync("//LandingPage");
                 return;
             }
 
@@ -48,7 +45,7 @@
             {
                 var exercise = await _exerciseService.GetExerciseByIdAsync(ExerciseId);
 
-                if (exercise != null)
+                if (exercise is not null)
                 {
                     exercise.Image = GetImageOrPlaceholder(exercise.Image);
                 }
@@ -66,7 +63,7 @@
 
             if (Exercise is null)
             {
-                await Shell.Current.DisplayAlertAsync("Exercise not found", "This PUSH exercise could not be loaded.", "OK");
+                await Shell.Current.DisplayAlertAsync("Exercise Not Found", "This PUSH exercise could not be loaded.", "OK");
                 await NavigateAsync("..");
             }
         }

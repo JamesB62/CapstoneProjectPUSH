@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:CapstoneProjectPUSH.ViewModels.Admin"
+             x:Class="CapstoneProjectPUSH.Views.Admin.ReportDetailsPage"
+             x:DataType="vm:ReportDetailsViewModel"
+             Title="PUSH Report Details">
+
+    <ScrollView>
+        
+        <VerticalStackLayout
+            Padding="30"
+            Spacing="20">
+
+            <Label
+                FontAttributes="Bold"
+                FontSize="18"
+                Text="Report"/>
+
+            <Border
+                Style="{StaticResource Card}">
+
+                <VerticalStackLayout
+                    Spacing="10">
+
+                    <Grid
+                        ColumnDefinitions="*,Auto"
+                        ColumnSpacing="10">
+
+                        <Label
+                            Grid.Column="0"
+                            FontAttributes="Bold"
+                            FontSize="16"
+                            LineBreakMode="TailTruncation"
+                            Text="{Binding Report.Id, StringFormat='Report ID: {0}'}"
+                            VerticalOptions="Center"/>
+
+                        <Border
+                            Grid.Column="1"
+                            Style="{StaticResource Pill}">
+
+                            <Label
+                                FontSize="12"
+                                LineBreakMode="TailTruncation"
+                                Text="{Binding Report.StatusLabel}"/>
+
+                        </Border>
+
+                    </Grid>
+
+                    <!-- Reason -->
+                    <Label
+                        FontSize="14"
+                        Margin="0,0,0,3"
+                        Text="{Binding Report.Reason}"/>
+
+                    <!-- Dates -->
+                    <VerticalStackLayout
+                        Spacing="3">
+
+                        <Label
+                            FontAttributes="Italic"
+                            FontSize="12">
+
+                            <Label.Text>
+
+                                <MultiBinding
+                                    StringFormat="Reported by {0} on {1:d MMM yyyy}">
+
+                                    <Binding
+                                        Path="Report.UserDisplayName"/>
+
+                                    <Binding
+                                        Path="Report.DateTimeCreated"/>
+
+                                </MultiBinding>
+
+                            </Label.Text>
+
+                        </Label>
+
+                        <Label
+                            FontAttributes="Italic"
+                            FontSize="12"
+                            IsVisible="{Binding Report.IsResolved}"
+                            Text="{Binding ResolvedText}"/>
+
+                    </VerticalStackLayout>
+
+                </VerticalStackLayout>
+
+            </Border>
+
+            <Label
+                FontAttributes="Bold"
+                FontSize="18"
+                Text="Reported Workout"/>
+
+            <!-- Card -->
+            <Border
+                IsVisible="{Binding HasWorkout}"
+                Style="{StaticResource Card}">
+
+                <VerticalStackLayout
+                    Spacing="10">
+
+                    <Grid
+                        ColumnDefinitions="*,Auto,Auto"
+                        ColumnSpacing="10">
+
+                        <Label
+                            Grid.Column="0"
+                            FontAttributes="Bold"
+                            FontSize="16"
+                            LineBreakMode="TailTruncation"
+                            Text="{Binding Workout.Title}"
+                            VerticalOptions="Center"/>
+
+                        <Border
+                            Grid.Column="1"
+                            Style="{StaticResource Pill}">
+
+                            <Label
+                                FontSize="12"
+                                LineBreakMode="TailTruncation"
+                                Text="{Binding PrivacyText}"/>
+
+                        </Border>
+
+                        <Border
+                            Grid.Column="2"
+                            Style="{StaticResource Pill}">
+
+                            <Label
+                                FontSize="12"
+                                LineBreakMode="TailTruncation"
+                                Text="{Binding Workout.CategoryTitle}"/>
+
+                        </Border>
+                        
+                    </Grid>
+
+                    <!-- Info -->
+                    <VerticalStackLayout
+                        Spacing="3">
+
+                        <Label
+                            Text="{Binding Workout.ExerciseCount, StringFormat='• Exercises: {0}'}"/>
+
+                        <Label
+                            IsVisible="{Binding Workout.HasSets}"
+                            Text="{Binding Workout.SetCount, StringFormat='• Sets: {0}'}"/>
+
+                        <Label
+                            IsVisible="{Binding Workout.HasMinutes}"
+                            Text="{Binding Workout.TotalMinutes, StringFormat='• Time: {0} min'}"/>
+
+                    </VerticalStackLayout>
+
+                    <!-- Date time created -->                    
+                    <Label
+                        FontAttributes="Italic"
+                        FontSize="12">
+
+                        <Label.Text>
+
+                            <MultiBinding
+                                    StringFormat="Created by {0} on {1:d MMM yyyy}">
+
+                                <Binding
+                                        Path="Workout.UserDisplayName"/>
+
+                                <Binding
+                                        Path="Workout.DateTimeCreated"/>
+
+                            </MultiBinding>
+
+                        </Label.Text>
+
+                    </Label>
+
+                </VerticalStackLayout>
+
+            </Border>
+
+            <!-- Removed workout card -->
+            <Border
+                IsVisible="{Binding HasNoWorkout}"
+                Style="{StaticResource Card}">
+
+                <VerticalStackLayout
+                    Spacing="10">
+
+                    <Label
+                        FontAttributes="Bold"
+                        FontSize="16"
+                        Text="Removed workout"/>
+
+                    <Label
+                        FontAttributes="Italic"
+                        Text="This workout has been deleted."/>
+
+                </VerticalStackLayout>
+
+            </Border>
+
+            <!-- Error -->
+            <Label
+                IsVisible="{Binding HasErrorMessage}"
+                Text="{Binding ErrorMessage}"
+                TextColor="Red"/>
+
+            <!-- Buttons -->
+            <VerticalStackLayout
+                Spacing="10">
+
+                <Button
+                    Command="{Binding ViewWorkoutCommand}"
+                    IsVisible="{Binding CanViewWorkout}"
+                    Text="View Workout"/>
+
+                <Button
+                    Command="{Binding DismissCommand}"
+                    IsVisible="{Binding CanResolve}"
+                    Text="Dismiss"/>
+
+                <Button
+                    Command="{Binding RemoveContentCommand}"
+                    IsVisible="{Binding CanResolve}"
+                    Text="Remove Content"/>
+
+            </VerticalStackLayout>
+
+        </VerticalStackLayout>
+        
+    </ScrollView>
+    
+</ContentPage>

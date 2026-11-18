@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:CapstoneProjectPUSH.ViewModels.Admin"
+             xmlns:models="clr-namespace:CapstoneProjectPUSH.Models"
+             x:Class="CapstoneProjectPUSH.Views.Admin.GymsManagementPage"
+             x:DataType="vm:GymsManagementViewModel"
+             Title="Manage PUSH Gyms">
+
+    <ContentPage.ToolbarItems>
+
+        <ToolbarItem
+            Command="{Binding AddCommand}"
+            Text="+ Add"/>
+
+    </ContentPage.ToolbarItems>
+
+    <Grid
+        MaximumWidthRequest="500"
+        Padding="30,15,30,0"
+        RowDefinitions="Auto,Auto,*"
+        RowSpacing="20">
+
+        <!-- Search bar -->
+        <SearchBar
+            Grid.Row="0"
+            Placeholder="Search by name or city..."
+            Text="{Binding SearchText}"/>
+
+        <VerticalStackLayout
+            Grid.Row="1"
+            Spacing="15">
+
+            <!-- Gym count -->
+            <Label
+                Text="{Binding StatusMessage}"/>
+
+            <!-- Error message -->
+            <Label
+                IsVisible="{Binding HasErrorMessage}"
+                Text="{Binding ErrorMessage}"
+                TextColor="Red"/>
+
+        </VerticalStackLayout>
+
+        <RefreshView
+            Grid.Row="2"
+            Command="{Binding LoadCommand}"
+            IsRefreshing="{Binding IsBusy}">
+
+            <CollectionView
+                ItemsSource="{Binding Gyms}">
+
+                <!-- Empty view -->
+                <CollectionView.EmptyView>
+
+                    <VerticalStackLayout
+                        HorizontalOptions="Center"
+                        VerticalOptions="Center">
+
+                        <Label
+                            FontAttributes="Italic"
+                            HorizontalTextAlignment="Center"
+                            Text="No gyms found."/>
+
+                        <Label
+                            FontAttributes="Italic"
+                            HorizontalTextAlignment="Center"
+                            Text="Pull down to try again."/>
+
+                    </VerticalStackLayout>
+
+                </CollectionView.EmptyView>
+
+                <!-- Item layout -->
+                <CollectionView.ItemsLayout>
+
+                    <LinearItemsLayout
+                        ItemSpacing="10"
+                        Orientation="Vertical"/>
+
+                </CollectionView.ItemsLayout>
+
+                <!-- Item template -->
+                <CollectionView.ItemTemplate>
+
+                    <DataTemplate
+                        x:DataType="models:Gym">
+
+                        <SwipeView>
+
+                            <!-- Swipe actions -->
+                            <SwipeView.LeftItems>
+
+                                <SwipeItems>
+
+                                    <SwipeItem
+                                        BackgroundColor="#6B7280"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:GymsManagementViewModel}}, Path=EditCommand}"
+                                        CommandParameter="{Binding .}"
+                                        Text="Edit"/>
+
+                                </SwipeItems>
+
+                            </SwipeView.LeftItems>
+
+                            <SwipeView.RightItems>
+
+                                <SwipeItems>
+
+                                    <SwipeItem
+                                        BackgroundColor="Red"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:GymsManagementViewModel}}, Path=DeleteCommand}"
+                                        CommandParameter="{Binding .}"
+                                        Text="Delete"/>
+
+                                </SwipeItems>
+
+                            </SwipeView.RightItems>
+
+                            <!-- Card -->
+                            <Border
+                                Style="{StaticResource Card}">
+
+                                <VerticalStackLayout
+                                    Spacing="10">
+
+                                    <!-- Header -->
+                                    <Label
+                                        FontAttributes="Bold"
+                                        FontSize="16"
+                                        LineBreakMode="TailTruncation"
+                                        Text="{Binding Name}"/>
+
+                                    <!-- Info -->
+                                    <Label
+                                        LineBreakMode="TailTruncation"
+                                        Text="{Binding FullAddress}"/>
+
+                                </VerticalStackLayout>
+
+                            </Border>
+
+                        </SwipeView>
+
+                    </DataTemplate>
+
+                </CollectionView.ItemTemplate>
+
+            </CollectionView>
+
+        </RefreshView>
+
+    </Grid>
+
+</ContentPage>

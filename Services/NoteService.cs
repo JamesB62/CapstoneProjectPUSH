@@ -3,15 +3,22 @@
     public class NoteService
     {
         private readonly DatabaseService _databaseService;
+        private readonly UserService _userService;
 
-        public NoteService(DatabaseService databaseService)
+        public NoteService(DatabaseService databaseService, UserService userService)
         {
             _databaseService = databaseService;
+            _userService = userService;
         }
 
         // Get all notes for a user
         public async Task<List<Note>> GetNotesForUserAsync(int userId)
         {
+            if (!_userService.IsCurrentUser(userId))
+            {
+                return new List<Note>();
+            }
+
             var db = await _databaseService.GetConnectionAsync();
 
             var notes = await db.Table<Note>()
@@ -33,9 +40,30 @@
             return notes;
         }
 
+        // Get note by workout id for a user
+        public async Task<List<Note>> GetNoteForWorkoutAsync(int workoutId, int userId)
+        {
+            if (!_userService.IsCurrentUser(userId))
+            {
+                return new List<Note>();
+            }
+
+            var db = await _databaseService.GetConnectionAsync();
+
+            return await db.Table<Note>()
+                .Where(n => n.WorkoutId == workoutId && n.UserId == userId)
+                .OrderByDescending(n => n.DateTimeCreated)
+                .ToListAsync();
+        }
+
         // Get note by Id for a user
         public async Task<Note?> GetNoteByIdAsync(int noteId, int userId)
         {
+            if (!_userService.IsCurrentUser(userId))
+            {
+                return null;
+            }
+
             var db = await _databaseService.GetConnectionAsync();
 
             var note = await db.Table<Note>()
@@ -61,6 +89,58 @@
             }
 
             return note;
+        }
+
+        // Add
+        public async Task<int> AddNoteAsync(Note note)
+        {
+            // Notes are view-only for guests
+            if (!_userService.IsCurrentMember(note.UserId))
+            {
+                return 0;
+            }
+
+            var db = await _databaseService.GetConnectionAsync();
+
+            return await db.InsertAsync(note);
+        }
+
+        // Delete
+        public async Task<int> DeleteNoteAsync(int noteId, int userId)
+        {
+            if (!_userService.IsCurrentMember(userId))
+            {
+                return 0;
+            }
+
+            var db = await _databaseService.GetConnectionAsync();
+
+            return await db.Table<Note>().DeleteAsync(n => n.Id == noteId && n.UserId == userId);
+        }
+
+        // Update
+        public async Task<int> UpdateNoteAsync(Note note, int userId)
+        {
+            if (!_userService.IsCurrentMember(userId))
+            {
+                return 0;
+            }
+
+            var db = await _databaseService.GetConnectionAsync();
+
+            var existingNote = await db.Table<Note>()
+                .Where(n => n.Id == note.Id && n.UserId == userId)
+                .FirstOrDefaultAsync();
+
+            if (existingNote is null)
+            {
+                return 0;
+            }
+
+            existingNote.Title = note.Title;
+            existingNote.Content = note.Content;
+
+            return await db.UpdateAsync(existingNote);
         }
     }
 }

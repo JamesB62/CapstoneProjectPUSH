@@ -12,6 +12,8 @@
         [NotNull, MaxLength(1000)]
         public string Description { get; set; } = string.Empty;
 
+        public bool IsTimed { get; set; } = false;
+
         public int Difficulty { get; set; } = 1;
 
         [Ignore]

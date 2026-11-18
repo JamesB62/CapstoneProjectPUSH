@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:CapstoneProjectPUSH.ViewModels.Auth"
              x:Class="CapstoneProjectPUSH.Views.Auth.LoginPage"
+             x:DataType="vm:LoginViewModel"
              Title="">
 
     <ScrollView>
@@ -9,7 +11,7 @@
         <VerticalStackLayout
             MaximumWidthRequest="500"
             Padding="30,0,30,30"
-            Spacing="15"
+            Spacing="20"
             VerticalOptions="Center">
 
             <!-- Branding -->
@@ -68,13 +70,24 @@
                 Text="{Binding ErrorMessage}"
                 TextColor="Red"/>
 
-            <!-- Login button -->
-            <Button
-                Command="{Binding LoginCommand}"
-                FontAttributes="Bold"
-                IsEnabled="{Binding IsNotBusy}"
-                Text="Log In"/>
+            <VerticalStackLayout
+                Spacing="10">
 
+                <!-- Login button -->
+                <Button
+                    Command="{Binding LoginCommand}"
+                    FontAttributes="Bold"
+                    IsEnabled="{Binding IsNotBusy}"
+                    Text="Log In"/>
+
+                <Button
+                    Text="Forgot password?"
+                    Command="{Binding GoToForgotPasswordCommand}"
+                    FontAttributes="Bold"
+                    IsEnabled="{Binding IsNotBusy}"/>
+
+            </VerticalStackLayout>
+            
             <!-- Register link -->
             <Label
                 Text="Don't have an account? Tap here to register"
@@ -89,7 +102,6 @@
 
             </Label>
 
-            <!-- Adjust margin value? -->
             <!-- Loading circle -->
             <ActivityIndicator
                 IsRunning="{Binding IsBusy}"

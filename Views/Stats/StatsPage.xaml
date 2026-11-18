@@ -15,8 +15,8 @@
 
             <VerticalStackLayout
                 MaximumWidthRequest="500"
-                Padding="30,15"
-                Spacing="15">
+                Padding="30"
+                Spacing="20">
 
                 <!-- Time filters -->
                 <Grid
@@ -209,25 +209,27 @@
                             <DataTemplate
                                 x:DataType="charts:ChartBar">
 
-                                <Grid
-                                    RowDefinitions="130,Auto"
-                                    RowSpacing="4">
+                                <VerticalStackLayout
+                                    Spacing="4"
+                                    VerticalOptions="End">
+
+                                    <Label
+                                        FontSize="10"
+                                        HorizontalTextAlignment="Center"
+                                        Text="{Binding ValueText}"/>
 
                                     <BoxView
-                                        Grid.Row="0"
                                         Color="{AppThemeBinding Light=#2563EB, Dark=#60A5FA}"
                                         CornerRadius="0"
                                         HeightRequest="{Binding BarHeight}"
-                                        VerticalOptions="End"
                                         WidthRequest="14"/>
 
                                     <Label
-                                        Grid.Row="1"
                                         FontSize="12"
                                         HorizontalTextAlignment="Center"
                                         Text="{Binding Label}"/>
 
-                                </Grid>
+                                </VerticalStackLayout>
 
                             </DataTemplate>
 
@@ -261,6 +263,12 @@
                     </VerticalStackLayout>
 
                 </Border>
+
+                <!-- Error message -->
+                <Label
+                    IsVisible="{Binding HasErrorMessage}"
+                    Text="{Binding ErrorMessage}"
+                    TextColor="Red"/>
 
                 <Button
                     Command="{Binding AddWeighInCommand}"

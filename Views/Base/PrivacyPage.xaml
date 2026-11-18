@@ -9,7 +9,7 @@
         <VerticalStackLayout
             MaximumWidthRequest="500"
             Padding="30,15"
-            Spacing="15">
+            Spacing="20">
 
             <!-- All statements need to be updated -->
 
