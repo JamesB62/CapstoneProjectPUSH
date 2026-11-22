@@ -192,6 +192,62 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
             await NavigateAsync(nameof(CreateWorkoutPage), parameters);
         }
 
+        [RelayCommand]
+        private async Task DeleteWorkoutAsync()
+        {
+            if (Workout is null || !CanEdit || IsBusy)
+            {
+                return;
+            }
+
+            var user = _userService.CurrentUser;
+
+            if (user is null)
+            {
+                return;
+            }
+
+            ErrorMessage = string.Empty;
+
+            bool confirmed = await Shell.Current.DisplayAlertAsync(
+                "Delete Workout",
+                $"Delete {Workout.Title}? Its notes will be deleted too. This can't be undone.",
+                "Delete",
+                "Cancel");
+
+            if (!confirmed)
+            {
+                return;
+            }
+
+            bool deleted = false;
+            IsBusy = true;
+
+            try
+            {
+                deleted = await _workoutService.DeleteWorkoutAsync(Workout.Id, user.Id);
+
+                if (!deleted)
+                {
+                    ErrorMessage = "Couldn't delete the workout. Please try again.";
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex);
+                ErrorMessage = "Couldn't delete the workout. Please try again.";
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+
+            if (deleted)
+            {
+                await NavigateAsync("..");
+            }
+        }
+
         // Star button next to the workout title
         [RelayCommand]
         private async Task ToggleFavouriteAsync()

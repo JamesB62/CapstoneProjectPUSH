@@ -299,11 +299,11 @@
         }
 
         // Delete a workout
-        public async Task DeleteWorkoutAsync(int workoutId, int userId)
+        public async Task<bool> DeleteWorkoutAsync(int workoutId, int userId)
         {
             if (!_userService.IsCurrentMember(userId))
             {
-                return;
+                return false;
             }
 
             var db = await _databaseService.GetConnectionAsync();
@@ -312,10 +312,6 @@
                 .Where(w => w.Id == workoutId && w.UserId == userId)
                 .FirstOrDefaultAsync();
 
-            if (workout is null)
-            {
-                return;
-            }
 
             await db.RunInTransactionAsync(conn =>
             {
@@ -323,6 +319,20 @@
                 conn.Table<WorkoutFavourite>().Delete(f => f.WorkoutId == workoutId);
                 conn.Table<Workout>().Delete(w => w.Id == workoutId && w.UserId == userId);
             });
+
+            if(workout = null)
+            {
+                return;
+            }
+
+
+            if (!result.Success)
+            {
+                System.Diagnostics.Debug.WriteLine("Delete workout failed: " + result.Message);
+            }
+
+            return result.Success;
+
         }
 
         // Add workout with exercises
@@ -347,6 +357,7 @@
             });
 
             return workout.Id;
+
         }
 
         // Helpers
