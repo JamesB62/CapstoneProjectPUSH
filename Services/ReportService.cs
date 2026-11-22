@@ -2,23 +2,31 @@
 {
     public class ReportService
     {
-        private readonly CategoryService _categoryService;
-        private readonly DatabaseService _databaseService;
+        private readonly ApiClient _apiClient;
         private readonly UserService _userService;
 
-        public ReportService(CategoryService categoryService, DatabaseService databaseService, UserService userService)
+        public ReportService(ApiClient apiClient, UserService userService)
         {
-            _categoryService = categoryService;
-            _databaseService = databaseService;
+            _apiClient = apiClient;
             _userService = userService;
         }
 
         // Get pending report count
         public async Task<int> GetPendingReportCountAsync()
         {
-            var db = await _databaseService.GetConnectionAsync();
+            if (!_userService.IsCurrentUserAdmin())
+            {
+                return 0;
+            }
 
-            return await db.Table<Report>().Where(r => !r.IsResolved).CountAsync();
+            ApiResult<int> result = await _apiClient.GetAsync<int>("api/reports/pending-count");
+
+            if (result.Success)
+            {
+                return result.Data;
+            }
+
+            return 0;
         }
 
         // Get all reports
@@ -29,15 +37,14 @@
                 return new List<Report>();
             }
 
-            var db = await _databaseService.GetConnectionAsync();
+            ApiResult<List<Report>> result = await _apiClient.GetAsync<List<Report>>("api/reports");
 
-            var reports = await db.Table<Report>()
-                .OrderByDescending(r => r.DateTimeCreated)
-                .ToListAsync();
+            if (result.Success && result.Data != null)
+            {
+                return result.Data;
+            }
 
-            await FillDetailsAsync(reports);
-
-            return reports;
+            return new List<Report>();
         }
 
         // Get report by Id
@@ -48,32 +55,34 @@
                 return null;
             }
 
-            var db = await _databaseService.GetConnectionAsync();
+            ApiResult<Report> result = await _apiClient.GetAsync<Report>($"api/reports/{reportId}");
 
-            var report = await db.Table<Report>().Where(r => r.Id == reportId).FirstOrDefaultAsync();
-
-            if (report is null)
+            if (result.Success)
             {
-                return null;
+                return result.Data;
             }
 
-            await FillDetailsAsync(new List<Report> { report });
-
-            return report;
+            return null;
         }
 
         // Add
         public async Task<(bool Success, string Message)> AddReportAsync(int workoutId, string reason)
         {
-            var user = _userService.CurrentUser;
+            User? user = _userService.CurrentUser;
 
             if (user is null || user.IsGuest)
             {
                 return (false, "You need to be logged in to report a workout.");
             }
 
-            reason = (reason ?? string.Empty).Trim();
+            if (reason is null)
+            {
+                reason = string.Empty;
+            }
 
+            reason = reason.Trim();
+
+            // App-side validation
             if (reason.Length == 0)
             {
                 return (false, "Please enter a reason for the report.");
@@ -84,39 +93,15 @@
                 return (false, "Reason must be 500 characters or fewer.");
             }
 
-            var db = await _databaseService.GetConnectionAsync();
-
-            var workout = await db.Table<Workout>().Where(w => w.Id == workoutId).FirstOrDefaultAsync();
-
-            if (workout is null || workout.IsPrivate)
-            {
-                return (false, "This workout could not be found.");
-            }
-
-            if (workout.UserId == user.Id)
-            {
-                return (false, "You can't report your own workout.");
-            }
-
-            var userId = user.Id;
-
-            var alreadyReported = await db.Table<Report>()
-                .Where(r => r.WorkoutId == workoutId && r.UserId == userId && !r.IsResolved)
-                .CountAsync() > 0;
-
-            if (alreadyReported)
-            {
-                return (false, "You've already reported this workout.");
-            }
-
-            await db.InsertAsync(new Report
+            ReportRequest request = new ReportRequest
             {
                 WorkoutId = workoutId,
-                UserId = userId,
                 Reason = reason
-            });
+            };
 
-            return (true, "An admin will review this workout.");
+            ApiResult<MessageResponse> result = await _apiClient.PostAsync<MessageResponse>("api/reports", request);
+
+            return ToTuple(result);
         }
 
         // Dismiss report
@@ -127,26 +112,9 @@
                 return (false, "Only admins can manage reports.");
             }
 
-            var db = await _databaseService.GetConnectionAsync();
+            ApiResult<MessageResponse> result = await _apiClient.PostAsync<MessageResponse>($"api/reports/{reportId}/dismiss", null);
 
-            var report = await db.Table<Report>().Where(r => r.Id == reportId).FirstOrDefaultAsync();
-
-            if (report is null)
-            {
-                return (false, "Report could not be found.");
-            }
-
-            if (report.IsResolved)
-            {
-                return (false, "This report has already been resolved.");
-            }
-
-            report.IsResolved = true;
-            report.DateTimeResolved = DateTime.Now;
-
-            await db.UpdateAsync(report);
-
-            return (true, "Report dismissed.");
+            return ToTuple(result);
         }
 
         // Remove the reported workout
@@ -157,77 +125,9 @@
                 return (false, "Only admins can manage reports.");
             }
 
-            var db = await _databaseService.GetConnectionAsync();
+            ApiResult<MessageResponse> result = await _apiClient.PostAsync<MessageResponse>($"api/reports/{reportId}/remove-content", null);
 
-            var report = await db.Table<Report>().Where(r => r.Id == reportId).FirstOrDefaultAsync();
-
-            if (report is null)
-            {
-                return (false, "Report could not be found.");
-            }
-
-            if (report.IsResolved)
-            {
-                return (false, "This report has already been resolved.");
-            }
-
-            var workoutId = report.WorkoutId;
-            var resolvedAt = DateTime.Now;
-
-            // All or nothing, so the workout and its reports stay in step
-            await db.RunInTransactionAsync(conn =>
-            {
-                conn.Table<WorkoutExercise>().Delete(we => we.WorkoutId == workoutId);
-                conn.Table<Note>().Delete(n => n.WorkoutId == workoutId);
-                conn.Table<Workout>().Delete(w => w.Id == workoutId);
-
-                var pendingReports = conn.Table<Report>()
-                    .Where(r => r.WorkoutId == workoutId && !r.IsResolved)
-                    .ToList();
-
-                foreach (var pending in pendingReports)
-                {
-                    pending.IsResolved = true;
-                    pending.DateTimeResolved = resolvedAt;
-                    conn.Update(pending);
-                }
-            });
-
-            return (true, "Workout removed.");
-        }
-
-        // Fill details
-        private async Task FillDetailsAsync(List<Report> reports)
-        {
-            var db = await _databaseService.GetConnectionAsync();
-
-            var workouts = await db.Table<Workout>().ToListAsync();
-            var displayNames = await _userService.GetDisplayNamesByIdAsync();
-
-            foreach (var report in reports)
-            {
-                var workout = workouts.FirstOrDefault(w => w.Id == report.WorkoutId);
-
-                if (workout is null)
-                {
-                    report.WorkoutTitle = "Removed workout";
-                    report.WorkoutExists = false;
-                }
-                else
-                {
-                    report.WorkoutTitle = workout.Title;
-                    report.WorkoutExists = true;
-                }
-
-                if (displayNames.TryGetValue(report.UserId, out var displayName))
-                {
-                    report.UserDisplayName = displayName;
-                }
-                else
-                {
-                    report.UserDisplayName = "Deleted user";
-                }
-            }
+            return ToTuple(result);
         }
 
         // Get the reported workout with its details
@@ -238,28 +138,31 @@
                 return null;
             }
 
-            var db = await _databaseService.GetConnectionAsync();
+            ApiResult<Workout> result = await _apiClient.GetAsync<Workout>($"api/reports/workout/{workoutId}");
 
-            var workout = await db.Table<Workout>().Where(w => w.Id == workoutId).FirstOrDefaultAsync();
-
-            if (workout is null)
+            if (result.Success)
             {
-                return null;
+                return result.Data;
             }
 
-            var categoryTitles = await _categoryService.GetCategoryTitlesAsync();
-            workout.CategoryTitle = categoryTitles.GetValueOrDefault(workout.CategoryId, "Uncategorised");
+            return null;
+        }
 
-            var displayNames = await _userService.GetDisplayNamesByIdAsync();
-            workout.UserDisplayName = displayNames.GetValueOrDefault(workout.UserId, "Deleted user");
+        // Helpers
+        // Turns an api reply into the response the view models expect
+        private static (bool Success, string Message) ToTuple(ApiResult<MessageResponse> result)
+        {
+            if (!result.Success)
+            {
+                return (false, result.Message);
+            }
 
-            var items = await db.Table<WorkoutExercise>().Where(we => we.WorkoutId == workoutId).ToListAsync();
+            if (result.Data is null)
+            {
+                return (true, string.Empty);
+            }
 
-            workout.ExerciseCount = items.Count;
-            workout.SetCount = items.Sum(i => i.Sets);
-            workout.TotalMinutes = items.Sum(i => i.DurationMinutes);
-
-            return workout;
+            return (true, result.Data.Message);
         }
     }
 }

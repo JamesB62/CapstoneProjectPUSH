@@ -3,8 +3,6 @@ namespace CapstoneProjectPUSH.ViewModels.Auth
     public partial class ForgotPasswordViewModel : BaseViewModel
     {
         private readonly PasswordResetService _passwordResetService;
-
-        private readonly NotificationService _notifications;
     
         [ObservableProperty]
         public partial string Email { get; set; }
@@ -24,10 +22,9 @@ namespace CapstoneProjectPUSH.ViewModels.Auth
 
         public bool IsEmailStep => !IsCodeStep;
 
-        public ForgotPasswordViewModel(PasswordResetService passwordResetService, UserService userService, NotificationService notificationService) : base(userService)
+        public ForgotPasswordViewModel(PasswordResetService passwordResetService, UserService userService) : base(userService)
         {
             _passwordResetService = passwordResetService;
-            _notifications = notificationService;
             Email = string.Empty;
             Code = string.Empty;
             NewPassword = string.Empty;
@@ -50,13 +47,6 @@ namespace CapstoneProjectPUSH.ViewModels.Auth
             {
                 IsBusy = true;
                 ErrorMessage = string.Empty;
-                
-                bool emailExists = await _passwordResetService.IsEmailRegisteredAsync(Email);
-                if (!emailExists)
-                {
-                    ErrorMessage = "This email address is not registered.";
-                    return; 
-                }
 
                 await _passwordResetService.RequestResetAsync(Email);
 
@@ -64,7 +54,7 @@ namespace CapstoneProjectPUSH.ViewModels.Auth
             }
             catch(Exception ex)
             {
-                ErrorMessage = "Somthing went worng, please try again. (errorn 667)";
+                ErrorMessage = "Somthing went wrong, please try again.";
                 System.Diagnostics.Debug.WriteLine(ex);
             }
             finally
@@ -96,13 +86,12 @@ namespace CapstoneProjectPUSH.ViewModels.Auth
                 NewPassword = string.Empty;
                 ConfirmPassword = string.Empty;
 
-                _=_notifications.SendWelcomeAsync(result.User!);
                 await Shell.Current.DisplayAlertAsync("Done", result.Message, "OK");
                 await Shell.Current.GoToAsync("..");
             }
             catch(Exception ex)
             {
-                ErrorMessage = "Something when worng, please try again. (error 668)";
+                ErrorMessage = "Something when wrong, please try again.";
                 System.Diagnostics.Debug.WriteLine(ex);
             }
             finally
@@ -118,6 +107,5 @@ namespace CapstoneProjectPUSH.ViewModels.Auth
             Code = string.Empty;
             IsCodeStep = false;
         }
-        
     }
 }

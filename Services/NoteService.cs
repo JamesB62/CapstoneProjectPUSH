@@ -2,12 +2,12 @@
 {
     public class NoteService
     {
-        private readonly DatabaseService _databaseService;
+        private readonly ApiClient _apiClient;
         private readonly UserService _userService;
 
-        public NoteService(DatabaseService databaseService, UserService userService)
+        public NoteService(ApiClient apiClient, UserService userService)
         {
-            _databaseService = databaseService;
+            _apiClient = apiClient;
             _userService = userService;
         }
 
@@ -19,25 +19,14 @@
                 return new List<Note>();
             }
 
-            var db = await _databaseService.GetConnectionAsync();
+            ApiResult<List<Note>> result = await _apiClient.GetAsync<List<Note>>("api/notes/mine");
 
-            var notes = await db.Table<Note>()
-                .Where(n => n.UserId == userId)
-                .OrderByDescending(n => n.DateTimeCreated)
-                .ToListAsync();
-
-            var workouts = await db.Table<Workout>()
-                .Where(w => w.UserId == userId)
-                .ToListAsync();
-
-            var workoutTitle = workouts.ToDictionary(w => w.Id, w => w.Title);
-
-            foreach (var note in notes)
+            if (result.Success && result.Data != null)
             {
-                note.WorkoutTitle = workoutTitle.GetValueOrDefault(note.WorkoutId, "No workout");
+                return result.Data;
             }
 
-            return notes;
+            return new List<Note>();
         }
 
         // Get note by workout id for a user
@@ -48,12 +37,14 @@
                 return new List<Note>();
             }
 
-            var db = await _databaseService.GetConnectionAsync();
+            ApiResult<List<Note>> result = await _apiClient.GetAsync<List<Note>>($"api/notes/workout/{workoutId}");
 
-            return await db.Table<Note>()
-                .Where(n => n.WorkoutId == workoutId && n.UserId == userId)
-                .OrderByDescending(n => n.DateTimeCreated)
-                .ToListAsync();
+            if (result.Success && result.Data != null)
+            {
+                return result.Data;
+            }
+
+            return new List<Note>();
         }
 
         // Get note by Id for a user
@@ -64,31 +55,14 @@
                 return null;
             }
 
-            var db = await _databaseService.GetConnectionAsync();
+            ApiResult<Note> result = await _apiClient.GetAsync<Note>($"api/notes/{noteId}");
 
-            var note = await db.Table<Note>()
-                .Where(n => n.Id == noteId && n.UserId == userId)
-                .FirstOrDefaultAsync();
-
-            if (note is null)
+            if (result.Success)
             {
-                return null;
+                return result.Data;
             }
 
-            var workout = await db.Table<Workout>()
-                .Where(w => w.Id == note.WorkoutId && w.UserId == userId)
-                .FirstOrDefaultAsync();
-
-            if (workout is null)
-            {
-                note.WorkoutTitle = "No workout";
-            }
-            else
-            {
-                note.WorkoutTitle = workout.Title;
-            }
-
-            return note;
+            return null;
         }
 
         // Add
@@ -100,9 +74,29 @@
                 return 0;
             }
 
-            var db = await _databaseService.GetConnectionAsync();
+            // App-side validation
+            if (!IsValidNote(note))
+            {
+                return 0;
+            }
 
-            return await db.InsertAsync(note);
+            NoteRequest request = new NoteRequest
+            {
+                Title = note.Title.Trim(),
+                Content = note.Content.Trim(),
+                WorkoutId = note.WorkoutId
+            };
+
+            ApiResult<NoteCreatedResponse> result = await _apiClient.PostAsync<NoteCreatedResponse>("api/notes", request);
+
+            if (result.Success && result.Data != null)
+            {
+                note.Id = result.Data.NoteId;
+                return result.Data.NoteId;
+            }
+
+            System.Diagnostics.Debug.WriteLine("Add note failed: " + result.Message);
+            return 0;
         }
 
         // Delete
@@ -113,9 +107,15 @@
                 return 0;
             }
 
-            var db = await _databaseService.GetConnectionAsync();
+            ApiResult<MessageResponse> result = await _apiClient.DeleteAsync<MessageResponse>($"api/notes/{noteId}");
 
-            return await db.Table<Note>().DeleteAsync(n => n.Id == noteId && n.UserId == userId);
+            if (result.Success)
+            {
+                return 1;
+            }
+
+            System.Diagnostics.Debug.WriteLine("Delete note failed: " + result.Message);
+            return 0;
         }
 
         // Update
@@ -126,21 +126,58 @@
                 return 0;
             }
 
-            var db = await _databaseService.GetConnectionAsync();
-
-            var existingNote = await db.Table<Note>()
-                .Where(n => n.Id == note.Id && n.UserId == userId)
-                .FirstOrDefaultAsync();
-
-            if (existingNote is null)
+            // App-side validation
+            if (!IsValidNote(note))
             {
                 return 0;
             }
 
-            existingNote.Title = note.Title;
-            existingNote.Content = note.Content;
+            NoteRequest request = new NoteRequest
+            {
+                Title = note.Title.Trim(),
+                Content = note.Content.Trim(),
+                WorkoutId = note.WorkoutId
+            };
 
-            return await db.UpdateAsync(existingNote);
+            ApiResult<MessageResponse> result = await _apiClient.PutAsync<MessageResponse>($"api/notes/{note.Id}", request);
+
+            if (result.Success)
+            {
+                return 1;
+            }
+
+            System.Diagnostics.Debug.WriteLine("Update note failed: " + result.Message);
+            return 0;
+        }
+
+        // Helpers
+        // Input validation
+        private static bool IsValidNote(Note note)
+        {
+            string title = string.Empty;
+            string content = string.Empty;
+
+            if (note.Title is not null)
+            {
+                title = note.Title.Trim();
+            }
+
+            if (note.Content is not null)
+            {
+                content = note.Content.Trim();
+            }
+
+            if (title.Length == 0 || title.Length > 100)
+            {
+                return false;
+            }
+
+            if (content.Length == 0 || content.Length > 5000)
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }

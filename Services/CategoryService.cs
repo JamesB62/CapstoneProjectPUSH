@@ -2,48 +2,66 @@
 {
     public class CategoryService
     {
-        private readonly DatabaseService _databaseService;
+        private readonly ApiClient _apiClient;
         private readonly UserService _userService;
 
-        public CategoryService(DatabaseService databaseService, UserService userService)
+        public CategoryService(ApiClient apiClient, UserService userService)
         {
-            _databaseService = databaseService;
+            _apiClient = apiClient;
             _userService = userService;
         }
 
         // Get category count
         public async Task<int> GetCategoryCountAsync()
         {
-            var db = await _databaseService.GetConnectionAsync();
+            ApiResult<int> result = await _apiClient.GetAsync<int>("api/categories/count");
 
-            return await db.Table<Category>().CountAsync();
+            if (result.Success)
+            {
+                return result.Data;
+            }
+
+            return 0;
         }
 
         // Get all categories
         public async Task<List<Category>> GetCategoriesAsync()
         {
-            var db = await _databaseService.GetConnectionAsync();
+            ApiResult<List<Category>> result = await _apiClient.GetAsync<List<Category>>("api/categories");
 
-            var categories = await db.Table<Category>().ToListAsync();
+            if (result.Success && result.Data != null)
+            {
+                return result.Data;
+            }
 
-            return categories.OrderBy(c => c.Title, StringComparer.OrdinalIgnoreCase).ToList();
+            return new List<Category>();
         }
 
         // Get category by Id
         public async Task<Category?> GetCategoryByIdAsync(int categoryId)
         {
-            var db = await _databaseService.GetConnectionAsync();
+            ApiResult<Category> result = await _apiClient.GetAsync<Category>($"api/categories/{categoryId}");
 
-            return await db.Table<Category>()
-                .Where(c => c.Id == categoryId)
-                .FirstOrDefaultAsync();
+            if (result.Success)
+            {
+                return result.Data;
+            }
+
+            return null;
         }
 
         // Get category titles
         public async Task<Dictionary<int, string>> GetCategoryTitlesAsync()
         {
-            var categories = await GetCategoriesAsync();
-            return categories.ToDictionary(c => c.Id, c => c.Title);
+            List<Category> categories = await GetCategoriesAsync();
+            Dictionary<int, string> titles = new Dictionary<int, string>();
+
+            foreach (Category category in categories)
+            {
+                titles[category.Id] = category.Title;
+            }
+
+            return titles;
         }
 
         // Add category
@@ -54,25 +72,22 @@
                 return (false, "Only admins can add categories.");
             }
 
-            title = (title ?? string.Empty).Trim();
+            title = Clean(title);
 
+            // App-side validation
             if (title.Length < 2 || title.Length > 50)
             {
                 return (false, "Category title must be between 2 and 50 characters.");
             }
 
-            var db = await _databaseService.GetConnectionAsync();
-            var categories = await GetCategoriesAsync();
-
-            // Case-insensitive duplicate check (the Unique constraint is case-sensitive)
-            if (categories.Any(c => string.Equals(c.Title, title, StringComparison.OrdinalIgnoreCase)))
+            CategoryRequest request = new CategoryRequest
             {
-                return (false, "A category with that title already exists.");
-            }
+                Title = title
+            };
 
-            await db.InsertAsync(new Category { Title = title });
+            ApiResult<MessageResponse> result = await _apiClient.PostAsync<MessageResponse>("api/categories", request);
 
-            return (true, "Category added.");
+            return ToTuple(result);
         }
 
         // Update category
@@ -83,37 +98,25 @@
                 return (false, "Only admins can edit categories.");
             }
 
-            title = (title ?? string.Empty).Trim();
+            title = Clean(title);
 
+            // App-side validation
             if (title.Length < 2 || title.Length > 50)
             {
                 return (false, "Category title must be between 2 and 50 characters.");
             }
 
-            var db = await _databaseService.GetConnectionAsync();
-
-            var category = await GetCategoryByIdAsync(categoryId);
-
-            if (category is null)
+            CategoryRequest request = new CategoryRequest
             {
-                return (false, "Category could not be found.");
-            }
+                Title = title
+            };
 
-            var categories = await GetCategoriesAsync();
+            ApiResult<MessageResponse> result = await _apiClient.PutAsync<MessageResponse>($"api/categories/{categoryId}", request);
 
-            if (categories.Any(c => c.Id != categoryId && string.Equals(c.Title, title, StringComparison.OrdinalIgnoreCase)))
-            {
-                return (false, "A category with that title already exists.");
-            }
-
-            category.Title = title;
-
-            await db.UpdateAsync(category);
-
-            return (true, "Category updated.");
+            return ToTuple(result);
         }
 
-        // Delete category
+        // Delete category (the API sets anything using it to "Uncategorised")
         public async Task<(bool Success, string Message)> DeleteCategoryAsync(int categoryId)
         {
             if (!_userService.IsCurrentUserAdmin())
@@ -121,42 +124,37 @@
                 return (false, "Only admins can delete categories.");
             }
 
-            var db = await _databaseService.GetConnectionAsync();
+            ApiResult<MessageResponse> result = await _apiClient.DeleteAsync<MessageResponse>($"api/categories/{categoryId}");
 
-            var category = await GetCategoryByIdAsync(categoryId);
+            return ToTuple(result);
+        }
 
-            if (category is null)
+        // Helpers
+        // Clean inputs
+        private static string Clean(string? value)
+        {
+            if (value is null)
             {
-                return (false, "Category could not be found.");
+                return string.Empty;
             }
 
-            var exercises = await db.Table<Exercise>().Where(e => e.CategoryId == categoryId).ToListAsync();
+            return value.Trim();
+        }
 
-            foreach (var exercise in exercises)
+        // Turns an api reply into the response the view models expect
+        private static (bool Success, string Message) ToTuple(ApiResult<MessageResponse> result)
+        {
+            if (!result.Success)
             {
-                exercise.CategoryId = 0;
-                await db.UpdateAsync(exercise);
+                return (false, result.Message);
             }
 
-            var trainers = await db.Table<Trainer>().Where(t => t.CategoryId == categoryId).ToListAsync();
-
-            foreach (var trainer in trainers)
+            if (result.Data is null)
             {
-                trainer.CategoryId = 0;
-                await db.UpdateAsync(trainer);
+                return (true, string.Empty);
             }
 
-            var workouts = await db.Table<Workout>().Where(w => w.CategoryId == categoryId).ToListAsync();
-
-            foreach (var workout in workouts)
-            {
-                workout.CategoryId = 0;
-                await db.UpdateAsync(workout);
-            }
-
-            await db.DeleteAsync(category);
-
-            return (true, "Category deleted.");
+            return (true, result.Data.Message);
         }
     }
 }
