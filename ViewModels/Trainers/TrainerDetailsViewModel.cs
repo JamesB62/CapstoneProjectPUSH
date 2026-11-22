@@ -22,6 +22,9 @@
         [NotifyPropertyChangedFor(nameof(IsTrainerAvailable))]
         public partial Trainer? Trainer { get; set; }
 
+        [ObservableProperty]
+        public partial bool CanManage { get; set; }
+
         public bool HasContactDetails => HasEmail || HasPhone;
         public bool HasEmail => !string.IsNullOrWhiteSpace(Trainer?.Email);
         public bool HasPhone => !string.IsNullOrWhiteSpace(Trainer?.PhoneNumber);
@@ -48,6 +51,7 @@
                 return;
             }
 
+            CanManage = _userService.IsCurrentUserAdmin();
             IsBusy = true;
 
             try
@@ -73,6 +77,86 @@
             if (Trainer is null)
             {
                 await Shell.Current.DisplayAlertAsync("Trainer Not Found", "This PUSH trainer could not be loaded.", "OK");
+                await NavigateAsync("..");
+            }
+        }
+
+        // Reloads after coming back from the edit form
+        public void Reload()
+        {
+            if (Trainer is null)
+            {
+                return;
+            }
+
+            LoadTrainerCommand.Execute(null);
+        }
+
+        [RelayCommand]
+        private async Task EditTrainerAsync()
+        {
+            if (Trainer is null || !CanManage)
+            {
+                return;
+            }
+
+            var parameters = new ShellNavigationQueryParameters
+            {
+                { "TrainerId", Trainer.Id }
+            };
+
+            await NavigateAsync(nameof(CreateTrainerPage), parameters);
+        }
+
+        [RelayCommand]
+        private async Task DeleteTrainerAsync()
+        {
+            if (Trainer is null || !CanManage || IsBusy)
+            {
+                return;
+            }
+
+            ErrorMessage = string.Empty;
+
+            bool confirmed = await Shell.Current.DisplayAlertAsync(
+                "Delete Trainer",
+                $"Delete {Trainer.FullName}? This can't be undone.",
+                "Delete",
+                "Cancel");
+
+            if (!confirmed)
+            {
+                return;
+            }
+
+            bool deleted = false;
+            IsBusy = true;
+
+            try
+            {
+                var result = await _trainerService.DeleteTrainerAsync(Trainer.Id);
+
+                if (result.Success)
+                {
+                    deleted = true;
+                }
+                else
+                {
+                    ErrorMessage = result.Message;
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex);
+                ErrorMessage = "Couldn't delete the trainer. Please try again.";
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+
+            if (deleted)
+            {
                 await NavigateAsync("..");
             }
         }

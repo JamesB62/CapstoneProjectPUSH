@@ -216,11 +216,11 @@
         }
 
         // Delete a workout
-        public async Task DeleteWorkoutAsync(int workoutId, int userId)
+        public async Task<bool> DeleteWorkoutAsync(int workoutId, int userId)
         {
             if (!_userService.IsCurrentMember(userId))
             {
-                return;
+                return false;
             }
 
             ApiResult<MessageResponse> result = await _apiClient.DeleteAsync<MessageResponse>($"api/workouts/{workoutId}");
@@ -229,6 +229,8 @@
             {
                 System.Diagnostics.Debug.WriteLine("Delete workout failed: " + result.Message);
             }
+
+            return result.Success;
         }
 
         // Helpers
