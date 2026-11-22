@@ -171,11 +171,6 @@
                 return PlaceholderImage;
             }
 
-            if (!File.Exists(imagePath))
-            {
-                return PlaceholderImage;
-            }
-
             return imagePath;
         }
     }
