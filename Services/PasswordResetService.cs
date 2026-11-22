@@ -1,109 +1,85 @@
-using System.Text;
-
 namespace CapstoneProjectPUSH.Services
 {
     public class PasswordResetService
     {
-        private const int CodeMinutes = 15;
-        private const int MaxAttempts = 5;
+        private readonly ApiClient _apiClient;
 
-        private const string InvalidMessage = "Invalid or expired code.";
-
-        private readonly DatabaseService _databaseService;
-        private readonly UserService _userService;
-        private readonly IEmailSender _emailSender;
-
-        public PasswordResetService(DatabaseService databaseService, UserService userService, IEmailSender emailSender)
+        public PasswordResetService(ApiClient apiClient)
         {
-            _databaseService = databaseService;
-            _userService = userService;
-            _emailSender = emailSender;
+            _apiClient = apiClient;
         }
 
+        // Request an password reset code via email
         public async Task RequestResetAsync(string email)
         {
-            email = (email ?? string.Empty).Trim().ToLowerInvariant();
-
-            var db = await _databaseService.GetConnectionAsync();
-            var user = await db.Table<User>().Where(u => u.Email == email).FirstOrDefaultAsync();
-
-            if (user is null || !user.IsActive) return;
-
-            var code = RandomNumberGenerator.GetInt32(0, 1_000_000).ToString("D6");
-
-            await db.Table<PasswordReset>().DeleteAsync(r => r.UserId == user.Id); //delete old code
-            await db.InsertAsync(new PasswordReset
+            ResetCodeRequest request = new ResetCodeRequest
             {
-                UserId = user.Id,
-                CodeHash = HashCode(code),
-                ExpiresAt = DateTime.UtcNow.AddMinutes(CodeMinutes)
-            });
+                Email = Clean(email).ToLowerInvariant()
+            };
 
-            try
+            ApiResult<MessageResponse> result = await _apiClient.PostAsync<MessageResponse>("api/passwordreset/request", request);
+
+            if (!result.Success)
             {
-                await _emailSender.SendAsync(
-                    user.Email,
-                    "PUSH Password reset",
-                    $"Your reset code is {code}. It expires in {CodeMinutes} minutes."
-                );
+                System.Diagnostics.Debug.WriteLine("Reset request failed: " + result.Message);
             }
-            catch(Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine(ex);
-            }
-
         }
 
+        // Send the code and the new password
         public async Task<AuthResult> ResetPasswordAsync(string email, string code, string newPassword, string confirmPassword)
         {
-            email = (email ?? string.Empty).Trim().ToLowerInvariant();
-            code = (code ?? string.Empty).Trim();
+            email = Clean(email).ToLowerInvariant();
+            code = Clean(code);
 
-            var db = await _databaseService.GetConnectionAsync();
-            var user = await db.Table<User>().Where(u => u.Email == email).FirstOrDefaultAsync();
-            if(user is null) return new AuthResult(false, InvalidMessage);
-
-            var reset = await db.Table<PasswordReset>().Where(r => r.UserId == user.Id).FirstOrDefaultAsync();
-            if(reset is null) return new AuthResult(false,InvalidMessage);
-
-            if(reset.ExpiresAt < DateTime.UtcNow || reset.FailedAttempts >= MaxAttempts)
+            // App-side validation
+            if (code.Length == 0)
             {
-                await db.DeleteAsync(reset);
-                return new AuthResult(false, InvalidMessage);
+                return new AuthResult(false, "Invalid or expired code.");
             }
 
-           var matches = CryptographicOperations.FixedTimeEquals(
-                Encoding.UTF8.GetBytes(HashCode(code)),
-                Encoding.UTF8.GetBytes(reset.CodeHash));
-
-            if(!matches)
+            if (!UserService.IsStrongPassword(newPassword))
             {
-                reset.FailedAttempts++;
-                await db.UpdateAsync(reset);
-                return new AuthResult(false, InvalidMessage);
+                return new AuthResult(false, UserService.PasswordRequirementsText);
             }
 
-            var result = await _userService.SetNewPasswordAsync(user.Id, newPassword, confirmPassword);
-
-            if(result.Success)
+            if (newPassword != confirmPassword)
             {
-                await db.DeleteAsync(reset);
+                return new AuthResult(false, "Passwords do not match.");
             }
-            return result;
+
+            ResetPasswordRequest request = new ResetPasswordRequest
+            {
+                Email = email,
+                Code = code,
+                NewPassword = newPassword,
+                ConfirmPassword = confirmPassword
+            };
+
+            ApiResult<MessageResponse> result = await _apiClient.PostAsync<MessageResponse>("api/passwordreset/reset", request);
+
+            if (!result.Success)
+            {
+                return new AuthResult(false, result.Message);
+            }
+
+            if (result.Data is null)
+            {
+                return new AuthResult(true, "Password updated. You can log in now.");
+            }
+
+            return new AuthResult(true, result.Data.Message);
         }
 
-        private static string HashCode(string code) =>
-            Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(code)));
-
-            // check account 
-            public async Task<bool> IsEmailRegisteredAsync(string email)
+        // Helpers
+        // Cleans input
+        private static string Clean(string? value)
+        {
+            if (value is null)
             {
-                var db = await _databaseService.GetConnectionAsync();
-                var user = await db.Table<User>().FirstOrDefaultAsync(u => u.Email.ToLower() == email.ToLower());
-                return user != null;
+                return string.Empty;
             }
 
+            return value.Trim();
+        }
     }
-
-    
 }

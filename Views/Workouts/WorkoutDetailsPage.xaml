@@ -10,6 +10,18 @@
     <ContentPage.ToolbarItems>
 
         <ToolbarItem
+            x:Name="EditToolbarItem"
+            Command="{Binding EditWorkoutCommand}"
+            Order="Secondary"
+            Text="Edit Workout"/>
+
+        <ToolbarItem
+            x:Name="DeleteToolbarItem"
+            Command="{Binding DeleteWorkoutCommand}"
+            Order="Secondary"
+            Text="Delete Workout"/>
+
+        <ToolbarItem
             x:Name="ReportToolbarItem"
             Command="{Binding ReportWorkoutCommand}"
             Order="Secondary"

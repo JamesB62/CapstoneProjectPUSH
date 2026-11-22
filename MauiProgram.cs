@@ -18,19 +18,17 @@ namespace CapstoneProjectPUSH
 
             // ========================= Services =========================
 
-            // Reset Password
-            builder.Services.AddSingleton<IEmailSender, GmailEmailSender>();
-            builder.Services.AddSingleton<PasswordResetService>();
-            builder.Services.AddSingleton<NotificationService>();
+            // API
+            builder.Services.AddSingleton<ApiClient>();
 
             // Core Services
             builder.Services.AddSingleton<ArticleService>();
             builder.Services.AddSingleton<CategoryService>();
-            builder.Services.AddSingleton<DatabaseService>();
             builder.Services.AddSingleton<ExerciseService>(); 
             builder.Services.AddSingleton<GymService>();
             builder.Services.AddSingleton<ImageService>();
             builder.Services.AddSingleton<NoteService>();
+            builder.Services.AddSingleton<PasswordResetService>();
             builder.Services.AddSingleton<ReportService>();
             builder.Services.AddSingleton<TrainerService>();
             builder.Services.AddSingleton<UserService>();

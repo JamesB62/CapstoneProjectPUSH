@@ -6,6 +6,22 @@
              x:DataType="vm:TrainerDetailsViewModel"
              Title="PUSH Trainer Details">
 
+    <ContentPage.ToolbarItems>
+
+        <ToolbarItem
+            x:Name="EditToolbarItem"
+            Command="{Binding EditTrainerCommand}"
+            Order="Secondary"
+            Text="Edit Trainer"/>
+
+        <ToolbarItem
+            x:Name="DeleteToolbarItem"
+            Command="{Binding DeleteTrainerCommand}"
+            Order="Secondary"
+            Text="Delete Trainer"/>
+
+    </ContentPage.ToolbarItems>
+
     <ScrollView>
 
         <VerticalStackLayout

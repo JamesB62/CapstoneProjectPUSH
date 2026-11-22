@@ -6,6 +6,22 @@
              x:DataType="vm:ExerciseDetailsViewModel"
              Title="PUSH Exercise Details">
 
+    <ContentPage.ToolbarItems>
+
+        <ToolbarItem
+            x:Name="EditToolbarItem"
+            Command="{Binding EditExerciseCommand}"
+            Order="Secondary"
+            Text="Edit Exercise"/>
+
+        <ToolbarItem
+            x:Name="DeleteToolbarItem"
+            Command="{Binding DeleteExerciseCommand}"
+            Order="Secondary"
+            Text="Delete Exercise"/>
+
+    </ContentPage.ToolbarItems>
+
     <ScrollView>
 
         <VerticalStackLayout
@@ -61,7 +77,13 @@
                 Text="{Binding Exercise.DifficultyLabel, StringFormat='• Difficulty: {0}'}"/>
 
             <!-- Add recommended reps/duration? -->
-            
+
+            <!-- Error message -->
+            <Label
+                IsVisible="{Binding HasErrorMessage}"
+                Text="{Binding ErrorMessage}"
+                TextColor="Red"/>
+
         </VerticalStackLayout>
 
     </ScrollView>

@@ -12,6 +12,8 @@ public partial class WorkoutDetailsPage : ContentPage
         BindingContext = _workoutDetailsViewModel;
 
         ToolbarItems.Remove(ReportToolbarItem);
+        ToolbarItems.Remove(EditToolbarItem);
+        ToolbarItems.Remove(DeleteToolbarItem);
         _workoutDetailsViewModel.PropertyChanged += OnViewModelPropertyChanged;
     }
 
@@ -27,6 +29,10 @@ public partial class WorkoutDetailsPage : ContentPage
         {
             UpdateReportToolbarItem();
         }
+        else if (e.PropertyName == nameof(WorkoutDetailsViewModel.CanEdit))
+        {
+            UpdateOwnerToolbarItems();
+        }
     }
 
     private void UpdateReportToolbarItem()
@@ -41,6 +47,27 @@ public partial class WorkoutDetailsPage : ContentPage
         else
         {
             ToolbarItems.Remove(ReportToolbarItem);
+        }
+    }
+
+    private void UpdateOwnerToolbarItems()
+    {
+        if (_workoutDetailsViewModel.CanEdit)
+        {
+            if (!ToolbarItems.Contains(EditToolbarItem))
+            {
+                ToolbarItems.Add(EditToolbarItem);
+            }
+
+            if (!ToolbarItems.Contains(DeleteToolbarItem))
+            {
+                ToolbarItems.Add(DeleteToolbarItem);
+            }
+        }
+        else
+        {
+            ToolbarItems.Remove(EditToolbarItem);
+            ToolbarItems.Remove(DeleteToolbarItem);
         }
     }
 }

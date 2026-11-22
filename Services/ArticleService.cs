@@ -2,41 +2,50 @@
 {
     public class ArticleService
     {
-        private readonly DatabaseService _databaseService;
+        private readonly ApiClient _apiClient;
 
-        public ArticleService(DatabaseService databaseService)
+        public ArticleService(ApiClient apiClient)
         {
-            _databaseService = databaseService;
+            _apiClient = apiClient;
         }
 
-        // Get article count -- add to admin dashboard?
+        // Get article count
         public async Task<int> GetArticleCountAsync()
         {
-            var db = await _databaseService.GetConnectionAsync();
+            ApiResult<int> result = await _apiClient.GetAsync<int>("api/articles/count");
 
-            return await db.Table<Article>().CountAsync();
+            if (result.Success)
+            {
+                return result.Data;
+            }
+
+            return 0;
         }
 
         // Get all articles
         public async Task<List<Article>> GetArticlesAsync()
         {
-            var db = await _databaseService.GetConnectionAsync();
+            ApiResult<List<Article>> result = await _apiClient.GetAsync<List<Article>>("api/articles");
 
-            var articles = await db.Table<Article>()
-                .OrderByDescending(a => a.DateTimePublished)
-                .ToListAsync();
+            if (result.Success && result.Data != null)
+            {
+                return result.Data;
+            }
 
-            return articles;
+            return new List<Article>();
         }
 
         // Get article by Id
         public async Task<Article?> GetArticleByIdAsync(int articleId)
         {
-            var db = await _databaseService.GetConnectionAsync();
+            ApiResult<Article> result = await _apiClient.GetAsync<Article>($"api/articles/{articleId}");
 
-            return await db.Table<Article>()
-                .Where(a => a.Id == articleId)
-                .FirstOrDefaultAsync();
+            if (result.Success)
+            {
+                return result.Data;
+            }
+
+            return null;
         }
     }
 }
