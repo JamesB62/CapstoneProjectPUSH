@@ -1,7 +1,3 @@
-using System.Net.Http.Headers;
-using System.Net.Http.Json;
-using System.Text.Json;
-
 namespace CapstoneProjectPUSH.Services
 {
     // One shared connection to the api -- also holds the login token and sends it with every request
