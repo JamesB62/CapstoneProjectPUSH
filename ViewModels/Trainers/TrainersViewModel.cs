@@ -71,6 +71,13 @@
                 return PlaceholderImage;
             }
 
+            // Uploaded photo -- a web address from the api, so there's no file to check
+            if (imagePath.StartsWith("http://", StringComparison.OrdinalIgnoreCase)
+                || imagePath.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+            {
+                return imagePath;
+            }
+
             if (!File.Exists(imagePath))
             {
                 return PlaceholderImage;
