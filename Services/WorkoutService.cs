@@ -312,27 +312,20 @@
                 .Where(w => w.Id == workoutId && w.UserId == userId)
                 .FirstOrDefaultAsync();
 
+            if (workout is null)
+            {
+                return false;
+            }
 
             await db.RunInTransactionAsync(conn =>
             {
                 conn.Table<WorkoutExercise>().Delete(we => we.WorkoutId == workoutId);
                 conn.Table<WorkoutFavourite>().Delete(f => f.WorkoutId == workoutId);
+                conn.Table<Note>().Delete(n => n.WorkoutId == workoutId);
                 conn.Table<Workout>().Delete(w => w.Id == workoutId && w.UserId == userId);
             });
 
-            if(workout = null)
-            {
-                return;
-            }
-
-
-            if (!result.Success)
-            {
-                System.Diagnostics.Debug.WriteLine("Delete workout failed: " + result.Message);
-            }
-
-            return result.Success;
-
+            return true;
         }
 
         // Add workout with exercises
