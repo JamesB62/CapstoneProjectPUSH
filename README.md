@@ -46,8 +46,6 @@ PUSH API (ASP.NET Core Web API)  ──►  Microsoft SQL Server database
 
 ## Repositories
 
-
-
 - **[CapstoneProjectPUSH](https://github.com/JamesB62/CapstoneProjectPUSH)** – the MAUI app
 - **[CapstoneProjectPUSH_API](https://github.com/JamesB62/CapstoneProjectPUSH_API)** – the Web API
 
@@ -100,5 +98,5 @@ PUSH API (ASP.NET Core Web API)  ──►  Microsoft SQL Server database
 ## Student Contributions
 
 - **[James]** – Web API, remote database and app migration, role-based access, reports
-- **[Dylan]** – Admin features, page layout and app plumbing, Stats page
+- **[Dylan]** – Admin features, page layout and app plumbing, stats page
 - **[Vison]** – Email features, guest account, workout feature
