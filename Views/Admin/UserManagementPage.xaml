@@ -104,13 +104,23 @@
 
                         <SwipeView>
 
+                            <SwipeView.LeftItems>
+
+                                <SwipeItem
+                                    BackgroundColor="#6B7280"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:UserManagementViewModel}}, Path=ToggleAdminCommand}"
+                                    CommandParameter="{Binding .}"
+                                    Text="{Binding RoleActionLabel}"/>
+
+                            </SwipeView.LeftItems>
+                            
                             <!-- Swipe actions -->
                             <SwipeView.RightItems>
 
                                 <SwipeItems>
 
                                     <SwipeItem
-                                        BackgroundColor="#6B7280"
+                                        BackgroundColor="Red"
                                         Command="{Binding Source={RelativeSource AncestorType={x:Type vm:UserManagementViewModel}}, Path=ToggleActiveCommand}"
                                         CommandParameter="{Binding .}"
                                         Text="{Binding ActionLabel}"/>

@@ -348,6 +348,44 @@
             return new AuthResult(true, result.Data.Message, result.Data.User);
         }
 
+        // Set user role
+        public async Task<AuthResult> SetUserRoleAsync(User user, bool isAdmin)
+        {
+            if (!IsCurrentUserAdmin())
+            {
+                return new AuthResult(false, "Only administrators can change account roles.");
+            }
+
+            if (user.Id == CurrentUser!.Id)
+            {
+                return new AuthResult(false, "You can't change your own role.");
+            }
+
+            if (user.IsGuest)
+            {
+                return new AuthResult(false, "The guest account's role can't be changed.");
+            }
+
+            UserRoleRequest request = new UserRoleRequest
+            {
+                IsAdmin = isAdmin
+            };
+
+            ApiResult<UserResponse> result = await _apiClient.PutAsync<UserResponse>($"api/users/{user.Id}/role", request);
+
+            if (!result.Success)
+            {
+                return new AuthResult(false, result.Message);
+            }
+
+            if (result.Data == null)
+            {
+                return new AuthResult(false, "Something went wrong. Please try again.");
+            }
+
+            return new AuthResult(true, result.Data.Message, result.Data.User);
+        }
+
         // Helpers
         // Normalise email
         private static string NormaliseEmail(string? email)

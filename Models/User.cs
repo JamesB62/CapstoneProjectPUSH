@@ -19,6 +19,22 @@
 
         public bool IsAdmin { get; set; } = false;
 
+        // Swipe action text on user management
+        public string RoleActionLabel
+        {
+            get
+            {
+                if (IsAdmin)
+                {
+                    return "Demote";
+                }
+                else
+                {
+                    return "Promote";
+                }
+            }
+        }
+
         public bool IsActive { get; set; } = true;
 
         public bool IsGuest { get; set; } = false;

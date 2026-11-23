@@ -81,62 +81,97 @@
                     <DataTemplate
                         x:DataType="models:Workout">
 
-                        <Border
-                            Style="{StaticResource Card}">
+                        <SwipeView>
 
-                            <VerticalStackLayout
-                                Spacing="10">
+                            <!-- Swipe actions -->
+                            <SwipeView.LeftItems>
 
-                                <Grid
-                                    ColumnDefinitions="*,Auto"
-                                    ColumnSpacing="10">
+                                <SwipeItems>
 
-                                    <Label
-                                        Grid.Column="0"
-                                        FontAttributes="Bold"
-                                        FontSize="16"
-                                        LineBreakMode="TailTruncation"
-                                        Text="{Binding Title}"
-                                        VerticalOptions="Center"/>
+                                    <SwipeItem
+                                        BackgroundColor="#6B7280"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MyWorkoutsViewModel}}, Path=EditWorkoutCommand}"
+                                        CommandParameter="{Binding .}"
+                                        IsVisible="{Binding Source={RelativeSource AncestorType={x:Type vm:MyWorkoutsViewModel}}, Path=IsLoggedIn}"
+                                        Text="Edit"/>
 
-                                    <Border
-                                        Grid.Column="1"
-                                        Style="{StaticResource Pill}">
+                                </SwipeItems>
+
+                            </SwipeView.LeftItems>
+
+                            <SwipeView.RightItems>
+
+                                <SwipeItems>
+
+                                    <SwipeItem
+                                        BackgroundColor="Red"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MyWorkoutsViewModel}}, Path=DeleteWorkoutCommand}"
+                                        CommandParameter="{Binding .}"
+                                        IsVisible="{Binding Source={RelativeSource AncestorType={x:Type vm:MyWorkoutsViewModel}}, Path=IsLoggedIn}"
+                                        Text="Delete"/>
+
+                                </SwipeItems>
+
+                            </SwipeView.RightItems>
+
+                            <Border
+                                Style="{StaticResource Card}">
+
+                                <VerticalStackLayout
+                                    Spacing="10">
+
+                                    <Grid
+                                        ColumnDefinitions="*,Auto"
+                                        ColumnSpacing="10">
 
                                         <Label
-                                            FontSize="12"
+                                            Grid.Column="0"
+                                            FontAttributes="Bold"
+                                            FontSize="16"
                                             LineBreakMode="TailTruncation"
-                                            Text="{Binding CategoryTitle}"/>
+                                            Text="{Binding Title}"
+                                            VerticalOptions="Center"/>
 
-                                    </Border>
+                                        <Border
+                                            Grid.Column="1"
+                                            Style="{StaticResource Pill}">
 
-                                </Grid>
+                                            <Label
+                                                FontSize="12"
+                                                LineBreakMode="TailTruncation"
+                                                Text="{Binding CategoryTitle}"/>
 
-                                <!-- Info -->
-                                <VerticalStackLayout
-                                    Spacing="3">
+                                        </Border>
+
+                                    </Grid>
+
+                                    <!-- Info -->
+                                    <VerticalStackLayout
+                                        Spacing="3">
+
+                                        <Label
+                                            Text="{Binding ExerciseCount, StringFormat='• Exercises: {0}'}"/>
+
+                                        <Label
+                                            IsVisible="{Binding HasSets}"
+                                            Text="{Binding SetCount, StringFormat='• Sets: {0}'}"/>
+
+                                        <Label
+                                            IsVisible="{Binding HasMinutes}"
+                                            Text="{Binding TotalMinutes, StringFormat='• Time: {0} min'}"/>
+
+                                    </VerticalStackLayout>
 
                                     <Label
-                                        Text="{Binding ExerciseCount, StringFormat='• Exercises: {0}'}"/>
-
-                                    <Label
-                                        IsVisible="{Binding HasSets}"
-                                        Text="{Binding SetCount, StringFormat='• Sets: {0}'}"/>
-
-                                    <Label
-                                        IsVisible="{Binding HasMinutes}"
-                                        Text="{Binding TotalMinutes, StringFormat='• Time: {0} min'}"/>
+                                        FontAttributes="Italic"
+                                        FontSize="12"
+                                        Text="{Binding DateTimeCreated, StringFormat='Created on {0:d MMM yyyy}'}"/>
 
                                 </VerticalStackLayout>
 
-                                <Label
-                                    FontAttributes="Italic"
-                                    FontSize="12"
-                                    Text="{Binding DateTimeCreated, StringFormat='Created on {0:d MMM yyyy}'}"/>
+                            </Border>
 
-                            </VerticalStackLayout>
-
-                        </Border>
+                        </SwipeView>
 
                     </DataTemplate>
 

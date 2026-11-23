@@ -81,6 +81,12 @@ namespace CapstoneProjectPUSH
                 return;
             }
 
+            // Going back only returns to a page that already passed this check
+            if (args.Source == ShellNavigationSource.Pop)
+            {
+                return;
+            }
+
             if (_userService.IsLoggedIn)
             {
                 return;

@@ -24,4 +24,10 @@
         public string Message { get; set; } = string.Empty;
         public User? User { get; set; }
     }
+
+    // What an admin sends to promote or demote an account
+    public class UserRoleRequest
+    {
+        public bool IsAdmin { get; set; }
+    }
 }
