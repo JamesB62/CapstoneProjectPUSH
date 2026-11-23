@@ -46,8 +46,10 @@ PUSH API (ASP.NET Core Web API)  ──►  Microsoft SQL Server database
 
 ## Repositories
 
-- **CapstoneProjectPUSH** – the MAUI app @ https://github.com/JamesB62/CapstoneProjectPUSH
-- **CapstoneProjectPUSH_API** – the Web API @ https://github.com/JamesB62/CapstoneProjectPUSH_API
+
+
+- **[CapstoneProjectPUSH](https://github.com/JamesB62/CapstoneProjectPUSH)** – the MAUI app
+- **[CapstoneProjectPUSH_API](https://github.com/JamesB62/CapstoneProjectPUSH_API)** – the Web API
 
 ## Running the API locally
 
