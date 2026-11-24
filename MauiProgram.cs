@@ -66,6 +66,7 @@ namespace CapstoneProjectPUSH
 
             // Home
             builder.Services.AddTransient<ArticleDetailsViewModel>();
+            builder.Services.AddTransient<CreateArticleViewModel>();
             builder.Services.AddTransient<HomeViewModel>();
 
             // Profile
@@ -120,6 +121,7 @@ namespace CapstoneProjectPUSH
 
             // Home
             builder.Services.AddTransient<ArticleDetailsPage>();
+            builder.Services.AddTransient<CreateArticlePage>();
             builder.Services.AddTransient<HomePage>();
 
             // Profile

@@ -7,6 +7,15 @@
              x:DataType="vm:HomeViewModel"
              Title="PUSH Home">
 
+    <ContentPage.ToolbarItems>
+
+        <ToolbarItem
+            x:Name="AddArticleToolbarItem"
+            Command="{Binding AddArticleCommand}"
+            Text="+ Add"/>
+
+    </ContentPage.ToolbarItems>
+
     <Grid
         MaximumWidthRequest="500"
         Padding="30,15,30,0"
@@ -107,12 +116,12 @@
 
         </CollectionView>
 
-        <!-- Featured Articles -->
+        <!-- Articles -->
         <Label
             Grid.Row="2"
             FontAttributes="Bold"
             FontSize="16"
-            Text="Featured Articles"/>
+            Text="Articles"/>
 
         <CollectionView
             Grid.Row="3"
@@ -145,58 +154,93 @@
                 <DataTemplate
                     x:DataType="models:Article">
 
-                    <Border
-                        Style="{StaticResource Card}">
+                    <SwipeView>
 
-                        <VerticalStackLayout
-                            Spacing="10">
+                        <!-- Swipe actions (admins only) -->
+                        <SwipeView.LeftItems>
 
-                            <Grid
-                                ColumnDefinitions="*,auto"
-                                ColumnSpacing="10">
+                            <SwipeItems>
 
-                                <Label
-                                    FontAttributes="Bold"
-                                    FontSize="16"
-                                    Grid.Column="0"
-                                    LineBreakMode="WordWrap"
-                                    MaxLines="2"
-                                    Text="{Binding Title}"
-                                    VerticalOptions="Center"/>
+                                <SwipeItem
+                                    BackgroundColor="#6B7280"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:HomeViewModel}}, Path=EditArticleCommand}"
+                                    CommandParameter="{Binding .}"
+                                    IsVisible="{Binding Source={RelativeSource AncestorType={x:Type vm:HomeViewModel}}, Path=IsCurrentUserAdmin}"
+                                    Text="Edit"/>
 
-                                <Border
-                                    Grid.Column="1"
-                                    Style="{StaticResource Pill}">
+                            </SwipeItems>
 
-                                    <Label
-                                        FontSize="12"
-                                        LineBreakMode="TailTruncation"
-                                        Text="{Binding Topic}"/>
+                        </SwipeView.LeftItems>
 
-                                </Border>
+                        <SwipeView.RightItems>
 
-                            </Grid>
+                            <SwipeItems>
+
+                                <SwipeItem
+                                    BackgroundColor="Red"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:HomeViewModel}}, Path=DeleteArticleCommand}"
+                                    CommandParameter="{Binding .}"
+                                    IsVisible="{Binding Source={RelativeSource AncestorType={x:Type vm:HomeViewModel}}, Path=IsCurrentUserAdmin}"
+                                    Text="Delete"/>
+
+                            </SwipeItems>
+
+                        </SwipeView.RightItems>
+
+                        <Border
+                            Style="{StaticResource Card}">
 
                             <VerticalStackLayout
-                                Spacing="3">
+                                Spacing="10">
+
+                                <Grid
+                                    ColumnDefinitions="*,auto"
+                                    ColumnSpacing="10">
+
+                                    <Label
+                                        FontAttributes="Bold"
+                                        FontSize="16"
+                                        Grid.Column="0"
+                                        LineBreakMode="WordWrap"
+                                        MaxLines="2"
+                                        Text="{Binding Title}"
+                                        VerticalOptions="Center"/>
+
+                                    <Border
+                                        Grid.Column="1"
+                                        Style="{StaticResource Pill}">
+
+                                        <Label
+                                            FontSize="12"
+                                            LineBreakMode="TailTruncation"
+                                            Text="{Binding Topic}"/>
+
+                                    </Border>
+
+                                </Grid>
+
+                                <VerticalStackLayout
+                                    Spacing="3">
+
+                                    <Label
+                                        Text="{Binding ReadingTime, StringFormat='• Reading time: {0}min'}"/>
+
+                                    <Label
+                                        LineBreakMode="TailTruncation"
+                                        Text="{Binding Citation, StringFormat='• Written by: {0}'}"/>
+
+                                </VerticalStackLayout>
 
                                 <Label
-                                    Text="{Binding ReadingTime, StringFormat='• Reading time: {0}min'}"/>
-
-                                <Label
-                                    LineBreakMode="TailTruncation"
-                                    Text="{Binding Citation, StringFormat='• Written by: {0}'}"/>
+                                    FontAttributes="Italic"
+                                    FontSize="12"
+                                    Text="{Binding DateTimePublished, StringFormat='Published on {0:d MMM yyyy}'}"/>
 
                             </VerticalStackLayout>
 
-                            <Label
-                                FontAttributes="Italic"
-                                FontSize="12"
-                                Text="{Binding DateTimePublished, StringFormat='Published on {0:d MMM yyyy}'}"/>
+                        </Border>
 
-                        </VerticalStackLayout>
-
-                    </Border>
+                    </SwipeView>
 
                 </DataTemplate>
                 

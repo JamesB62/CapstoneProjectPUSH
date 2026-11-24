@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:CapstoneProjectPUSH.ViewModels.Home"
+             x:Class="CapstoneProjectPUSH.Views.Home.CreateArticlePage"
+             x:DataType="vm:CreateArticleViewModel"
+             Title="{Binding PageTitle}">
+
+    <ScrollView>
+
+        <VerticalStackLayout
+            MaximumWidthRequest="500"
+            Padding="30"
+            Spacing="20">
+
+            <!-- Article form -->
+            <VerticalStackLayout>
+
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="18"
+                    Text="Photo"/>
+
+                <Grid
+                    ColumnDefinitions="*,Auto,Auto"
+                    ColumnSpacing="10">
+
+                    <Label
+                        Grid.Column="0"
+                        FontSize="14"
+                        Text="{Binding PhotoStatusText}"
+                        VerticalOptions="Center"/>
+
+                    <Button
+                        Grid.Column="1"
+                        Command="{Binding ChangePhotoCommand}"
+                        Text="Change"/>
+
+                    <Button
+                        Grid.Column="2"
+                        Command="{Binding RemovePhotoCommand}"
+                        IsVisible="{Binding HasArticleImage}"
+                        Text="Remove"/>
+
+                </Grid>
+
+            </VerticalStackLayout>
+
+            <VerticalStackLayout>
+
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="18"
+                    Text="Title"/>
+
+                <Entry
+                    MaxLength="100"
+                    Placeholder="Enter the article's title here"
+                    Text="{Binding Title}"/>
+
+            </VerticalStackLayout>
+
+            <VerticalStackLayout>
+
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="18"
+                    Text="Topic"/>
+
+                <Entry
+                    MaxLength="50"
+                    Placeholder="Enter the article's topic here"
+                    Text="{Binding Topic}"/>
+
+            </VerticalStackLayout>
+
+            <VerticalStackLayout>
+
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="18"
+                    Text="Published Date"/>
+
+                <DatePicker
+                    Date="{Binding PublishedDate}"
+                    Format="d MMM yyyy"
+                    MaximumDate="{Binding MaxPublishedDate}"/>
+
+            </VerticalStackLayout>
+
+            <VerticalStackLayout>
+
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="18"
+                    Text="Content"/>
+
+                <Editor
+                    AutoSize="TextChanges"
+                    MaxLength="5000"
+                    MinimumHeightRequest="200"
+                    Placeholder="Write the article here"
+                    Text="{Binding Content}"/>
+
+            </VerticalStackLayout>
+
+            <VerticalStackLayout>
+
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="18"
+                    Text="Citation"/>
+
+                <Editor
+                    AutoSize="TextChanges"
+                    MaxLength="300"
+                    Placeholder="Author, title, publisher, year"
+                    Text="{Binding Citation}"/>
+
+            </VerticalStackLayout>
+
+            <VerticalStackLayout>
+
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="18"
+                    Text="Source Link (Optional)"/>
+
+                <Entry
+                    Keyboard="Url"
+                    MaxLength="300"
+                    Placeholder="https://..."
+                    Text="{Binding CitationUrl}"/>
+
+            </VerticalStackLayout>
+
+            <!-- Error message -->
+            <Label
+                IsVisible="{Binding HasErrorMessage}"
+                Text="{Binding ErrorMessage}"
+                TextColor="Red"/>
+
+            <!-- Buttons -->
+            <VerticalStackLayout
+                Margin="0,5,0,0"
+                Spacing="10">
+
+                <Button
+                    Command="{Binding SaveCommand}"
+                    IsEnabled="{Binding IsNotBusy}"
+                    Text="{Binding SaveButtonText}"/>
+
+                <Button
+                    Command="{Binding CancelCommand}"
+                    IsEnabled="{Binding IsNotBusy}"
+                    Text="Cancel"/>
+
+            </VerticalStackLayout>
+
+        </VerticalStackLayout>
+
+    </ScrollView>
+
+</ContentPage>

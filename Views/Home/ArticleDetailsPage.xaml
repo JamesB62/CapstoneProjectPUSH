@@ -6,6 +6,22 @@
              x:DataType="vm:ArticleDetailsViewModel"
              Title="PUSH Article">
 
+    <ContentPage.ToolbarItems>
+
+        <ToolbarItem
+            x:Name="EditToolbarItem"
+            Command="{Binding EditArticleCommand}"
+            Order="Secondary"
+            Text="Edit Article"/>
+
+        <ToolbarItem
+            x:Name="DeleteToolbarItem"
+            Command="{Binding DeleteArticleCommand}"
+            Order="Secondary"
+            Text="Delete Article"/>
+
+    </ContentPage.ToolbarItems>
+
     <ScrollView>
 
         <VerticalStackLayout

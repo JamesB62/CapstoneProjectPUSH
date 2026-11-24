@@ -53,6 +53,7 @@ namespace CapstoneProjectPUSH
 
             // Home
             Routing.RegisterRoute(nameof(ArticleDetailsPage), typeof(ArticleDetailsPage));
+            Routing.RegisterRoute(nameof(CreateArticlePage), typeof(CreateArticlePage));
 
             // Profile
             Routing.RegisterRoute(nameof(MyNotesPage), typeof(MyNotesPage));
