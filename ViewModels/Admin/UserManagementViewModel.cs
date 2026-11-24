@@ -68,7 +68,7 @@
 
             try
             {
-                var result = await _userService.SetUserActiveStatusAsync(user.Id, activate);
+                var result = await _userService.SetUserActiveStatusAsync(user, activate);
 
                 if (result.Success)
                 {
