@@ -11,15 +11,15 @@
 
         <VerticalStackLayout
             MaximumWidthRequest="500"
-            Padding="30"
+            Padding="30,20,30,20"
             Spacing="20">
 
-            <!-- Trainer form -->
-            <VerticalStackLayout>
+            <!-- Photo -->
+            <VerticalStackLayout
+                Spacing="10">
 
                 <Label
-                    FontAttributes="Bold"
-                    FontSize="18"
+                    Style="{StaticResource FieldLabel}"
                     Text="Photo"/>
 
                 <Grid
@@ -28,159 +28,219 @@
 
                     <Label
                         Grid.Column="0"
-                        FontSize="14"
+                        Style="{StaticResource CardBody}"
                         Text="{Binding PhotoStatusText}"
                         VerticalOptions="Center"/>
 
                     <Button
-                        Grid.Column="1"
                         Command="{Binding ChangePhotoCommand}"
+                        Grid.Column="1"
+                        SemanticProperties.Description="Change photo"
+                        Style="{StaticResource SecondaryButton}"
                         Text="Change"/>
 
                     <Button
-                        Grid.Column="2"
                         Command="{Binding RemovePhotoCommand}"
+                        Grid.Column="2"
                         IsVisible="{Binding HasProfileImage}"
+                        SemanticProperties.Description="Remove photo"
+                        Style="{StaticResource SecondaryButton}"
                         Text="Remove"/>
 
                 </Grid>
 
             </VerticalStackLayout>
 
-            <VerticalStackLayout>
+            <!-- First name -->
+            <VerticalStackLayout
+                Spacing="10">
 
                 <Label
-                    FontAttributes="Bold"
-                    FontSize="18"
+                    Style="{StaticResource FieldLabel}"
                     Text="First Name"/>
 
-                <Entry
-                    MaxLength="60"
-                    Placeholder="Enter the trainer's first name here"
-                    Text="{Binding FirstName}"/>
+                <Border
+                    Style="{StaticResource InputFrame}">
+
+                    <Entry
+                        MaxLength="60"
+                        Placeholder="Enter the trainer's first name here"
+                        ReturnType="Next"
+                        SemanticProperties.Hint="First name"
+                        Text="{Binding FirstName}"/>
+
+                </Border>
 
             </VerticalStackLayout>
 
-            <VerticalStackLayout>
+            <!-- Last name -->
+            <VerticalStackLayout
+                Spacing="10">
 
                 <Label
-                    FontAttributes="Bold"
-                    FontSize="18"
+                    Style="{StaticResource FieldLabel}"
                     Text="Last Name"/>
 
-                <Entry
-                    MaxLength="60"
-                    Placeholder="Enter the trainer's last name here"
-                    Text="{Binding LastName}"/>
+                <Border
+                    Style="{StaticResource InputFrame}">
+
+                    <Entry
+                        MaxLength="60"
+                        Placeholder="Enter the trainer's last name here"
+                        ReturnType="Next"
+                        SemanticProperties.Hint="Last name"
+                        Text="{Binding LastName}"/>
+
+                </Border>
 
             </VerticalStackLayout>
 
             <!-- Contact (at least one required) -->
-            <VerticalStackLayout>
+            <VerticalStackLayout
+                Spacing="10">
 
                 <Label
-                    FontAttributes="Bold"
-                    FontSize="18"
+                    Style="{StaticResource FieldLabel}"
                     Text="Contact Details"/>
 
                 <Label
-                    FontSize="14"
-                    Margin="0,10,0,0"
+                    Style="{StaticResource HintLabel}"
                     Text="Enter an email address, a phone number, or both."/>
 
-                <VerticalStackLayout
-                    Spacing="5">
+                <Border
+                    Style="{StaticResource InputFrame}">
 
                     <Entry
                         Keyboard="Email"
                         MaxLength="250"
                         Placeholder="Enter the trainer's email address here"
+                        ReturnType="Next"
+                        SemanticProperties.Hint="Email address"
                         Text="{Binding Email}"/>
+
+                </Border>
+
+                <Border
+                    Style="{StaticResource InputFrame}">
 
                     <Entry
                         Keyboard="Telephone"
                         MaxLength="20"
                         Placeholder="Enter the trainer's phone number here"
+                        ReturnType="Next"
+                        SemanticProperties.Hint="Phone number"
                         Text="{Binding PhoneNumber}"/>
 
-                </VerticalStackLayout>
+                </Border>
 
             </VerticalStackLayout>
 
-            <VerticalStackLayout>
+            <!-- Specialty -->
+            <VerticalStackLayout
+                Spacing="10">
 
                 <Label
-                    FontAttributes="Bold"
-                    FontSize="18"
+                    Style="{StaticResource FieldLabel}"
                     Text="Specialty"/>
 
-                <Picker
-                    ItemDisplayBinding="{Binding Title, x:DataType=models:Category}"
-                    ItemsSource="{Binding Categories}"
-                    SelectedItem="{Binding SelectedCategory}"
-                    Title="Choose a specialty"/>
+                <Border
+                    Style="{StaticResource InputFrame}">
+
+                    <Picker
+                        ItemDisplayBinding="{Binding Title, x:DataType=models:Category}"
+                        ItemsSource="{Binding Categories}"
+                        SelectedItem="{Binding SelectedCategory}"
+                        SemanticProperties.Hint="Specialty"
+                        Title="Choose a specialty"/>
+
+                </Border>
 
             </VerticalStackLayout>
 
-            <VerticalStackLayout>
+            <!-- Gym -->
+            <VerticalStackLayout
+                Spacing="10">
 
                 <Label
-                    FontAttributes="Bold"
-                    FontSize="18"
+                    Style="{StaticResource FieldLabel}"
                     Text="Gym"/>
 
-                <Picker
-                    ItemDisplayBinding="{Binding NameAndCity, x:DataType=models:Gym}"
-                    ItemsSource="{Binding Gyms}"
-                    SelectedItem="{Binding SelectedGym}"
-                    Title="Choose a gym"/>
+                <Border
+                    Style="{StaticResource InputFrame}">
+
+                    <Picker
+                        ItemDisplayBinding="{Binding NameAndCity, x:DataType=models:Gym}"
+                        ItemsSource="{Binding Gyms}"
+                        SelectedItem="{Binding SelectedGym}"
+                        SemanticProperties.Hint="Gym"
+                        Title="Choose a gym"/>
+
+                </Border>
 
             </VerticalStackLayout>
 
-            <VerticalStackLayout>
+            <!-- About -->
+            <VerticalStackLayout
+                Spacing="10">
 
                 <Label
-                    FontAttributes="Bold"
-                    FontSize="18"
+                    Style="{StaticResource FieldLabel}"
                     Text="About"/>
 
-                <Editor
-                    AutoSize="TextChanges"
-                    MaxLength="1000"
-                    MinimumHeightRequest="100"
-                    Placeholder="Write a short description (optional)"
-                    Text="{Binding Description}"/>
+                <Border
+                    Style="{StaticResource InputFrame}">
+
+                    <Editor
+                        AutoSize="TextChanges"
+                        MaxLength="1000"
+                        MinimumHeightRequest="100"
+                        Placeholder="Write a short description (optional)"
+                        SemanticProperties.Hint="Short description (optional)"
+                        Text="{Binding Description}"/>
+
+                </Border>
 
             </VerticalStackLayout>
 
             <!-- Availability -->
-            <Grid
-                ColumnDefinitions="*,Auto"
-                ColumnSpacing="10"
-                Margin="0,-15">
+            <VerticalStackLayout
+                Spacing="10">
+
+                <Grid
+                    ColumnDefinitions="*,Auto"
+                    ColumnSpacing="10">
+
+                    <Label
+                        AutomationProperties.IsInAccessibleTree="False"
+                        Grid.Column="0"
+                        Style="{StaticResource FieldLabel}"
+                        Text="Available for New Clients"
+                        VerticalOptions="Center"/>
+
+                    <Switch
+                        Grid.Column="1"
+                        IsToggled="{Binding Available}"
+                        SemanticProperties.Description="Available for new clients"
+                        SemanticProperties.Hint="Turn on if the trainer is available for new clients"
+                        VerticalOptions="Center"/>
+
+                </Grid>
 
                 <Label
-                    Grid.Column="0"
-                    FontSize="14"
-                    Text="Available for new clients"
-                    VerticalOptions="Center"/>
+                    AutomationProperties.IsInAccessibleTree="False"
+                    Style="{StaticResource HintLabel}"
+                    Text="Turn on if the trainer is available for new clients"/>
 
-                <Switch
-                    Grid.Column="1"
-                    IsToggled="{Binding Available}"
-                    VerticalOptions="Center"/>
-
-            </Grid>
+            </VerticalStackLayout>
 
             <!-- Error message -->
             <Label
                 IsVisible="{Binding HasErrorMessage}"
-                Text="{Binding ErrorMessage}"
-                TextColor="Red"/>
+                Style="{StaticResource ErrorLabel}"
+                Text="{Binding ErrorMessage}"/>
 
             <!-- Buttons -->
             <VerticalStackLayout
-                Margin="0,5,0,0"
                 Spacing="10">
 
                 <Button
@@ -191,6 +251,7 @@
                 <Button
                     Command="{Binding CancelCommand}"
                     IsEnabled="{Binding IsNotBusy}"
+                    Style="{StaticResource SecondaryButton}"
                     Text="Cancel"/>
 
             </VerticalStackLayout>

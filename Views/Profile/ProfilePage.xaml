@@ -37,17 +37,17 @@
                 Spacing="5">
 
                 <Label
-                    HorizontalOptions="Center"
+                    HorizontalTextAlignment="Center"
                     Style="{StaticResource DetailTitle}"
                     Text="{Binding DisplayName}"/>
 
                 <Label
-                    HorizontalOptions="Center"
+                    HorizontalTextAlignment="Center"
                     Style="{StaticResource CardBody}"
                     Text="{Binding Email}"/>
 
                 <Label
-                    HorizontalOptions="Center"
+                    HorizontalTextAlignment="Center"
                     IsVisible="{Binding HasFavouriteGym}"
                     Style="{StaticResource CardBody}"
                     Text="{Binding FavouriteGymText, StringFormat='Favourite gym: {0}'}"/>

@@ -20,6 +20,7 @@
         [NotifyPropertyChangedFor(nameof(HasPhone))]
         [NotifyPropertyChangedFor(nameof(HasContactDetails))]
         [NotifyPropertyChangedFor(nameof(IsTrainerAvailable))]
+        [NotifyPropertyChangedFor(nameof(IsTrainerUnavailable))]
         public partial Trainer? Trainer { get; set; }
 
         [ObservableProperty]
@@ -29,6 +30,7 @@
         public bool HasEmail => !string.IsNullOrWhiteSpace(Trainer?.Email);
         public bool HasPhone => !string.IsNullOrWhiteSpace(Trainer?.PhoneNumber);
         public bool IsTrainerAvailable => Trainer?.Available ?? false;
+        public bool IsTrainerUnavailable => !IsTrainerAvailable;
 
         partial void OnTrainerIdChanged(int value)
         {

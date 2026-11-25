@@ -16,6 +16,22 @@
 
         public string Description { get; set; } = string.Empty;
 
+        // True when the trainer has a description to show
+        public bool HasDescription
+        {
+            get
+            {
+                if (string.IsNullOrWhiteSpace(Description))
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+        }
+
         public bool Available { get; set; } = true;
 
         public string AvailableText => Available ? "Available" : "Unavailable";

@@ -12,60 +12,80 @@
         <ToolbarItem
             x:Name="AddTrainerToolbarItem"
             Command="{Binding AddTrainerCommand}"
-            Text="+ Add"/>
+            Order="Secondary"
+            Text="Add Trainer"/>
 
     </ContentPage.ToolbarItems>
 
     <Grid
         MaximumWidthRequest="500"
-        Padding="30,15,30,0"
+        Padding="30,20,30,0"
         RowDefinitions="Auto,Auto,*"
         RowSpacing="20">
 
-        <!-- Search bar -->
-        <SearchBar
+        <VerticalStackLayout
             Grid.Row="0"
-            Placeholder="Search by name, specialty or gym..."
-            Text="{Binding SearchText}"/>
+            Spacing="20">
 
+            <!-- Error message -->
+            <Label
+                IsVisible="{Binding HasErrorMessage}"
+                Style="{StaticResource ErrorLabel}"
+                Text="{Binding ErrorMessage}"/>
+
+            <!-- Search bar -->
+            <Border
+                Style="{StaticResource InputFrame}">
+
+                <SearchBar
+                    Placeholder="Search by name, specialty or gym..."
+                    SemanticProperties.Hint="Search trainers"
+                    Text="{Binding SearchText}"/>
+
+            </Border>
+
+        </VerticalStackLayout>
+
+        <!-- Count, active filter and swipe hint -->
         <VerticalStackLayout
             Grid.Row="1"
-            Spacing="15">
+            Spacing="5">
 
             <Grid
                 ColumnDefinitions="*,Auto"
                 ColumnSpacing="10">
 
-                <!-- Status message -->
+                <!-- Trainer count -->
                 <Label
                     Grid.Column="0"
+                    Style="{StaticResource StatusLabel}"
                     Text="{Binding StatusMessage}"
                     VerticalOptions="Center"/>
 
-                <!-- Availability toggle -->
                 <HorizontalStackLayout
                     Grid.Column="1"
                     Margin="0,-15,0,-15"
                     Spacing="5">
 
                     <Label
+                        AutomationProperties.IsInAccessibleTree="False"
+                        Style="{StaticResource StatusLabel}"
                         Text="Available Only"
                         VerticalOptions="Center"/>
 
                     <Switch
                         IsToggled="{Binding ShowAvailableOnly}"
+                        SemanticProperties.Description="Show available trainers only"
                         VerticalOptions="Center"/>
-
 
                 </HorizontalStackLayout>
 
             </Grid>
 
-            <!-- Error message -->
             <Label
-                IsVisible="{Binding HasErrorMessage}"
-                Text="{Binding ErrorMessage}"
-                TextColor="Red"/>
+                IsVisible="{Binding IsCurrentUserAdmin}"
+                Style="{StaticResource HintLabel}"
+                Text="Swipe right to edit or left to delete."/>
 
         </VerticalStackLayout>
 
@@ -82,29 +102,32 @@
                 <!-- Empty view -->
                 <CollectionView.EmptyView>
 
-                    <VerticalStackLayout
-                        HorizontalOptions="Center"
-                        VerticalOptions="Center">
+                    <Grid>
 
-                        <Label
-                            FontAttributes="Italic"
-                            HorizontalTextAlignment="Center"
-                            Text="No trainers found."/>
+                        <VerticalStackLayout
+                            HorizontalOptions="Center"
+                            Spacing="5"
+                            VerticalOptions="Center">
 
-                        <Label
-                            FontAttributes="Italic"
-                            HorizontalTextAlignment="Center"
-                            Text="Pull down to try again."/>
+                            <Label
+                                Style="{StaticResource EmptyLabel}"
+                                Text="No trainers found."/>
 
-                    </VerticalStackLayout>
+                            <Label
+                                Style="{StaticResource EmptyLabel}"
+                                Text="Pull down to try again."/>
+
+                        </VerticalStackLayout>
+
+                    </Grid>
 
                 </CollectionView.EmptyView>
 
-                <!-- Item layout -->
+                <!-- Items layout -->
                 <CollectionView.ItemsLayout>
 
                     <LinearItemsLayout
-                        ItemSpacing="10"
+                        ItemSpacing="15"
                         Orientation="Vertical"/>
 
                 </CollectionView.ItemsLayout>
@@ -115,121 +138,139 @@
                     <DataTemplate
                         x:DataType="models:Trainer">
 
-                        <SwipeView>
+                        <Border
+                            Style="{StaticResource SwipeClip}">
 
-                            <!-- Swipe actions (admins only) -->
-                            <SwipeView.LeftItems>
+                            <SwipeView>
 
-                                <SwipeItems>
+                                <!-- Swipe actions (admins only) -->
+                                <SwipeView.LeftItems>
 
-                                    <SwipeItem
-                                        BackgroundColor="#6B7280"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TrainersViewModel}}, Path=EditTrainerCommand}"
-                                        CommandParameter="{Binding .}"
-                                        IsVisible="{Binding Source={RelativeSource AncestorType={x:Type vm:TrainersViewModel}}, Path=IsCurrentUserAdmin}"
-                                        Text="Edit"/>
+                                    <SwipeItems>
 
-                                </SwipeItems>
+                                        <SwipeItem
+                                            BackgroundColor="{StaticResource SwipeEdit}"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TrainersViewModel}}, Path=EditTrainerCommand}"
+                                            CommandParameter="{Binding .}"
+                                            IsVisible="{Binding Source={RelativeSource AncestorType={x:Type vm:TrainersViewModel}}, Path=IsCurrentUserAdmin}"
+                                            Text="Edit"/>
 
-                            </SwipeView.LeftItems>
+                                    </SwipeItems>
 
-                            <SwipeView.RightItems>
+                                </SwipeView.LeftItems>
 
-                                <SwipeItems>
+                                <SwipeView.RightItems>
 
-                                    <SwipeItem
-                                        BackgroundColor="Red"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TrainersViewModel}}, Path=DeleteTrainerCommand}"
-                                        CommandParameter="{Binding .}"
-                                        IsVisible="{Binding Source={RelativeSource AncestorType={x:Type vm:TrainersViewModel}}, Path=IsCurrentUserAdmin}"
-                                        Text="Delete"/>
+                                    <SwipeItems>
 
-                                </SwipeItems>
+                                        <SwipeItem
+                                            BackgroundColor="{StaticResource SwipeDelete}"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TrainersViewModel}}, Path=DeleteTrainerCommand}"
+                                            CommandParameter="{Binding .}"
+                                            IsVisible="{Binding Source={RelativeSource AncestorType={x:Type vm:TrainersViewModel}}, Path=IsCurrentUserAdmin}"
+                                            Text="Delete"/>
 
-                            </SwipeView.RightItems>
+                                    </SwipeItems>
 
-                            <Border
-                                Style="{StaticResource Card}">
+                                </SwipeView.RightItems>
 
-                                <Grid
-                                    ColumnDefinitions="Auto,*"
-                                    ColumnSpacing="15">
+                                <!-- Card -->
+                                <Border
+                                    Style="{StaticResource SwipeCard}">
 
-                                    <Border
-                                        Grid.Column="0"
-                                        HeightRequest="50"
-                                        HorizontalOptions="Center"
-                                        StrokeShape="Ellipse"
-                                        StrokeThickness="0"
-                                        WidthRequest="50">
+                                    <Grid
+                                        ColumnDefinitions="Auto,*"
+                                        ColumnSpacing="15">
 
-                                        <Image
-                                            Aspect="AspectFill"
-                                            Source="{Binding ProfileImage}"/>
+                                        <!-- Photo -->
+                                        <Border
+                                            AutomationProperties.IsInAccessibleTree="False"
+                                            BackgroundColor="{StaticResource CardBackground}"
+                                            Grid.Column="0"
+                                            HeightRequest="50"
+                                            HorizontalOptions="Center"
+                                            Stroke="{StaticResource Accent}"
+                                            StrokeShape="Ellipse"
+                                            StrokeThickness="2"
+                                            VerticalOptions="Center"
+                                            WidthRequest="50">
 
-                                    </Border>
+                                            <Image
+                                                Aspect="AspectFill"
+                                                AutomationProperties.IsInAccessibleTree="False"
+                                                Source="{Binding ProfileImage}"/>
 
-                                    <VerticalStackLayout
-                                        Grid.Column="1"
-                                        Spacing="10">
+                                        </Border>
 
-                                        <Grid
-                                            ColumnDefinitions="*,Auto"
-                                            ColumnSpacing="10">
+                                        <!-- Trainer details -->
+                                        <VerticalStackLayout
+                                            Grid.Column="1"
+                                            Spacing="10">
 
-                                            <Label
-                                                Grid.Column="0"
-                                                FontAttributes="Bold"
-                                                FontSize="16"
-                                                LineBreakMode="TailTruncation"
-                                                Text="{Binding FullName}"
-                                                VerticalOptions="Center"/>
-
-                                            <Border
-                                                Grid.Column="1"
-                                                Style="{StaticResource Pill}">
+                                            <Grid
+                                                ColumnDefinitions="*,Auto"
+                                                ColumnSpacing="10">
 
                                                 <Label
-                                                    FontSize="12"
+                                                    Grid.Column="0"
                                                     LineBreakMode="TailTruncation"
-                                                    Text="{Binding AvailableText}"/>
+                                                    MaxLines="2"
+                                                    Style="{StaticResource CardTitle}"
+                                                    Text="{Binding FullName}"
+                                                    VerticalOptions="Center"/>
 
-                                            </Border>
+                                                <Border
+                                                    Grid.Column="1"
+                                                    Style="{StaticResource Pill}"
+                                                    VerticalOptions="Start">
 
-                                        </Grid>
+                                                    <Label
+                                                        Style="{StaticResource PillLabel}"
+                                                        Text="{Binding AvailableText}"/>
 
-                                        <Label
-                                            MaxLines="2"
-                                            LineBreakMode="TailTruncation"
-                                            Text="{Binding Description}"/>
+                                                </Border>
 
-                                        <VerticalStackLayout
-                                            Spacing="3">
+                                            </Grid>
 
+                                            <!-- About preview -->
                                             <Label
+                                                AutomationProperties.IsInAccessibleTree="False"
+                                                IsVisible="{Binding HasDescription}"
                                                 LineBreakMode="TailTruncation"
-                                                Text="{Binding CategoryTitle, StringFormat='• Specialty: {0}'}"/>
+                                                MaxLines="2"
+                                                Style="{StaticResource CardBody}"
+                                                Text="{Binding Description}"/>
 
+                                            <VerticalStackLayout
+                                                Spacing="5">
+
+                                                <Label
+                                                    Style="{StaticResource CardCredit}"
+                                                    Text="{Binding CategoryTitle, StringFormat='Specialty: {0}'}"/>
+
+                                                <Label
+                                                    Style="{StaticResource CardCredit}"
+                                                    Text="{Binding GymLabel, StringFormat='Gym: {0}'}"/>
+
+                                            </VerticalStackLayout>
+
+                                            <!-- Favourite gym -->
                                             <Label
-                                                LineBreakMode="TailTruncation"
-                                                Text="{Binding GymLabel, StringFormat='• Gym: {0}'}"/>
+                                                FontAttributes="Bold"
+                                                FontSize="12"
+                                                IsVisible="{Binding IsAtFavouriteGym}"
+                                                Text="At your favourite gym"
+                                                TextColor="{StaticResource Accent}"/>
 
                                         </VerticalStackLayout>
 
-                                        <!-- Favourite gym -->
-                                        <Label
-                                            FontAttributes="Italic"
-                                            FontSize="12"
-                                            IsVisible="{Binding IsAtFavouriteGym}"
-                                            Text="At your favourite gym"/>
+                                    </Grid>
 
-                                    </VerticalStackLayout>
-
-                                </Grid>
-
-                            </Border>
+                                </Border>
                             
-                        </SwipeView>
+                            </SwipeView>
+
+                        </Border>
 
                     </DataTemplate>
 
