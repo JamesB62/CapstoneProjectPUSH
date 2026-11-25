@@ -8,6 +8,21 @@
 
         public int ExerciseCount { get; set; }
 
+        public string ExerciseCountText
+        {
+            get
+            {
+                if (ExerciseCount == 1)
+                {
+                    return "1 exercise";
+                }
+                else
+                {
+                    return $"{ExerciseCount} exercises";
+                }
+            }
+        }
+
         public int SetCount { get; set; }
 
         public int TotalMinutes { get; set; }

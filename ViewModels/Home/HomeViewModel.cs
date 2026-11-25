@@ -58,7 +58,8 @@
                 List<Workout> workouts = await _workoutService.GetWorkoutsForUserAsync(user.Id);
 
                 List<Workout> randomWorkouts = workouts
-                    .OrderBy(w => Random.Shared.Next())
+                    .OrderByDescending(w => w.IsFavourite)
+                    .ThenBy(w => Random.Shared.Next())
                     .Take(3)
                     .ToList();
 

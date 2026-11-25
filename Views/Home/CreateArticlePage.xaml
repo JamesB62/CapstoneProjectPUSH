@@ -10,15 +10,15 @@
 
         <VerticalStackLayout
             MaximumWidthRequest="500"
-            Padding="30"
+            Padding="30,20,30,20"
             Spacing="20">
 
-            <!-- Article form -->
-            <VerticalStackLayout>
+            <!-- Photo -->
+            <VerticalStackLayout
+                Spacing="10">
 
                 <Label
-                    FontAttributes="Bold"
-                    FontSize="18"
+                    Style="{StaticResource FieldLabel}"
                     Text="Photo"/>
 
                 <Grid
@@ -27,122 +27,168 @@
 
                     <Label
                         Grid.Column="0"
-                        FontSize="14"
+                        Style="{StaticResource CardBody}"
                         Text="{Binding PhotoStatusText}"
                         VerticalOptions="Center"/>
 
                     <Button
                         Grid.Column="1"
                         Command="{Binding ChangePhotoCommand}"
+                        SemanticProperties.Description="Change photo"
+                        Style="{StaticResource SecondaryButton}"
                         Text="Change"/>
 
                     <Button
                         Grid.Column="2"
                         Command="{Binding RemovePhotoCommand}"
                         IsVisible="{Binding HasArticleImage}"
+                        SemanticProperties.Description="Remove photo"
+                        Style="{StaticResource SecondaryButton}"
                         Text="Remove"/>
 
                 </Grid>
 
             </VerticalStackLayout>
 
-            <VerticalStackLayout>
+            <!-- Title -->
+            <VerticalStackLayout
+                Spacing="10">
 
                 <Label
-                    FontAttributes="Bold"
-                    FontSize="18"
+                    Style="{StaticResource FieldLabel}"
                     Text="Title"/>
 
-                <Entry
-                    MaxLength="100"
-                    Placeholder="Enter the article's title here"
-                    Text="{Binding Title}"/>
+                <Border
+                    Style="{StaticResource InputFrame}">
+
+                    <Entry
+                        MaxLength="100"
+                        Placeholder="Enter the article's title here"
+                        SemanticProperties.Hint="Title"
+                        Text="{Binding Title}"/>
+
+                </Border>
 
             </VerticalStackLayout>
 
-            <VerticalStackLayout>
+            <!-- Topic -->
+            <VerticalStackLayout
+                Spacing="10">
 
                 <Label
-                    FontAttributes="Bold"
-                    FontSize="18"
+                    Style="{StaticResource FieldLabel}"
                     Text="Topic"/>
 
-                <Entry
-                    MaxLength="50"
-                    Placeholder="Enter the article's topic here"
-                    Text="{Binding Topic}"/>
+                <Border
+                    Style="{StaticResource InputFrame}">
+
+                    <Entry
+                        MaxLength="50"
+                        Placeholder="Enter the article's topic here"
+                        SemanticProperties.Hint="Topic"
+                        Text="{Binding Topic}"/>
+
+                </Border>
 
             </VerticalStackLayout>
-
-            <VerticalStackLayout>
+            
+            <!-- Published date -->
+            <VerticalStackLayout
+                Spacing="10">
 
                 <Label
-                    FontAttributes="Bold"
-                    FontSize="18"
+                    Style="{StaticResource FieldLabel}"
                     Text="Published Date"/>
 
-                <DatePicker
-                    Date="{Binding PublishedDate}"
-                    Format="d MMM yyyy"
-                    MaximumDate="{Binding MaxPublishedDate}"/>
+                <Border
+                    Style="{StaticResource InputFrame}">
+
+                    <DatePicker
+                        Date="{Binding PublishedDate}"
+                        Format="d MMM yyyy"
+                        MaximumDate="{Binding MaxPublishedDate}"
+                        SemanticProperties.Hint="Published date"/>
+
+                </Border>
 
             </VerticalStackLayout>
 
-            <VerticalStackLayout>
+            <!-- Content -->
+            <VerticalStackLayout
+                Spacing="10">
 
                 <Label
-                    FontAttributes="Bold"
-                    FontSize="18"
+                    Style="{StaticResource FieldLabel}"
                     Text="Content"/>
 
-                <Editor
-                    AutoSize="TextChanges"
-                    MaxLength="5000"
-                    MinimumHeightRequest="200"
-                    Placeholder="Write the article here"
-                    Text="{Binding Content}"/>
+                <Border
+                    Style="{StaticResource InputFrame}">
+
+                    <Editor
+                        AutoSize="TextChanges"
+                        MaxLength="5000"
+                        MinimumHeightRequest="200"
+                        Placeholder="Write the article here"
+                        SemanticProperties.Hint="Content"
+                        Text="{Binding Content}"/>
+
+                </Border>
 
             </VerticalStackLayout>
 
-            <VerticalStackLayout>
+            <!-- Citation -->
+            <VerticalStackLayout
+                Spacing="10">
 
                 <Label
-                    FontAttributes="Bold"
-                    FontSize="18"
+                    Style="{StaticResource FieldLabel}"
                     Text="Citation"/>
 
-                <Editor
-                    AutoSize="TextChanges"
-                    MaxLength="300"
-                    Placeholder="Author, title, publisher, year"
-                    Text="{Binding Citation}"/>
+                <Border
+                    Style="{StaticResource InputFrame}">
+
+                    <Editor
+                        AutoSize="TextChanges"
+                        MaxLength="300"
+                        Placeholder="Enter the article's author or publisher here"
+                        SemanticProperties.Hint="Citation"
+                        Text="{Binding Citation}"
+                        VerticalTextAlignment="Center"/>
+
+                </Border>
 
             </VerticalStackLayout>
-
-            <VerticalStackLayout>
+            
+            <!-- Source link -->
+            <VerticalStackLayout
+                Spacing="10">
 
                 <Label
-                    FontAttributes="Bold"
-                    FontSize="18"
+                    Style="{StaticResource FieldLabel}"
                     Text="Source Link (Optional)"/>
 
-                <Entry
-                    Keyboard="Url"
-                    MaxLength="300"
-                    Placeholder="https://..."
-                    Text="{Binding CitationUrl}"/>
+                <Border
+                    Style="{StaticResource InputFrame}">
+
+                    <Entry
+                        Keyboard="Url"
+                        MaxLength="300"
+                        Placeholder="https://..."
+                        SemanticProperties.Hint="Source link, optional"
+                        Text="{Binding CitationUrl}"/>
+
+                </Border>
 
             </VerticalStackLayout>
 
             <!-- Error message -->
             <Label
                 IsVisible="{Binding HasErrorMessage}"
-                Text="{Binding ErrorMessage}"
-                TextColor="Red"/>
+                Style="{StaticResource ErrorLabel}"
+                Text="{Binding ErrorMessage}"/>
 
             <!-- Buttons -->
             <VerticalStackLayout
-                Margin="0,5,0,0"
                 Spacing="10">
 
                 <Button
@@ -153,6 +199,7 @@
                 <Button
                     Command="{Binding CancelCommand}"
                     IsEnabled="{Binding IsNotBusy}"
+                    Style="{StaticResource SecondaryButton}"
                     Text="Cancel"/>
 
             </VerticalStackLayout>
