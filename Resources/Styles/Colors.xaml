@@ -60,10 +60,11 @@
     <Color x:Key="Accent">#A3E635</Color> <!-- Lime400 -->
     <Color x:Key="OnAccent">#020617</Color> <!-- Slate950 -->
     <Color x:Key="PillText">#BEF264</Color> <!-- Lime300 -->
-    <Color x:Key="SwitchTrackOn">#3F6212</Color> <!-- Lime800 // Change??? -->
+    <Color x:Key="SwitchTrackOn">#3F6212</Color> <!-- Lime800 -->
 
     <!-- Status -->
     <Color x:Key="Error">#F87171</Color> <!-- Red400 -->
+    <Color x:Key="Danger">#EF4444</Color> <!-- Red500 -->
     <Color x:Key="Favourite">#FCD34D</Color> <!-- Amber300 -->
 
     <!-- Lines and inputs -->

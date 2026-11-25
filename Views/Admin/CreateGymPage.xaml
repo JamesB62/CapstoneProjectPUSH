@@ -10,63 +10,84 @@
 
         <VerticalStackLayout
             MaximumWidthRequest="500"
-            Padding="30"
+            Padding="30,20,30,20"
             Spacing="20">
 
-            <!-- Gym form -->
-            <VerticalStackLayout>
+            <!-- Gym name -->
+            <VerticalStackLayout
+                Spacing="10">
 
                 <Label
-                    FontAttributes="Bold"
-                    FontSize="18"
+                    Style="{StaticResource FieldLabel}"
                     Text="Gym Name"/>
 
-                <Entry
-                    MaxLength="250"
-                    Placeholder="Enter the gym's name here"
-                    Text="{Binding Name}"/>
+                <Border
+                    Style="{StaticResource InputFrame}">
+
+                    <Entry
+                        MaxLength="250"
+                        Placeholder="Enter the gym's name here"
+                        ReturnType="Next"
+                        SemanticProperties.Hint="Gym name"
+                        Text="{Binding Name}"/>
+
+                </Border>
 
             </VerticalStackLayout>
 
-            <VerticalStackLayout>
+            <!-- Address -->
+            <VerticalStackLayout
+                Spacing="10">
 
                 <Label
-                    FontAttributes="Bold"
-                    FontSize="18"
+                    Style="{StaticResource FieldLabel}"
                     Text="Address"/>
 
-                <Entry
-                    MaxLength="250"
-                    Placeholder="Enter the street address here"
-                    Text="{Binding Address}"/>
+                <Border
+                    Style="{StaticResource InputFrame}">
+
+                    <Entry
+                        MaxLength="250"
+                        Placeholder="Enter the gym's street address here"
+                        ReturnType="Next"
+                        SemanticProperties.Hint="Street address"
+                        Text="{Binding Address}"/>
+
+                </Border>
 
             </VerticalStackLayout>
 
-            <VerticalStackLayout>
+            <!-- City -->
+            <VerticalStackLayout
+                Spacing="10">
 
                 <Label
-                    FontAttributes="Bold"
-                    FontSize="18"
+                    Style="{StaticResource FieldLabel}"
                     Text="City"/>
 
-                <Entry
-                    MaxLength="100"
-                    Placeholder="Enter the city here"
-                    ReturnCommand="{Binding SaveCommand}"
-                    ReturnType="Done"
-                    Text="{Binding City}"/>
+                <Border
+                    Style="{StaticResource InputFrame}">
+
+                    <Entry
+                        MaxLength="100"
+                        Placeholder="Enter the gym's city here"
+                        ReturnCommand="{Binding SaveCommand}"
+                        ReturnType="Done"
+                        SemanticProperties.Hint="City"
+                        Text="{Binding City}"/>
+
+                </Border>
 
             </VerticalStackLayout>
 
             <!-- Error message -->
             <Label
                 IsVisible="{Binding HasErrorMessage}"
-                Text="{Binding ErrorMessage}"
-                TextColor="Red"/>
+                Style="{StaticResource ErrorLabel}"
+                Text="{Binding ErrorMessage}"/>
 
             <!-- Buttons -->
             <VerticalStackLayout
-                Margin="0,5,0,0"
                 Spacing="10">
 
                 <Button
@@ -77,6 +98,7 @@
                 <Button
                     Command="{Binding CancelCommand}"
                     IsEnabled="{Binding IsNotBusy}"
+                    Style="{StaticResource SecondaryButton}"
                     Text="Cancel"/>
 
             </VerticalStackLayout>

@@ -212,7 +212,7 @@
                 "Category title (2 to 50 characters)",
                 accept: accept,
                 cancel: "Cancel",
-                placeholder: "Enter category title here...",
+                placeholder: "Enter category title here",
                 maxLength: 50,
                 initialValue: initialValue);
         }

@@ -179,6 +179,25 @@ namespace CapstoneProjectPUSH
 #endif
             });
 
+            Microsoft.Maui.Handlers.SearchBarHandler.Mapper.AppendToMapping("NoUnderline", (handler, view) =>
+            {
+#if ANDROID
+                Android.Content.Context context = handler.PlatformView.Context;
+
+                int searchPlateId = context.Resources.GetIdentifier("search_plate", "id", context.PackageName);
+
+                if (searchPlateId != 0)
+                {
+                    Android.Views.View searchPlate = handler.PlatformView.FindViewById(searchPlateId);
+
+                    if (searchPlate != null)
+                    {
+                        searchPlate.SetBackgroundColor(Android.Graphics.Color.Transparent);
+                    }
+                }
+#endif
+            });
+
             return builder.Build();
         }
     }

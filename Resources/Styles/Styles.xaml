@@ -163,6 +163,23 @@
         <Setter Property="FontSize" Value="14"/>
     </Style>
 
+    <!-- Dashboard stat number -->
+    <Style x:Key="StatValue" TargetType="Label">
+        <Setter Property="TextColor" Value="{StaticResource Accent}"/>
+        <Setter Property="FontFamily" Value="OpenSansRegular"/>
+        <Setter Property="FontAttributes" Value="Bold"/>
+        <Setter Property="FontSize" Value="18"/>
+        <Setter Property="HorizontalTextAlignment" Value="Center"/>
+    </Style>
+
+    <!-- Dashboard stat title -->
+    <Style x:Key="StatLabel" TargetType="Label">
+        <Setter Property="TextColor" Value="{StaticResource TextSecondary}"/>
+        <Setter Property="FontFamily" Value="OpenSansRegular"/>
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="HorizontalTextAlignment" Value="Center"/>
+    </Style>
+
     <!-- ==================== Borders, cards and pills ==================== -->
 
     <!-- Default border -->
@@ -242,7 +259,7 @@
 
     <!-- Destructive button -->
     <Style x:Key="DangerButton" TargetType="Button" BasedOn="{StaticResource BaseButton}">
-        <Setter Property="BackgroundColor" Value="{StaticResource Error}"/>
+        <Setter Property="BackgroundColor" Value="{StaticResource Danger}"/>
         <Setter Property="TextColor" Value="{StaticResource OnAccent}"/>
         <Setter Property="BorderWidth" Value="0"/>
     </Style>
