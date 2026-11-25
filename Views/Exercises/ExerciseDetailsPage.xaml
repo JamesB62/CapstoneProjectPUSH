@@ -26,63 +26,75 @@
 
         <VerticalStackLayout
             MaximumWidthRequest="500"
-            Padding="30"
+            Padding="30,20,30,20"
             Spacing="20">
+
+            <!-- Error message -->
+            <Label
+                IsVisible="{Binding HasErrorMessage}"
+                Style="{StaticResource ErrorLabel}"
+                Text="{Binding ErrorMessage}"/>
 
             <!-- Placeholder image -->
             <Border
-                StrokeThickness="0"
-                StrokeShape="RoundRectangle 12">
+                StrokeShape="RoundRectangle 12"
+                StrokeThickness="0">
 
                 <Image
                     Aspect="AspectFill"
+                    AutomationProperties.IsInAccessibleTree="False"
                     MaximumHeightRequest="400"
                     Source="{Binding Exercise.Image}"/>
 
             </Border>
 
-            <Grid
-                ColumnDefinitions="*,Auto"
-                ColumnSpacing="15">
+            <!-- Title, category and difficulty -->
+            <VerticalStackLayout
+                Spacing="10">
 
-                <Label
-                    FontAttributes="Bold"
-                    FontSize="18"
-                    Grid.Column="0"
-                    LineBreakMode="WordWrap"
-                    Text="{Binding Exercise.Title}"
-                    VerticalOptions="Center"/>
-
-                <Border
-                    Grid.Column="1"
-                    Style="{StaticResource Pill}">
+                <Grid
+                    ColumnDefinitions="*,Auto"
+                    ColumnSpacing="10">
 
                     <Label
-                        FontSize="12"
-                        Text="{Binding Exercise.CategoryTitle}"/>
+                        Grid.Column="0"
+                        Style="{StaticResource DetailTitle}"
+                        Text="{Binding Exercise.Title}"
+                        VerticalOptions="Center"/>
 
-                </Border>
+                    <Border
+                        Grid.Column="1"
+                        Style="{StaticResource Pill}"
+                        VerticalOptions="Start">
 
-            </Grid>
+                        <Label
+                            Style="{StaticResource PillLabel}"
+                            Text="{Binding Exercise.CategoryTitle}"/>
 
-            <Label
-                FontAttributes="Bold"
-                FontSize="16"
-                Text="About This Exercise"/>
+                    </Border>
 
-            <Label
-                Text="{Binding Exercise.Description}"/>
+                </Grid>
 
-            <Label
-                Text="{Binding Exercise.DifficultyLabel, StringFormat='• Difficulty: {0}'}"/>
+                <Label
+                    Margin="0,8,0,0"
+                    Style="{StaticResource CardCredit}"
+                    Text="{Binding Exercise.DifficultyLabel, StringFormat='Difficulty: {0}'}"/>
 
-            <!-- Add recommended reps/duration? -->
+            </VerticalStackLayout>
+            
+            <!-- About -->
+            <VerticalStackLayout
+                Spacing="10">
 
-            <!-- Error message -->
-            <Label
-                IsVisible="{Binding HasErrorMessage}"
-                Text="{Binding ErrorMessage}"
-                TextColor="Red"/>
+                <Label
+                    Style="{StaticResource SectionHeader}"
+                    Text="About This Exercise"/>
+
+                <Label
+                    Style="{StaticResource LongText}"
+                    Text="{Binding Exercise.Description}"/>
+
+            </VerticalStackLayout>
 
         </VerticalStackLayout>
 
