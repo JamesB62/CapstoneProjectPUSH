@@ -8,134 +8,128 @@
 
         <VerticalStackLayout
             MaximumWidthRequest="500"
-            Padding="30,15"
+            Padding="30,20,30,20"
             Spacing="20">
 
-            <!-- All statements need to be updated -->
-
+            <!-- Prototype notice -->
             <Border
-                StrokeThickness="0"
-                BackgroundColor="#EEF2FF"
-                StrokeShape="RoundRectangle 10"
-                Padding="10">
+                Style="{StaticResource NoticeCard}">
 
-                <Grid
-                    ColumnDefinitions="Auto,*"
-                    ColumnSpacing="10">
-
-                    <Label
-                        FontSize="18"
-                        Grid.Column="0"
-                        Padding="10,0"
-                        Text="&#128274;"
-                        VerticalOptions="Center"/>
-
-                    <Label
-                        Grid.Column="1"
-                        LineBreakMode="WordWrap"
-                        Text="This is a prototype app. Your data is stored securely in a remote database, accessed through a .NET Web API."
-                        TextColor="#4F46E5"
-                        VerticalOptions="Center"/>
-
-                </Grid>
+                <Label
+                    Style="{StaticResource CardBody}"
+                    Text="PUSH is a student project built for a capstone project. Your information is stored in a remote database and send over a secure connection."/>
 
             </Border>
 
+            <!-- What information is collected -->
             <VerticalStackLayout
                 Spacing="10">
 
                 <Label
-                    FontAttributes="Bold"
-                    FontSize="18"
+                    Style="{StaticResource SectionHeader}"
                     Text="What Information Is Collected"/>
 
                 <Label
-                    LineBreakMode="WordWrap"
-                    Text="When you create a PUSH account, we collect your display name, email address, and password. We also store the workouts you create and application usage data for statistical purposes."/>
+                    Style="{StaticResource LongText}"
+                    Text="When you create an account, PUSH collects your display name, email address, and password. As you use the app, it also stores the content you create: your workouts, notes and any reports you submit. You can also choose to add a profile picture and a favourite gym."/>
 
             </VerticalStackLayout>
 
+            <!-- Why your information is collected -->
             <VerticalStackLayout
                 Spacing="10">
 
                 <Label
-                    FontAttributes="Bold"
-                    FontSize="18"
+                    Style="{StaticResource SectionHeader}"
                     Text="Why Your Information Is Collected"/>
 
                 <Label
-                    LineBreakMode="WordWrap"
-                    Text="The information is collected so the application can sign you in, attribute content to your account, track your progress, and save shared workouts."/>
+                    Style="{StaticResource LongText}"
+                    Text="Your information lets PUSH sign you in, show your display name on workouts you share, save your workouts and notes, and track useful workout stats."/>
 
             </VerticalStackLayout>
 
+            <!-- How your information is used -->
             <VerticalStackLayout
                 Spacing="10">
 
                 <Label
-                    FontAttributes="Bold"
-                    FontSize="18"
+                    Style="{StaticResource SectionHeader}"
                     Text="How Your Information Is Used"/>
 
                 <Label
-                    LineBreakMode="WordWrap"
-                    Text="Your information is only used to power app features. It is not shared with any third parties or used for any other purpose outside the app."/>
+                    Style="{StaticResource LongText}"
+                    Text="Your information is only used to power PUSH features. It isn't sold, shared with third parties or used for advertising."/>
 
             </VerticalStackLayout>
 
+            <!-- Who can see your information -->
             <VerticalStackLayout
                 Spacing="10">
 
                 <Label
-                    FontAttributes="Bold"
-                    FontSize="18"
+                    Style="{StaticResource SectionHeader}"
+                    Text="Who Can See Your Information"/>
+                
+                <Label
+                    Style="{StaticResource LongText}"
+                    Text="Private workouts and your notes are only visible to you. Workouts you make public appear on the Community Workouts page with your display name, where other signed-in users can view them."/>
+
+            </VerticalStackLayout>
+
+            <!-- Where your information is stored -->
+            <VerticalStackLayout
+                Spacing="10">
+
+                <Label
+                    Style="{StaticResource SectionHeader}"
                     Text="Where Your Information Is Stored"/>
 
                 <Label
-                    LineBreakMode="WordWrap"
-                    Text="Your information is stored securely in a remote database. Passwords are never stored in plain text – they're hashed, so your password cannot be exposed."/>
+                    Style="{StaticResource LongText}"
+                    Text="Your information is securely in a remote database and sent over a secure HTTPS connection through the PUSH web API. Passwords are never stored in plain text – they're hashed, so your actual password can't be seen by anyone, including administrators."/>
 
             </VerticalStackLayout>
 
+            <!-- How you can correct your information -->
             <VerticalStackLayout
                 Spacing="10">
 
                 <Label
-                    FontAttributes="Bold"
-                    FontSize="18"
+                    Style="{StaticResource SectionHeader}"
                     Text="How You Can Correct Your Information"/>
 
                 <Label
-                    LineBreakMode="WordWrap"
-                    Text="You can update your account details or edit any workout or note at any time – just open the item, make changes, and save."/>
+                    Style="{StaticResource LongText}"
+                    Text="You can update your display name, email address, password, profile picture and favourite gym from your profile at any time. You can also edit any workout or note you've created."/>
 
             </VerticalStackLayout>
 
+            <!-- How you can delete your information -->
             <VerticalStackLayout
                 Spacing="10">
 
                 <Label
-                    FontAttributes="Bold"
-                    FontSize="18"
+                    Style="{StaticResource SectionHeader}"
                     Text="How You Can Delete Your Information"/>
 
                 <Label
-                    LineBreakMode="WordWrap"
-                    Text="You can delete any workout or note you've created at any time. Once confirmed, it's permanently removed and cannot be recovered."/>
+                    Style="{StaticResource LongText}"
+                    Text="You can delete any workout or note you've created, and you can permanently delete your account at any time from your profile. Once confirmed, deleted information is removed and can't be recovered."/>
 
             </VerticalStackLayout>
 
+            <!-- What administrators can see -->
             <VerticalStackLayout
                 Spacing="10">
 
                 <Label
-                    FontAttributes="Bold"
-                    FontSize="18"
+                    Style="{StaticResource SectionHeader}"
                     Text="What Administrators Can See"/>
 
                 <Label
-                    LineBreakMode="WordWrap"
-                    Text="Administrators can view reported workouts as part of the moderation process, and can view basic account information to manage users. Administrators do not have access to your password or personal notes."/>
+                    Style="{StaticResource LongText}"
+                    Text="Administrators can view basic account information (display name, email address, role, account status and join date) to manage users and deactivate accounts. They can also view reported workouts and the reason provided. Administrators can't see your password or your private notes."/>
 
             </VerticalStackLayout>
 

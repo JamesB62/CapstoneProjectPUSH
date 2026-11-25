@@ -10,118 +10,190 @@
 
         <VerticalStackLayout
             MaximumWidthRequest="500"
-            Padding="30,0,30,30"
+            Padding="30,20,30,20"
             Spacing="20"
             VerticalOptions="Center">
 
             <!-- Branding -->
-            <HorizontalStackLayout
-                HorizontalOptions="Center"
+            <VerticalStackLayout
                 Spacing="10">
 
-                <!-- Logo placeholder -->
-                <Border
-                    HeightRequest="50"
-                    StrokeShape="RoundRectangle 12"
-                    WidthRequest="50">
+                <HorizontalStackLayout
+                    HorizontalOptions="Center"
+                    Spacing="10">
+
+                    <!-- Logo placeholder (decorative) -->
+                    <Border
+                        Style="{StaticResource LogoFrame}">
+
+                        <Label
+                            Style="{StaticResource LogoPlaceholderLabel}"
+                            Text="Logo"/>
+
+                    </Border>
 
                     <Label
-                        FontAttributes="Bold"
-                        FontSize="10"
-                        HorizontalOptions="Center"
-                        Text="Logo"
-                        VerticalOptions="Center"/>
+                        Style="{StaticResource BrandTitle}"
+                        Text="PUSH"/>
+
+                </HorizontalStackLayout>
+
+                <Label
+                    HorizontalOptions="Center"
+                    Style="{StaticResource CardBody}"
+                    Text="Create your PUSH account"/>
+
+            </VerticalStackLayout>
+
+            <!-- Display name -->
+            <VerticalStackLayout
+                Spacing="10">
+
+                <Label
+                    Style="{StaticResource FieldLabel}"
+                    Text="Display Name"/>
+
+                <Border
+                    Style="{StaticResource InputFrame}">
+
+                    <Entry
+                        IsEnabled="{Binding IsNotBusy}"
+                        Placeholder="Enter your display name here"
+                        ReturnType="Next"
+                        SemanticProperties.Hint="Display name"
+                        Text="{Binding DisplayName}"/>
+
+                </Border>
+
+            </VerticalStackLayout>
+
+            <!-- Email -->
+            <VerticalStackLayout
+                Spacing="10">
+
+                <Label
+                    Style="{StaticResource FieldLabel}"
+                    Text="Email"/>
+
+                <Border
+                    Style="{StaticResource InputFrame}">
+
+                    <Entry
+                        IsEnabled="{Binding IsNotBusy}"
+                        Keyboard="Email"
+                        Placeholder="Enter your email address here"
+                        ReturnType="Next"
+                        SemanticProperties.Hint="Email"
+                        Text="{Binding Email}"/>
+
+                </Border>
+
+            </VerticalStackLayout>
+
+            <!-- Password -->
+            <VerticalStackLayout
+                Spacing="10">
+
+                <Label
+                    Style="{StaticResource FieldLabel}"
+                    Text="Password"/>
+
+                <Border
+                    Style="{StaticResource InputFrame}">
+
+                    <Entry
+                        IsEnabled="{Binding IsNotBusy}"
+                        IsPassword="True"
+                        Placeholder="Enter your password here"
+                        ReturnType="Next"
+                        SemanticProperties.Hint="Password"
+                        Text="{Binding Password}"/>
 
                 </Border>
 
                 <Label
-                    FontSize="21"
-                    FontAttributes="Bold"
-                    Text="PUSH"
-                    VerticalOptions="Center"/>
-
-            </HorizontalStackLayout>
-
-            <Label
-                HorizontalOptions="Center"
-                Text="Create your PUSH account"/>
-
-            <!-- Register form -->
-            <VerticalStackLayout
-                Spacing="5">
-
-                <Entry
-                    IsEnabled="{Binding IsNotBusy}"
-                    Placeholder="Enter your display name here"
-                    Text="{Binding DisplayName}"/>
-
-                <Entry
-                    IsEnabled="{Binding IsNotBusy}"
-                    Keyboard="Email"
-                    Placeholder="Enter your email address here"
-                    Text="{Binding Email}"/>
-
-                <Entry
-                    IsEnabled="{Binding IsNotBusy}"
-                    IsPassword="True"
-                    Placeholder="Enter your password here"
-                    Text="{Binding Password}"/>
-
-                <Entry
-                    IsEnabled="{Binding IsNotBusy}"
-                    IsPassword="True"
-                    Placeholder="Confirm your password here"
-                    Text="{Binding ConfirmPassword}"/>
-
-                <Label
-                    FontSize="14"
+                    Style="{StaticResource HintLabel}"
                     Text="{Binding PasswordRequirements}"/>
 
-                <!-- Privacy consent check -->
-                <HorizontalStackLayout
-                    Margin="0,0,0,-10"
-                    Spacing="-5">
+            </VerticalStackLayout>
 
-                    <CheckBox
-                        IsChecked="{Binding HasAcceptedPrivacy}"
-                        IsEnabled="{Binding IsNotBusy}"/>
+            <!-- Confirm password -->
+            <VerticalStackLayout
+                Spacing="10">
 
-                    <!-- Privacy statement link -->
-                    <Label
-                        Text="Privacy Consent"
-                        TextDecorations="Underline"
-                        VerticalOptions="Center">
+                <Label
+                    Style="{StaticResource FieldLabel}"
+                    Text="Confirm Password"/>
 
-                        <Label.GestureRecognizers>
+                <Border
+                    Style="{StaticResource InputFrame}">
 
-                            <TapGestureRecognizer
-                                Command="{Binding GoToPrivacyCommand}"/>
+                    <Entry
+                        IsEnabled="{Binding IsNotBusy}"
+                        IsPassword="True"
+                        Placeholder="Enter your password again"
+                        ReturnType="Done"
+                        SemanticProperties.Hint="Confirm password"
+                        Text="{Binding ConfirmPassword}"/>
 
-                        </Label.GestureRecognizers>
-
-                    </Label>
-
-                </HorizontalStackLayout>
+                </Border>
 
             </VerticalStackLayout>
+
+            <!-- Privacy consent -->
+            <Grid
+                ColumnDefinitions="Auto,Auto,*"
+                ColumnSpacing="0">
+
+                <CheckBox
+                    Grid.Column="0"
+                    IsChecked="{Binding HasAcceptedPrivacy}"
+                    IsEnabled="{Binding IsNotBusy}"
+                    SemanticProperties.Description="I accept the privacy consent"
+                    VerticalOptions="Center"/>
+
+                <Label
+                    Grid.Column="1"
+                    AutomationProperties.IsInAccessibleTree="False"
+                    Text="I accept the "
+                    VerticalOptions="Center"/>
+
+                <Label
+                    Grid.Column="2"
+                    SemanticProperties.Hint="Opens the privacy statement"
+                    Style="{StaticResource LinkLabel}"
+                    Text="Privacy Consent"
+                    VerticalOptions="Center">
+
+                    <Label.GestureRecognizers>
+
+                        <TapGestureRecognizer
+                            Command="{Binding GoToPrivacyCommand}"/>
+
+                    </Label.GestureRecognizers>
+
+                </Label>
+
+            </Grid>
 
             <!-- Error message -->
             <Label
                 IsVisible="{Binding HasErrorMessage}"
-                Text="{Binding ErrorMessage}"
-                TextColor="Red"/>
+                Style="{StaticResource ErrorLabel}"
+                Text="{Binding ErrorMessage}"/>
 
             <!-- Register button -->
             <Button
                 Command="{Binding RegisterCommand}"
-                FontAttributes="Bold"
                 IsEnabled="{Binding IsNotBusy}"
                 Text="Register"/>
 
             <!-- Login link -->
             <Label
-                Text="Already have an account? Tap here to log in"
-                TextDecorations="Underline">
+                HorizontalOptions="Center"
+                SemanticProperties.Hint="Opens the log in page"
+                Style="{StaticResource LinkLabel}"
+                Text="Already have an account? Tap here to log in">
 
                 <Label.GestureRecognizers>
 
@@ -135,7 +207,8 @@
             <!-- Loading circle -->
             <ActivityIndicator
                 IsRunning="{Binding IsBusy}"
-                Margin="0,10,0,0"/>
+                IsVisible="{Binding IsBusy}"
+                SemanticProperties.Description="Creating your account"/>
 
         </VerticalStackLayout>
 

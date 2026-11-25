@@ -11,7 +11,7 @@
 
         <VerticalStackLayout
             MaximumWidthRequest="500"
-            Padding="30,0,30,30"
+            Padding="30,20,30,20"
             Spacing="20"
             VerticalOptions="Center">
 
@@ -22,26 +22,25 @@
 
                 <!-- Logo placeholder -->
                 <Border
-                    HeightRequest="50"
-                    StrokeShape="RoundRectangle 10"
-                    WidthRequest="50">
+                    Style="{StaticResource LogoFrame}">
 
                     <Label
-                        FontAttributes="Bold"
-                        FontSize="10"
-                        HorizontalOptions="Center"
-                        Text="Logo"
-                        VerticalOptions="Center"/>
+                        Style="{StaticResource LogoPlaceholderLabel}"
+                        Text="Logo"/>
 
                 </Border>
 
                 <Label
-                    FontSize="21"
-                    FontAttributes="Bold"
-                    Text="PUSH"
-                    VerticalOptions="Center"/>
+                    Style="{StaticResource BrandTitle}"
+                    Text="PUSH"/>
 
             </HorizontalStackLayout>
+
+            <!-- Error message -->
+            <Label
+                IsVisible="{Binding HasErrorMessage}"
+                Style="{StaticResource ErrorLabel}"
+                Text="{Binding ErrorMessage}"/>
 
             <!-- Buttons -->
             <VerticalStackLayout
@@ -49,31 +48,28 @@
 
                 <Button
                     Command="{Binding GoToLoginCommand}"
-                    FontAttributes="Bold"
                     Text="Log In"/>
 
                 <Button
                     Command="{Binding GoToRegisterCommand}"
-                    FontAttributes="Bold"
+                    Style="{StaticResource SecondaryButton}"
                     Text="Register"/>
 
-                    <!-- Guest button -->
+                <!-- Guest -->
                 <Button
                     Command="{Binding GuestLoginCommand}"
-                    FontAttributes="Bold"
-                    Text="Continue as Guest"
-                    BackgroundColor="Transparent"
-                    BorderWidth="1"
-                    BorderColor="{AppThemeBinding Light=#9CA3AF, Dark=#6B7280}"
-                    TextColor="{AppThemeBinding Light=Black, Dark=White}"/>
-
+                    SemanticProperties.Hint="Browse PUSH with limited features, no account needed"
+                    Style="{StaticResource TertiaryButton}"
+                    Text="Continue as Guest"/>
 
             </VerticalStackLayout>
 
             <!-- Privacy statement link -->
             <Label
-                Text="View Privacy Statement"
-                TextDecorations="Underline">
+                HorizontalOptions="Center"
+                SemanticProperties.Hint="Opens the privacy statement"
+                Style="{StaticResource LinkLabel}"
+                Text="View Privacy Statement">
 
                 <Label.GestureRecognizers>
 
@@ -83,12 +79,6 @@
                 </Label.GestureRecognizers>
 
             </Label>
-
-            <!-- Error message -->
-            <Label
-                IsVisible="{Binding HasErrorMessage}"
-                Text="{Binding ErrorMessage}"
-                TextColor="Red"/>
 
         </VerticalStackLayout>
 

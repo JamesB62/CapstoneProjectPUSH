@@ -213,6 +213,15 @@
         <Setter Property="BackgroundColor" Value="{StaticResource Divider}"/>
     </Style>
 
+    <!-- Highlighted notice -->
+    <Style x:Key="NoticeCard" TargetType="Border">
+        <Setter Property="BackgroundColor" Value="{StaticResource CardBackground}"/>
+        <Setter Property="Padding" Value="15"/>
+        <Setter Property="Stroke" Value="{StaticResource Accent}"/>
+        <Setter Property="StrokeShape" Value="RoundRectangle 12"/>
+        <Setter Property="StrokeThickness" Value="1"/>
+    </Style>
+
     <!-- ==================== Buttons ==================== -->
 
     <!-- Default button (unused) -->
@@ -254,6 +263,14 @@
         <Setter Property="BackgroundColor" Value="Transparent"/>
         <Setter Property="TextColor" Value="{StaticResource Accent}"/>
         <Setter Property="BorderColor" Value="{StaticResource Accent}"/>
+        <Setter Property="BorderWidth" Value="1"/>
+    </Style>
+
+    <!-- Tertiary button -->
+    <Style x:Key="TertiaryButton" TargetType="Button" BasedOn="{StaticResource BaseButton}">
+        <Setter Property="BackgroundColor" Value="Transparent"/>
+        <Setter Property="TextColor" Value="{StaticResource TextPrimary}"/>
+        <Setter Property="BorderColor" Value="{StaticResource InputBorder}"/>
         <Setter Property="BorderWidth" Value="1"/>
     </Style>
 
@@ -517,6 +534,42 @@
         <Setter Property="TextColor" Value="{StaticResource TextSecondary}"/>
         <Setter Property="FontFamily" Value="OpenSansRegular"/>
         <Setter Property="FontSize" Value="14"/>
+    </Style>
+
+    <!-- ==================== Branding ==================== -->
+
+    <!-- PUSH heading -->
+    <Style x:Key="BrandTitle" TargetType="Label">
+        <Setter Property="TextColor" Value="{StaticResource Accent}"/>
+        <Setter Property="FontFamily" Value="OpenSansRegular"/>
+        <Setter Property="FontAttributes" Value="Bold"/>
+        <Setter Property="FontSize" Value="28"/>
+        <Setter Property="VerticalOptions" Value="Center"/>
+        <Setter Property="SemanticProperties.HeadingLevel" Value="Level1"/>
+    </Style>
+
+    <!-- DELETE BELOW ONCE LOGO HAS BEEN APPLIED -->
+    
+    <!-- Box for the logo (decorative, hidden from screen readers) -->
+    <Style x:Key="LogoFrame" TargetType="Border">
+        <Setter Property="BackgroundColor" Value="{StaticResource CardBackground}"/>
+        <Setter Property="HeightRequest" Value="50"/>
+        <Setter Property="WidthRequest" Value="50"/>
+        <Setter Property="Stroke" Value="{StaticResource Accent}"/>
+        <Setter Property="StrokeShape" Value="RoundRectangle 10"/>
+        <Setter Property="StrokeThickness" Value="1"/>
+        <Setter Property="AutomationProperties.IsInAccessibleTree" Value="False"/>
+    </Style>
+
+    <!-- "Logo" text inside LogoFrame until a real logo exists -->
+    <Style x:Key="LogoPlaceholderLabel" TargetType="Label">
+        <Setter Property="TextColor" Value="{StaticResource TextSecondary}"/>
+        <Setter Property="FontFamily" Value="OpenSansRegular"/>
+        <Setter Property="FontAttributes" Value="Bold"/>
+        <Setter Property="FontSize" Value="10"/>
+        <Setter Property="HorizontalOptions" Value="Center"/>
+        <Setter Property="VerticalOptions" Value="Center"/>
+        <Setter Property="AutomationProperties.IsInAccessibleTree" Value="False"/>
     </Style>
 
 </ResourceDictionary>
