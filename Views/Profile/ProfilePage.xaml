@@ -11,89 +11,101 @@
 
         <VerticalStackLayout
             MaximumWidthRequest="500"
-            Padding="30"
+            Padding="30,20,30,20"
             Spacing="20">
 
             <!-- Profile image -->
             <Border
+                AutomationProperties.IsInAccessibleTree="False"
+                BackgroundColor="{StaticResource CardBackground}"
                 HeightRequest="100"
                 HorizontalOptions="Center"
+                Stroke="{StaticResource Accent}"
                 StrokeShape="Ellipse"
-                StrokeThickness="0"
+                StrokeThickness="2"
                 WidthRequest="100">
 
                 <Image
                     Aspect="AspectFill"
+                    AutomationProperties.IsInAccessibleTree="False"
                     Source="{Binding ProfileImage}"/>
 
             </Border>
 
             <!-- Profile details -->
             <VerticalStackLayout
-                HorizontalOptions="Center"
                 Spacing="5">
 
                 <Label
-                    FontAttributes="Bold"
-                    FontSize="18"
                     HorizontalOptions="Center"
+                    Style="{StaticResource DetailTitle}"
                     Text="{Binding DisplayName}"/>
 
                 <Label
                     HorizontalOptions="Center"
+                    Style="{StaticResource CardBody}"
                     Text="{Binding Email}"/>
 
                 <Label
                     HorizontalOptions="Center"
                     IsVisible="{Binding HasFavouriteGym}"
+                    Style="{StaticResource CardBody}"
                     Text="{Binding FavouriteGymText, StringFormat='Favourite gym: {0}'}"/>
                 
-            </VerticalStackLayout>
-
-            <!-- Buttons -->
-            <VerticalStackLayout
-                Margin="0,10,0,0"
-                Spacing="10">
-
-                <Button
-                    Command="{Binding GoToUpdateDetailsCommand}"
-                    Text="Update Details"/>
-
-                <Button
-                    Command="{Binding GoToMyWorkoutsCommand}"
-                    Text="My Workouts"/>
-
-                <Button
-                    Command="{Binding GoToMyNotesCommand}"
-                    Text="My Notes"/>
-
-                <Button
-                    Command="{Binding GoToAdminDashboardCommand}"
-                    IsVisible="{Binding IsAdmin}"
-                    Text="Admin Dashboard"/>
-
-                <Button
-                    Command="{Binding DeleteAccountCommand}"
-                    IsEnabled="{Binding IsNotBusy}"
-                    IsVisible="{Binding CanDeleteAccount}"
-                    Text="Delete Account"/>
-
-                <Button
-                    Command="{Binding LogoutCommand}"
-                    Text="Logout"/>
-
             </VerticalStackLayout>
 
             <!-- Error message -->
             <Label
                 IsVisible="{Binding HasErrorMessage}"
-                Text="{Binding ErrorMessage}"
-                TextColor="Red"/>
+                Style="{StaticResource ErrorLabel}"
+                Text="{Binding ErrorMessage}"/>
+
+            <!-- Buttons -->
+            <VerticalStackLayout
+                Spacing="10">
+
+                <Button
+                    Command="{Binding GoToUpdateDetailsCommand}"
+                    Style="{StaticResource SecondaryButton}"
+                    Text="Update Details"/>
+
+                <Button
+                    Command="{Binding GoToMyWorkoutsCommand}"
+                    Style="{StaticResource SecondaryButton}"
+                    Text="My Workouts"/>
+
+                <Button
+                    Command="{Binding GoToMyNotesCommand}"
+                    Style="{StaticResource SecondaryButton}"
+                    Text="My Notes"/>
+
+                <Button
+                    Command="{Binding GoToAdminDashboardCommand}"
+                    IsVisible="{Binding IsAdmin}"
+                    Style="{StaticResource SecondaryButton}"
+                    Text="Admin Dashboard"/>
+
+                <Button
+                    Command="{Binding LogoutCommand}"
+                    Style="{StaticResource TertiaryButton}"
+                    Text="Logout"/>
+
+                <Button
+                    Command="{Binding DeleteAccountCommand}"
+                    IsEnabled="{Binding IsNotBusy}"
+                    IsVisible="{Binding CanDeleteAccount}"
+                    SemanticProperties.Hint="Permanently deletes your account and everything you've created"
+                    Style="{StaticResource DangerButton}"
+                    Text="Delete Account"/>
+
+            </VerticalStackLayout>
 
             <!-- Privacy statement link -->
             <Label
-                Text="Privacy Statement"
-                TextDecorations="Underline">
+                HorizontalTextAlignment="Center"
+                SemanticProperties.Hint="Opens the privacy statement"
+                Style="{StaticResource LinkLabel}"
+                Text="Privacy Statement">
 
                 <Label.GestureRecognizers>
 

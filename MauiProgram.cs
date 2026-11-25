@@ -179,6 +179,9 @@ namespace CapstoneProjectPUSH
 #endif
             });
 
+#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
+
             Microsoft.Maui.Handlers.SearchBarHandler.Mapper.AppendToMapping("NoUnderline", (handler, view) =>
             {
 #if ANDROID
