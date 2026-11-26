@@ -10,49 +10,72 @@
 
         <VerticalStackLayout
             MaximumWidthRequest="500"
-            Padding="30"
+            Padding="30,20,30,20"
             Spacing="20">
 
-            <!-- Note form -->
-            <VerticalStackLayout>
+            <!-- Notice -->
+            <Border
+                Style="{StaticResource NoticeCard}">
 
                 <Label
-                    FontAttributes="Bold"
-                    FontSize="18"
+                    Style="{StaticResource CardBody}"
+                    Text="Your notes are private to you, but don't use them to store sensitive information such as passwords, bank account details or health information."/>
+
+            </Border>
+            
+            <!-- Title-->
+            <VerticalStackLayout
+                Spacing="10">
+
+                <Label
+                    Style="{StaticResource FieldLabel}"
                     Text="Title"/>
 
-                <Entry
-                    MaxLength="100"
-                    Placeholder="Enter a title here"
-                    Text="{Binding NoteTitle}"/>
+                <Border
+                    Style="{StaticResource InputFrame}">
+                    
+                    <Entry
+                        MaxLength="100"
+                        Placeholder="Enter a title here"
+                        ReturnType="Next"
+                        SemanticProperties.Hint="Note title"
+                        Text="{Binding NoteTitle}"/>
+
+                </Border>
 
             </VerticalStackLayout>
 
-            <VerticalStackLayout>
+            <!-- Note -->
+            <VerticalStackLayout
+                Spacing="10">
 
                 <Label
-                    FontAttributes="Bold"
-                    FontSize="18"
+                    Style="{StaticResource FieldLabel}"
                     Text="Note"/>
 
-                <Editor
-                    AutoSize="TextChanges"
-                    MaxLength="5000"
-                    MinimumHeightRequest="150"
-                    Placeholder="Write your note here"
-                    Text="{Binding NoteContent}"/>
+                <Border
+                    Style="{StaticResource InputFrame}">
+
+                    <Editor
+                        AutoSize="TextChanges"
+                        MaxLength="5000"
+                        MinimumHeightRequest="150"
+                        Placeholder="Write your note here"
+                        SemanticProperties.Hint="Note"
+                        Text="{Binding NoteContent}"/>
+
+                </Border>
 
             </VerticalStackLayout>
 
             <!-- Error message -->
             <Label
                 IsVisible="{Binding HasErrorMessage}"
-                Text="{Binding ErrorMessage}"
-                TextColor="Red"/>
+                Style="{StaticResource ErrorLabel}"
+                Text="{Binding ErrorMessage}"/>
 
             <!-- Buttons -->
             <VerticalStackLayout
-                Margin="0,5,0,0"
                 Spacing="10">
 
                 <Button
@@ -63,6 +86,7 @@
                 <Button
                     Command="{Binding CancelCommand}"
                     IsEnabled="{Binding IsNotBusy}"
+                    Style="{StaticResource SecondaryButton}"
                     Text="Cancel"/>
 
             </VerticalStackLayout>

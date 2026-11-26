@@ -29,6 +29,15 @@
 
         public bool HasErrorMessage => !string.IsNullOrEmpty(ErrorMessage);
 
+        // Reads new errors aloud for screen reader users
+        partial void OnErrorMessageChanged(string value)
+        {
+            if (!string.IsNullOrWhiteSpace(value))
+            {
+                SemanticScreenReader.Default.Announce(value);
+            }
+        }
+
         // Signed-in state
         public bool IsUnauthenticated => _userService.IsUnauthenticated;
         public bool IsGuest => _userService.IsGuest;

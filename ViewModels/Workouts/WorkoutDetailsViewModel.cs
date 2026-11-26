@@ -113,7 +113,7 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
 
                     IsFavourite = await _workoutService.IsFavouriteAsync(WorkoutId, user.Id);
                     
-                    if (!IsOwner && !Workout.IsPrivate && IsLoggedIn && !IsCurrentUserAdmin)
+                    if (!IsOwner && !Workout.IsPrivate && IsLoggedIn)
                     {
                         CanReport = true;
                     }
@@ -128,7 +128,7 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
                     }
                     else
                     {
-                        PrivacyText = "Shared";
+                        PrivacyText = "Public";
                     }
 
                     var exercises = await _workoutService.GetExercisesForWorkoutAsync(WorkoutId);

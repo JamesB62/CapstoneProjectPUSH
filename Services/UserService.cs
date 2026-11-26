@@ -4,6 +4,9 @@
 
     public class UserService
     {
+        // Matches DbSeeder.SeedAdminEmail in the api
+        public const string SeedAdminEmail = "admin@push.app";
+
         private const int MinDisplayNameLength = 5;
         private const int MaxDisplayNameLength = 60;
 
@@ -174,6 +177,11 @@
                 return new AuthResult(false, "Please enter a valid email address.");
             }
 
+            if (IsSeededAdmin(CurrentUser) && email != CurrentUser.Email)
+            {
+                return new AuthResult(false, "The main admin account's email can't be changed.");
+            }
+
             bool changingPassword = !string.IsNullOrEmpty(newPassword) || !string.IsNullOrEmpty(confirmPassword);
 
             if (changingPassword)
@@ -316,16 +324,21 @@
         }
 
         // Set user active status
-        public async Task<AuthResult> SetUserActiveStatusAsync(int userId, bool isActive)
+        public async Task<AuthResult> SetUserActiveStatusAsync(User user, bool isActive)
         {
             if (!IsCurrentUserAdmin())
             {
                 return new AuthResult(false, "Only administrators can change account status.");
             }
 
-            if (userId == CurrentUser!.Id)
+            if (user.Id == CurrentUser!.Id)
             {
                 return new AuthResult(false, "You can't deactivate your own account.");
+            }
+
+            if (IsSeededAdmin(user) && !isActive)
+            {
+                return new AuthResult(false, "The main admin account can't be deactivated.");
             }
 
             UserStatusRequest request = new UserStatusRequest
@@ -333,7 +346,50 @@
                 IsActive = isActive
             };
 
-            ApiResult<UserResponse> result = await _apiClient.PutAsync<UserResponse>($"api/users/{userId}/status", request);
+            ApiResult<UserResponse> result = await _apiClient.PutAsync<UserResponse>($"api/users/{user.Id}/status", request);
+
+            if (!result.Success)
+            {
+                return new AuthResult(false, result.Message);
+            }
+
+            if (result.Data == null)
+            {
+                return new AuthResult(false, "Something went wrong. Please try again.");
+            }
+
+            return new AuthResult(true, result.Data.Message, result.Data.User);
+        }
+
+        // Set user role
+        public async Task<AuthResult> SetUserRoleAsync(User user, bool isAdmin)
+        {
+            if (!IsCurrentUserAdmin())
+            {
+                return new AuthResult(false, "Only administrators can change account roles.");
+            }
+
+            if (user.Id == CurrentUser!.Id)
+            {
+                return new AuthResult(false, "You can't change your own role.");
+            }
+
+            if (user.IsGuest)
+            {
+                return new AuthResult(false, "The guest account's role can't be changed.");
+            }
+
+            if (IsSeededAdmin(user))
+            {
+                return new AuthResult(false, "The main admin account's role can't be changed.");
+            }
+
+            UserRoleRequest request = new UserRoleRequest
+            {
+                IsAdmin = isAdmin
+            };
+
+            ApiResult<UserResponse> result = await _apiClient.PutAsync<UserResponse>($"api/users/{user.Id}/role", request);
 
             if (!result.Success)
             {
@@ -436,6 +492,12 @@
                 return null;
             }
             return CurrentUser;
+        }
+
+        // The seeded admin is locked so there's always a way into the admin content
+        public static bool IsSeededAdmin(User user)
+        {
+            return string.Equals(user.Email, SeedAdminEmail, StringComparison.OrdinalIgnoreCase);
         }
     }
 }

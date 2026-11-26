@@ -53,6 +53,7 @@ namespace CapstoneProjectPUSH
 
             // Home
             Routing.RegisterRoute(nameof(ArticleDetailsPage), typeof(ArticleDetailsPage));
+            Routing.RegisterRoute(nameof(CreateArticlePage), typeof(CreateArticlePage));
 
             // Profile
             Routing.RegisterRoute(nameof(MyNotesPage), typeof(MyNotesPage));
@@ -77,6 +78,12 @@ namespace CapstoneProjectPUSH
             base.OnNavigating(args);
 
             if (args.Target?.Location == null)
+            {
+                return;
+            }
+
+            // Going back only returns to a page that already passed this check
+            if (args.Source == ShellNavigationSource.Pop)
             {
                 return;
             }

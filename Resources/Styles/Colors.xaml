@@ -41,4 +41,42 @@
     <SolidColorBrush x:Key="Gray600Brush" Color="{StaticResource Gray600}"/>
     <SolidColorBrush x:Key="Gray900Brush" Color="{StaticResource Gray900}"/>
     <SolidColorBrush x:Key="Gray950Brush" Color="{StaticResource Gray950}"/>
+
+    <!-- Custom dark theme colours (using tailwind css and wcag 2 contrast ratios) -->
+    <!-- https://tailwindcss.com/docs/colors -->
+    <!-- https://webaim.org/resources/contrastchecker/ -->
+    
+    <!-- Surfaces -->
+    <Color x:Key="PageBackground">#0F172A</Color> <!-- Slate900 -->
+    <Color x:Key="CardBackground">#1E293B</Color> <!-- Slate800 -->
+    <Color x:Key="BarBackground">#1E293B</Color> <!-- Slate800 -->
+    <Color x:Key="PillBackground">#172033</Color> <!-- Custom -->
+
+    <!-- Text -->
+    <Color x:Key="TextPrimary">#F8FAFC</Color> <!-- Slate50 -->
+    <Color x:Key="TextSecondary">#94A3B8</Color> <!-- Slate400 -->
+
+    <!-- Accent -->
+    <Color x:Key="Accent">#A3E635</Color> <!-- Lime400 -->
+    <Color x:Key="OnAccent">#020617</Color> <!-- Slate950 -->
+    <Color x:Key="PillText">#BEF264</Color> <!-- Lime300 -->
+    <Color x:Key="SwitchTrackOn">#3F6212</Color> <!-- Lime800 -->
+
+    <!-- Status -->
+    <Color x:Key="Error">#F87171</Color> <!-- Red400 -->
+    <Color x:Key="Danger">#EF4444</Color> <!-- Red500 -->
+    <Color x:Key="Favourite">#FCD34D</Color> <!-- Amber300 -->
+
+    <!-- Lines and inputs -->
+    <Color x:Key="InputBorder">#64748B</Color> <!-- Slate500 -->
+    <Color x:Key="Divider">#334155</Color> <!-- Slate700 -->
+
+    <!-- Disabled -->
+    <Color x:Key="DisabledBackground">#334155</Color> <!-- Slate700 -->
+    <Color x:Key="DisabledText">#94A3B8</Color> <!-- Slate400 -->
+
+    <!-- Swipe actions -->
+    <Color x:Key="SwipeEdit">#475569</Color> <!-- Slate600 -->
+    <Color x:Key="SwipeDelete">#B91C1C</Color> <!-- Red700 -->
+
 </ResourceDictionary>

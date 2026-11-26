@@ -110,6 +110,7 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
 
             value.IsSelected = !value.IsSelected;
             SelectedCount = _allExercises.Count(e => e.IsSelected);
+            SemanticScreenReader.Default.Announce($"{SelectedCount} selected");
             SelectedExercise = null;
         }
 

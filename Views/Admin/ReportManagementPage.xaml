@@ -8,55 +8,67 @@
              Title="Manage PUSH Reports">
 
     <Grid
-        Padding="30,15,30,0"
+        MaximumWidthRequest="500"
+        Padding="30,20,30,0"
         RowDefinitions="Auto,Auto,*"
         RowSpacing="20">
 
-        <!-- Search -->
-        <SearchBar
-            Grid.Row="0"
-            Placeholder="Search by workout, reporter or reason"
-            Text="{Binding SearchText}"/>
-
         <VerticalStackLayout
+            Grid.Row="0"
+            Spacing="20">
+
+            <!-- Error message -->
+            <Label
+                IsVisible="{Binding HasErrorMessage}"
+                Style="{StaticResource ErrorLabel}"
+                Text="{Binding ErrorMessage}"/>
+
+            <!-- Search bar -->
+            <Border
+                Style="{StaticResource InputFrame}">
+
+                <SearchBar
+                    Placeholder="Search by workout, reporter or reason"
+                    SemanticProperties.Hint="Search reports"
+                    Text="{Binding SearchText}"/>
+
+            </Border>
+
+        </VerticalStackLayout>
+
+        <!-- Count and pending filter -->
+        <Grid
             Grid.Row="1"
-            Spacing="15">
+            ColumnDefinitions="*,Auto"
+            ColumnSpacing="10">
 
-            <Grid
-                ColumnDefinitions="*,Auto"
-                ColumnSpacing="10">
+            <!-- Status message -->
+            <Label
+                Grid.Column="0"
+                Style="{StaticResource StatusLabel}"
+                Text="{Binding StatusMessage}"
+                VerticalOptions="Center"/>
 
-                <!-- Status message -->
+            <!-- Availability toggle -->
+            <HorizontalStackLayout
+                Grid.Column="1"
+                Margin="0,-15,0,-15"
+                Spacing="5">
+
                 <Label
-                    Grid.Column="0"
-                    Text="{Binding StatusMessage}"
+                    AutomationProperties.IsInAccessibleTree="False"
+                    Style="{StaticResource StatusLabel}"
+                    Text="Pending Only"
                     VerticalOptions="Center"/>
 
-                <!-- Availability toggle -->
-                <HorizontalStackLayout
-                    Grid.Column="1"
-                    Margin="0,-15,0,-15"
-                    Spacing="5">
+                <Switch
+                    IsToggled="{Binding ShowPendingOnly}"
+                    SemanticProperties.Description="Show pending reports only"
+                    VerticalOptions="Center"/>
 
-                    <Label
-                        Text="Pending Only"
-                        VerticalOptions="Center"/>
+            </HorizontalStackLayout>
 
-                    <Switch
-                        IsToggled="{Binding ShowPendingOnly}"
-                        VerticalOptions="Center"/>
-
-
-                </HorizontalStackLayout>
-
-            </Grid>
-
-            <Label
-                Text="{Binding ErrorMessage}"
-                TextColor="Red"
-                IsVisible="{Binding HasErrorMessage}"/>
-            
-        </VerticalStackLayout>
+        </Grid>
 
         <RefreshView
             Grid.Row="2"
@@ -70,30 +82,34 @@
 
                 <!-- Empty view -->
                 <CollectionView.EmptyView>
-                    
-                    <VerticalStackLayout
-                        Padding="0,20">
-                        
-                        <Label
-                            Text="No reports to show."
-                            FontAttributes="Italic"
-                            HorizontalOptions="Center"/>
-                        
-                        <Label
-                            Text="Pull down to try again."
-                            FontAttributes="Italic"
-                            HorizontalOptions="Center"/>
-                        
-                    </VerticalStackLayout>
-                    
+
+                    <Grid>
+
+                        <VerticalStackLayout
+                            HorizontalOptions="Center"
+                            Spacing="5"
+                            VerticalOptions="Center">
+
+                            <Label
+                                Style="{StaticResource EmptyLabel}"
+                                Text="No reports to show."/>
+
+                            <Label
+                                Style="{StaticResource EmptyLabel}"
+                                Text="Pull down to try again."/>
+
+                        </VerticalStackLayout>
+
+                    </Grid>
+
                 </CollectionView.EmptyView>
 
-                <!-- Item layout -->
+                <!-- Items layout -->
                 <CollectionView.ItemsLayout>
                     
                     <LinearItemsLayout
-                        Orientation="Vertical"
-                        ItemSpacing="10"/>
+                        ItemSpacing="15"
+                        Orientation="Vertical"/>
                     
                 </CollectionView.ItemsLayout>
 
@@ -109,25 +125,24 @@
                             <VerticalStackLayout
                                 Spacing="10">
 
+                                <!-- Title and status pill -->
                                 <Grid
                                     ColumnDefinitions="*,Auto"
                                     ColumnSpacing="10">
                                     
                                     <Label
-                                        FontAttributes="Bold"
-                                        FontSize="16"
                                         Grid.Column="0"
                                         LineBreakMode="TailTruncation"
-                                        Text="{Binding Id, StringFormat='Report ID: {0}'}"
-                                        VerticalOptions="Center"/>
+                                        Style="{StaticResource CardTitle}"
+                                        Text="{Binding Id, StringFormat='Report ID: {0}'}"/>
 
                                     <Border
                                         Grid.Column="1"
-                                        Style="{StaticResource Pill}">
+                                        Style="{StaticResource Pill}"
+                                        VerticalOptions="Start">
                                                                                
                                         <Label
-                                            FontSize="12"
-                                            LineBreakMode="TailTruncation"
+                                            Style="{StaticResource PillLabel}"
                                             Text="{Binding StatusLabel}"/>
                                         
                                     </Border>
@@ -138,16 +153,16 @@
                                 <Label
                                     LineBreakMode="TailTruncation"
                                     MaxLines="2"
+                                    Style="{StaticResource CardBody}"
                                     Text="{Binding Reason}"/>
 
+                                <!-- Credit -->
                                 <VerticalStackLayout
-                                    Spacing="3">
+                                    Spacing="5">
 
                                     <!-- Footer -->
                                     <Label
-                                        FontSize="12"
-                                        FontAttributes="Italic"
-                                        Margin="0,3,0,0">
+                                        Style="{StaticResource CardCredit}">
 
                                         <Label.Text>
 
@@ -167,9 +182,8 @@
                                     </Label>
 
                                     <Label
-                                        FontAttributes="Italic"
-                                        FontSize="12"
                                         IsVisible="{Binding IsResolved}"
+                                        Style="{StaticResource CardCredit}"
                                         Text="{Binding ResolvedText}"/>
 
                                 </VerticalStackLayout>

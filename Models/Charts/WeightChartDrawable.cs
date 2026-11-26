@@ -52,21 +52,14 @@
             float chartWidth = chartRight - chartLeft;
             float chartHeight = chartBottom - chartTop;
 
-            // Defines the line colour
-            Color lineColour;
-
-            if (Application.Current?.RequestedTheme == AppTheme.Dark)
-            {
-                lineColour = Color.FromArgb("#60A5FA");
-            }
-            else
-            {
-                lineColour = Color.FromArgb("#2563EB");
-            }
+            // Defines the chart colours from the app theme
+            Color lineColour = GetThemeColour("Accent", Colors.LimeGreen);
+            Color labelColour = GetThemeColour("TextSecondary", Colors.LightGray);
+            Color baselineColour = GetThemeColour("InputBorder", Colors.Gray);
 
             // Defines the font colour and size for labels
-            canvas.FontColor = Colors.Gray;
-            canvas.FontSize = 10;
+            canvas.FontColor = labelColour;
+            canvas.FontSize = 12;
 
             // Draws the x-axis labels, one per filter bucket (matches the bar chart)
             if (_labels.Count > 0)
@@ -82,7 +75,7 @@
             }
 
             // Draws the baseline along the bottom of the graph
-            canvas.StrokeColor = Colors.Gray;
+            canvas.StrokeColor = baselineColour;
             canvas.StrokeSize = 1;
             canvas.DrawLine(chartLeft, chartBottom, chartRight, chartBottom);
 
@@ -99,8 +92,8 @@
             double weightRange = maxWeight - minWeight;
 
             // Y-axis labels
-            canvas.DrawString($"{maxWeight:0}", dirtyRect.Left, chartTop - 6, LeftPadding - 6, 12, HorizontalAlignment.Right, VerticalAlignment.Center);
-            canvas.DrawString($"{minWeight:0}", dirtyRect.Left, chartBottom - 6, LeftPadding - 6, 12, HorizontalAlignment.Right, VerticalAlignment.Center);
+            canvas.DrawString($"{maxWeight:0}", dirtyRect.Left, chartTop - 6, LeftPadding - 6, 14, HorizontalAlignment.Right, VerticalAlignment.Center);
+            canvas.DrawString($"{minWeight:0}", dirtyRect.Left, chartBottom - 6, LeftPadding - 6, 14, HorizontalAlignment.Right, VerticalAlignment.Center);
 
             // Calculates where each weigh-in sits on graph
             double totalDays = (_rangeEnd - _rangeStart).TotalDays;
@@ -134,6 +127,20 @@
             {
                 canvas.FillCircle(screenPoint, 3);
             }
+        }
+
+        // Gets a colour from colors.xaml so the chart matches the app theme
+        private static Color GetThemeColour(string key, Color fallback)
+        {
+            if (Application.Current != null && Application.Current.Resources.TryGetValue(key, out object value))
+            {
+                if (value is Color colour)
+                {
+                    return colour;
+                }
+            }
+
+            return fallback;
         }
     }
 }

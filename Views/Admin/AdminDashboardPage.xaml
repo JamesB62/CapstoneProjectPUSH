@@ -14,211 +14,237 @@
 
             <VerticalStackLayout
                 MaximumWidthRequest="500"
-                Padding="30"
+                Padding="30,20,30,20"
                 Spacing="20">
 
-                <!-- Stats -->
-                <Grid
-                    ColumnDefinitions="*,*"
-                    ColumnSpacing="10"
-                    RowDefinitions="Auto,Auto,Auto,Auto"
-                    RowSpacing="10">
-
-                    <Border
-                        Grid.Column="0"
-                        Grid.Row="0"
-                        Style="{StaticResource Card}">
-
-                        <VerticalStackLayout>
-
-                            <Label
-                                FontAttributes="Bold"
-                                FontSize="18"
-                                HorizontalOptions="Center"
-                                Text="{Binding TotalUsers}"/>
-
-                            <Label
-                                HorizontalOptions="Center"
-                                Text="Users"/>
-
-                        </VerticalStackLayout>
-
-                    </Border>
-
-                    <Border
-                        Grid.Column="1"
-                        Grid.Row="0"
-                        Style="{StaticResource Card}">
-
-                        <VerticalStackLayout>
-
-                            <Label
-                                FontAttributes="Bold"
-                                FontSize="18"
-                                HorizontalOptions="Center"
-                                Text="{Binding TotalActiveUsers}"/>
-
-                            <Label
-                                HorizontalOptions="Center"
-                                Text="Active Users"/>
-
-                        </VerticalStackLayout>
-
-                    </Border>
-
-                    <Border
-                        Grid.Column="0"
-                        Grid.Row="1"
-                        Style="{StaticResource Card}">
-
-                        <VerticalStackLayout>
-
-                            <Label
-                                FontAttributes="Bold"
-                                FontSize="18"
-                                HorizontalOptions="Center"
-                                Text="{Binding TotalTrainers}"/>
-
-                            <Label
-                                HorizontalOptions="Center"
-                                Text="Trainers"/>
-
-                        </VerticalStackLayout>
-
-                    </Border>
-
-                    <Border
-                        Grid.Column="1"
-                        Grid.Row="1"
-                        Style="{StaticResource Card}">
-
-                        <VerticalStackLayout>
-
-                            <Label
-                                FontAttributes="Bold"
-                                FontSize="18"
-                                HorizontalOptions="Center"
-                                Text="{Binding AvailableTrainers}"/>
-
-                            <Label
-                                HorizontalOptions="Center"
-                                Text="Available Trainers"/>
-
-                        </VerticalStackLayout>
-
-                    </Border>
-
-                    <Border
-                        Grid.Column="0"
-                        Grid.Row="2"
-                        Style="{StaticResource Card}">
-
-                        <VerticalStackLayout>
-
-                            <Label
-                                FontAttributes="Bold"
-                                FontSize="18"
-                                HorizontalOptions="Center"
-                                Text="{Binding TotalGyms}"/>
-
-                            <Label
-                                HorizontalOptions="Center"
-                                Text="Gyms"/>
-
-                        </VerticalStackLayout>
-
-                    </Border>
-
-                    <Border
-                        Grid.Column="1"
-                        Grid.Row="2"
-                        Style="{StaticResource Card}">
-
-                        <VerticalStackLayout>
-
-                            <Label
-                                FontAttributes="Bold"
-                                FontSize="18"
-                                HorizontalOptions="Center"
-                                Text="{Binding TotalCategories}"/>
-
-                            <Label
-                                HorizontalOptions="Center"
-                                Text="Categories"/>
-
-                        </VerticalStackLayout>
-
-                    </Border>
-
-                    <Border
-                        Grid.Column="0"
-                        Grid.Row="3"
-                        Style="{StaticResource Card}">
-
-                        <VerticalStackLayout>
-
-                            <Label
-                                FontAttributes="Bold"
-                                FontSize="18"
-                                HorizontalOptions="Center"
-                                Text="{Binding TotalExercises}"/>
-
-                            <Label
-                                HorizontalOptions="Center"
-                                Text="Exercises"/>
-
-                        </VerticalStackLayout>
-
-                    </Border>
-
-                    <Border
-                        Grid.Column="1"
-                        Grid.Row="3"
-                        Style="{StaticResource Card}">
-
-                        <VerticalStackLayout>
-
-                            <Label
-                                FontAttributes="Bold"
-                                FontSize="18"
-                                HorizontalOptions="Center"
-                                Text="{Binding PendingReports}"/>
-
-                            <Label
-                                HorizontalOptions="Center"
-                                Text="Pending Reports"/>
-
-                        </VerticalStackLayout>
-
-                    </Border>
-
-                </Grid>
-
+                <!-- Error message -->
                 <Label
-                    HorizontalOptions="Center"
-                    IsVisible="{Binding HasStatusMessage}"
-                    Text="{Binding StatusMessage}"
-                    TextColor="Red"/>
+                    IsVisible="{Binding HasErrorMessage}"
+                    Style="{StaticResource ErrorLabel}"
+                    Text="{Binding ErrorMessage}"/>
+
+                <!-- Overview -->
+                <Label
+                    Style="{StaticResource SectionHeader}"
+                    Text="Overview"/>
+
+                <!-- Overview stats -->
+                <VerticalStackLayout
+                    Spacing="10">
+
+                    <Grid
+                        ColumnDefinitions="*,*"
+                        ColumnSpacing="15"
+                        RowDefinitions="Auto,Auto,Auto,Auto"
+                        RowSpacing="15">
+
+                        <Border
+                            Grid.Column="0"
+                            Grid.Row="0"
+                            Style="{StaticResource Card}">
+
+                            <VerticalStackLayout
+                                Spacing="5">
+
+                                <Label
+                                    SemanticProperties.Description="{Binding TotalUsers, StringFormat='{0} users'}"
+                                    Style="{StaticResource StatValue}"
+                                    Text="{Binding TotalUsers}"/>
+
+                                <Label
+                                    AutomationProperties.IsInAccessibleTree="False"
+                                    Style="{StaticResource StatLabel}"
+                                    Text="Users"/>
+
+                            </VerticalStackLayout>
+
+                        </Border>
+
+                        <Border
+                            Grid.Column="1"
+                            Grid.Row="0"
+                            Style="{StaticResource Card}">
+
+                            <VerticalStackLayout
+                                Spacing="5">
+
+                                <Label
+                                    SemanticProperties.Description="{Binding TotalActiveUsers, StringFormat='{0} active users'}"
+                                    Style="{StaticResource StatValue}"
+                                    Text="{Binding TotalActiveUsers}"/>
+
+                                <Label
+                                    AutomationProperties.IsInAccessibleTree="False"
+                                    Style="{StaticResource StatLabel}"
+                                    Text="Active Users"/>
+
+                            </VerticalStackLayout>
+
+                        </Border>
+
+                        <Border
+                            Grid.Column="0"
+                            Grid.Row="1"
+                            Style="{StaticResource Card}">
+
+                            <VerticalStackLayout
+                                Spacing="5">
+
+                                <Label
+                                    SemanticProperties.Description="{Binding TotalTrainers, StringFormat='{0} trainers'}"
+                                    Style="{StaticResource StatValue}"
+                                    Text="{Binding TotalTrainers}"/>
+
+                                <Label
+                                    AutomationProperties.IsInAccessibleTree="False"
+                                    Style="{StaticResource StatLabel}"
+                                    Text="Trainers"/>
+
+                            </VerticalStackLayout>
+
+                        </Border>
+
+                        <Border
+                            Grid.Column="1"
+                            Grid.Row="1"
+                            Style="{StaticResource Card}">
+
+                            <VerticalStackLayout
+                                Spacing="5">
+
+                                <Label
+                                    SemanticProperties.Description="{Binding AvailableTrainers, StringFormat='{0} available trainers'}"
+                                    Style="{StaticResource StatValue}"
+                                    Text="{Binding AvailableTrainers}"/>
+
+                                <Label
+                                    AutomationProperties.IsInAccessibleTree="False"
+                                    Style="{StaticResource StatLabel}"
+                                    Text="Available Trainers"/>
+
+                            </VerticalStackLayout>
+
+                        </Border>
+
+                        <Border
+                            Grid.Column="0"
+                            Grid.Row="2"
+                            Style="{StaticResource Card}">
+
+                            <VerticalStackLayout
+                                Spacing="5">
+
+                                <Label
+                                    SemanticProperties.Description="{Binding TotalGyms, StringFormat='{0} gyms'}"
+                                    Style="{StaticResource StatValue}"
+                                    Text="{Binding TotalGyms}"/>
+
+                                <Label
+                                    AutomationProperties.IsInAccessibleTree="False"
+                                    Style="{StaticResource StatLabel}"
+                                    Text="Gyms"/>
+
+                            </VerticalStackLayout>
+
+                        </Border>
+
+                        <Border
+                            Grid.Column="1"
+                            Grid.Row="2"
+                            Style="{StaticResource Card}">
+
+                            <VerticalStackLayout
+                                Spacing="5">
+
+                                <Label
+                                    SemanticProperties.Description="{Binding TotalCategories, StringFormat='{0} categories'}"
+                                    Style="{StaticResource StatValue}"
+                                    Text="{Binding TotalCategories}"/>
+
+                                <Label
+                                    AutomationProperties.IsInAccessibleTree="False"
+                                    Style="{StaticResource StatLabel}"
+                                    Text="Categories"/>
+
+                            </VerticalStackLayout>
+
+                        </Border>
+
+                        <Border
+                            Grid.Column="0"
+                            Grid.Row="3"
+                            Style="{StaticResource Card}">
+
+                            <VerticalStackLayout
+                                Spacing="5">
+
+                                <Label
+                                    SemanticProperties.Description="{Binding TotalExercises, StringFormat='{0} exercises'}"
+                                    Style="{StaticResource StatValue}"
+                                    Text="{Binding TotalExercises}"/>
+
+                                <Label
+                                    AutomationProperties.IsInAccessibleTree="False"
+                                    Style="{StaticResource StatLabel}"
+                                    Text="Exercises"/>
+
+                            </VerticalStackLayout>
+
+                        </Border>
+
+                        <Border
+                            Grid.Column="1"
+                            Grid.Row="3"
+                            Style="{StaticResource Card}">
+
+                            <VerticalStackLayout
+                                Spacing="5">
+
+                                <Label
+                                    SemanticProperties.Description="{Binding PendingReports, StringFormat='{0} pending reports'}"
+                                    Style="{StaticResource StatValue}"
+                                    Text="{Binding PendingReports}"/>
+
+                                <Label
+                                    AutomationProperties.IsInAccessibleTree="False"
+                                    Style="{StaticResource StatLabel}"
+                                    Text="Pending Reports"/>
+
+                            </VerticalStackLayout>
+
+                        </Border>
+
+                    </Grid>
+
+                </VerticalStackLayout>
+
+                <!-- Manage -->
+                <Label
+                    Style="{StaticResource SectionHeader}"
+                    Text="Manage"/>
 
                 <!-- Management buttons -->
                 <VerticalStackLayout
-                    Margin="0,10,0,0"
                     Spacing="10">
 
                     <Button
                         Command="{Binding GoToUserManagementCommand}"
+                        Style="{StaticResource SecondaryButton}"
                         Text="Manage Users"/>
 
                     <Button
                         Command="{Binding GoToCategoryManagementCommand}"
+                        Style="{StaticResource SecondaryButton}"
                         Text="Manage Categories"/>
 
                     <Button
                         Command="{Binding GoToGymManagementCommand}"
+                        Style="{StaticResource SecondaryButton}"
                         Text="Manage Gyms"/>
 
                     <Button
                         Command="{Binding GoToReportsCommand}"
+                        Style="{StaticResource SecondaryButton}"
                         Text="Manage Reports"/>
 
                 </VerticalStackLayout>

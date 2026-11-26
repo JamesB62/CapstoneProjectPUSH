@@ -66,6 +66,7 @@ namespace CapstoneProjectPUSH
 
             // Home
             builder.Services.AddTransient<ArticleDetailsViewModel>();
+            builder.Services.AddTransient<CreateArticleViewModel>();
             builder.Services.AddTransient<HomeViewModel>();
 
             // Profile
@@ -120,6 +121,7 @@ namespace CapstoneProjectPUSH
 
             // Home
             builder.Services.AddTransient<ArticleDetailsPage>();
+            builder.Services.AddTransient<CreateArticlePage>();
             builder.Services.AddTransient<HomePage>();
 
             // Profile
@@ -147,6 +149,57 @@ namespace CapstoneProjectPUSH
 #if DEBUG
             builder.Logging.AddDebug();
 #endif
+
+            // Removes Android's default underline from text inputs and pickers
+            Microsoft.Maui.Handlers.EntryHandler.Mapper.AppendToMapping("NoUnderline", (handler, view) =>
+            {
+#if ANDROID
+                handler.PlatformView.BackgroundTintList = Android.Content.Res.ColorStateList.ValueOf(Android.Graphics.Color.Transparent);
+#endif
+            });
+
+            Microsoft.Maui.Handlers.EditorHandler.Mapper.AppendToMapping("NoUnderline", (handler, view) =>
+            {
+#if ANDROID
+                handler.PlatformView.BackgroundTintList = Android.Content.Res.ColorStateList.ValueOf(Android.Graphics.Color.Transparent);
+#endif
+            });
+
+            Microsoft.Maui.Handlers.DatePickerHandler.Mapper.AppendToMapping("NoUnderline", (handler, view) =>
+            {
+#if ANDROID
+                handler.PlatformView.BackgroundTintList = Android.Content.Res.ColorStateList.ValueOf(Android.Graphics.Color.Transparent);
+#endif
+            });
+
+            Microsoft.Maui.Handlers.PickerHandler.Mapper.AppendToMapping("NoUnderline", (handler, view) =>
+            {
+#if ANDROID
+                handler.PlatformView.BackgroundTintList = Android.Content.Res.ColorStateList.ValueOf(Android.Graphics.Color.Transparent);
+#endif
+            });
+
+#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
+
+            Microsoft.Maui.Handlers.SearchBarHandler.Mapper.AppendToMapping("NoUnderline", (handler, view) =>
+            {
+#if ANDROID
+                Android.Content.Context context = handler.PlatformView.Context;
+
+                int searchPlateId = context.Resources.GetIdentifier("search_plate", "id", context.PackageName);
+
+                if (searchPlateId != 0)
+                {
+                    Android.Views.View searchPlate = handler.PlatformView.FindViewById(searchPlateId);
+
+                    if (searchPlate != null)
+                    {
+                        searchPlate.SetBackgroundColor(Android.Graphics.Color.Transparent);
+                    }
+                }
+#endif
+            });
 
             return builder.Build();
         }

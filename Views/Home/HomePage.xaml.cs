@@ -14,6 +14,23 @@ public partial class HomePage : ContentPage
     protected override void OnAppearing()
     {
         base.OnAppearing();
+
+        UpdateToolbar();
+
         _homeViewModel.LoadHomeCommand.Execute(null);
+    }
+
+    private void UpdateToolbar()
+    {
+        bool isAdmin = _homeViewModel.IsCurrentUserAdmin;
+
+        if (isAdmin && !ToolbarItems.Contains(AddArticleToolbarItem))
+        {
+            ToolbarItems.Add(AddArticleToolbarItem);
+        }
+        else if (!isAdmin)
+        {
+            ToolbarItems.Remove(AddArticleToolbarItem);
+        }
     }
 }

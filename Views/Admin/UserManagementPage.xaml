@@ -9,19 +9,37 @@
 
     <Grid
         MaximumWidthRequest="500"
-        Padding="30,15,30,0"
+        Padding="30,20,30,0"
         RowDefinitions="Auto,Auto,*"
         RowSpacing="20">
 
-        <!-- Search bar -->
-        <SearchBar
+        <VerticalStackLayout
             Grid.Row="0"
-            Placeholder="Search by display name or email..."
-            Text="{Binding SearchText}"/>
+            Spacing="20">
 
+            <!-- Error message -->
+            <Label
+                IsVisible="{Binding HasErrorMessage}"
+                Style="{StaticResource ErrorLabel}"
+                Text="{Binding ErrorMessage}"/>
+
+            <!-- Search bar -->
+            <Border
+                Style="{StaticResource InputFrame}">
+
+                <SearchBar
+                    Placeholder="Search by display name or email..."
+                    SemanticProperties.Hint="Search users"
+                    Text="{Binding SearchText}"/>
+
+            </Border>
+
+        </VerticalStackLayout>
+
+        <!-- Count, active filter and swipe hint -->
         <VerticalStackLayout
             Grid.Row="1"
-            Spacing="15">
+            Spacing="5">
 
             <Grid
                 ColumnDefinitions="*,Auto"
@@ -30,6 +48,7 @@
                 <!-- User count -->
                 <Label
                     Grid.Column="0"
+                    Style="{StaticResource StatusLabel}"
                     Text="{Binding StatusMessage}"
                     VerticalOptions="Center"/>
 
@@ -39,22 +58,23 @@
                     Spacing="5">
 
                     <Label
+                        AutomationProperties.IsInAccessibleTree="False"
+                        Style="{StaticResource StatusLabel}"
                         Text="Active Only"
                         VerticalOptions="Center"/>
 
                     <Switch
                         IsToggled="{Binding ShowActiveOnly}"
+                        SemanticProperties.Description="Show active users only"
                         VerticalOptions="Center"/>
 
                 </HorizontalStackLayout>
 
             </Grid>
 
-            <!-- Error message -->
             <Label
-                IsVisible="{Binding HasErrorMessage}"
-                Text="{Binding ErrorMessage}"
-                TextColor="Red"/>
+                Style="{StaticResource HintLabel}"
+                Text="Swipe right to change role or left to change status."/>
 
         </VerticalStackLayout>
 
@@ -69,29 +89,32 @@
                 <!-- Empty view -->
                 <CollectionView.EmptyView>
 
-                    <VerticalStackLayout
-                        HorizontalOptions="Center"
-                        VerticalOptions="Center">
+                    <Grid>
 
-                        <Label
-                            FontAttributes="Italic"
-                            HorizontalTextAlignment="Center"
-                            Text="No users found."/>
+                        <VerticalStackLayout
+                            HorizontalOptions="Center"
+                            Spacing="5"
+                            VerticalOptions="Center">
 
-                        <Label
-                            FontAttributes="Italic"
-                            HorizontalTextAlignment="Center"
-                            Text="Pull down to try again."/>
+                            <Label
+                                Style="{StaticResource EmptyLabel}"
+                                Text="No users found."/>
 
-                    </VerticalStackLayout>
+                            <Label
+                                Style="{StaticResource EmptyLabel}"
+                                Text="Pull down to try again."/>
+
+                        </VerticalStackLayout>
+
+                    </Grid>
 
                 </CollectionView.EmptyView>
 
-                <!-- Item layout -->
+                <!-- Items layout -->
                 <CollectionView.ItemsLayout>
 
                     <LinearItemsLayout
-                        ItemSpacing="10"
+                        ItemSpacing="15"
                         Orientation="Vertical"/>
 
                 </CollectionView.ItemsLayout>
@@ -102,81 +125,94 @@
                     <DataTemplate
                         x:DataType="models:User">
 
-                        <SwipeView>
+                        <Border
+                            Style="{StaticResource SwipeClip}">
 
-                            <!-- Swipe actions -->
-                            <SwipeView.RightItems>
+                            <SwipeView>
 
-                                <SwipeItems>
+                                <!-- Swipe actions -->
+                                <SwipeView.LeftItems>
 
                                     <SwipeItem
-                                        BackgroundColor="#6B7280"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:UserManagementViewModel}}, Path=ToggleActiveCommand}"
+                                        BackgroundColor="{StaticResource SwipeEdit}"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:UserManagementViewModel}}, Path=ToggleAdminCommand}"
                                         CommandParameter="{Binding .}"
-                                        Text="{Binding ActionLabel}"/>
+                                        Text="{Binding RoleActionLabel}"/>
 
-                                </SwipeItems>
+                                </SwipeView.LeftItems>
+                            
+                                <SwipeView.RightItems>
 
-                            </SwipeView.RightItems>
+                                    <SwipeItems>
 
-                            <!-- Card -->
-                            <Border
-                                Style="{StaticResource Card}">
+                                        <SwipeItem
+                                            BackgroundColor="{StaticResource SwipeDelete}"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:UserManagementViewModel}}, Path=ToggleActiveCommand}"
+                                            CommandParameter="{Binding .}"
+                                            Text="{Binding ActionLabel}"/>
 
-                                <VerticalStackLayout
-                                    Spacing="10">
+                                    </SwipeItems>
 
-                                    <Grid
-                                        ColumnDefinitions="*,Auto"
-                                        ColumnSpacing="10">
+                                </SwipeView.RightItems>
 
-                                        <!-- Header -->
-                                        <Label
-                                            Grid.Column="0"
-                                            FontAttributes="Bold"
-                                            FontSize="16"
-                                            LineBreakMode="TailTruncation"
-                                            Text="{Binding DisplayName}"
-                                            VerticalOptions="Center"/>
+                                <!-- Card -->
+                                <Border
+                                    Style="{StaticResource SwipeCard}">
 
-                                        <!-- Status -->
-                                        <Border
-                                            Grid.Column="1"
-                                            Style="{StaticResource Pill}">
+                                    <VerticalStackLayout
+                                        Spacing="10">
+
+                                        <!-- Title and status pill -->
+                                        <Grid
+                                            ColumnDefinitions="*,Auto"
+                                            ColumnSpacing="10">
 
                                             <Label
-                                                FontSize="12"
+                                                Grid.Column="0"
                                                 LineBreakMode="TailTruncation"
-                                                Text="{Binding StatusLabel}"/>
+                                                Style="{StaticResource CardTitle}"
+                                                Text="{Binding DisplayName}"/>
 
-                                        </Border>
+                                            <Border
+                                                Grid.Column="1"
+                                                Style="{StaticResource Pill}"
+                                                VerticalOptions="Start">
 
-                                    </Grid>
+                                                <Label
+                                                    Style="{StaticResource PillLabel}"
+                                                    Text="{Binding StatusLabel}"/>
 
-                                    <!-- Info -->
-                                    <VerticalStackLayout
-                                        Spacing="3">
+                                            </Border>
 
+                                        </Grid>
+
+                                        <!-- Info -->
+                                        <VerticalStackLayout
+                                            Spacing="5">
+
+                                            <Label
+                                                LineBreakMode="TailTruncation"
+                                                Style="{StaticResource CardBody}"
+                                                Text="{Binding Email, StringFormat='Email: {0}'}"/>
+
+                                            <Label
+                                                Style="{StaticResource CardBody}"
+                                                Text="{Binding RoleLabel, StringFormat='Role: {0}'}"/>
+
+                                        </VerticalStackLayout>
+
+                                        <!-- Credit -->
                                         <Label
-                                            LineBreakMode="TailTruncation"
-                                            Text="{Binding Email, StringFormat='• Email: {0}'}"/>
-
-                                        <Label
-                                            Text="{Binding RoleLabel, StringFormat='• Role: {0}'}"/>
+                                            Style="{StaticResource CardCredit}"
+                                            Text="{Binding DateTimeCreated, StringFormat='Joined on {0:d MMM yyyy}'}"/>
 
                                     </VerticalStackLayout>
 
-                                    <!-- Date time created -->
-                                    <Label
-                                        FontAttributes="Italic"
-                                        FontSize="12"
-                                        Text="{Binding DateTimeCreated, StringFormat='Joined on {0:d MMM yyyy}'}"/>
+                                </Border>
 
-                                </VerticalStackLayout>
+                            </SwipeView>
 
-                            </Border>
-
-                        </SwipeView>
+                        </Border>
 
                     </DataTemplate>
 

@@ -31,11 +31,14 @@ namespace CapstoneProjectPUSH.ViewModels.Auth
             ConfirmPassword = string.Empty;
         }
 
-        //setp one sending the email 
+        // Step one - sending the email 
         [RelayCommand]
         private async Task SendCodeAsync()
         {
-            if(IsBusy) return;
+            if (IsBusy)
+            {
+                return;
+            }
 
             if(string.IsNullOrWhiteSpace(Email))
             {
@@ -51,10 +54,12 @@ namespace CapstoneProjectPUSH.ViewModels.Auth
                 await _passwordResetService.RequestResetAsync(Email);
 
                 IsCodeStep = true;
+
+                SemanticScreenReader.Default.Announce("Reset code sent. Enter the code and your new password.");
             }
             catch(Exception ex)
             {
-                ErrorMessage = "Somthing went wrong, please try again.";
+                ErrorMessage = "Something went wrong, please try again.";
                 System.Diagnostics.Debug.WriteLine(ex);
             }
             finally
@@ -63,11 +68,14 @@ namespace CapstoneProjectPUSH.ViewModels.Auth
             }
         }
 
-        //step two vaild code and reset password 
+        // Step two - vaild code and reset password 
         [RelayCommand]
         private async Task ResetPasswordAsync()
         {
-            if(IsBusy) return;
+            if (IsBusy)
+            {
+                return;
+            }
 
             try
             {
@@ -87,11 +95,11 @@ namespace CapstoneProjectPUSH.ViewModels.Auth
                 ConfirmPassword = string.Empty;
 
                 await Shell.Current.DisplayAlertAsync("Done", result.Message, "OK");
-                await Shell.Current.GoToAsync("..");
+                await NavigateAsync("..");
             }
             catch(Exception ex)
             {
-                ErrorMessage = "Something when wrong, please try again.";
+                ErrorMessage = "Something went wrong, please try again.";
                 System.Diagnostics.Debug.WriteLine(ex);
             }
             finally

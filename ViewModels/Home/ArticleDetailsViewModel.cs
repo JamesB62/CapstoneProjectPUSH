@@ -3,6 +3,8 @@
     [QueryProperty(nameof(ArticleId), "ArticleId")]
     public partial class ArticleDetailsViewModel : BaseViewModel
     {
+        private const string PlaceholderImage = "article_placeholder.png";
+
         private readonly ArticleService _articleService;
 
         public ArticleDetailsViewModel(ArticleService articleService, UserService userService) : base(userService)
@@ -17,6 +19,9 @@
         [NotifyPropertyChangedFor(nameof(HasSourceLink))]
         [NotifyPropertyChangedFor(nameof(HasNoSourceLink))]
         public partial Article? Article { get; set; }
+
+        [ObservableProperty]
+        public partial bool CanManage { get; set; }
 
         public bool HasSourceLink => Article is not null && !string.IsNullOrWhiteSpace(Article.CitationUrl);
 
@@ -45,11 +50,19 @@
                 return;
             }
 
+            CanManage = _userService.IsCurrentUserAdmin();
             IsBusy = true;
 
             try
             {
-                Article = await _articleService.GetArticleByIdAsync(ArticleId);
+                Article? article = await _articleService.GetArticleByIdAsync(ArticleId);
+
+                if (article is not null)
+                {
+                    article.Image = GetImageOrPlaceholder(article.Image);
+                }
+
+                Article = article;
             }
             catch (Exception ex)
             {
@@ -96,6 +109,97 @@
                 System.Diagnostics.Debug.WriteLine(ex);
                 ErrorMessage = "Couldn't open the source link.";
             }
+        }
+
+        // Reloads after coming back from the edit form
+        public void Reload()
+        {
+            if (Article is null)
+            {
+                return;
+            }
+
+            LoadArticleCommand.Execute(null);
+        }
+
+        [RelayCommand]
+        private async Task EditArticleAsync()
+        {
+            if (Article is null || !CanManage)
+            {
+                return;
+            }
+
+            await NavigateAsync(nameof(CreateArticlePage) + "?ArticleId=" + Article.Id);
+        }
+
+        [RelayCommand]
+        private async Task DeleteArticleAsync()
+        {
+            if (Article is null || !CanManage || IsBusy)
+            {
+                return;
+            }
+
+            ErrorMessage = string.Empty;
+
+            bool confirmed = await Shell.Current.DisplayAlertAsync(
+                "Delete Article",
+                "Delete " + Article.Title + "? This can't be undone.",
+                "Delete",
+                "Cancel");
+
+            if (!confirmed)
+            {
+                return;
+            }
+
+            IsBusy = true;
+
+            try
+            {
+                (bool Success, string Message) result = await _articleService.DeleteArticleAsync(Article.Id);
+
+                if (result.Success)
+                {
+                    await NavigateAsync("..");
+                }
+                else
+                {
+                    ErrorMessage = result.Message;
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex);
+                ErrorMessage = "Couldn't delete the article. Please try again.";
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
+        private static string GetImageOrPlaceholder(string? imagePath)
+        {
+            if (string.IsNullOrWhiteSpace(imagePath))
+            {
+                return PlaceholderImage;
+            }
+
+            // Uploaded photo -- a web address from the api, so there's no file to check
+            if (imagePath.StartsWith("http://", StringComparison.OrdinalIgnoreCase)
+                || imagePath.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+            {
+                return imagePath;
+            }
+
+            if (!File.Exists(imagePath))
+            {
+                return PlaceholderImage;
+            }
+
+            return imagePath;
         }
     }
 }

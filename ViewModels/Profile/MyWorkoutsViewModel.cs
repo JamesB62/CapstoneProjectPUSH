@@ -126,5 +126,56 @@
 
             await NavigateAsync($"{nameof(WorkoutDetailsPage)}?WorkoutId={workout.Id}");
         }
+
+        [RelayCommand]
+        private async Task EditWorkoutAsync(Workout? workout)
+        {
+            if (workout is null || !IsLoggedIn)
+            {
+                return;
+            }
+
+            await NavigateAsync(nameof(CreateWorkoutPage) + "?WorkoutId=" + workout.Id);
+        }
+
+        [RelayCommand]
+        private async Task DeleteWorkoutAsync(Workout? workout)
+        {
+            if (workout is null || !IsLoggedIn)
+            {
+                return;
+            }
+
+            User? user = _userService.CurrentUser;
+
+            if (user is null)
+            {
+                return;
+            }
+
+            ErrorMessage = string.Empty;
+
+            bool confirmed = await Shell.Current.DisplayAlertAsync(
+                "Delete Workout",
+                "Delete " + workout.Title + "? This can't be undone.",
+                "Delete",
+                "Cancel");
+
+            if (!confirmed)
+            {
+                return;
+            }
+
+            try
+            {
+                await _workoutService.DeleteWorkoutAsync(workout.Id, user.Id);
+                await LoadMyWorkoutsCommand.ExecuteAsync(null);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex);
+                ErrorMessage = "Couldn't delete the workout. Please try again.";
+            }
+        }
     }
 }

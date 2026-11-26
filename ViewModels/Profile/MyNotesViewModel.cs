@@ -123,5 +123,69 @@
 
             await NavigateAsync($"{nameof(WorkoutDetailsPage)}?WorkoutId={note.WorkoutId}");
         }
+
+        [RelayCommand]
+        private async Task EditNoteAsync(Note? note)
+        {
+            if (note is null || !IsLoggedIn)
+            {
+                return;
+            }
+
+            ShellNavigationQueryParameters parameters = new ShellNavigationQueryParameters
+            {
+                { "NoteId", note.Id }
+            };
+
+            await NavigateAsync(nameof(NoteFormPage), parameters);
+        }
+
+        [RelayCommand]
+        private async Task DeleteNoteAsync(Note? note)
+        {
+            if (note is null || !IsLoggedIn)
+            {
+                return;
+            }
+
+            User? user = _userService.CurrentUser;
+
+            if (user is null)
+            {
+                return;
+            }
+
+            ErrorMessage = string.Empty;
+
+            bool confirmed = await Shell.Current.DisplayAlertAsync(
+                "Delete Note",
+                "Delete " + note.Title + "? This can't be undone.",
+                "Delete",
+                "Cancel");
+
+            if (!confirmed)
+            {
+                return;
+            }
+
+            try
+            {
+                int rowsDeleted = await _noteService.DeleteNoteAsync(note.Id, user.Id);
+
+                if (rowsDeleted > 0)
+                {
+                    await LoadMyNotesCommand.ExecuteAsync(null);
+                }
+                else
+                {
+                    ErrorMessage = "That note could not be found.";
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex);
+                ErrorMessage = "Couldn't delete the note. Please try again.";
+            }
+        }
     }
 }

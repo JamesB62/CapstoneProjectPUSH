@@ -8,6 +8,21 @@
 
         public int ExerciseCount { get; set; }
 
+        public string ExerciseCountText
+        {
+            get
+            {
+                if (ExerciseCount == 1)
+                {
+                    return "1 exercise";
+                }
+                else
+                {
+                    return $"{ExerciseCount} exercises";
+                }
+            }
+        }
+
         public int SetCount { get; set; }
 
         public int TotalMinutes { get; set; }
@@ -19,8 +34,6 @@
         public DateTime DateTimeCreated { get; set; } = DateTime.Now;
 
         public bool IsPrivate { get; set; } = true;
-
-        public string VisibilityText => IsPrivate ? "Private" : "Public";
 
         // Set per user by WorkoutService (not stored on the workout)
         public bool IsFavourite { get; set; }

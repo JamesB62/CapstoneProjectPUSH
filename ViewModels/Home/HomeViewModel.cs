@@ -46,16 +46,11 @@
 
             try
             {
-                var articles = await _articleService.GetArticlesAsync();
-
-                List<Article> randomArticles = articles
-                    .OrderBy(a => Random.Shared.Next())
-                    .Take(3)
-                    .ToList();
+                List<Article> articles = await _articleService.GetArticlesAsync();
 
                 FeaturedArticles.Clear();
 
-                foreach (var article in randomArticles)
+                foreach (Article article in articles)
                 {
                     FeaturedArticles.Add(article);
                 }
@@ -63,7 +58,8 @@
                 List<Workout> workouts = await _workoutService.GetWorkoutsForUserAsync(user.Id);
 
                 List<Workout> randomWorkouts = workouts
-                    .OrderBy(w => Random.Shared.Next())
+                    .OrderByDescending(w => w.IsFavourite)
+                    .ThenBy(w => Random.Shared.Next())
                     .Take(3)
                     .ToList();
 
@@ -129,6 +125,69 @@
             }
 
             await NavigateAsync($"{nameof(ArticleDetailsPage)}?ArticleId={article.Id}");
+        }
+
+        [RelayCommand]
+        private async Task AddArticleAsync()
+        {
+            if (!IsCurrentUserAdmin)
+            {
+                return;
+            }
+
+            await NavigateAsync(nameof(CreateArticlePage));
+        }
+
+        [RelayCommand]
+        private async Task EditArticleAsync(Article? article)
+        {
+            if (article is null || !IsCurrentUserAdmin)
+            {
+                return;
+            }
+
+            await NavigateAsync(nameof(CreateArticlePage) + "?ArticleId=" + article.Id);
+        }
+
+        [RelayCommand]
+        private async Task DeleteArticleAsync(Article? article)
+        {
+            if (article is null || !IsCurrentUserAdmin)
+            {
+                return;
+            }
+
+            ErrorMessage = string.Empty;
+
+            bool confirmed = await Shell.Current.DisplayAlertAsync(
+                "Delete Article",
+                "Delete " + article.Title + "? This can't be undone.",
+                "Delete",
+                "Cancel");
+
+            if (!confirmed)
+            {
+                return;
+            }
+
+            try
+            {
+                (bool Success, string Message) result = await _articleService.DeleteArticleAsync(article.Id);
+
+                if (result.Success)
+                {
+                    FeaturedArticles.Remove(article);
+                }
+                else
+                {
+                    ErrorMessage = result.Message;
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex);
+                ErrorMessage = "Couldn't delete the article. Please try again.";
+            }
         }
 
         private async Task CheckWeighInPromptAsync()

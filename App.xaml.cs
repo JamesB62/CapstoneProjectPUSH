@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-
-namespace CapstoneProjectPUSH
+﻿namespace CapstoneProjectPUSH
 {
     public partial class App : Application
     {
@@ -10,6 +8,7 @@ namespace CapstoneProjectPUSH
         {
             InitializeComponent();
             _appShell = appShell;
+            UserAppTheme = AppTheme.Dark;
         }
 
         protected override Window CreateWindow(IActivationState? activationState)
