@@ -160,6 +160,7 @@
         {
             int completed = Exercises.Count(e => e.IsCompleted);
             CompletedText = $"{completed} of {Exercises.Count} completed";
+            SemanticScreenReader.Default.Announce(CompletedText);
         }
 
         // Finish and discard

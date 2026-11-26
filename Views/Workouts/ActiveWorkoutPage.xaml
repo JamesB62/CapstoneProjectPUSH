@@ -8,7 +8,7 @@
 
     <Grid
         MaximumWidthRequest="500"
-        Padding="30,15"
+        Padding="30,20,30,20"
         RowDefinitions="Auto,Auto,*,Auto"
         RowSpacing="20">
 
@@ -18,35 +18,33 @@
             Spacing="5">
 
             <Label
-                FontAttributes="Bold"
-                FontSize="18"
                 HorizontalTextAlignment="Center"
+                Style="{StaticResource DetailTitle}"
                 Text="{Binding Workout.Title}"/>
 
             <Label
-                FontAttributes="Bold"
-                FontSize="40"
                 HorizontalTextAlignment="Center"
+                SemanticProperties.Description="{Binding ElapsedText, StringFormat='Elapsed time: {0}'}"
+                Style="{StaticResource TimerLabel}"
                 Text="{Binding ElapsedText}"/>
 
         </VerticalStackLayout>
 
         <!-- Exercises heading and progress -->
         <Grid
+            Grid.Row="1"
             ColumnDefinitions="*,Auto"
-            Grid.Row="1">
+            ColumnSpacing="10">
 
             <Label
-                FontAttributes="Bold"
-                FontSize="16"
                 Grid.Column="0"
+                Style="{StaticResource SectionHeader}"
                 Text="Exercises"
                 VerticalOptions="Center"/>
 
             <Label
-                FontAttributes="Italic"
-                FontSize="14"
                 Grid.Column="1"
+                Style="{StaticResource StatusLabel}"
                 Text="{Binding CompletedText}"
                 VerticalOptions="Center"/>
 
@@ -56,23 +54,27 @@
         <CollectionView
             Grid.Row="2"
             ItemsSource="{Binding Exercises}"
-            SelectionMode="Single"
-            SelectedItem="{Binding SelectedExercise, Mode=TwoWay}">
+            SelectedItem="{Binding SelectedExercise, Mode=TwoWay}"
+            SelectionMode="Single">
 
+            <!-- Items layout -->
             <CollectionView.ItemsLayout>
 
                 <LinearItemsLayout
-                    ItemSpacing="10"
+                    ItemSpacing="15"
                     Orientation="Vertical"/>
 
             </CollectionView.ItemsLayout>
 
+            <!-- Item template -->
             <CollectionView.ItemTemplate>
 
                 <DataTemplate
                     x:DataType="vm:ActiveExercise">
 
+                    <!-- Card -->
                     <Border
+                        Stroke="{StaticResource Accent}"
                         Style="{StaticResource Card}">
 
                         <Border.Triggers>
@@ -83,8 +85,8 @@
                                 Value="True">
 
                                 <Setter
-                                    Property="Opacity"
-                                    Value="0.5"/>
+                                    Property="StrokeThickness"
+                                    Value="1"/>
 
                             </DataTrigger>
 
@@ -94,32 +96,38 @@
                             ColumnDefinitions="Auto,*,Auto"
                             ColumnSpacing="15">
 
+                            <!-- Exercise order number -->
                             <Label
                                 FontAttributes="Bold"
                                 FontSize="18"
                                 Grid.Column="0"
                                 Text="{Binding WorkoutExercise.DisplayNumber}"
+                                TextColor="{StaticResource Accent}"
                                 VerticalOptions="Center"/>
 
+                            <!-- Title and target -->
                             <VerticalStackLayout
                                 Grid.Column="1"
-                                Spacing="3">
+                                Spacing="5">
 
                                 <Label
-                                    FontAttributes="Bold"
-                                    FontSize="16"
                                     LineBreakMode="TailTruncation"
+                                    MaxLines="2"
+                                    Style="{StaticResource CardTitle}"
                                     Text="{Binding WorkoutExercise.ExerciseTitle}"/>
 
                                 <Label
+                                    Style="{StaticResource CardBody}"
                                     Text="{Binding WorkoutExercise.TargetText}"/>
 
                             </VerticalStackLayout>
 
+                            <!-- Checkbox -->
                             <CheckBox
                                 Grid.Column="2"
                                 InputTransparent="True"
                                 IsChecked="{Binding IsCompleted, Mode=OneWay}"
+                                SemanticProperties.Description="Completed"
                                 VerticalOptions="Center"/>
 
                         </Grid>
@@ -140,8 +148,8 @@
             <!-- Error message -->
             <Label
                 IsVisible="{Binding HasErrorMessage}"
-                Text="{Binding ErrorMessage}"
-                TextColor="Red"/>
+                Style="{StaticResource ErrorLabel}"
+                Text="{Binding ErrorMessage}"/>
 
             <Button
                 Command="{Binding FinishWorkoutCommand}"

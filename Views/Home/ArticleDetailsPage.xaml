@@ -6,100 +6,134 @@
              x:DataType="vm:ArticleDetailsViewModel"
              Title="PUSH Article">
 
+    <ContentPage.ToolbarItems>
+
+        <ToolbarItem
+            x:Name="EditToolbarItem"
+            Command="{Binding EditArticleCommand}"
+            Order="Secondary"
+            Text="Edit Article"/>
+
+        <ToolbarItem
+            x:Name="DeleteToolbarItem"
+            Command="{Binding DeleteArticleCommand}"
+            Order="Secondary"
+            Text="Delete Article"/>
+
+    </ContentPage.ToolbarItems>
+
     <ScrollView>
 
         <VerticalStackLayout
             MaximumWidthRequest="500"
-            Padding="30"
+            Padding="30,20,30,20"
             Spacing="20">
 
+            <!-- Error message -->
+            <Label
+                IsVisible="{Binding HasErrorMessage}"
+                Style="{StaticResource ErrorLabel}"
+                Text="{Binding ErrorMessage}"/>
+
+            <!-- Image (hidden from screen readers) -->
             <Border
                 StrokeShape="RoundRectangle 12"
                 StrokeThickness="0">
 
                 <Image
                     Aspect="AspectFill"
+                    AutomationProperties.IsInAccessibleTree="False"
                     MaximumHeightRequest="200"
                     Source="{Binding Article.Image}"/>
 
             </Border>
 
-            <Grid
-                ColumnDefinitions="*,Auto"
-                ColumnSpacing="10">
+            <!-- Title, topic and info -->
+            <VerticalStackLayout
+                Spacing="10">
 
-                <Label
-                    FontAttributes="Bold"
-                    FontSize="18"
-                    Grid.Column="0"
-                    LineBreakMode="WordWrap"
-                    Text="{Binding Article.Title}"
-                    VerticalOptions="Center"/>
-
-                <Border
-                    Grid.Column="1"
-                    Style="{StaticResource Pill}">
+                <Grid
+                    ColumnDefinitions="*,Auto"
+                    ColumnSpacing="10">
 
                     <Label
-                        FontSize="12"
-                        Text="{Binding Article.Topic}"/>
+                        Grid.Column="0"
+                        Style="{StaticResource DetailTitle}"
+                        Text="{Binding Article.Title}"/>
 
-                </Border>
+                    <Border
+                        Grid.Column="1"
+                        Style="{StaticResource Pill}"
+                        VerticalOptions="Start">
 
-            </Grid>
+                        <Label
+                            Style="{StaticResource PillLabel}"
+                            Text="{Binding Article.Topic}"/>
 
-            <!-- Info -->
-            <VerticalStackLayout
-                Spacing="3">
+                    </Border>
 
-                <Label
-                    Text="{Binding Article.ReadingTime, StringFormat='• Reading time: {0} min'}"/>
+                </Grid>
 
-                <Label
-                    Text="{Binding Article.DateTimePublished, StringFormat='• Published: {0:d MMM yyyy}'}"/>
+                <VerticalStackLayout
+                    Spacing="5">
+
+                    <Label
+                        Style="{StaticResource CardCredit}"
+                        Text="{Binding Article.ReadingTime, StringFormat='{0} min read'}"/>
+
+                    <Label
+                        Style="{StaticResource CardCredit}"
+                        Text="{Binding Article.DateTimePublished, StringFormat='Published on {0:d MMM yyyy}'}"/>
+
+                </VerticalStackLayout>
 
             </VerticalStackLayout>
 
             <!-- Content -->
-            <Label
-                FontAttributes="Bold"
-                FontSize="16"
-                Text="Article Content"/>
+            <VerticalStackLayout
+                Spacing="10">
 
-            <Label
-                Text="{Binding Article.Content}"/>
+                <Label
+                    Style="{StaticResource SectionHeader}"
+                    Text="Article Content"/>
+
+                <Label
+                    Style="{StaticResource LongText}"
+                    Text="{Binding Article.Content}"/>
+
+            </VerticalStackLayout>
 
             <!-- Source -->
-            <Label
-                FontAttributes="Bold"
-                FontSize="16"
-                Text="Source"/>
+            <VerticalStackLayout
+                Spacing="10">
 
-            <!-- Tappable when there's a link -->
-            <Label
-                IsVisible="{Binding HasSourceLink}"
-                Text="{Binding Article.Citation}"
-                TextDecorations="Underline">
+                <Label
+                    Style="{StaticResource SectionHeader}"
+                    Text="Source"/>
 
-                <Label.GestureRecognizers>
+                <!-- Tappable when there's a link -->
+                <Label
+                    IsVisible="{Binding HasSourceLink}"
+                    SemanticProperties.Hint="Opens the source in your browser"
+                    Style="{StaticResource LinkLabel}"
+                    Text="{Binding Article.Citation}">
 
-                    <TapGestureRecognizer
-                        Command="{Binding OpenSourceCommand}"/>
+                    <Label.GestureRecognizers>
 
-                </Label.GestureRecognizers>
+                        <TapGestureRecognizer
+                            Command="{Binding OpenSourceCommand}"/>
 
-            </Label>
+                    </Label.GestureRecognizers>
 
-            <!-- Plain text when there's no link -->
-            <Label
-                IsVisible="{Binding HasNoSourceLink}"
-                Text="{Binding Article.Citation}"/>
+                </Label>
 
-            <!-- Error message -->
-            <Label
-                IsVisible="{Binding HasErrorMessage}"
-                Text="{Binding ErrorMessage}"
-                TextColor="Red"/>
+                <!-- Plain text when there's no link -->
+                <Label
+                    IsVisible="{Binding HasNoSourceLink}"
+                    Style="{StaticResource CardBody}"
+                    Text="{Binding Article.Citation}"/>
+
+            </VerticalStackLayout>
 
         </VerticalStackLayout>
 

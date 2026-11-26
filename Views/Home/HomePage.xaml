@@ -7,30 +7,40 @@
              x:DataType="vm:HomeViewModel"
              Title="PUSH Home">
 
+    <ContentPage.ToolbarItems>
+
+        <ToolbarItem
+            x:Name="AddArticleToolbarItem"
+            Command="{Binding AddArticleCommand}"
+            Order="Secondary"
+            Text="Add Article"/>
+
+    </ContentPage.ToolbarItems>
+
     <Grid
         MaximumWidthRequest="500"
-        Padding="30,15,30,0"
+        Padding="30,20,30,0"
         RowDefinitions="Auto,Auto,Auto,*"
         RowSpacing="20">
 
         <VerticalStackLayout
             Grid.Row="0"
-            Spacing="15">
+            Spacing="20">
 
             <!-- Error message -->
             <Label
                 IsVisible="{Binding HasErrorMessage}"
-                Text="{Binding ErrorMessage}"
-                TextColor="Red"/>
+                Style="{StaticResource ErrorLabel}"
+                Text="{Binding ErrorMessage}"/>
 
-            <!-- Featured workouts -->
+            <!-- My workouts -->
             <Label
-                FontAttributes="Bold"
-                FontSize="16"
-                Text="Your Workouts"/>
+                Style="{StaticResource SectionHeader}"
+                Text="My Workouts"/>
 
         </VerticalStackLayout>
 
+        <!-- Collection view -->
         <CollectionView
             Grid.Row="1"
             HeightRequest="150"
@@ -41,79 +51,110 @@
             <!-- Empty view -->
             <CollectionView.EmptyView>
 
-                <VerticalStackLayout
-                    HorizontalOptions="Center"
-                    VerticalOptions="Center">
+                <Grid>
 
                     <Label
-                        FontAttributes="Italic"
-                        HorizontalTextAlignment="Center"
-                        Text="No workouts yet."/>
+                        HorizontalOptions="Center"
+                        Style="{StaticResource EmptyLabel}"
+                        Text="No workouts yet."
+                        VerticalOptions="Center"/>
 
-                </VerticalStackLayout>
+                </Grid>
 
             </CollectionView.EmptyView>
 
-            <!-- Item layout -->
+            <!-- Items layout -->
             <CollectionView.ItemsLayout>
-                
+
                 <LinearItemsLayout
-                    ItemSpacing="10"
+                    ItemSpacing="15"
                     Orientation="Horizontal"/>
-                
+
             </CollectionView.ItemsLayout>
 
             <!-- Item template -->
             <CollectionView.ItemTemplate>
-                
+
                 <DataTemplate
                     x:DataType="models:Workout">
 
                     <Border
                         Style="{StaticResource Card}"
-                        WidthRequest="150">
+                        WidthRequest="175">
 
-                        <VerticalStackLayout
-                            Spacing="10"
-                            VerticalOptions="Center">
+                        <Grid
+                            RowDefinitions="Auto,Auto,*,Auto"
+                            RowSpacing="5">
 
+                            <!-- Title and favourite star -->
+                            <Grid
+                                Grid.Row="0"
+                                ColumnDefinitions="*,Auto"
+                                ColumnSpacing="5">
+
+                                <Label
+                                    Grid.Column="0"
+                                    LineBreakMode="TailTruncation"
+                                    MaxLines="2"
+                                    Style="{StaticResource CardTitle}"
+                                    Text="{Binding Title}"/>
+
+                                <Label
+                                    Grid.Column="1"
+                                    IsVisible="{Binding IsFavourite}"
+                                    SemanticProperties.Description="Favourite"
+                                    Text="★"
+                                    TextColor="{StaticResource Favourite}"
+                                    VerticalOptions="Start"/>
+
+                            </Grid>
+
+                            <!-- Exercise count -->
                             <Label
-                                FontAttributes="Bold"
-                                FontSize="16"
-                                HorizontalTextAlignment="Center"
-                                LineBreakMode="TailTruncation"
-                                MaxLines="2"
-                                Text="{Binding Title}"/>
+                                Grid.Row="1"
+                                Style="{StaticResource StatusLabel}"
+                                FontSize="12"
+                                Text="{Binding ExerciseCountText}"/>
 
+                            <!-- Category pill -->
                             <Border
-                                HorizontalOptions="Center"
+                                Grid.Row="3"
+                                HorizontalOptions="Start"
                                 Style="{StaticResource Pill}">
 
                                 <Label
-                                    FontSize="12"
-                                    HorizontalTextAlignment="Center"
-                                    LineBreakMode="TailTruncation"
+                                    Style="{StaticResource PillLabel}"
                                     Text="{Binding CategoryTitle}"/>
 
                             </Border>
 
-                        </VerticalStackLayout>
+                        </Grid>
 
                     </Border>
 
                 </DataTemplate>
-                
+
             </CollectionView.ItemTemplate>
 
         </CollectionView>
 
-        <!-- Featured Articles -->
-        <Label
+        <!-- Articles -->
+        <VerticalStackLayout
             Grid.Row="2"
-            FontAttributes="Bold"
-            FontSize="16"
-            Text="Featured Articles"/>
+            Spacing="5">
 
+            <Label
+                Style="{StaticResource SectionHeader}"
+                Text="Articles"/>
+
+            <Label
+                IsVisible="{Binding IsCurrentUserAdmin}"
+                Style="{StaticResource HintLabel}"
+                Text="Swipe right to edit or left to delete."/>
+
+        </VerticalStackLayout>
+
+        <!-- Collection view -->
         <CollectionView
             Grid.Row="3"
             ItemsSource="{Binding FeaturedArticles}"
@@ -122,88 +163,146 @@
 
             <!-- Empty view -->
             <CollectionView.EmptyView>
-                
-                <Label
-                    FontAttributes="Italic"
-                    HorizontalTextAlignment="Center"
-                    Text="No articles available."/>
-                
+
+                <Grid>
+
+                    <Label
+                        HorizontalOptions="Center"
+                        Style="{StaticResource EmptyLabel}"
+                        Text="No articles available."
+                        VerticalOptions="Center"/>
+
+                </Grid>
+
             </CollectionView.EmptyView>
 
-            <!-- Item layout -->
+            <!-- Items layout -->
             <CollectionView.ItemsLayout>
-                
+
                 <LinearItemsLayout
-                    ItemSpacing="10"
+                    ItemSpacing="15"
                     Orientation="Vertical"/>
-                
+
             </CollectionView.ItemsLayout>
 
             <!-- Item template -->
             <CollectionView.ItemTemplate>
-                
+
                 <DataTemplate
                     x:DataType="models:Article">
 
                     <Border
-                        Style="{StaticResource Card}">
+                        Style="{StaticResource SwipeClip}">
+                    
+                        <SwipeView>
 
-                        <VerticalStackLayout
-                            Spacing="10">
+                            <!-- Swipe actions (admins only) -->
+                            <SwipeView.LeftItems>
 
-                            <Grid
-                                ColumnDefinitions="*,auto"
-                                ColumnSpacing="10">
+                                <SwipeItems>
 
-                                <Label
-                                    FontAttributes="Bold"
-                                    FontSize="16"
-                                    Grid.Column="0"
-                                    LineBreakMode="WordWrap"
-                                    MaxLines="2"
-                                    Text="{Binding Title}"
-                                    VerticalOptions="Center"/>
+                                    <SwipeItem
+                                        BackgroundColor="{StaticResource SwipeEdit}"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:HomeViewModel}}, Path=EditArticleCommand}"
+                                        CommandParameter="{Binding .}"
+                                        IsVisible="{Binding Source={RelativeSource AncestorType={x:Type vm:HomeViewModel}}, Path=IsCurrentUserAdmin}"
+                                        Text="Edit"/>
 
-                                <Border
-                                    Grid.Column="1"
-                                    Style="{StaticResource Pill}">
+                                </SwipeItems>
 
+                            </SwipeView.LeftItems>
+
+                            <SwipeView.RightItems>
+
+                                <SwipeItems>
+
+                                    <SwipeItem
+                                        BackgroundColor="{StaticResource SwipeDelete}"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:HomeViewModel}}, Path=DeleteArticleCommand}"
+                                        CommandParameter="{Binding .}"
+                                        IsVisible="{Binding Source={RelativeSource AncestorType={x:Type vm:HomeViewModel}}, Path=IsCurrentUserAdmin}"
+                                        Text="Delete"/>
+
+                                </SwipeItems>
+
+                            </SwipeView.RightItems>
+
+                            <Border
+                                Style="{StaticResource SwipeCard}">
+
+                                <VerticalStackLayout
+                                    Spacing="10">
+
+                                    <Grid
+                                        ColumnDefinitions="*,auto"
+                                        ColumnSpacing="10">
+
+                                        <!-- Title and category pill -->
+                                        <Label
+                                            Grid.Column="0"
+                                            LineBreakMode="TailTruncation"
+                                            MaxLines="2"
+                                            Style="{StaticResource CardTitle}"
+                                            Text="{Binding Title}"
+                                            VerticalOptions="Center"/>
+
+                                        <Border
+                                            Grid.Column="1"
+                                            Style="{StaticResource Pill}"
+                                            VerticalOptions="Start">
+
+                                            <Label
+                                                Style="{StaticResource PillLabel}"
+                                                Text="{Binding Topic}"/>
+
+                                        </Border>
+
+                                    </Grid>
+
+                                    <!-- Content preview -->
                                     <Label
-                                        FontSize="12"
+                                        AutomationProperties.IsInAccessibleTree="False"
                                         LineBreakMode="TailTruncation"
-                                        Text="{Binding Topic}"/>
+                                        MaxLines="3"
+                                        Style="{StaticResource CardBody}"
+                                        Text="{Binding Content}"/>
 
-                                </Border>
+                                    <!-- Credit -->
+                                    <Label
+                                        LineBreakMode="TailTruncation"
+                                        Style="{StaticResource CardCredit}">
 
-                            </Grid>
+                                        <Label.Text>
 
-                            <VerticalStackLayout
-                                Spacing="3">
+                                            <MultiBinding
+                                                StringFormat="Written by {0} on {1:d MMM yyyy}">
 
-                                <Label
-                                    Text="{Binding ReadingTime, StringFormat='• Reading time: {0}min'}"/>
+                                                <Binding
+                                                    Path="Citation"/>
+                                            
+                                                <Binding
+                                                    Path="DateTimePublished"/>
 
-                                <Label
-                                    LineBreakMode="TailTruncation"
-                                    Text="{Binding Citation, StringFormat='• Written by: {0}'}"/>
+                                            </MultiBinding>
 
-                            </VerticalStackLayout>
+                                        </Label.Text>
 
-                            <Label
-                                FontAttributes="Italic"
-                                FontSize="12"
-                                Text="{Binding DateTimePublished, StringFormat='Published on {0:d MMM yyyy}'}"/>
+                                    </Label>
 
-                        </VerticalStackLayout>
+                                </VerticalStackLayout>
+
+                            </Border>
+
+                        </SwipeView>
 
                     </Border>
 
                 </DataTemplate>
-                
+
             </CollectionView.ItemTemplate>
 
         </CollectionView>
 
     </Grid>
-    
+
 </ContentPage>

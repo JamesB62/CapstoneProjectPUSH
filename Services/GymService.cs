@@ -2,44 +2,52 @@
 {
     public class GymService
     {
-        private readonly DatabaseService _databaseService;
+        private readonly ApiClient _apiClient;
         private readonly UserService _userService;
 
-        public GymService(DatabaseService databaseService, UserService userService)
+        public GymService(ApiClient apiClient, UserService userService)
         {
-            _databaseService = databaseService;
+            _apiClient = apiClient;
             _userService = userService;
         }
 
         // Get gym count
         public async Task<int> GetGymCountAsync()
         {
-            var db = await _databaseService.GetConnectionAsync();
+            ApiResult<int> result = await _apiClient.GetAsync<int>("api/gyms/count");
 
-            return await db.Table<Gym>().CountAsync();
+            if (result.Success)
+            {
+                return result.Data;
+            }
+
+            return 0;
         }
 
         // Get all gyms
         public async Task<List<Gym>> GetGymsAsync()
         {
-            var db = await _databaseService.GetConnectionAsync();
+            ApiResult<List<Gym>> result = await _apiClient.GetAsync<List<Gym>>("api/gyms");
 
-            var gyms = await db.Table<Gym>().ToListAsync();
+            if (result.Success && result.Data != null)
+            {
+                return result.Data;
+            }
 
-            return gyms
-                .OrderBy(g => g.Name, StringComparer.OrdinalIgnoreCase)
-                .ThenBy(g => g.City, StringComparer.OrdinalIgnoreCase)
-                .ToList();
+            return new List<Gym>();
         }
 
         // Get gym by Id
         public async Task<Gym?> GetGymByIdAsync(int gymId)
         {
-            var db = await _databaseService.GetConnectionAsync();
+            ApiResult<Gym> result = await _apiClient.GetAsync<Gym>($"api/gyms/{gymId}");
 
-            return await db.Table<Gym>()
-                .Where(g => g.Id == gymId)
-                .FirstOrDefaultAsync();
+            if (result.Success)
+            {
+                return result.Data;
+            }
+
+            return null;
         }
 
         // Add gym
@@ -50,28 +58,28 @@
                 return (false, "Only admins can add gyms.");
             }
 
-            name = (name ?? string.Empty).Trim();
-            address = (address ?? string.Empty).Trim();
-            city = (city ?? string.Empty).Trim();
+            name = Clean(name);
+            address = Clean(address);
+            city = Clean(city);
 
-            var error = ValidateGym(name, address, city);
+            // App-side validation
+            string? error = ValidateGym(name, address, city);
 
             if (error is not null)
             {
                 return (false, error);
             }
 
-            var db = await _databaseService.GetConnectionAsync();
-            var gyms = await GetGymsAsync();
-
-            if (gyms.Any(g => IsSameGym(g, name, address, city)))
+            GymRequest request = new GymRequest
             {
-                return (false, "That gym already exists.");
-            }
+                Name = name,
+                Address = address,
+                City = city
+            };
 
-            await db.InsertAsync(new Gym { Name = name, Address = address, City = city });
+            ApiResult<MessageResponse> result = await _apiClient.PostAsync<MessageResponse>("api/gyms", request);
 
-            return (true, "Gym added.");
+            return ToTuple(result);
         }
 
         // Update gym
@@ -82,40 +90,28 @@
                 return (false, "Only admins can edit gyms.");
             }
 
-            name = (name ?? string.Empty).Trim();
-            address = (address ?? string.Empty).Trim();
-            city = (city ?? string.Empty).Trim();
+            name = Clean(name);
+            address = Clean(address);
+            city = Clean(city);
 
-            var error = ValidateGym(name, address, city);
+            // App-side validation
+            string? error = ValidateGym(name, address, city);
 
             if (error is not null)
             {
                 return (false, error);
             }
 
-            var db = await _databaseService.GetConnectionAsync();
-
-            var gym = await GetGymByIdAsync(gymId);
-
-            if (gym is null)
+            GymRequest request = new GymRequest
             {
-                return (false, "Gym could not be found.");
-            }
+                Name = name,
+                Address = address,
+                City = city
+            };
 
-            var gyms = await GetGymsAsync();
+            ApiResult<MessageResponse> result = await _apiClient.PutAsync<MessageResponse>($"api/gyms/{gymId}", request);
 
-            if (gyms.Any(g => g.Id != gymId && IsSameGym(g, name, address, city)))
-            {
-                return (false, "That gym already exists.");
-            }
-
-            gym.Name = name;
-            gym.Address = address;
-            gym.City = city;
-
-            await db.UpdateAsync(gym);
-
-            return (true, "Gym updated.");
+            return ToTuple(result);
         }
 
         // Delete gym
@@ -126,35 +122,9 @@
                 return (false, "Only admins can delete gyms.");
             }
 
-            var db = await _databaseService.GetConnectionAsync();
+            ApiResult<MessageResponse> result = await _apiClient.DeleteAsync<MessageResponse>($"api/gyms/{gymId}");
 
-            var gym = await GetGymByIdAsync(gymId);
-
-            if (gym is null)
-            {
-                return (false, "Gym could not be found.");
-            }
-
-            // Clear the gym from its trainers
-            var trainers = await db.Table<Trainer>().Where(t => t.GymId == gymId).ToListAsync();
-
-            foreach (var trainer in trainers)
-            {
-                trainer.GymId = 0;
-                await db.UpdateAsync(trainer);
-            }
-
-            var users = await db.Table<User>().Where(u => u.GymId == gymId).ToListAsync();
-
-            foreach (var user in users)
-            {
-                user.GymId = null;
-                await db.UpdateAsync(user);
-            }
-
-            await db.DeleteAsync(gym);
-
-            return (true, "Gym deleted.");
+            return ToTuple(result);
         }
 
         // Helpers
@@ -179,12 +149,31 @@
             return null;
         }
 
-        // Compare gym details ignoring case
-        private static bool IsSameGym(Gym gym, string name, string address, string city)
+        // Clean inputs
+        private static string Clean(string? value)
         {
-            return string.Equals(gym.Name, name, StringComparison.OrdinalIgnoreCase)
-                && string.Equals(gym.Address, address, StringComparison.OrdinalIgnoreCase)
-                && string.Equals(gym.City, city, StringComparison.OrdinalIgnoreCase);
+            if (value is null)
+            {
+                return string.Empty;
+            }
+
+            return value.Trim();
+        }
+
+        // Turns an api reply into the response the view models expect
+        private static (bool Success, string Message) ToTuple(ApiResult<MessageResponse> result)
+        {
+            if (!result.Success)
+            {
+                return (false, result.Message);
+            }
+
+            if (result.Data is null)
+            {
+                return (true, string.Empty);
+            }
+
+            return (true, result.Data.Message);
         }
     }
 }

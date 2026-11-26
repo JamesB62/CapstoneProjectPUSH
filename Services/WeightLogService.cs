@@ -2,12 +2,12 @@
 {
     public class WeightLogService
     {
-        private readonly DatabaseService _databaseService;
+        private readonly ApiClient _apiClient;
         private readonly UserService _userService;
 
-        public WeightLogService(DatabaseService databaseService, UserService userService)
+        public WeightLogService(ApiClient apiClient, UserService userService)
         {
-            _databaseService = databaseService;
+            _apiClient = apiClient;
             _userService = userService;
         }
 
@@ -19,12 +19,14 @@
                 return new List<WeightLog>();
             }
 
-            var db = await _databaseService.GetConnectionAsync();
+            ApiResult<List<WeightLog>> result = await _apiClient.GetAsync<List<WeightLog>>("api/weightlogs/mine");
 
-            return await db.Table<WeightLog>()
-                .Where(wl => wl.UserId == userId)
-                .OrderByDescending(wl => wl.DateTimeLogged)
-                .ToListAsync();
+            if (result.Success && result.Data != null)
+            {
+                return result.Data;
+            }
+
+            return new List<WeightLog>();
         }
 
         // Save weight for today for user Id
@@ -35,35 +37,22 @@
                 return;
             }
 
-            var db = await _databaseService.GetConnectionAsync();
-
-            // Used to create a date range for today
-            DateTime todayStart = DateTime.Today;
-            DateTime tomorrowStart = todayStart.AddDays(1);
-
-            // Check if a weight log already exists for today for user Id
-            var existingLog = await db.Table<WeightLog>()
-                .Where(wl => wl.UserId == userId && wl.DateTimeLogged >= todayStart && wl.DateTimeLogged < tomorrowStart)
-                .FirstOrDefaultAsync();
-
-            // Updates the existing weight log or...
-            if (existingLog is not null)
+            // App-side validation
+            if (weightKg <= 0 || weightKg > 500)
             {
-                existingLog.WeightKg = weightKg;
-                existingLog.DateTimeLogged = DateTime.Now;
-                await db.UpdateAsync(existingLog);
+                return;
             }
-            // Creates a new weight log
-            else
-            {
-                var weightLog = new WeightLog
-                {
-                    UserId = userId,
-                    WeightKg = weightKg,
-                    DateTimeLogged = DateTime.Now
-                };
 
-                await db.InsertAsync(weightLog);
+            WeightLogRequest request = new WeightLogRequest
+            {
+                WeightKg = weightKg
+            };
+
+            ApiResult<MessageResponse> result = await _apiClient.PostAsync<MessageResponse>("api/weightlogs/today", request);
+
+            if (!result.Success)
+            {
+                System.Diagnostics.Debug.WriteLine("Save weight failed: " + result.Message);
             }
         }
     }

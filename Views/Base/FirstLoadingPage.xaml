@@ -7,29 +7,42 @@
 
     <VerticalStackLayout
         MaximumWidthRequest="500"
-        Padding="30,0,30,30"
-        Spacing="30"
+        Padding="30,20,30,20"
+        Spacing="20"
         VerticalOptions="Center">
 
-        <!-- Splash text -->
+        <!-- Branding -->
         <VerticalStackLayout
-            Spacing="5">
+            Spacing="10">
 
-            <Label 
-                FontAttributes="Bold"
-                FontSize="21"
+            <HorizontalStackLayout
                 HorizontalOptions="Center"
-                Text="Welcome to PUSH"/>
+                Spacing="10">
+
+                <!-- Logo -->
+                <Image
+                    AutomationProperties.IsInAccessibleTree="False"
+                    HeightRequest="50"
+                    Source="push.svg"
+                    WidthRequest="50"/>
+
+                <Label
+                    Style="{StaticResource BrandTitle}"
+                    Text="PUSH"/>
+
+            </HorizontalStackLayout>
 
             <Label
                 HorizontalOptions="Center"
+                Style="{StaticResource CardBody}"
                 Text="Preparing your exercise journey..."/>
 
         </VerticalStackLayout>
 
         <!-- Loading bar -->
         <ProgressBar
-            x:Name="MyProgressBar"/>
+            x:Name="MyProgressBar"
+            SemanticProperties.Description="Loading PUSH"/>
 
     </VerticalStackLayout>
     

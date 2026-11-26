@@ -15,7 +15,7 @@
 
             <VerticalStackLayout
                 MaximumWidthRequest="500"
-                Padding="30"
+                Padding="30,20,30,20"
                 Spacing="20">
 
                 <!-- Time filters -->
@@ -27,7 +27,7 @@
                         Grid.Column="0"
                         Command="{Binding SelectFilterCommand}"
                         CommandParameter="Week"
-                        Opacity="0.5"
+                        Style="{StaticResource SecondaryButton}"
                         Text="Week">
 
                         <Button.Triggers>
@@ -36,11 +36,19 @@
                                 Binding="{Binding SelectedFilter}"
                                 TargetType="Button"
                                 Value="Week">
-                                
+
                                 <Setter
-                                    Property="Opacity"
-                                    Value="1"/>
-                                
+                                    Property="BackgroundColor"
+                                    Value="{StaticResource Accent}"/>
+
+                                <Setter
+                                    Property="TextColor"
+                                    Value="{StaticResource OnAccent}"/>
+
+                                <Setter
+                                    Property="SemanticProperties.Description"
+                                    Value="Week, selected"/>
+
                             </DataTrigger>
 
                         </Button.Triggers>
@@ -51,7 +59,7 @@
                         Grid.Column="1"
                         Command="{Binding SelectFilterCommand}"
                         CommandParameter="Month"
-                        Opacity="0.5"
+                        Style="{StaticResource SecondaryButton}"
                         Text="Month">
 
                         <Button.Triggers>
@@ -62,9 +70,17 @@
                                 Value="Month">
 
                                 <Setter
-                                    Property="Opacity"
-                                    Value="1"/>
-                                
+                                    Property="BackgroundColor"
+                                    Value="{StaticResource Accent}"/>
+
+                                <Setter
+                                    Property="TextColor"
+                                    Value="{StaticResource OnAccent}"/>
+
+                                <Setter
+                                    Property="SemanticProperties.Description"
+                                    Value="Month, selected"/>
+
                             </DataTrigger>
 
                         </Button.Triggers>
@@ -75,7 +91,7 @@
                         Grid.Column="2"
                         Command="{Binding SelectFilterCommand}"
                         CommandParameter="Year"
-                        Opacity="0.5"
+                        Style="{StaticResource SecondaryButton}"
                         Text="Year">
 
                         <Button.Triggers>
@@ -86,9 +102,17 @@
                                 Value="Year">
 
                                 <Setter
-                                    Property="Opacity"
-                                    Value="1"/>
-                                
+                                    Property="BackgroundColor"
+                                    Value="{StaticResource Accent}"/>
+
+                                <Setter
+                                    Property="TextColor"
+                                    Value="{StaticResource OnAccent}"/>
+
+                                <Setter
+                                    Property="SemanticProperties.Description"
+                                    Value="Year, selected"/>
+
                             </DataTrigger>
 
                         </Button.Triggers>
@@ -98,27 +122,32 @@
                 </Grid>
 
                 <!-- Top stats -->
+                <Label
+                    Style="{StaticResource SectionHeader}"
+                    Text="Overview"/>
+                
                 <Grid
                     ColumnDefinitions="*,*"
-                    ColumnSpacing="10"
+                    ColumnSpacing="15"
                     RowDefinitions="Auto,Auto"
-                    RowSpacing="10">
+                    RowSpacing="15">
 
                     <Border
                         Grid.Column="0"
                         Grid.Row="0"
                         Style="{StaticResource Card}">
 
-                        <VerticalStackLayout>
+                        <VerticalStackLayout
+                            Spacing="5">
 
                             <Label
-                                FontAttributes="Bold"
-                                FontSize="18"
-                                HorizontalOptions="Center"
+                                SemanticProperties.Description="{Binding WorkoutCountText, StringFormat='Workouts: {0}'}"
+                                Style="{StaticResource StatValue}"
                                 Text="{Binding WorkoutCountText}"/>
 
                             <Label
-                                HorizontalOptions="Center"
+                                AutomationProperties.IsInAccessibleTree="False"
+                                Style="{StaticResource StatLabel}"
                                 Text="Workouts"/>
 
                         </VerticalStackLayout>
@@ -130,16 +159,17 @@
                         Grid.Row="0"
                         Style="{StaticResource Card}">
 
-                        <VerticalStackLayout>
+                        <VerticalStackLayout
+                            Spacing="5">
 
                             <Label
-                                FontAttributes="Bold"
-                                FontSize="18"
-                                HorizontalOptions="Center"
+                                SemanticProperties.Description="{Binding TotalTimeText, StringFormat='Total time: {0}'}"
+                                Style="{StaticResource StatValue}"
                                 Text="{Binding TotalTimeText}"/>
 
                             <Label
-                                HorizontalOptions="Center"
+                                AutomationProperties.IsInAccessibleTree="False"
+                                Style="{StaticResource StatLabel}"
                                 Text="Total Time"/>
 
                         </VerticalStackLayout>
@@ -151,16 +181,17 @@
                         Grid.Row="1"
                         Style="{StaticResource Card}">
 
-                        <VerticalStackLayout>
+                        <VerticalStackLayout
+                            Spacing="5">
 
                             <Label
-                                FontAttributes="Bold"
-                                FontSize="18"
-                                HorizontalOptions="Center"
+                                SemanticProperties.Description="{Binding AvgDurationText, StringFormat='Average duration: {0}'}"
+                                Style="{StaticResource StatValue}"
                                 Text="{Binding AvgDurationText}"/>
 
                             <Label
-                                HorizontalOptions="Center"
+                                AutomationProperties.IsInAccessibleTree="False"
+                                Style="{StaticResource StatLabel}"
                                 Text="Avg. Duration"/>
 
                         </VerticalStackLayout>
@@ -172,16 +203,17 @@
                         Grid.Row="1"
                         Style="{StaticResource Card}">
 
-                        <VerticalStackLayout>
+                        <VerticalStackLayout
+                            Spacing="5">
 
                             <Label
-                                FontAttributes="Bold"
-                                FontSize="18"
-                                HorizontalOptions="Center"
+                                SemanticProperties.Description="{Binding StreakText, StringFormat='Current streak: {0}'}"
+                                Style="{StaticResource StatValue}"
                                 Text="{Binding StreakText}"/>
 
                             <Label
-                                HorizontalOptions="Center"
+                                AutomationProperties.IsInAccessibleTree="False"
+                                Style="{StaticResource StatLabel}"
                                 Text="Current Streak"/>
 
                         </VerticalStackLayout>
@@ -192,8 +224,7 @@
 
                 <!-- Minutes trained chart -->
                 <Label
-                    FontAttributes="Bold"
-                    FontSize="16"
+                    Style="{StaticResource SectionHeader}"
                     Text="Minutes Trained"/>
 
                 <Border
@@ -210,24 +241,47 @@
                                 x:DataType="charts:ChartBar">
 
                                 <VerticalStackLayout
-                                    Spacing="4"
+                                    Spacing="5"
                                     VerticalOptions="End">
 
+                                    <!-- Value -->
                                     <Label
-                                        FontSize="10"
+                                        AutomationProperties.IsInAccessibleTree="False"
                                         HorizontalTextAlignment="Center"
+                                        Style="{StaticResource HintLabel}"
                                         Text="{Binding ValueText}"/>
 
+                                    <!-- Bar -->
                                     <BoxView
-                                        Color="{AppThemeBinding Light=#2563EB, Dark=#60A5FA}"
-                                        CornerRadius="0"
+                                        AutomationProperties.IsInAccessibleTree="False"
+                                        BackgroundColor="Transparent"
+                                        Color="{StaticResource Accent}"
+                                        CornerRadius="4,4,0,0"
                                         HeightRequest="{Binding BarHeight}"
                                         WidthRequest="14"/>
 
+                                    <!-- Period label -->
                                     <Label
-                                        FontSize="12"
                                         HorizontalTextAlignment="Center"
-                                        Text="{Binding Label}"/>
+                                        Style="{StaticResource HintLabel}"
+                                        Text="{Binding Label}">
+
+                                        <SemanticProperties.Description>
+
+                                            <MultiBinding
+                                                StringFormat="{}{0}, {1}">
+
+                                                <Binding
+                                                    Path="Label"/>
+
+                                                <Binding
+                                                    Path="ValueText"/>
+
+                                            </MultiBinding>
+
+                                        </SemanticProperties.Description>
+
+                                    </Label>
 
                                 </VerticalStackLayout>
 
@@ -241,8 +295,7 @@
 
                 <!-- Weigh-in chart -->
                 <Label
-                    FontAttributes="Bold"
-                    FontSize="16"
+                    Style="{StaticResource SectionHeader}"
                     Text="Weigh-In"/>
 
                 <Border
@@ -252,11 +305,11 @@
                         Spacing="10">
 
                         <Label
-                            FontAttributes="Italic"
-                            FontSize="14"
+                            Style="{StaticResource CardBody}"
                             Text="{Binding LatestWeightText}"/>
 
                         <GraphicsView
+                            AutomationProperties.IsInAccessibleTree="False"
                             Drawable="{Binding WeightChart}"
                             HeightRequest="160"/>
 
@@ -267,8 +320,8 @@
                 <!-- Error message -->
                 <Label
                     IsVisible="{Binding HasErrorMessage}"
-                    Text="{Binding ErrorMessage}"
-                    TextColor="Red"/>
+                    Style="{StaticResource ErrorLabel}"
+                    Text="{Binding ErrorMessage}"/>
 
                 <Button
                     Command="{Binding AddWeighInCommand}"

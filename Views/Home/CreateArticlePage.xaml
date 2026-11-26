@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:CapstoneProjectPUSH.ViewModels.Home"
+             x:Class="CapstoneProjectPUSH.Views.Home.CreateArticlePage"
+             x:DataType="vm:CreateArticleViewModel"
+             Title="{Binding PageTitle}">
+
+    <ScrollView>
+
+        <VerticalStackLayout
+            MaximumWidthRequest="500"
+            Padding="30,20,30,20"
+            Spacing="20">
+
+            <!-- Photo -->
+            <VerticalStackLayout
+                Spacing="10">
+
+                <Label
+                    Style="{StaticResource FieldLabel}"
+                    Text="Photo"/>
+
+                <Grid
+                    ColumnDefinitions="*,Auto,Auto"
+                    ColumnSpacing="10">
+
+                    <Label
+                        Grid.Column="0"
+                        Style="{StaticResource CardBody}"
+                        Text="{Binding PhotoStatusText}"
+                        VerticalOptions="Center"/>
+
+                    <Button
+                        Grid.Column="1"
+                        Command="{Binding ChangePhotoCommand}"
+                        SemanticProperties.Description="Change photo"
+                        Style="{StaticResource SecondaryButton}"
+                        Text="Change"/>
+
+                    <Button
+                        Grid.Column="2"
+                        Command="{Binding RemovePhotoCommand}"
+                        IsVisible="{Binding HasArticleImage}"
+                        SemanticProperties.Description="Remove photo"
+                        Style="{StaticResource SecondaryButton}"
+                        Text="Remove"/>
+
+                </Grid>
+
+            </VerticalStackLayout>
+
+            <!-- Title -->
+            <VerticalStackLayout
+                Spacing="10">
+
+                <Label
+                    Style="{StaticResource FieldLabel}"
+                    Text="Title"/>
+
+                <Border
+                    Style="{StaticResource InputFrame}">
+
+                    <Entry
+                        MaxLength="100"
+                        Placeholder="Enter the article's title here"
+                        SemanticProperties.Hint="Title"
+                        Text="{Binding Title}"/>
+
+                </Border>
+
+            </VerticalStackLayout>
+
+            <!-- Topic -->
+            <VerticalStackLayout
+                Spacing="10">
+
+                <Label
+                    Style="{StaticResource FieldLabel}"
+                    Text="Topic"/>
+
+                <Border
+                    Style="{StaticResource InputFrame}">
+
+                    <Entry
+                        MaxLength="50"
+                        Placeholder="Enter the article's topic here"
+                        SemanticProperties.Hint="Topic"
+                        Text="{Binding Topic}"/>
+
+                </Border>
+
+            </VerticalStackLayout>
+            
+            <!-- Published date -->
+            <VerticalStackLayout
+                Spacing="10">
+
+                <Label
+                    Style="{StaticResource FieldLabel}"
+                    Text="Published Date"/>
+
+                <Border
+                    Style="{StaticResource InputFrame}">
+
+                    <DatePicker
+                        Date="{Binding PublishedDate}"
+                        Format="d MMM yyyy"
+                        MaximumDate="{Binding MaxPublishedDate}"
+                        SemanticProperties.Hint="Published date"/>
+
+                </Border>
+
+            </VerticalStackLayout>
+
+            <!-- Content -->
+            <VerticalStackLayout
+                Spacing="10">
+
+                <Label
+                    Style="{StaticResource FieldLabel}"
+                    Text="Content"/>
+
+                <Border
+                    Style="{StaticResource InputFrame}">
+
+                    <Editor
+                        AutoSize="TextChanges"
+                        MaxLength="5000"
+                        MinimumHeightRequest="200"
+                        Placeholder="Write the article here"
+                        SemanticProperties.Hint="Content"
+                        Text="{Binding Content}"/>
+
+                </Border>
+
+            </VerticalStackLayout>
+
+            <!-- Citation -->
+            <VerticalStackLayout
+                Spacing="10">
+
+                <Label
+                    Style="{StaticResource FieldLabel}"
+                    Text="Citation"/>
+
+                <Border
+                    Style="{StaticResource InputFrame}">
+
+                    <Editor
+                        AutoSize="TextChanges"
+                        MaxLength="300"
+                        Placeholder="Enter the article's author or publisher here"
+                        SemanticProperties.Hint="Citation"
+                        Text="{Binding Citation}"
+                        VerticalTextAlignment="Center"/>
+
+                </Border>
+
+            </VerticalStackLayout>
+            
+            <!-- Source link -->
+            <VerticalStackLayout
+                Spacing="10">
+
+                <Label
+                    Style="{StaticResource FieldLabel}"
+                    Text="Source Link (Optional)"/>
+
+                <Border
+                    Style="{StaticResource InputFrame}">
+
+                    <Entry
+                        Keyboard="Url"
+                        MaxLength="300"
+                        Placeholder="https://..."
+                        SemanticProperties.Hint="Source link, optional"
+                        Text="{Binding CitationUrl}"/>
+
+                </Border>
+
+            </VerticalStackLayout>
+
+            <!-- Error message -->
+            <Label
+                IsVisible="{Binding HasErrorMessage}"
+                Style="{StaticResource ErrorLabel}"
+                Text="{Binding ErrorMessage}"/>
+
+            <!-- Buttons -->
+            <VerticalStackLayout
+                Spacing="10">
+
+                <Button
+                    Command="{Binding SaveCommand}"
+                    IsEnabled="{Binding IsNotBusy}"
+                    Text="{Binding SaveButtonText}"/>
+
+                <Button
+                    Command="{Binding CancelCommand}"
+                    IsEnabled="{Binding IsNotBusy}"
+                    Style="{StaticResource SecondaryButton}"
+                    Text="Cancel"/>
+
+            </VerticalStackLayout>
+
+        </VerticalStackLayout>
+
+    </ScrollView>
+
+</ContentPage>

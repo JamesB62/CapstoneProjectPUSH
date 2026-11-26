@@ -9,29 +9,46 @@
 
     <Grid
         MaximumWidthRequest="500"
-        Padding="30,15,30,0"
+        Padding="30,20,30,0"
         RowDefinitions="Auto,Auto,*"
         RowSpacing="20">
 
-        <!-- Search bar -->
-        <SearchBar
-            Grid.Row="0"
-            Placeholder="Search by title, content or workout..."
-            Text="{Binding SearchText}"/>
-
         <VerticalStackLayout
-            Grid.Row="1"
-            Spacing="15">
-
-            <!-- Status message -->
-            <Label
-                Text="{Binding StatusMessage}"/>
+            Grid.Row="0"
+            Spacing="20">
 
             <!-- Error message -->
             <Label
                 IsVisible="{Binding HasErrorMessage}"
-                Text="{Binding ErrorMessage}"
-                TextColor="Red"/>
+                Style="{StaticResource ErrorLabel}"
+                Text="{Binding ErrorMessage}"/>
+
+            <!-- Search bar -->
+            <Border
+                Style="{StaticResource InputFrame}">
+
+                <SearchBar
+                    Placeholder="Search by title, content or workout..."
+                    SemanticProperties.Hint="Search notes"
+                    Text="{Binding SearchText}"/>
+
+            </Border>
+
+        </VerticalStackLayout>
+
+        <!-- Count and swipe hint (registered accounts only) -->
+        <VerticalStackLayout
+            Grid.Row="1"
+            Spacing="5">
+
+            <Label
+                Style="{StaticResource StatusLabel}"
+                Text="{Binding StatusMessage}"/>
+
+            <Label
+                IsVisible="{Binding IsLoggedIn}"
+                Style="{StaticResource HintLabel}"
+                Text="Swipe right to edit or left to delete."/>
 
         </VerticalStackLayout>
 
@@ -48,29 +65,32 @@
                 <!-- Empty view -->
                 <CollectionView.EmptyView>
 
-                    <VerticalStackLayout
-                        HorizontalOptions="Center"
-                        VerticalOptions="Center">
+                    <Grid>
 
-                        <Label
-                            FontAttributes="Italic"
-                            HorizontalTextAlignment="Center"
-                            Text="No notes found."/>
+                        <VerticalStackLayout
+                            HorizontalOptions="Center"
+                            Spacing="5"
+                            VerticalOptions="Center">
 
-                        <Label
-                            FontAttributes="Italic"
-                            HorizontalTextAlignment="Center"
-                            Text="Pull down to try again."/>
+                            <Label
+                                Style="{StaticResource EmptyLabel}"
+                                Text="No notes found."/>
 
-                    </VerticalStackLayout>
+                            <Label
+                                Style="{StaticResource EmptyLabel}"
+                                Text="Pull down to try again."/>
+
+                        </VerticalStackLayout>
+
+                    </Grid>
 
                 </CollectionView.EmptyView>
 
-                <!-- Item layout -->
+                <!-- Items layout -->
                 <CollectionView.ItemsLayout>
 
                     <LinearItemsLayout
-                        ItemSpacing="10"
+                        ItemSpacing="15"
                         Orientation="Vertical"/>
 
                 </CollectionView.ItemsLayout>
@@ -82,47 +102,87 @@
                         x:DataType="models:Note">
 
                         <Border
-                            Style="{StaticResource Card}">
+                            Style="{StaticResource SwipeClip}">
+                        
+                            <SwipeView>
 
-                            <VerticalStackLayout
-                                Spacing="10">
+                                <!-- Swipe actions (registered accounts only) -->
+                                <SwipeView.LeftItems>
 
-                                <Grid
-                                    ColumnDefinitions="*,Auto"
-                                    ColumnSpacing="10">
+                                    <SwipeItems>
 
-                                    <Label
-                                        Grid.Column="0"
-                                        FontAttributes="Bold"
-                                        FontSize="16"
-                                        LineBreakMode="TailTruncation"
-                                        Text="{Binding Title}"
-                                        VerticalOptions="Center"/>
+                                        <SwipeItem
+                                            BackgroundColor="{StaticResource SwipeEdit}"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MyNotesViewModel}}, Path=EditNoteCommand}"
+                                            CommandParameter="{Binding .}"
+                                            IsVisible="{Binding Source={RelativeSource AncestorType={x:Type vm:MyNotesViewModel}}, Path=IsLoggedIn}"
+                                            Text="Edit"/>
 
-                                    <Border
-                                        Grid.Column="1"
-                                        Style="{StaticResource Pill}">
+                                    </SwipeItems>
 
+                                </SwipeView.LeftItems>
+
+                                <SwipeView.RightItems>
+
+                                    <SwipeItems>
+
+                                        <SwipeItem
+                                            BackgroundColor="{StaticResource SwipeDelete}"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MyNotesViewModel}}, Path=DeleteNoteCommand}"
+                                            CommandParameter="{Binding .}"
+                                            IsVisible="{Binding Source={RelativeSource AncestorType={x:Type vm:MyNotesViewModel}}, Path=IsLoggedIn}"
+                                            Text="Delete"/>
+
+                                    </SwipeItems>
+
+                                </SwipeView.RightItems>
+
+                                <Border
+                                    Style="{StaticResource SwipeCard}">
+
+                                    <VerticalStackLayout
+                                        Spacing="10">
+
+                                        <!-- Title and workout pill -->
+                                        <Grid
+                                            ColumnDefinitions="*,Auto"
+                                            ColumnSpacing="10">
+
+                                            <Label
+                                                Grid.Column="0"
+                                                LineBreakMode="TailTruncation"
+                                                MaxLines="2"
+                                                Style="{StaticResource CardTitle}"
+                                                Text="{Binding Title}"/>
+
+                                            <Border
+                                                Grid.Column="1"
+                                                Style="{StaticResource Pill}"
+                                                VerticalOptions="Start">
+
+                                                <Label
+                                                    Style="{StaticResource PillLabel}"
+                                                    Text="{Binding WorkoutTitle}"/>
+
+                                            </Border>
+
+                                        </Grid>
+
+                                        <!-- Content -->
                                         <Label
-                                            FontSize="12"
-                                            LineBreakMode="TailTruncation"
-                                            Text="{Binding WorkoutTitle}"/>
+                                            Style="{StaticResource CardBody}"
+                                            Text="{Binding Content}"/>
 
-                                    </Border>
+                                        <!-- Credit -->
+                                        <Label
+                                            Style="{StaticResource CardCredit}"
+                                            Text="{Binding DateTimeCreated, StringFormat='Created on {0:d MMM yyyy}'}"/>
 
-                                </Grid>
+                                    </VerticalStackLayout>
 
-                                <Label
-                                    LineBreakMode="TailTruncation"
-                                    MaxLines="2"
-                                    Text="{Binding Content}"/>
+                                </Border>
 
-                                <Label
-                                    FontAttributes="Italic"
-                                    FontSize="12"
-                                    Text="{Binding DateTimeCreated, StringFormat='Created on {0:d MMM yyyy}'}"/>
-
-                            </VerticalStackLayout>
+                            </SwipeView>
 
                         </Border>
 

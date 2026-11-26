@@ -11,35 +11,54 @@
 
         <ToolbarItem
             Command="{Binding AddCommand}"
-            Text="+ Add"/>
+            Order="Secondary"
+            Text="Add Gym"/>
 
     </ContentPage.ToolbarItems>
 
     <Grid
         MaximumWidthRequest="500"
-        Padding="30,15,30,0"
+        Padding="30,20,30,0"
         RowDefinitions="Auto,Auto,*"
         RowSpacing="20">
 
-        <!-- Search bar -->
-        <SearchBar
-            Grid.Row="0"
-            Placeholder="Search by name or city..."
-            Text="{Binding SearchText}"/>
-
         <VerticalStackLayout
-            Grid.Row="1"
-            Spacing="15">
-
-            <!-- Gym count -->
-            <Label
-                Text="{Binding StatusMessage}"/>
+            Grid.Row="0"
+            Spacing="20">
 
             <!-- Error message -->
             <Label
                 IsVisible="{Binding HasErrorMessage}"
-                Text="{Binding ErrorMessage}"
-                TextColor="Red"/>
+                Style="{StaticResource ErrorLabel}"
+                Text="{Binding ErrorMessage}"/>
+
+            <!-- Search bar -->
+            <Border
+                Style="{StaticResource InputFrame}">
+
+                <SearchBar
+                    Placeholder="Search by name or city..."
+                    SemanticProperties.Hint="Search gyms"
+                    Text="{Binding SearchText}"/>
+
+            </Border>
+
+        </VerticalStackLayout>
+
+        <!-- Count and swipe hint -->
+        <VerticalStackLayout
+            Grid.Row="1"
+            Spacing="5">
+
+            <!-- Gym count -->
+            <Label
+                Style="{StaticResource StatusLabel}"
+                Text="{Binding StatusMessage}"/>
+
+            <!-- Swipe hint -->
+            <Label
+                Style="{StaticResource HintLabel}"
+                Text="Swipe right to edit or left to delete."/>
 
         </VerticalStackLayout>
 
@@ -54,29 +73,32 @@
                 <!-- Empty view -->
                 <CollectionView.EmptyView>
 
-                    <VerticalStackLayout
-                        HorizontalOptions="Center"
-                        VerticalOptions="Center">
+                    <Grid>
 
-                        <Label
-                            FontAttributes="Italic"
-                            HorizontalTextAlignment="Center"
-                            Text="No gyms found."/>
+                        <VerticalStackLayout
+                            HorizontalOptions="Center"
+                            Spacing="5"
+                            VerticalOptions="Center">
 
-                        <Label
-                            FontAttributes="Italic"
-                            HorizontalTextAlignment="Center"
-                            Text="Pull down to try again."/>
+                            <Label
+                                Style="{StaticResource EmptyLabel}"
+                                Text="No gyms found."/>
 
-                    </VerticalStackLayout>
+                            <Label
+                                Style="{StaticResource EmptyLabel}"
+                                Text="Pull down to try again."/>
+
+                        </VerticalStackLayout>
+
+                    </Grid>
 
                 </CollectionView.EmptyView>
 
-                <!-- Item layout -->
+                <!-- Items layout -->
                 <CollectionView.ItemsLayout>
 
                     <LinearItemsLayout
-                        ItemSpacing="10"
+                        ItemSpacing="15"
                         Orientation="Vertical"/>
 
                 </CollectionView.ItemsLayout>
@@ -87,61 +109,66 @@
                     <DataTemplate
                         x:DataType="models:Gym">
 
-                        <SwipeView>
+                        <Border
+                            Style="{StaticResource SwipeClip}">
 
-                            <!-- Swipe actions -->
-                            <SwipeView.LeftItems>
+                            <SwipeView>
 
-                                <SwipeItems>
+                                <!-- Swipe actions -->
+                                <SwipeView.LeftItems>
 
-                                    <SwipeItem
-                                        BackgroundColor="#6B7280"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:GymsManagementViewModel}}, Path=EditCommand}"
-                                        CommandParameter="{Binding .}"
-                                        Text="Edit"/>
+                                    <SwipeItems>
 
-                                </SwipeItems>
+                                        <SwipeItem
+                                            BackgroundColor="{StaticResource SwipeEdit}"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:GymsManagementViewModel}}, Path=EditCommand}"
+                                            CommandParameter="{Binding .}"
+                                            Text="Edit"/>
 
-                            </SwipeView.LeftItems>
+                                    </SwipeItems>
 
-                            <SwipeView.RightItems>
+                                </SwipeView.LeftItems>
 
-                                <SwipeItems>
+                                <SwipeView.RightItems>
 
-                                    <SwipeItem
-                                        BackgroundColor="Red"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:GymsManagementViewModel}}, Path=DeleteCommand}"
-                                        CommandParameter="{Binding .}"
-                                        Text="Delete"/>
+                                    <SwipeItems>
 
-                                </SwipeItems>
+                                        <SwipeItem
+                                            BackgroundColor="{StaticResource SwipeDelete}"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:GymsManagementViewModel}}, Path=DeleteCommand}"
+                                            CommandParameter="{Binding .}"
+                                            Text="Delete"/>
 
-                            </SwipeView.RightItems>
+                                    </SwipeItems>
 
-                            <!-- Card -->
-                            <Border
-                                Style="{StaticResource Card}">
+                                </SwipeView.RightItems>
 
-                                <VerticalStackLayout
-                                    Spacing="10">
+                                <!-- Card -->
+                                <Border
+                                    Style="{StaticResource SwipeCard}">
 
-                                    <!-- Header -->
-                                    <Label
-                                        FontAttributes="Bold"
-                                        FontSize="16"
-                                        LineBreakMode="TailTruncation"
-                                        Text="{Binding Name}"/>
+                                    <VerticalStackLayout
+                                        Spacing="10">
 
-                                    <!-- Info -->
-                                    <Label
-                                        LineBreakMode="TailTruncation"
-                                        Text="{Binding FullAddress}"/>
+                                        <!-- Header -->
+                                        <Label
+                                            LineBreakMode="TailTruncation"
+                                            Style="{StaticResource CardTitle}"
+                                            Text="{Binding Name}"/>
 
-                                </VerticalStackLayout>
+                                        <!-- Info -->
+                                        <Label
+                                            LineBreakMode="TailTruncation"
+                                            Style="{StaticResource CardBody}"
+                                            Text="{Binding FullAddress}"/>
 
-                            </Border>
+                                    </VerticalStackLayout>
 
-                        </SwipeView>
+                                </Border>
+
+                            </SwipeView>
+
+                        </Border>
 
                     </DataTemplate>
 

@@ -26,31 +26,34 @@
 
         <VerticalStackLayout
             MaximumWidthRequest="500"
-            Padding="30"
-            Spacing="15">
+            Padding="30,20,30,20"
+            Spacing="20">
 
+            <!-- Image -->
             <Border
+                AutomationProperties.IsInAccessibleTree="False"
+                BackgroundColor="{StaticResource CardBackground}"
                 HeightRequest="100"
                 HorizontalOptions="Center"
+                Stroke="{StaticResource Accent}"
                 StrokeShape="Ellipse"
-                StrokeThickness="0"
+                StrokeThickness="2"
                 WidthRequest="100">
 
                 <Image
                     Aspect="AspectFill"
+                    AutomationProperties.IsInAccessibleTree="False"
                     Source="{Binding Trainer.ProfileImage}"/>
 
             </Border>
 
+            <!-- Full name, availability and info -->
             <VerticalStackLayout
-                HorizontalOptions="Center"
-                Margin="0,0,0,10"
                 Spacing="10">
 
                 <Label
-                    FontAttributes="Bold"
-                    FontSize="18"
-                    HorizontalOptions="Center"
+                    HorizontalTextAlignment="Center"
+                    Style="{StaticResource DetailTitle}"
                     Text="{Binding Trainer.FullName}"/>
 
                 <Border
@@ -58,62 +61,88 @@
                     Style="{StaticResource Pill}">
 
                     <Label
-                        FontSize="12"
+                        Style="{StaticResource PillLabel}"
                         Text="{Binding Trainer.AvailableText}"/>
 
                 </Border>
 
-            </VerticalStackLayout>
+                <VerticalStackLayout
+                    Spacing="5">
 
-            <Label
-                FontAttributes="Bold"
-                FontSize="16"
-                Text="About Me"/>
+                    <Label
+                        HorizontalTextAlignment="Center"
+                        Style="{StaticResource CardBody}"
+                        Text="{Binding Trainer.CategoryTitle, StringFormat='Specialty: {0}'}"/>
 
-            <Label
-                Text="{Binding Trainer.Description}"/>
+                    <Label
+                        HorizontalTextAlignment="Center"
+                        Style="{StaticResource CardBody}"
+                        Text="{Binding Trainer.GymDetailsLabel, StringFormat='Gym: {0}'}"/>
 
-            <VerticalStackLayout
-                Spacing="5">
-
-                <Label
-                    Text="{Binding Trainer.CategoryTitle, StringFormat='• Specialty: {0}'}"/>
-
-                <Label
-                    Text="{Binding Trainer.GymDetailsLabel, StringFormat='• Gym: {0}'}"/>
+                </VerticalStackLayout>
 
             </VerticalStackLayout>
 
-            <Label
-                FontAttributes="Bold"
-                FontSize="16"
-                IsVisible="{Binding HasContactDetails}"
-                Margin="0,0,0,4"
-                Text="Contact Me"/>
-
+            <!-- About -->
             <VerticalStackLayout
-                IsVisible="{Binding HasContactDetails}"
+                IsVisible="{Binding Trainer.HasDescription}"
                 Spacing="10">
 
-                <Button
-                    Command="{Binding CallTrainerCommand}"
-                    IsEnabled="{Binding IsTrainerAvailable}"
-                    IsVisible="{Binding HasPhone}"
-                    Text="Call"/>
+                <Label
+                    Style="{StaticResource SectionHeader}"
+                    Text="About Me"/>
 
-                <Button
-                    Command="{Binding EmailTrainerCommand}"
-                    IsEnabled="{Binding IsTrainerAvailable}"
-                    IsVisible="{Binding HasEmail}"
-                    Text="Email"/>
+                <Label
+                    Style="{StaticResource LongText}"
+                    Text="{Binding Trainer.Description}"/>
 
             </VerticalStackLayout>
 
-            <!-- Error message -->
-            <Label
-                IsVisible="{Binding HasErrorMessage}"
-                Text="{Binding ErrorMessage}"
-                TextColor="Red"/>
+            <!-- Contact -->
+            <VerticalStackLayout
+                Spacing="10">
+
+                <Label
+                    IsVisible="{Binding HasContactDetails}"
+                    Style="{StaticResource SectionHeader}"
+                    Text="Contact Me"/>
+
+                <!-- Error message -->
+                <Label
+                    IsVisible="{Binding HasErrorMessage}"
+                    Style="{StaticResource ErrorLabel}"
+                    Text="{Binding ErrorMessage}"/>
+
+                <!-- Buttons -->
+                <VerticalStackLayout
+                    IsVisible="{Binding HasContactDetails}"
+                    Margin="0,5,0,0"
+                    Spacing="10">
+
+                    <Label
+                        IsVisible="{Binding IsTrainerUnavailable}"
+                        Style="{StaticResource HintLabel}"
+                        Text="This trainer isn't taking on new clients right now."/>
+
+                    <Button
+                        Command="{Binding CallTrainerCommand}"
+                        IsEnabled="{Binding IsTrainerAvailable}"
+                        IsVisible="{Binding HasPhone}"
+                        SemanticProperties.Hint="Opens your phone app to call this trainer"
+                        Style="{StaticResource SecondaryButton}"
+                        Text="Call"/>
+
+                    <Button
+                        Command="{Binding EmailTrainerCommand}"
+                        IsEnabled="{Binding IsTrainerAvailable}"
+                        IsVisible="{Binding HasEmail}"
+                        SemanticProperties.Hint="Opens your email app to email this trainer"
+                        Style="{StaticResource SecondaryButton}"
+                        Text="Email"/>
+
+                </VerticalStackLayout>
+
+            </VerticalStackLayout>
 
         </VerticalStackLayout>
 

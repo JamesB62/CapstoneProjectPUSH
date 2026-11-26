@@ -9,12 +9,13 @@
     <ScrollView>
         
         <VerticalStackLayout
-            Padding="30"
+            MaximumWidthRequest="500"
+            Padding="30,20,30,20"
             Spacing="20">
 
+            <!-- Report -->
             <Label
-                FontAttributes="Bold"
-                FontSize="18"
+                Style="{StaticResource SectionHeader}"
                 Text="Report"/>
 
             <Border
@@ -23,25 +24,24 @@
                 <VerticalStackLayout
                     Spacing="10">
 
+                    <!-- Title and status pill -->
                     <Grid
                         ColumnDefinitions="*,Auto"
                         ColumnSpacing="10">
 
                         <Label
                             Grid.Column="0"
-                            FontAttributes="Bold"
-                            FontSize="16"
                             LineBreakMode="TailTruncation"
-                            Text="{Binding Report.Id, StringFormat='Report ID: {0}'}"
-                            VerticalOptions="Center"/>
+                            Style="{StaticResource CardTitle}"
+                            Text="{Binding Report.Id, StringFormat='Report ID: {0}'}"/>
 
                         <Border
                             Grid.Column="1"
-                            Style="{StaticResource Pill}">
+                            Style="{StaticResource Pill}"
+                            VerticalOptions="Start">
 
                             <Label
-                                FontSize="12"
-                                LineBreakMode="TailTruncation"
+                                Style="{StaticResource PillLabel}"
                                 Text="{Binding Report.StatusLabel}"/>
 
                         </Border>
@@ -50,17 +50,15 @@
 
                     <!-- Reason -->
                     <Label
-                        FontSize="14"
-                        Margin="0,0,0,3"
+                        Style="{StaticResource CardBody}"
                         Text="{Binding Report.Reason}"/>
 
-                    <!-- Dates -->
+                    <!-- Credit -->
                     <VerticalStackLayout
-                        Spacing="3">
+                        Spacing="5">
 
                         <Label
-                            FontAttributes="Italic"
-                            FontSize="12">
+                            Style="{StaticResource CardCredit}">
 
                             <Label.Text>
 
@@ -79,10 +77,10 @@
 
                         </Label>
 
+                        <!-- Resolved label -->
                         <Label
-                            FontAttributes="Italic"
-                            FontSize="12"
                             IsVisible="{Binding Report.IsResolved}"
+                            Style="{StaticResource CardCredit}"
                             Text="{Binding ResolvedText}"/>
 
                     </VerticalStackLayout>
@@ -91,9 +89,9 @@
 
             </Border>
 
+            <!-- Reported workout -->
             <Label
-                FontAttributes="Bold"
-                FontSize="18"
+                Style="{StaticResource SectionHeader}"
                 Text="Reported Workout"/>
 
             <!-- Card -->
@@ -104,36 +102,25 @@
                 <VerticalStackLayout
                     Spacing="10">
 
+                    <!-- Title and pills -->
                     <Grid
-                        ColumnDefinitions="*,Auto,Auto"
+                        ColumnDefinitions="*,Auto"
                         ColumnSpacing="10">
 
                         <Label
                             Grid.Column="0"
-                            FontAttributes="Bold"
-                            FontSize="16"
                             LineBreakMode="TailTruncation"
-                            Text="{Binding Workout.Title}"
-                            VerticalOptions="Center"/>
+                            MaxLines="2"
+                            Style="{StaticResource CardTitle}"
+                            Text="{Binding Workout.Title}"/>
 
                         <Border
                             Grid.Column="1"
-                            Style="{StaticResource Pill}">
+                            Style="{StaticResource Pill}"
+                            VerticalOptions="Start">
 
                             <Label
-                                FontSize="12"
-                                LineBreakMode="TailTruncation"
-                                Text="{Binding PrivacyText}"/>
-
-                        </Border>
-
-                        <Border
-                            Grid.Column="2"
-                            Style="{StaticResource Pill}">
-
-                            <Label
-                                FontSize="12"
-                                LineBreakMode="TailTruncation"
+                                Style="{StaticResource PillLabel}"
                                 Text="{Binding Workout.CategoryTitle}"/>
 
                         </Border>
@@ -142,25 +129,27 @@
 
                     <!-- Info -->
                     <VerticalStackLayout
-                        Spacing="3">
+                        Spacing="5">
 
                         <Label
-                            Text="{Binding Workout.ExerciseCount, StringFormat='• Exercises: {0}'}"/>
+                            Style="{StaticResource CardBody}"
+                            Text="{Binding Workout.ExerciseCount, StringFormat='Exercises: {0}'}"/>
 
                         <Label
                             IsVisible="{Binding Workout.HasSets}"
-                            Text="{Binding Workout.SetCount, StringFormat='• Sets: {0}'}"/>
+                            Style="{StaticResource CardBody}"
+                            Text="{Binding Workout.SetCount, StringFormat='Sets: {0}'}"/>
 
                         <Label
                             IsVisible="{Binding Workout.HasMinutes}"
-                            Text="{Binding Workout.TotalMinutes, StringFormat='• Time: {0} min'}"/>
+                            Style="{StaticResource CardBody}"
+                            Text="{Binding Workout.TotalMinutes, StringFormat='Time: {0} min'}"/>
 
                     </VerticalStackLayout>
 
-                    <!-- Date time created -->                    
+                    <!-- Credit -->                    
                     <Label
-                        FontAttributes="Italic"
-                        FontSize="12">
+                        Style="{StaticResource CardCredit}">
 
                         <Label.Text>
 
@@ -192,23 +181,22 @@
                     Spacing="10">
 
                     <Label
-                        FontAttributes="Bold"
-                        FontSize="16"
+                        Style="{StaticResource CardTitle}"
                         Text="Removed workout"/>
 
                     <Label
-                        FontAttributes="Italic"
+                        Style="{StaticResource CardBody}"
                         Text="This workout has been deleted."/>
 
                 </VerticalStackLayout>
 
             </Border>
 
-            <!-- Error -->
+            <!-- Error message -->
             <Label
                 IsVisible="{Binding HasErrorMessage}"
-                Text="{Binding ErrorMessage}"
-                TextColor="Red"/>
+                Style="{StaticResource ErrorLabel}"
+                Text="{Binding ErrorMessage}"/>
 
             <!-- Buttons -->
             <VerticalStackLayout
@@ -217,16 +205,20 @@
                 <Button
                     Command="{Binding ViewWorkoutCommand}"
                     IsVisible="{Binding CanViewWorkout}"
+                    Style="{StaticResource SecondaryButton}"
                     Text="View Workout"/>
 
                 <Button
                     Command="{Binding DismissCommand}"
                     IsVisible="{Binding CanResolve}"
+                    SemanticProperties.Hint="Resolves the report and keeps the workout"
                     Text="Dismiss"/>
 
                 <Button
                     Command="{Binding RemoveContentCommand}"
                     IsVisible="{Binding CanResolve}"
+                    SemanticProperties.Hint="Deletes the reported workout and resolves the report"
+                    Style="{StaticResource DangerButton}"
                     Text="Remove Content"/>
 
             </VerticalStackLayout>

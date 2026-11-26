@@ -1,22 +1,17 @@
 ﻿namespace CapstoneProjectPUSH.Models
 {
-    [Table("Exercises")]
     public class Exercise
     {
-        [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
 
-        [NotNull, MaxLength(100)]
         public string Title { get; set; } = string.Empty;
 
-        [NotNull, MaxLength(1000)]
         public string Description { get; set; } = string.Empty;
 
         public bool IsTimed { get; set; } = false;
 
         public int Difficulty { get; set; } = 1;
 
-        [Ignore]
         public string DifficultyLabel => Difficulty switch
         {
             1 => "Beginner",
@@ -27,13 +22,13 @@
             _ => "Unknown"
         };
 
-        // Swap to ImageUrl when using remote database
+        // The api calls this "imageUrl"
+        [JsonPropertyName("imageUrl")]
+        [JsonConverter(typeof(ImageUrlJsonConverter))]
         public string Image { get; set; } = string.Empty;
 
-        [Indexed]
         public int CategoryId { get; set; }
 
-        [Ignore]
         public string CategoryTitle { get; set; } = string.Empty;
     }
 }

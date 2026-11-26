@@ -4,20 +4,19 @@
 
     public class UserService
     {
-        private const int SaltSize = 16;
-        private const int KeySize = 32;
-        private const int Iterations = 100_000;
+        // Matches DbSeeder.SeedAdminEmail in the api
+        public const string SeedAdminEmail = "admin@push.app";
 
         private const int MinDisplayNameLength = 5;
         private const int MaxDisplayNameLength = 60;
 
         public const string PasswordRequirementsText = "Password must be at least 8 characters and contain at least one letter and one number.";
 
-        private readonly DatabaseService _databaseService;
+        private readonly ApiClient _apiClient;
 
-        public UserService(DatabaseService database)
+        public UserService(ApiClient apiClient)
         {
-            _databaseService = database;
+            _apiClient = apiClient;
         }
 
         public User? CurrentUser { get; private set; }
@@ -31,7 +30,6 @@
         // Signed in with a registered account
         public bool IsLoggedIn => CurrentUser != null && !CurrentUser.IsGuest;
 
-
         // Registration
         public async Task<AuthResult> RegisterAsync(string displayName, string email, string password, string confirmPassword, bool hasAcceptedPrivacy)
         {
@@ -44,7 +42,7 @@
 
             email = NormaliseEmail(email);
 
-            // Validation
+            // App-side validation
             if (displayName.Length < MinDisplayNameLength || displayName.Length > MaxDisplayNameLength)
             {
                 return new AuthResult(false, $"Display name must be between {MinDisplayNameLength} and {MaxDisplayNameLength} characters.");
@@ -70,43 +68,19 @@
                 return new AuthResult(false, "You must agree to the privacy consent to register.");
             }
 
-            // Database checks
-            var db = await _databaseService.GetConnectionAsync();
-
-            var emailTaken = await db.Table<User>().Where(u => u.Email == email).FirstOrDefaultAsync();
-
-            if (emailTaken is not null)
+            // Create user request
+            RegisterRequest request = new RegisterRequest
             {
-                return new AuthResult(false, "An account with that email already exists.");
-            }
-
-            var nameTaken = await db.Table<User>().Where(u => u.DisplayName.ToLower() == displayName.ToLower()).FirstOrDefaultAsync();
-
-            if (nameTaken is not null)
-            {
-                return new AuthResult(false, "An account with that display name already exists.");
-            }
-
-            // Create user
-            var user = new User
-            {
-                Email = email,
                 DisplayName = displayName,
-                PasswordHash = await Task.Run(() => HashPassword(password)),
+                Email = email,
+                Password = password,
+                ConfirmPassword = confirmPassword,
+                HasAcceptedPrivacy = hasAcceptedPrivacy
             };
 
-            try
-            {
-                await db.InsertAsync(user);
-            }
-            catch (SQLiteException)
-            {
-                return new AuthResult(false, "An account with that email or display name already exists.");
-            }
+            ApiResult<AuthResponse> result = await _apiClient.PostAsync<AuthResponse>("api/auth/register", request);
 
-            CurrentUser = user;
-
-            return new AuthResult(true, "Account created successfully.", user);
+            return SignInFromResult(result);
         }
 
         // Login
@@ -114,7 +88,7 @@
         {
             email = NormaliseEmail(email);
 
-            // Validation
+            // App-side validation
             if (string.IsNullOrWhiteSpace(email))
             {
                 return new AuthResult(false, "Please enter your email address.");
@@ -125,63 +99,49 @@
                 return new AuthResult(false, "Please enter your password.");
             }
 
-            // Database check
-            var db = await _databaseService.GetConnectionAsync();
-
-            var user = await db.Table<User>().Where(u => u.Email == email).FirstOrDefaultAsync();
-
-            if (user is null)
+            LoginRequest request = new LoginRequest
             {
-                return new AuthResult(false, "Invalid email or password.");
-            }
+                Email = email,
+                Password = password
+            };
 
-            var passwordCorrect = await Task.Run(() => VerifyPassword(password, user.PasswordHash));
+            ApiResult<AuthResponse> result = await _apiClient.PostAsync<AuthResponse>("api/auth/login", request);
 
-            if (!passwordCorrect)
-            {
-                return new AuthResult(false, "Invalid email or password.");
-            }
-
-            if (!user.IsActive)
-            {
-                return new AuthResult(false, "This account has been deactivated.");
-            }
-
-            // Login user
-            CurrentUser = user;
-
-            return new AuthResult(true, $"Welcome back, {user.DisplayName}!", user);
+            return SignInFromResult(result);
         }
 
         // Login guest
         public async Task<AuthResult> GuestLoginAsync()
         {
-            // Database check
-            var db = await _databaseService.GetConnectionAsync();
+            ApiResult<AuthResponse> result = await _apiClient.PostAsync<AuthResponse>("api/auth/guest", null);
 
-            var guestUser = await db.Table<User>().Where(u => u.IsGuest).FirstOrDefaultAsync();
-
-            if (guestUser is null)
-            {
-                return new AuthResult(false, "Guest account not found.");
-            }
-
-            if (!guestUser.IsActive)
-            {
-                return new AuthResult(false, "Guest access is currently disabled.");
-            }
-
-            // Login as guest user
-            CurrentUser = guestUser;
-
-            return new AuthResult(true, "Welcome back, Guest!", guestUser);
+            return SignInFromResult(result);
         }
-
 
         // Logout
         public void Logout()
         {
             CurrentUser = null;
+            _apiClient.SetToken(null);
+        }
+
+        // Saves the token and signed-in user from a register/login reply
+        private AuthResult SignInFromResult(ApiResult<AuthResponse> result)
+        {
+            if (!result.Success)
+            {
+                return new AuthResult(false, result.Message);
+            }
+
+            if (result.Data == null || result.Data.User == null || string.IsNullOrEmpty(result.Data.Token))
+            {
+                return new AuthResult(false, "Something went wrong. Please try again.");
+            }
+
+            _apiClient.SetToken(result.Data.Token);
+            CurrentUser = result.Data.User;
+
+            return new AuthResult(true, result.Data.Message, CurrentUser);
         }
 
         // Update details
@@ -197,11 +157,6 @@
                 return new AuthResult(false, "Guest accounts can't update details. Register to create your own account.");
             }
 
-            if (!CurrentUser.IsActive)
-            {
-                return new AuthResult(false, "This account has been deactivated.");
-            }
-
             if (displayName is null)
             {
                 displayName = string.Empty;
@@ -211,7 +166,7 @@
 
             email = NormaliseEmail(email);
 
-            // Validation
+            // App-side validation
             if (displayName.Length < MinDisplayNameLength || displayName.Length > MaxDisplayNameLength)
             {
                 return new AuthResult(false, $"Display name must be between {MinDisplayNameLength} and {MaxDisplayNameLength} characters.");
@@ -222,7 +177,12 @@
                 return new AuthResult(false, "Please enter a valid email address.");
             }
 
-            var changingPassword = !string.IsNullOrEmpty(newPassword) || !string.IsNullOrEmpty(confirmPassword);
+            if (IsSeededAdmin(CurrentUser) && email != CurrentUser.Email)
+            {
+                return new AuthResult(false, "The main admin account's email can't be changed.");
+            }
+
+            bool changingPassword = !string.IsNullOrEmpty(newPassword) || !string.IsNullOrEmpty(confirmPassword);
 
             if (changingPassword)
             {
@@ -242,93 +202,51 @@
                 }
             }
 
-            // Database checks
-            var db = await _databaseService.GetConnectionAsync();
-
-            var user = await db.Table<User>().Where(u => u.Id == CurrentUser.Id).FirstOrDefaultAsync();
-
-            if (user is null)
+            UpdateDetailsRequest request = new UpdateDetailsRequest
             {
-                return new AuthResult(false, "Account could not be found.");
+                DisplayName = displayName,
+                Email = email,
+                CurrentPassword = currentPassword,
+                NewPassword = newPassword,
+                ConfirmPassword = confirmPassword,
+                GymId = gymId
+            };
+
+            ApiResult<UserResponse> result = await _apiClient.PutAsync<UserResponse>("api/users/me", request);
+
+            if (!result.Success)
+            {
+                return new AuthResult(false, result.Message);
             }
 
-            var emailTaken = await db.Table<User>().Where(u => u.Email == email && u.Id != user.Id).FirstOrDefaultAsync();
-
-            if (emailTaken is not null)
+            if (result.Data == null || result.Data.User == null)
             {
-                return new AuthResult(false, "An account with that email already exists.");
+                return new AuthResult(false, "Something went wrong. Please try again.");
             }
 
-            var nameTaken = await db.Table<User>().Where(u => u.DisplayName.ToLower() == displayName.ToLower() && u.Id != user.Id).FirstOrDefaultAsync();
+            CurrentUser = result.Data.User;
+            string message = result.Data.Message;
 
-            if (nameTaken is not null)
-            {
-                return new AuthResult(false, "An account with that display name already exists.");
-            }
-
+            // New photo, removed photo, or unchanged
             if (profileImage is not null)
             {
-                profileImage = profileImage.Trim();
+                string? imageError = await ImageUpload.ApplyAsync(_apiClient, "api/images/profile", profileImage);
 
-                if (profileImage.Length > 0 && profileImage != user.ProfileImage && !ImageService.IsAppImage(profileImage))
+                if (imageError is not null)
                 {
-                    return new AuthResult(false, "That photo couldn't be used. Please choose another.");
+                    return new AuthResult(true, message + " The photo couldn't be saved: " + imageError, CurrentUser);
+                }
+
+                // Reload the account so current user has the new photo's address
+                ApiResult<User> meResult = await _apiClient.GetAsync<User>("api/users/me");
+
+                if (meResult.Success && meResult.Data != null)
+                {
+                    CurrentUser = meResult.Data;
                 }
             }
 
-            if (gymId is not null)
-            {
-                int favouriteGymId = gymId.Value;
-
-                var gym = await db.Table<Gym>().Where(g => g.Id == favouriteGymId).FirstOrDefaultAsync();
-
-                if (gym is null)
-                {
-                    return new AuthResult(false, "That gym could not be found.");
-                }
-            }
-
-            if (changingPassword)
-            {
-                var passwordCorrect = await Task.Run(() => VerifyPassword(currentPassword, user.PasswordHash));
-
-                if (!passwordCorrect)
-                {
-                    return new AuthResult(false, "Current password is incorrect.");
-                }
-
-                user.PasswordHash = await Task.Run(() => HashPassword(newPassword));
-            }
-
-            // Update details
-            user.DisplayName = displayName;
-            user.Email = email;
-            user.GymId = gymId;
-
-            string oldProfileImage = user.ProfileImage;
-
-            if (profileImage is not null)
-            {
-                user.ProfileImage = profileImage;
-            }
-
-            try
-            {
-                await db.UpdateAsync(user);
-            }
-            catch (SQLiteException)
-            {
-                return new AuthResult(false, "An account with that email or display name already exists.");
-            }
-
-            if (profileImage is not null && oldProfileImage != profileImage)
-            {
-                ImageService.DeleteImage(oldProfileImage);
-            }
-
-            CurrentUser = user;
-
-            return new AuthResult(true, "Details updated successfully.", user);
+            return new AuthResult(true, message, CurrentUser);
         }
 
         // Delete account
@@ -349,29 +267,14 @@
                 return new AuthResult(false, "Admin accounts can't be deleted.");
             }
 
-            var userId = CurrentUser.Id;
-            var profileImage = CurrentUser.ProfileImage;
+            ApiResult<MessageResponse> result = await _apiClient.DeleteAsync<MessageResponse>("api/users/me");
 
-            var db = await _databaseService.GetConnectionAsync();
-
-            await db.RunInTransactionAsync(conn =>
+            if (!result.Success)
             {
-                var workouts = conn.Table<Workout>().Where(w => w.UserId == userId).ToList();
+                return new AuthResult(false, result.Message);
+            }
 
-                foreach (var workout in workouts)
-                {
-                    var workoutId = workout.Id;
-                    conn.Table<WorkoutExercise>().Delete(we => we.WorkoutId == workoutId);
-                }
-
-                conn.Table<Workout>().Delete(w => w.UserId == userId);
-                conn.Table<Note>().Delete(n => n.UserId == userId);
-                conn.Table<WorkoutLog>().Delete(l => l.UserId == userId);
-                conn.Table<WeightLog>().Delete(l => l.UserId == userId);
-                conn.Table<User>().Delete(u => u.Id == userId);
-            });
-
-            ImageService.DeleteImage(profileImage);
+            Logout();
 
             return new AuthResult(true, "Your account has been deleted.");
         }
@@ -379,17 +282,27 @@
         // Get user count
         public async Task<int> GetUserCountAsync()
         {
-            var db = await _databaseService.GetConnectionAsync();
+            ApiResult<int> result = await _apiClient.GetAsync<int>("api/users/count");
 
-            return await db.Table<User>().CountAsync();
+            if (result.Success)
+            {
+                return result.Data;
+            }
+
+            return 0;
         }
 
         // Get active user count
         public async Task<int> GetActiveUserCountAsync()
         {
-            var db = await _databaseService.GetConnectionAsync();
+            ApiResult<int> result = await _apiClient.GetAsync<int>("api/users/active-count");
 
-            return await db.Table<User>().Where(u => u.IsActive).CountAsync();
+            if (result.Success)
+            {
+                return result.Data;
+            }
+
+            return 0;
         }
 
         // Get all users
@@ -400,57 +313,95 @@
                 return new List<User>();
             }
 
-            var db = await _databaseService.GetConnectionAsync();
+            ApiResult<List<User>> result = await _apiClient.GetAsync<List<User>>("api/users");
 
-            var users = await db.Table<User>()
-                .OrderBy(u => u.DateTimeCreated)
-                .ToListAsync();
+            if (result.Success && result.Data != null)
+            {
+                return result.Data;
+            }
 
-            return users;
-        }
-
-        // Get all display names
-        public async Task<Dictionary<int, string>> GetDisplayNamesByIdAsync()
-        {
-            var db = await _databaseService.GetConnectionAsync();
-
-            var users = await db.Table<User>().ToListAsync();
-
-            return users.ToDictionary(u => u.Id, u => u.DisplayName);
+            return new List<User>();
         }
 
         // Set user active status
-        public async Task<AuthResult> SetUserActiveStatusAsync(int userId, bool isActive)
+        public async Task<AuthResult> SetUserActiveStatusAsync(User user, bool isActive)
         {
             if (!IsCurrentUserAdmin())
             {
                 return new AuthResult(false, "Only administrators can change account status.");
             }
 
-            if (userId == CurrentUser!.Id)
+            if (user.Id == CurrentUser!.Id)
             {
                 return new AuthResult(false, "You can't deactivate your own account.");
             }
 
-            var db = await _databaseService.GetConnectionAsync();
-
-            var user = await db.Table<User>().Where(u => u.Id == userId).FirstOrDefaultAsync();
-
-            if (user is null)
+            if (IsSeededAdmin(user) && !isActive)
             {
-                return new AuthResult(false, "Account could not be found.");
+                return new AuthResult(false, "The main admin account can't be deactivated.");
             }
 
-            user.IsActive = isActive;
-
-            await db.UpdateAsync(user);
-
-            if (isActive)
+            UserStatusRequest request = new UserStatusRequest
             {
-                return new AuthResult(true, "Account reactivated.", user);
+                IsActive = isActive
+            };
+
+            ApiResult<UserResponse> result = await _apiClient.PutAsync<UserResponse>($"api/users/{user.Id}/status", request);
+
+            if (!result.Success)
+            {
+                return new AuthResult(false, result.Message);
             }
 
-            return new AuthResult(true, "Account deactivated.", user);
+            if (result.Data == null)
+            {
+                return new AuthResult(false, "Something went wrong. Please try again.");
+            }
+
+            return new AuthResult(true, result.Data.Message, result.Data.User);
+        }
+
+        // Set user role
+        public async Task<AuthResult> SetUserRoleAsync(User user, bool isAdmin)
+        {
+            if (!IsCurrentUserAdmin())
+            {
+                return new AuthResult(false, "Only administrators can change account roles.");
+            }
+
+            if (user.Id == CurrentUser!.Id)
+            {
+                return new AuthResult(false, "You can't change your own role.");
+            }
+
+            if (user.IsGuest)
+            {
+                return new AuthResult(false, "The guest account's role can't be changed.");
+            }
+
+            if (IsSeededAdmin(user))
+            {
+                return new AuthResult(false, "The main admin account's role can't be changed.");
+            }
+
+            UserRoleRequest request = new UserRoleRequest
+            {
+                IsAdmin = isAdmin
+            };
+
+            ApiResult<UserResponse> result = await _apiClient.PutAsync<UserResponse>($"api/users/{user.Id}/role", request);
+
+            if (!result.Success)
+            {
+                return new AuthResult(false, result.Message);
+            }
+
+            if (result.Data == null)
+            {
+                return new AuthResult(false, "Something went wrong. Please try again.");
+            }
+
+            return new AuthResult(true, result.Data.Message, result.Data.User);
         }
 
         // Helpers
@@ -485,7 +436,7 @@
         }
 
         // Validate password strength
-        private static bool IsStrongPassword(string? password)
+        public static bool IsStrongPassword(string? password)
         {
             if (string.IsNullOrEmpty(password))
             {
@@ -498,38 +449,6 @@
             }
 
             return password.Any(char.IsLetter) && password.Any(char.IsDigit);
-        }
-
-        // Hash password using PBKDF2
-        public static string HashPassword(string password)
-        {
-            var salt = RandomNumberGenerator.GetBytes(SaltSize);
-            var key = Rfc2898DeriveBytes.Pbkdf2(password, salt, Iterations, HashAlgorithmName.SHA256, KeySize);
-
-            return $"{Iterations}.{Convert.ToBase64String(salt)}.{Convert.ToBase64String(key)}";
-        }
-
-        // Verify password against stored hash
-        private static bool VerifyPassword(string password, string stored)
-        {
-            var parts = stored.Split('.');
-            if (parts.Length != 3 || !int.TryParse(parts[0], out var iterations))
-            {
-                return false;
-            }
-
-            try
-            {
-                var salt = Convert.FromBase64String(parts[1]);
-                var expected = Convert.FromBase64String(parts[2]);
-                var actual = Rfc2898DeriveBytes.Pbkdf2(password, salt, iterations, HashAlgorithmName.SHA256, expected.Length);
-
-                return CryptographicOperations.FixedTimeEquals(actual, expected);
-            }
-            catch (FormatException)
-            {
-                return false;
-            }
         }
 
         // Admin check
@@ -575,31 +494,10 @@
             return CurrentUser;
         }
 
-        //reset user account password
-        public async Task<AuthResult> SetNewPasswordAsync(int userId, string newPassword, string confirmPassword)
+        // The seeded admin is locked so there's always a way into the admin content
+        public static bool IsSeededAdmin(User user)
         {
-            if(!IsStrongPassword(newPassword))
-            {
-                return new AuthResult(false, PasswordRequirementsText);
-            }
-
-            if(newPassword != confirmPassword)
-            {
-                return new AuthResult(false, "Password do not match.");
-            }
-
-            var db = await _databaseService.GetConnectionAsync();
-            var user = await db.Table<User>().Where(u => u.Id == userId).FirstOrDefaultAsync();
-
-            if(user is null)
-            {
-                return new AuthResult(false, "Account could not found.");
-            }
-
-            user.PasswordHash = await Task.Run(() => HashPassword(newPassword));
-            await db.UpdateAsync(user);
-
-            return new AuthResult(true, "Password updated, You can log in now.");
+            return string.Equals(user.Email, SeedAdminEmail, StringComparison.OrdinalIgnoreCase);
         }
     }
 }

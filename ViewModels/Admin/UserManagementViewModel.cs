@@ -68,7 +68,7 @@
 
             try
             {
-                var result = await _userService.SetUserActiveStatusAsync(user.Id, activate);
+                var result = await _userService.SetUserActiveStatusAsync(user, activate);
 
                 if (result.Success)
                 {
@@ -83,6 +83,62 @@
             {
                 System.Diagnostics.Debug.WriteLine(ex);
                 ErrorMessage = "Couldn't update that account. Please try again.";
+            }
+        }
+
+        // Promotes a member to admin or demotes an admin to member
+        [RelayCommand]
+        private async Task ToggleAdminAsync(User? user)
+        {
+            if (user is null)
+            {
+                return;
+            }
+
+            ErrorMessage = string.Empty;
+
+            bool promote = !user.IsAdmin;
+            string title;
+            string message;
+            string accept;
+
+            if (promote)
+            {
+                title = "Promote to Admin";
+                message = "Promote " + user.DisplayName + " to admin? They'll have full access to the admin dashboard after their next sign in.";
+                accept = "Promote";
+            }
+            else
+            {
+                title = "Demote to Member";
+                message = "Demote " + user.DisplayName + " to member? They'll be signed out and lose admin access straight away.";
+                accept = "Demote";
+            }
+
+            bool confirmed = await Shell.Current.DisplayAlertAsync(title, message, accept, "Cancel");
+
+            if (!confirmed)
+            {
+                return;
+            }
+
+            try
+            {
+                AuthResult result = await _userService.SetUserRoleAsync(user, promote);
+
+                if (result.Success)
+                {
+                    await LoadCommand.ExecuteAsync(null);
+                }
+                else
+                {
+                    ErrorMessage = result.Message;
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex);
+                ErrorMessage = "Couldn't update that account's role. Please try again.";
             }
         }
 

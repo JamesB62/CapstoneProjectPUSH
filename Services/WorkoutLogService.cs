@@ -2,12 +2,12 @@
 {
     public class WorkoutLogService
     {
-        private readonly DatabaseService _databaseService;
+        private readonly ApiClient _apiClient;
         private readonly UserService _userService;
 
-        public WorkoutLogService(DatabaseService databaseService, UserService userService)
+        public WorkoutLogService(ApiClient apiClient, UserService userService)
         {
-            _databaseService = databaseService;
+            _apiClient = apiClient;
             _userService = userService;
         }
 
@@ -19,12 +19,14 @@
                 return new List<WorkoutLog>();
             }
 
-            var db = await _databaseService.GetConnectionAsync();
+            ApiResult<List<WorkoutLog>> result = await _apiClient.GetAsync<List<WorkoutLog>>("api/workoutlogs/mine");
 
-            return await db.Table<WorkoutLog>()
-                .Where(wl => wl.UserId == userId)
-                .OrderByDescending(wl => wl.DateTimeCompleted)
-                .ToListAsync();
+            if (result.Success && result.Data != null)
+            {
+                return result.Data;
+            }
+
+            return new List<WorkoutLog>();
         }
 
         // Add workout log
@@ -36,9 +38,24 @@
                 return;
             }
 
-            var db = await _databaseService.GetConnectionAsync();
+            // App-side validation
+            if (workoutLog.DurationSeconds < 0)
+            {
+                return;
+            }
 
-            await db.InsertAsync(workoutLog);
+            WorkoutLogRequest request = new WorkoutLogRequest
+            {
+                WorkoutId = workoutLog.WorkoutId,
+                DurationSeconds = workoutLog.DurationSeconds
+            };
+
+            ApiResult<MessageResponse> result = await _apiClient.PostAsync<MessageResponse>("api/workoutlogs", request);
+
+            if (!result.Success)
+            {
+                System.Diagnostics.Debug.WriteLine("Add workout log failed: " + result.Message);
+            }
         }
     }
 }
