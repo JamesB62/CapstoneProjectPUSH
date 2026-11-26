@@ -30,7 +30,7 @@
 		<!-- <MauiXamlInflator>SourceGen</MauiXamlInflator> -->
 
 		<!-- Display name -->
-		<ApplicationTitle>CapstoneProjectPUSH</ApplicationTitle>
+		<ApplicationTitle>PUSH</ApplicationTitle>
 
 		<!-- App Identifier -->
 		<ApplicationId>com.companyname.capstoneprojectpush</ApplicationId>
@@ -51,14 +51,26 @@
 
 	<ItemGroup>
 		<!-- App Icon -->
-		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
+		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\push_logo.svg" ForegroundScale="0.4" Color="#0F172A" TintColor="#A3E635" />
 
 		<!-- Splash Screen -->
-		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
+		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#0F172A" BaseSize="128,128" />
 
 		<!-- Images -->
 		<MauiImage Include="Resources\Images\*" />
 		<MauiImage Update="Resources\Images\dotnet_bot.png" Resize="True" BaseSize="300,185" />
+
+		<!-- PUSH logo -->
+		<MauiImage Update="Resources\Images\push.svg" TintColor="#A3E635" />
+
+		<!-- Flyout icons -->
+		<MauiImage Update="Resources\Images\house.svg" TintColor="#F8FAFC" />
+		<MauiImage Update="Resources\Images\stopwatch.svg" TintColor="#F8FAFC" />
+		<MauiImage Update="Resources\Images\people.svg" TintColor="#F8FAFC" />
+		<MauiImage Update="Resources\Images\graph_up.svg" TintColor="#F8FAFC" />
+		<MauiImage Update="Resources\Images\person_walking.svg" TintColor="#F8FAFC" />
+		<MauiImage Update="Resources\Images\person_vcard.svg" TintColor="#F8FAFC" />
+		<MauiImage Update="Resources\Images\person.svg" TintColor="#F8FAFC" />
 		
 		<!-- Custom Fonts -->
 		<MauiFont Include="Resources\Fonts\*" />
@@ -69,10 +81,8 @@
 
 	<ItemGroup>
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
-		<PackageReference Include="MailKit" Version="4.17.0" />
 		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
-		<PackageReference Include="sqlite-net-pcl" Version="1.11.285" />
 		<PackageReference Include="System.Security.Cryptography.Pkcs" Version="10.0.13" />
 	</ItemGroup>
 
@@ -168,6 +178,9 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\Home\ArticleDetailsPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\Home\CreateArticlePage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\Home\HomePage.xaml">

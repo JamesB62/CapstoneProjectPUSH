@@ -9,30 +9,38 @@
 
     <Grid
         MaximumWidthRequest="500"
-        Padding="30,15,30,0"
+        Padding="30,20,30,0"
         RowDefinitions="Auto,Auto,*"
         RowSpacing="20">
 
-        <!-- Search bar -->
-        <SearchBar
-            Grid.Row="0"
-            Placeholder="Search by title, category or creator..."
-            Text="{Binding SearchText}"/>
-
         <VerticalStackLayout
-            Grid.Row="1"
-            Spacing="15">
-
-            <Label
-                Text="{Binding StatusMessage}"/>
+            Grid.Row="0"
+            Spacing="20">
 
             <!-- Error message -->
             <Label
                 IsVisible="{Binding HasErrorMessage}"
-                Text="{Binding ErrorMessage}"
-                TextColor="Red"/>
+                Style="{StaticResource ErrorLabel}"
+                Text="{Binding ErrorMessage}"/>
+
+            <!-- Search bar -->
+            <Border
+                Style="{StaticResource InputFrame}">
+
+                <SearchBar
+                    Placeholder="Search by title, category or creator..."
+                    SemanticProperties.Hint="Search community workouts"
+                    Text="{Binding SearchText}"/>
+
+            </Border>
 
         </VerticalStackLayout>
+
+        <!-- Workout count -->
+        <Label
+            Grid.Row="1"
+            Style="{StaticResource StatusLabel}"
+            Text="{Binding StatusMessage}"/>
 
         <RefreshView
             Command="{Binding LoadWorkoutsCommand}"
@@ -47,29 +55,32 @@
                 <!-- Empty view -->
                 <CollectionView.EmptyView>
 
-                    <VerticalStackLayout
-                        HorizontalOptions="Center"
-                        VerticalOptions="Center">
+                    <Grid>
 
-                        <Label
-                            FontAttributes="Italic"
-                            HorizontalTextAlignment="Center"
-                            Text="No workouts found."/>
+                        <VerticalStackLayout
+                            HorizontalOptions="Center"
+                            Spacing="5"
+                            VerticalOptions="Center">
 
-                        <Label
-                            FontAttributes="Italic"
-                            HorizontalTextAlignment="Center"
-                            Text="Share one of yours or pull down to try again."/>
+                            <Label
+                                Style="{StaticResource EmptyLabel}"
+                                Text="No workouts found."/>
 
-                    </VerticalStackLayout>
+                            <Label
+                                Style="{StaticResource EmptyLabel}"
+                                Text="Share one of yours or pull down to try again."/>
+
+                        </VerticalStackLayout>
+
+                    </Grid>
 
                 </CollectionView.EmptyView>
 
-                <!-- Item layout -->
+                <!-- Items layout -->
                 <CollectionView.ItemsLayout>
 
                     <LinearItemsLayout
-                        ItemSpacing="10"
+                        ItemSpacing="15"
                         Orientation="Vertical"/>
 
                 </CollectionView.ItemsLayout>
@@ -86,63 +97,66 @@
                             <VerticalStackLayout
                                 Spacing="10">
 
+                                <!-- Title, favourite star and category pill -->
                                 <Grid
                                     ColumnDefinitions="*,Auto,Auto"
                                     ColumnSpacing="10">
 
                                     <Label
                                         Grid.Column="0"
-                                        FontAttributes="Bold"
-                                        FontSize="16"
                                         LineBreakMode="TailTruncation"
+                                        MaxLines="2"
                                         Text="{Binding Title}"
+                                        Style="{StaticResource CardTitle}"
                                         VerticalOptions="Center"/>
 
                                     <Border
                                         Grid.Column="1"
-                                        Style="{StaticResource Pill}">
+                                        Style="{StaticResource Pill}"
+                                        VerticalOptions="Start">
 
                                         <Label
-                                            FontSize="12"
-                                            LineBreakMode="TailTruncation"
+                                            Style="{StaticResource PillLabel}"
                                             Text="{Binding CategoryTitle}"/>
 
                                     </Border>
 
                                     <!-- Favourite star (registered accounts only) -->
                                     <Label
-                                        FontSize="21"
+                                        FontSize="16"
                                         Grid.Column="2"
-                                        IsVisible="{Binding Source={RelativeSource AncestorType={x:Type vm:CommunityWorkoutsViewModel}}, Path=IsLoggedIn}"
-                                        Margin="0,-4,0,0"
-                                        Text="{Binding FavouriteIcon}"
-                                        TextColor="Goldenrod"
-                                        VerticalOptions="Center"/>
+                                        IsVisible="{Binding IsFavourite}"
+                                        SemanticProperties.Description="Favourite"
+                                        Text="★"
+                                        TextColor="{StaticResource Favourite}"
+                                        VerticalOptions="Start"/>
 
                                 </Grid>
 
                                 <!-- Info -->
                                 <VerticalStackLayout
-                                    Spacing="3">
+                                    Spacing="5">
 
                                     <Label
-                                        Text="{Binding ExerciseCount, StringFormat='• Exercises: {0}'}"/>
+                                        Style="{StaticResource CardBody}"
+                                        Text="{Binding ExerciseCountText}"/>
 
                                     <Label
                                         IsVisible="{Binding HasSets}"
-                                        Text="{Binding SetCount, StringFormat='• Sets: {0}'}"/>
+                                        Style="{StaticResource CardBody}"
+                                        Text="{Binding SetCount, StringFormat='Sets: {0}'}"/>
 
                                     <Label
                                         IsVisible="{Binding HasMinutes}"
-                                        Text="{Binding TotalMinutes, StringFormat='• Time: {0} min'}"/>
+                                        Style="{StaticResource CardBody}"
+                                        Text="{Binding TotalMinutes, StringFormat='Time: {0} min'}"/>
 
                                 </VerticalStackLayout>
 
                                 <!-- Credit -->
                                 <Label
-                                    FontAttributes="Italic"
-                                    FontSize="12"
-                                    LineBreakMode="TailTruncation">
+                                    LineBreakMode="TailTruncation"
+                                    Style="{StaticResource CardCredit}">
 
                                     <Label.Text>
 

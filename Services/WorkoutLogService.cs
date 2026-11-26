@@ -2,30 +2,60 @@
 {
     public class WorkoutLogService
     {
-        private readonly DatabaseService _databaseService;
+        private readonly ApiClient _apiClient;
+        private readonly UserService _userService;
 
-        public WorkoutLogService(DatabaseService databaseService)
+        public WorkoutLogService(ApiClient apiClient, UserService userService)
         {
-            _databaseService = databaseService;
+            _apiClient = apiClient;
+            _userService = userService;
         }
 
         // Get all workout logs for user Id
         public async Task<List<WorkoutLog>> GetWorkoutLogsAsync(int userId)
         {
-            var db = await _databaseService.GetConnectionAsync();
+            if (!_userService.IsCurrentUser(userId))
+            {
+                return new List<WorkoutLog>();
+            }
 
-            return await db.Table<WorkoutLog>()
-                .Where(wl => wl.UserId == userId)
-                .OrderByDescending(wl => wl.DateTimeCompleted)
-                .ToListAsync();
+            ApiResult<List<WorkoutLog>> result = await _apiClient.GetAsync<List<WorkoutLog>>("api/workoutlogs/mine");
+
+            if (result.Success && result.Data != null)
+            {
+                return result.Data;
+            }
+
+            return new List<WorkoutLog>();
         }
 
         // Add workout log
         public async Task AddWorkoutLogAsync(WorkoutLog workoutLog)
         {
-            var db = await _databaseService.GetConnectionAsync();
+            // Guest runs aren't saved
+            if (!_userService.IsCurrentMember(workoutLog.UserId))
+            {
+                return;
+            }
 
-            await db.InsertAsync(workoutLog);
+            // App-side validation
+            if (workoutLog.DurationSeconds < 0)
+            {
+                return;
+            }
+
+            WorkoutLogRequest request = new WorkoutLogRequest
+            {
+                WorkoutId = workoutLog.WorkoutId,
+                DurationSeconds = workoutLog.DurationSeconds
+            };
+
+            ApiResult<MessageResponse> result = await _apiClient.PostAsync<MessageResponse>("api/workoutlogs", request);
+
+            if (!result.Success)
+            {
+                System.Diagnostics.Debug.WriteLine("Add workout log failed: " + result.Message);
+            }
         }
     }
 }

@@ -11,36 +11,49 @@
 
         <VerticalStackLayout
             MaximumWidthRequest="500"
-            Padding="30"
+            Padding="30,20,30,20"
             Spacing="20">
 
-            <!-- Workout form -->
-            <VerticalStackLayout>
+            <!-- Title -->
+            <VerticalStackLayout
+                Spacing="10">
 
                 <Label
-                    FontAttributes="Bold"
-                    FontSize="18"
+                    Style="{StaticResource FieldLabel}"
                     Text="Title"/>
 
-                <Entry
-                    MaxLength="100"
-                    Placeholder="Enter a title here"
-                    Text="{Binding WorkoutTitle}"/>
+                <Border
+                    Style="{StaticResource InputFrame}">
+
+                    <Entry
+                        MaxLength="100"
+                        Placeholder="Enter a title here"
+                        SemanticProperties.Hint="Workout title"
+                        Text="{Binding WorkoutTitle}"/>
+
+                </Border>
 
             </VerticalStackLayout>
 
-            <VerticalStackLayout>
+            <!-- Category -->
+            <VerticalStackLayout
+                Spacing="10">
 
                 <Label
-                    FontAttributes="Bold"
-                    FontSize="18"
+                    Style="{StaticResource FieldLabel}"
                     Text="Category"/>
 
-                <Picker
-                    ItemDisplayBinding="{Binding Title, x:DataType=models:Category}"
-                    ItemsSource="{Binding Categories}"
-                    SelectedItem="{Binding SelectedCategory}"
-                    Title="Choose a category"/>
+                <Border
+                    Style="{StaticResource InputFrame}">
+
+                    <Picker
+                        ItemDisplayBinding="{Binding Title, x:DataType=models:Category}"
+                        ItemsSource="{Binding Categories}"
+                        SelectedItem="{Binding SelectedCategory}"
+                        SemanticProperties.Hint="Category"
+                        Title="Choose a category"/>
+
+                </Border>
 
             </VerticalStackLayout>
 
@@ -49,32 +62,30 @@
                 Spacing="10">
 
                 <Label
-                    FontAttributes="Bold"
-                    FontSize="18"
+                    Style="{StaticResource FieldLabel}"
                     Text="Exercises"/>
 
                 <VerticalStackLayout
                     BindableLayout.ItemsSource="{Binding Items}"
-                    Spacing="10">
+                    Spacing="15">
 
                     <!-- Empty view -->
                     <BindableLayout.EmptyView>
 
                         <Grid
-                            HeightRequest="150">
+                            HeightRequest="100">
 
                             <VerticalStackLayout
                                 HorizontalOptions="Center"
+                                Spacing="5"
                                 VerticalOptions="Center">
 
                                 <Label
-                                    FontAttributes="Italic"
-                                    HorizontalTextAlignment="Center"
+                                    Style="{StaticResource EmptyLabel}"
                                     Text="No exercises added yet."/>
 
                                 <Label
-                                    FontAttributes="Italic"
-                                    HorizontalTextAlignment="Center"
+                                    Style="{StaticResource EmptyLabel}"
                                     Text="Tap Add Exercises to pick some."/>
 
                             </VerticalStackLayout>
@@ -99,48 +110,40 @@
                                     <!-- Header with order and remove buttons -->
                                     <Grid
                                         ColumnDefinitions="*,Auto,Auto,Auto"
-                                        ColumnSpacing="5">
+                                        ColumnSpacing="0">
 
                                         <Label
                                             Grid.Column="0"
-                                            FontAttributes="Bold"
-                                            FontSize="16"
                                             LineBreakMode="TailTruncation"
+                                            MaxLines="2"
+                                            Style="{StaticResource CardTitle}"
                                             Text="{Binding Exercise.Title}"
                                             VerticalOptions="Center"/>
 
                                         <Button
                                             Grid.Column="1"
-                                            BackgroundColor="Transparent"
                                             Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CreateWorkoutViewModel}}, Path=MoveUpCommand}"
                                             CommandParameter="{Binding .}"
-                                            HeightRequest="30"
-                                            Padding="0"
-                                            Text="▲"
-                                            TextColor="Black"
-                                            WidthRequest="30"/>
+                                            SemanticProperties.Description="{Binding Exercise.Title, StringFormat='Move {0} up'}"
+                                            Style="{StaticResource IconButton}"
+                                            Text="▲"/>
 
                                         <Button
                                             Grid.Column="2"
-                                            BackgroundColor="Transparent"
                                             Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CreateWorkoutViewModel}}, Path=MoveDownCommand}"
                                             CommandParameter="{Binding .}"
-                                            HeightRequest="30"
-                                            Padding="0"
-                                            Text="▼"
-                                            TextColor="Black"
-                                            WidthRequest="30"/>
+                                            SemanticProperties.Description="{Binding Exercise.Title, StringFormat='Move {0} down'}"
+                                            Style="{StaticResource IconButton}"
+                                            Text="▼"/>
 
                                         <Button
                                             Grid.Column="3"
-                                            BackgroundColor="Transparent"
                                             Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CreateWorkoutViewModel}}, Path=RemoveItemCommand}"
                                             CommandParameter="{Binding .}"
-                                            HeightRequest="30"
-                                            Padding="0"
+                                            SemanticProperties.Description="{Binding Exercise.Title, StringFormat='Remove {0}'}"
+                                            Style="{StaticResource IconButton}"
                                             Text="✕"
-                                            TextColor="Red"
-                                            WidthRequest="30"/>
+                                            TextColor="{StaticResource Error}"/>
 
                                     </Grid>
 
@@ -152,27 +155,43 @@
 
                                         <Label
                                             Grid.Column="0"
+                                            AutomationProperties.IsInAccessibleTree="False"
+                                            Style="{StaticResource CardBody}"
                                             Text="Sets"
                                             VerticalOptions="Center"/>
 
-                                        <Entry
+                                        <Border
                                             Grid.Column="1"
-                                            HorizontalTextAlignment="Center"
-                                            Keyboard="Numeric"
-                                            MaxLength="2"
-                                            Text="{Binding SetsText}"/>
+                                            Style="{StaticResource InputFrame}">
+
+                                            <Entry
+                                                HorizontalTextAlignment="Center"
+                                                Keyboard="Numeric"
+                                                MaxLength="2"
+                                                SemanticProperties.Hint="{Binding Exercise.Title, StringFormat='Sets for {0}'}"
+                                                Text="{Binding SetsText}"/>
+
+                                        </Border>
 
                                         <Label
                                             Grid.Column="2"
+                                            AutomationProperties.IsInAccessibleTree="False"
+                                            Style="{StaticResource CardBody}"
                                             Text="Reps"
                                             VerticalOptions="Center"/>
 
-                                        <Entry
+                                        <Border
                                             Grid.Column="3"
-                                            HorizontalTextAlignment="Center"
-                                            Keyboard="Numeric"
-                                            MaxLength="3"
-                                            Text="{Binding RepsText}"/>
+                                            Style="{StaticResource InputFrame}">
+
+                                            <Entry
+                                                HorizontalTextAlignment="Center"
+                                                Keyboard="Numeric"
+                                                MaxLength="2"
+                                                SemanticProperties.Hint="{Binding Exercise.Title, StringFormat='Reps for {0}'}"
+                                                Text="{Binding RepsText}"/>
+
+                                        </Border>
 
                                     </Grid>
 
@@ -184,15 +203,23 @@
 
                                         <Label
                                             Grid.Column="0"
+                                            AutomationProperties.IsInAccessibleTree="False"
+                                            Style="{StaticResource CardBody}"
                                             Text="Minutes"
                                             VerticalOptions="Center"/>
 
-                                        <Entry
+                                        <Border
                                             Grid.Column="1"
-                                            HorizontalTextAlignment="Center"
-                                            Keyboard="Numeric"
-                                            MaxLength="3"
-                                            Text="{Binding DurationText}"/>
+                                            Style="{StaticResource InputFrame}">
+
+                                            <Entry
+                                                HorizontalTextAlignment="Center"
+                                                Keyboard="Numeric"
+                                                MaxLength="3"
+                                                SemanticProperties.Hint="{Binding Exercise.Title, StringFormat='Minutes for {0}'}"
+                                                Text="{Binding DurationText}"/>
+
+                                        </Border>
 
                                     </Grid>
 
@@ -208,42 +235,51 @@
 
                 <Button
                     Command="{Binding AddExercisesCommand}"
+                    Margin="0,5,0,0"
+                    Style="{StaticResource SecondaryButton}"
                     Text="Add Exercises"/>
 
             </VerticalStackLayout>
 
             <!-- Community visibility -->
-            <VerticalStackLayout>
+            <VerticalStackLayout
+                Spacing="10">
 
                 <Grid
                     ColumnDefinitions="*,Auto"
-                    ColumnSpacing="10"
-                    Margin="0,-15">
+                    ColumnSpacing="10">
 
                     <Label
                         Grid.Column="0"
-                        FontSize="14"
+                        AutomationProperties.IsInAccessibleTree="False"
+                        Style="{StaticResource FieldLabel}"
                         Text="Share with the PUSH community"
                         VerticalOptions="Center"/>
 
                     <Switch
                         Grid.Column="1"
                         IsToggled="{Binding IsPublic}"
+                        SemanticProperties.Description="Share with the PUSH community"
+                        SemanticProperties.Hint="Public workouts appear on the Community Workouts page"
                         VerticalOptions="Center"/>
 
                 </Grid>
+
+                <Label
+                    AutomationProperties.IsInAccessibleTree="False"
+                    Style="{StaticResource HintLabel}"
+                    Text="Public workouts appear in the Community Workouts page for all registered users."/>
 
             </VerticalStackLayout>
             
             <!-- Error message -->
             <Label
                 IsVisible="{Binding HasErrorMessage}"
-                Text="{Binding ErrorMessage}"
-                TextColor="Red"/>
+                Style="{StaticResource ErrorLabel}"
+                Text="{Binding ErrorMessage}"/>
 
             <!-- Buttons -->
             <VerticalStackLayout
-                Margin="0,5,0,0"
                 Spacing="10">
 
                 <Button
@@ -254,6 +290,7 @@
                 <Button
                     Command="{Binding CancelCommand}"
                     IsEnabled="{Binding IsNotBusy}"
+                    Style="{StaticResource SecondaryButton}"
                     Text="Cancel"/>
 
             </VerticalStackLayout>

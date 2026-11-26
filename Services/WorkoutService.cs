@@ -2,293 +2,284 @@
 {
     public class WorkoutService
     {
-        private readonly CategoryService _categoryService;
-        private readonly DatabaseService _databaseService;
+        private readonly ApiClient _apiClient;
         private readonly UserService _userService;
 
-        public WorkoutService(CategoryService categoryService, DatabaseService databaseService, UserService userService)
+        public WorkoutService(ApiClient apiClient, UserService userService)
         {
-            _categoryService = categoryService;
-            _databaseService = databaseService;
+            _apiClient = apiClient;
             _userService = userService;
         }
 
         // Get a user's workouts
         public async Task<List<Workout>> GetWorkoutsForUserAsync(int userId)
         {
-            var db = await _databaseService.GetConnectionAsync();
-
-            var workouts = await db.Table<Workout>()
-                .Where(w => w.UserId == userId)
-                .OrderByDescending(w => w.DateTimeCreated)
-                .ToListAsync();
-
-            if (workouts.Count == 0)
+            if (!_userService.IsCurrentUser(userId))
             {
-                return workouts;
+                return new List<Workout>();
             }
 
-            // Load every exercise for these workouts in one query, then group them by workout
-            var workoutIds = workouts.Select(w => w.Id).ToList();
+            ApiResult<List<Workout>> result = await _apiClient.GetAsync<List<Workout>>("api/workouts/mine");
 
-            var workoutExercises = await db.Table<WorkoutExercise>()
-                .Where(we => workoutIds.Contains(we.WorkoutId))
-                .ToListAsync();
-
-            var exercisesByWorkout = workoutExercises.ToLookup(we => we.WorkoutId);
-            var categoryTitles = await _categoryService.GetCategoryTitlesAsync();
-            var favouriteIds = await GetFavouriteWorkoutIdsAsync(userId);
-
-            foreach (var workout in workouts)
+            if (result.Success && result.Data != null)
             {
-                var exercises = exercisesByWorkout[workout.Id];
-
-                workout.CategoryTitle = categoryTitles.GetValueOrDefault(workout.CategoryId, "Uncategorised");
-                workout.ExerciseCount = exercises.Count();
-                workout.SetCount = exercises.Sum(e => e.Sets);
-                workout.TotalMinutes = exercises.Sum(e => e.DurationMinutes);
-                workout.IsFavourite = favouriteIds.Contains(workout.Id);
+                return result.Data;
             }
 
-            return workouts
-                .OrderByDescending(w => w.IsFavourite)
-                .ThenByDescending(w => w.DateTimeCreated)
-                .ToList();
+            return new List<Workout>();
         }
 
         // Get one of the user's own workouts
         public async Task<Workout?> GetWorkoutByIdAsync(int workoutId, int userId)
         {
-            var db = await _databaseService.GetConnectionAsync();
-
-            var workout = await db.Table<Workout>()
-                .Where(w => w.Id == workoutId && w.UserId == userId)
-                .FirstOrDefaultAsync();
-
-            if (workout is null)
+            if (!_userService.IsCurrentUser(userId))
             {
                 return null;
             }
 
-            var categoryTitles = await _categoryService.GetCategoryTitlesAsync();
-            workout.CategoryTitle = categoryTitles.GetValueOrDefault(workout.CategoryId, "Uncategorised");
+            ApiResult<Workout> result = await _apiClient.GetAsync<Workout>($"api/workouts/mine/{workoutId}");
 
-            return workout;
+            if (result.Success)
+            {
+                return result.Data;
+            }
+
+            return null;
         }
 
         // Gets every shared workout
         public async Task<List<Workout>> GetPublicWorkoutsAsync(int userId)
         {
-            var db = await _databaseService.GetConnectionAsync();
-
-            var workouts = await db.Table<Workout>()
-                .Where(w => w.IsPrivate == false)
-                .OrderByDescending(w => w.DateTimeCreated)
-                .ToListAsync();
-
-            if (workouts.Count == 0)
+            // Guests can't see community workouts
+            if (!_userService.IsCurrentMember(userId))
             {
-                return workouts;
+                return new List<Workout>();
             }
 
-            var workoutIds = workouts.Select(w => w.Id).ToList();
+            ApiResult<List<Workout>> result = await _apiClient.GetAsync<List<Workout>>("api/workouts/community");
 
-            var workoutExercises = await db.Table<WorkoutExercise>()
-                .Where(we => workoutIds.Contains(we.WorkoutId))
-                .ToListAsync();
-
-            var exercisesByWorkout = workoutExercises.ToLookup(we => we.WorkoutId);
-            var categoryTitles = await _categoryService.GetCategoryTitlesAsync();
-            var displayNames = await _userService.GetDisplayNamesByIdAsync();
-            var favouriteIds = await GetFavouriteWorkoutIdsAsync(userId);
-
-            foreach (var workout in workouts)
+            if (result.Success && result.Data != null)
             {
-                var exercises = exercisesByWorkout[workout.Id];
-
-                workout.CategoryTitle = categoryTitles.GetValueOrDefault(workout.CategoryId, "Uncategorised");
-                workout.UserDisplayName = displayNames.GetValueOrDefault(workout.UserId, "Unknown");
-                workout.ExerciseCount = exercises.Count();
-                workout.SetCount = exercises.Sum(e => e.Sets);
-                workout.TotalMinutes = exercises.Sum(e => e.DurationMinutes);
-                workout.IsFavourite = favouriteIds.Contains(workout.Id);
+                return result.Data;
             }
 
-            return workouts.OrderByDescending(w => w.IsFavourite).ToList();
+            return new List<Workout>();
         }
 
         // Get one shared workout by Id
         public async Task<Workout?> GetPublicWorkoutByIdAsync(int workoutId)
         {
-            var db = await _databaseService.GetConnectionAsync();
-
-            var workout = await db.Table<Workout>()
-                .Where(w => w.Id == workoutId && w.IsPrivate == false)
-                .FirstOrDefaultAsync();
-
-            if (workout is null)
+            if (_userService.GetCurrentMember() is null)
             {
                 return null;
             }
 
-            var categoryTitles = await _categoryService.GetCategoryTitlesAsync();
-            workout.CategoryTitle = categoryTitles.GetValueOrDefault(workout.CategoryId, "Uncategorised");
+            ApiResult<Workout> result = await _apiClient.GetAsync<Workout>($"api/workouts/community/{workoutId}");
 
-            var displayNames = await _userService.GetDisplayNamesByIdAsync();
-            workout.UserDisplayName = displayNames.GetValueOrDefault(workout.UserId, "Unknown");
+            if (result.Success)
+            {
+                return result.Data;
+            }
 
-            return workout;
+            return null;
         }
 
         // Get the Ids of the workouts favourited by user Id
         public async Task<HashSet<int>> GetFavouriteWorkoutIdsAsync(int userId)
         {
-            var db = await _databaseService.GetConnectionAsync();
+            HashSet<int> ids = new HashSet<int>();
 
-            var favourites = await db.Table<WorkoutFavourite>()
-                .Where(f => f.UserId == userId)
-                .ToListAsync();
+            if (!_userService.IsCurrentUser(userId))
+            {
+                return ids;
+            }
 
-            return favourites.Select(f => f.WorkoutId).ToHashSet();
+            ApiResult<List<int>> result = await _apiClient.GetAsync<List<int>>("api/workouts/favourite-ids");
+
+            if (result.Success && result.Data != null)
+            {
+                foreach (int id in result.Data)
+                {
+                    ids.Add(id);
+                }
+            }
+
+            return ids;
         }
 
         // Check if a workout is a favourite of user Id
         public async Task<bool> IsFavouriteAsync(int workoutId, int userId)
         {
-            var db = await _databaseService.GetConnectionAsync();
+            if (!_userService.IsCurrentUser(userId))
+            {
+                return false;
+            }
 
-            var favourite = await db.Table<WorkoutFavourite>()
-                .Where(f => f.WorkoutId == workoutId && f.UserId == userId)
-                .FirstOrDefaultAsync();
+            ApiResult<bool> result = await _apiClient.GetAsync<bool>($"api/workouts/{workoutId}/favourite");
 
-            return favourite is not null;
+            if (result.Success)
+            {
+                return result.Data;
+            }
+
+            return false;
         }
 
         // Add the workout to the user's favourites, or remove it if it is already there
         public async Task<(bool Success, bool IsFavourite, string Message)> ToggleFavouriteAsync(int workoutId, int userId)
         {
-            var db = await _databaseService.GetConnectionAsync();
-
-            // Users can favourite their own workouts and shared workouts
-            var workout = await db.Table<Workout>()
-                .Where(w => w.Id == workoutId && (w.UserId == userId || w.IsPrivate == false))
-                .FirstOrDefaultAsync();
-
-            if (workout is null)
+            if (!_userService.IsCurrentMember(userId))
             {
-                return (false, false, "Workout could not be found.");
+                return (false, false, "Register an account to favourite workouts.");
             }
 
-            var existing = await db.Table<WorkoutFavourite>()
-                .Where(f => f.WorkoutId == workoutId && f.UserId == userId)
-                .FirstOrDefaultAsync();
+            ApiResult<FavouriteResponse> result = await _apiClient.PostAsync<FavouriteResponse>($"api/workouts/{workoutId}/favourite", null);
 
-            if (existing is not null)
+            if (!result.Success)
             {
-                await db.DeleteAsync(existing);
-
-                return (true, false, $"{workout.Title} removed from your favourites.");
+                return (false, false, result.Message);
             }
 
-            await db.InsertAsync(new WorkoutFavourite { UserId = userId, WorkoutId = workoutId });
+            if (result.Data is null)
+            {
+                return (false, false, "Something went wrong. Please try again.");
+            }
 
-            return (true, true, $"{workout.Title} added to your favourites.");
+            return (true, result.Data.IsFavourite, result.Data.Message);
         }
 
-        // Update a workout and replace its exercises (all or nothing)
-        public async Task<bool> UpdateWorkoutWithExercisesAsync(Workout workout, int userId, IEnumerable<WorkoutExercise> items)
-        {
-            var db = await _databaseService.GetConnectionAsync();
-
-            var existing = await db.Table<Workout>()
-                .Where(w => w.Id == workout.Id && w.UserId == userId)
-                .FirstOrDefaultAsync();
-
-            if (existing is null)
-            {
-                return false;
-            }
-
-            // Copy the editable details across
-            existing.Title = workout.Title;
-            existing.CategoryId = workout.CategoryId;
-            existing.IsPrivate = workout.IsPrivate;
-
-            foreach (var item in items)
-            {
-                item.WorkoutId = existing.Id;
-            }
-
-            await db.RunInTransactionAsync(conn =>
-            {
-                conn.Update(existing);
-                conn.Table<WorkoutExercise>().Delete(we => we.WorkoutId == existing.Id);
-                conn.InsertAll(items);
-            });
-
-            return true;
-        }
-
-        // Gets a workout's exercises
+        // Gets a workout's exercises, in order
         public async Task<List<WorkoutExercise>> GetExercisesForWorkoutAsync(int workoutId)
         {
-            var db = await _databaseService.GetConnectionAsync();
+            ApiResult<List<WorkoutExercise>> result = await _apiClient.GetAsync<List<WorkoutExercise>>($"api/workouts/{workoutId}/exercises");
 
-            var items = await db.Table<WorkoutExercise>()
-                .Where(we => we.WorkoutId == workoutId)
-                .OrderBy(we => we.SortOrder)
-                .ToListAsync();
-
-            var exercises = await db.Table<Exercise>().ToListAsync();
-            var titles = exercises.ToDictionary(e => e.Id, e => e.Title);
-
-            foreach (var item in items)
+            if (result.Success && result.Data != null)
             {
-                item.ExerciseTitle = titles.GetValueOrDefault(item.ExerciseId, "Unknown exercise");
+                return result.Data;
             }
 
-            return items;
-        }
-
-        // Delete a workout
-        public async Task DeleteWorkoutAsync(int workoutId, int userId)
-        {
-            var db = await _databaseService.GetConnectionAsync();
-
-            var workout = await db.Table<Workout>()
-                .Where(w => w.Id == workoutId && w.UserId == userId)
-                .FirstOrDefaultAsync();
-
-            if (workout is null)
-            {
-                return;
-            }
-
-            await db.RunInTransactionAsync(conn =>
-            {
-                conn.Table<WorkoutExercise>().Delete(we => we.WorkoutId == workoutId);
-                conn.Table<WorkoutFavourite>().Delete(f => f.WorkoutId == workoutId);
-                conn.Table<Workout>().Delete(w => w.Id == workoutId && w.UserId == userId);
-            });
+            return new List<WorkoutExercise>();
         }
 
         // Add workout with exercises
         public async Task<int> AddWorkoutWithExercisesAsync(Workout workout, IEnumerable<WorkoutExercise> items)
         {
-            var db = await _databaseService.GetConnectionAsync();
-
-            await db.RunInTransactionAsync(conn =>
+            if (!_userService.IsCurrentMember(workout.UserId))
             {
-                conn.Insert(workout);
+                return 0;
+            }
 
-                foreach (var item in items)
+            List<WorkoutExercise> itemList = items.ToList();
+
+            // App-side validation
+            if (!IsValidWorkout(workout, itemList))
+            {
+                return 0;
+            }
+
+            ApiResult<WorkoutCreatedResponse> result = await _apiClient.PostAsync<WorkoutCreatedResponse>("api/workouts", ToRequest(workout, itemList));
+
+            if (result.Success && result.Data != null)
+            {
+                workout.Id = result.Data.WorkoutId;
+                return result.Data.WorkoutId;
+            }
+
+            System.Diagnostics.Debug.WriteLine("Add workout failed: " + result.Message);
+            return 0;
+        }
+
+        // Update a workout and replace its exercises
+        public async Task<bool> UpdateWorkoutWithExercisesAsync(Workout workout, int userId, IEnumerable<WorkoutExercise> items)
+        {
+            if (!_userService.IsCurrentMember(userId))
+            {
+                return false;
+            }
+
+            List<WorkoutExercise> itemList = items.ToList();
+
+            // App-side validation
+            if (!IsValidWorkout(workout, itemList))
+            {
+                return false;
+            }
+
+            ApiResult<MessageResponse> result = await _apiClient.PutAsync<MessageResponse>($"api/workouts/{workout.Id}", ToRequest(workout, itemList));
+
+            if (!result.Success)
+            {
+                System.Diagnostics.Debug.WriteLine("Update workout failed: " + result.Message);
+            }
+
+            return result.Success;
+        }
+
+        // Delete a workout
+        public async Task<bool> DeleteWorkoutAsync(int workoutId, int userId)
+        {
+            if (!_userService.IsCurrentMember(userId))
+            {
+                return false;
+            }
+
+            ApiResult<MessageResponse> result = await _apiClient.DeleteAsync<MessageResponse>($"api/workouts/{workoutId}");
+
+            if (!result.Success)
+            {
+                System.Diagnostics.Debug.WriteLine("Delete workout failed: " + result.Message);
+            }
+
+            return result.Success;
+        }
+
+        // Helpers
+        // Input validation
+        private static bool IsValidWorkout(Workout workout, List<WorkoutExercise> items)
+        {
+            string title = string.Empty;
+
+            if (workout.Title is not null)
+            {
+                title = workout.Title.Trim();
+            }
+
+            if (title.Length == 0 || title.Length > 100)
+            {
+                return false;
+            }
+
+            if (items.Count == 0)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        // Creates workout object for requests
+        private static WorkoutRequest ToRequest(Workout workout, List<WorkoutExercise> items)
+        {
+            WorkoutRequest request = new WorkoutRequest
+            {
+                Title = workout.Title.Trim(),
+                CategoryId = workout.CategoryId,
+                IsPrivate = workout.IsPrivate
+            };
+
+            foreach (WorkoutExercise item in items)
+            {
+                request.Exercises.Add(new WorkoutExerciseRequest
                 {
-                    item.WorkoutId = workout.Id;
-                    conn.Insert(item);
-                }
-            });
+                    ExerciseId = item.ExerciseId,
+                    SortOrder = item.SortOrder,
+                    Sets = item.Sets,
+                    Reps = item.Reps,
+                    DurationMinutes = item.DurationMinutes
+                });
+            }
 
-            return workout.Id;
+            return request;
         }
     }
 }

@@ -113,7 +113,7 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
 
                     IsFavourite = await _workoutService.IsFavouriteAsync(WorkoutId, user.Id);
                     
-                    if (!IsOwner && !Workout.IsPrivate && IsLoggedIn && !IsCurrentUserAdmin)
+                    if (!IsOwner && !Workout.IsPrivate && IsLoggedIn)
                     {
                         CanReport = true;
                     }
@@ -128,7 +128,7 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
                     }
                     else
                     {
-                        PrivacyText = "Shared";
+                        PrivacyText = "Public";
                     }
 
                     var exercises = await _workoutService.GetExercisesForWorkoutAsync(WorkoutId);
@@ -190,6 +190,62 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
             };
 
             await NavigateAsync(nameof(CreateWorkoutPage), parameters);
+        }
+
+        [RelayCommand]
+        private async Task DeleteWorkoutAsync()
+        {
+            if (Workout is null || !CanEdit || IsBusy)
+            {
+                return;
+            }
+
+            var user = _userService.CurrentUser;
+
+            if (user is null)
+            {
+                return;
+            }
+
+            ErrorMessage = string.Empty;
+
+            bool confirmed = await Shell.Current.DisplayAlertAsync(
+                "Delete Workout",
+                $"Delete {Workout.Title}? Its notes will be deleted too. This can't be undone.",
+                "Delete",
+                "Cancel");
+
+            if (!confirmed)
+            {
+                return;
+            }
+
+            bool deleted = false;
+            IsBusy = true;
+
+            try
+            {
+                deleted = await _workoutService.DeleteWorkoutAsync(Workout.Id, user.Id);
+
+                if (!deleted)
+                {
+                    ErrorMessage = "Couldn't delete the workout. Please try again.";
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex);
+                ErrorMessage = "Couldn't delete the workout. Please try again.";
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+
+            if (deleted)
+            {
+                await NavigateAsync("..");
+            }
         }
 
         // Star button next to the workout title

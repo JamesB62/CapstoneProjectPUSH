@@ -10,82 +10,115 @@
 
         <VerticalStackLayout
             MaximumWidthRequest="500"
-            Padding="30,0,30,30"
+            Padding="30,20,30,20"
             Spacing="20"
             VerticalOptions="Center">
 
             <!-- Branding -->
-            <HorizontalStackLayout
-                HorizontalOptions="Center"
+            <VerticalStackLayout
                 Spacing="10">
 
-                <!-- Logo placeholder -->
-                <Border
-                    HeightRequest="50"
-                    StrokeShape="RoundRectangle 10"
-                    WidthRequest="50">
+                <HorizontalStackLayout
+                    HorizontalOptions="Center"
+                    Spacing="10">
+
+                    <!-- Logo -->
+                    <Image
+                        AutomationProperties.IsInAccessibleTree="False"
+                        HeightRequest="50"
+                        Source="push.svg"
+                        WidthRequest="50"/>
 
                     <Label
-                        FontAttributes="Bold"
-                        FontSize="10"
-                        HorizontalOptions="Center"
-                        Text="Logo"
-                        VerticalOptions="Center"/>
+                        Style="{StaticResource BrandTitle}"
+                        Text="PUSH"/>
+
+                </HorizontalStackLayout>
+
+                <Label
+                    HorizontalOptions="Center"
+                    Style="{StaticResource CardBody}"
+                    Text="Log in to your PUSH account"/>
+
+            </VerticalStackLayout>
+
+            <!-- Email -->
+            <VerticalStackLayout
+                Spacing="10">
+
+                <Label
+                    Style="{StaticResource FieldLabel}"
+                    Text="Email"/>
+
+                <Border
+                    Style="{StaticResource InputFrame}">
+
+                    <Entry
+                        IsEnabled="{Binding IsNotBusy}"
+                        Keyboard="Email"
+                        Placeholder="Enter your email address here"
+                        ReturnType="Next"
+                        SemanticProperties.Hint="Email"
+                        Text="{Binding Email}"/>
 
                 </Border>
 
-                <Label
-                    FontSize="21"
-                    FontAttributes="Bold"
-                    Text="PUSH"
-                    VerticalOptions="Center"/>
+            </VerticalStackLayout>
 
-            </HorizontalStackLayout>
-
-            <Label
-                HorizontalOptions="Center"
-                Text="Log in to your PUSH account"/>
-
-            <!-- Login form -->
+            <!-- Password -->
             <VerticalStackLayout
-                Spacing="5">
+                Spacing="10">
 
-                <Entry
-                    IsEnabled="{Binding IsNotBusy}"
-                    Keyboard="Email"
-                    Placeholder="Enter your email address here"
-                    Text="{Binding Email}"/>
+                <Label
+                    Style="{StaticResource FieldLabel}"
+                    Text="Password"/>
 
-                <Entry
-                    IsEnabled="{Binding IsNotBusy}"
-                    IsPassword="True"
-                    Placeholder="Enter your password here"
-                    Text="{Binding Password}"/>
+                <Border
+                    Style="{StaticResource InputFrame}">
+
+                    <Entry
+                        IsEnabled="{Binding IsNotBusy}"
+                        IsPassword="True"
+                        Placeholder="Enter your password here"
+                        ReturnCommand="{Binding LoginCommand}"
+                        ReturnType="Done"
+                        SemanticProperties.Hint="Password"
+                        Text="{Binding Password}"/>
+
+                </Border>
 
             </VerticalStackLayout>
 
             <!-- Error message -->
             <Label
                 IsVisible="{Binding HasErrorMessage}"
-                Text="{Binding ErrorMessage}"
-                TextColor="Red"/>
+                Style="{StaticResource ErrorLabel}"
+                Text="{Binding ErrorMessage}"/>
 
-            <!-- Login button -->
-            <Button
-                Command="{Binding LoginCommand}"
-                FontAttributes="Bold"
-                IsEnabled="{Binding IsNotBusy}"
-                Text="Log In"/>
+            <!-- Buttons -->
+            <VerticalStackLayout
+                Spacing="10">
 
-               <Button Text="Forgot password?"
-                Command="{Binding GoToForgotPasswordCommand}"
-                FontAttributes="Bold"
-                IsEnabled="{Binding IsNotBusy}"/> 
+                <!-- Login button -->
+                <Button
+                    Command="{Binding LoginCommand}"
+                    IsEnabled="{Binding IsNotBusy}"
+                    Text="Log In"/>
+
+                <Button
+                    Command="{Binding GoToForgotPasswordCommand}"
+                    IsEnabled="{Binding IsNotBusy}"
+                    Style="{StaticResource SecondaryButton}"
+                    Text="Forgot password?"/>
+
+            </VerticalStackLayout>
 
             <!-- Register link -->
             <Label
-                Text="Don't have an account? Tap here to register"
-                TextDecorations="Underline">
+                HorizontalTextAlignment="Center"
+                SemanticProperties.Hint="Opens the registration page"
+                Style="{StaticResource LinkLabel}"
+                Text="Don't have an account? Tap here to register">
 
                 <Label.GestureRecognizers>
 
@@ -96,10 +129,11 @@
 
             </Label>
 
-            <!-- Loading circle -->
+            <!-- Loading indicator -->
             <ActivityIndicator
                 IsRunning="{Binding IsBusy}"
-                Margin="0,10,0,0"/>
+                IsVisible="{Binding IsBusy}"
+                SemanticProperties.Description="Logging in"/>
 
         </VerticalStackLayout>
 

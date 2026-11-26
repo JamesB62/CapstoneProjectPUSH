@@ -2,144 +2,158 @@
 {
     public class ExerciseService
     {
-        private readonly CategoryService _categoryService;
-        private readonly DatabaseService _databaseService;
+        private readonly ApiClient _apiClient;
+        private readonly UserService _userService;
 
-        public ExerciseService(CategoryService categoryService, DatabaseService databaseService)
+        public ExerciseService(ApiClient apiClient, UserService userService)
         {
-            _categoryService = categoryService;
-            _databaseService = databaseService;
+            _apiClient = apiClient;
+            _userService = userService;
         }
 
         // Get exercise count
         public async Task<int> GetExerciseCountAsync()
         {
-            var db = await _databaseService.GetConnectionAsync();
+            ApiResult<int> result = await _apiClient.GetAsync<int>("api/exercises/count");
 
-            return await db.Table<Exercise>().CountAsync();
+            if (result.Success)
+            {
+                return result.Data;
+            }
+
+            return 0;
         }
 
         // Get all exercises
         public async Task<List<Exercise>> GetExercisesAsync()
         {
-            var db = await _databaseService.GetConnectionAsync();
+            ApiResult<List<Exercise>> result = await _apiClient.GetAsync<List<Exercise>>("api/exercises");
 
-            var exercises = await db.Table<Exercise>().ToListAsync();
-
-            var categoryTitles = await _categoryService.GetCategoryTitlesAsync();
-
-            foreach (var exercise in exercises)
+            if (result.Success && result.Data != null)
             {
-                exercise.CategoryTitle = categoryTitles.GetValueOrDefault(exercise.CategoryId, "Uncategorised");
+                return result.Data;
             }
 
-            return exercises.OrderBy(e => e.Title, StringComparer.OrdinalIgnoreCase).ToList();
+            return new List<Exercise>();
         }
 
         // Get exercise by Id
         public async Task<Exercise?> GetExerciseByIdAsync(int exerciseId)
         {
-            var db = await _databaseService.GetConnectionAsync();
+            ApiResult<Exercise> result = await _apiClient.GetAsync<Exercise>($"api/exercises/{exerciseId}");
 
-            var exercise = await db.Table<Exercise>()
-                .Where(e => e.Id == exerciseId)
-                .FirstOrDefaultAsync();
-
-            if (exercise is null)
+            if (result.Success)
             {
-                return null;
+                return result.Data;
             }
 
-            var categoryTitles = await _categoryService.GetCategoryTitlesAsync();
-
-            exercise.CategoryTitle = categoryTitles.GetValueOrDefault(exercise.CategoryId, "Uncategorised");
-
-            return exercise;
+            return null;
         }
 
         // Add an exercise
         public async Task<(bool Success, string Message)> AddExerciseAsync(Exercise exercise)
         {
-            var error = await NormaliseAndValidateAsync(exercise, null);
+            if (!_userService.IsCurrentUserAdmin())
+            {
+                return (false, "Only admins can add exercises.");
+            }
+
+            // App-side validation
+            string? error = NormaliseAndValidate(exercise);
 
             if (error is not null)
             {
                 return (false, error);
             }
 
-            var db = await _databaseService.GetConnectionAsync();
+            ApiResult<CreatedResponse> result = await _apiClient.PostAsync<CreatedResponse>("api/exercises", ToRequest(exercise));
 
-            await db.InsertAsync(exercise);
+            if (!result.Success)
+            {
+                return (false, result.Message);
+            }
 
-            return (true, $"{exercise.Title} was added.");
+            if (result.Data is null)
+            {
+                return (false, "Something went wrong. Please try again.");
+            }
+
+            exercise.Id = result.Data.Id;
+
+            // Upload the photo once the exercise exists
+            if (ImageService.IsAppImage(exercise.Image))
+            {
+                string? imageError = await ImageUpload.ApplyAsync(_apiClient, $"api/images/exercises/{exercise.Id}", exercise.Image);
+
+                if (imageError is not null)
+                {
+                    return (true, result.Data.Message + " The photo couldn't be saved: " + imageError);
+                }
+            }
+
+            return (true, result.Data.Message);
         }
 
         // Update an exercise
         public async Task<(bool Success, string Message)> UpdateExerciseAsync(Exercise exercise)
         {
-            var db = await _databaseService.GetConnectionAsync();
-
-            var existing = await db.Table<Exercise>()
-                .Where(e => e.Id == exercise.Id)
-                .FirstOrDefaultAsync();
-
-            if (existing is null)
+            if (!_userService.IsCurrentUserAdmin())
             {
-                return (false, "Exercise could not be found.");
+                return (false, "Only admins can edit exercises.");
             }
 
-            var error = await NormaliseAndValidateAsync(exercise, exercise.Id);
+            // App-side validation
+            string? error = NormaliseAndValidate(exercise);
 
             if (error is not null)
             {
                 return (false, error);
             }
 
-            existing.Title = exercise.Title;
-            existing.Description = exercise.Description;
-            existing.IsTimed = exercise.IsTimed;
-            existing.Difficulty = exercise.Difficulty;
-            existing.CategoryId = exercise.CategoryId;
+            ApiResult<MessageResponse> result = await _apiClient.PutAsync<MessageResponse>($"api/exercises/{exercise.Id}", ToRequest(exercise));
 
-            await db.UpdateAsync(existing);
+            if (!result.Success)
+            {
+                return (false, result.Message);
+            }
 
-            return (true, $"{existing.Title} was updated.");
+            string message = string.Empty;
+
+            if (result.Data is not null)
+            {
+                message = result.Data.Message;
+            }
+
+            // New photo, removed photo, or unchanged
+            string? imageError = await ImageUpload.ApplyAsync(_apiClient, $"api/images/exercises/{exercise.Id}", exercise.Image);
+
+            if (imageError is not null)
+            {
+                return (true, message + " The photo couldn't be saved: " + imageError);
+            }
+
+            return (true, message);
         }
 
         // Delete an exercise
         public async Task<(bool Success, string Message)> DeleteExerciseAsync(int exerciseId)
         {
-            var db = await _databaseService.GetConnectionAsync();
-
-            var exercise = await db.Table<Exercise>()
-                .Where(e => e.Id == exerciseId)
-                .FirstOrDefaultAsync();
-
-            if (exercise is null)
+            if (!_userService.IsCurrentUserAdmin())
             {
-                return (false, "Exercise could not be found.");
+                return (false, "Only admins can delete exercises.");
             }
 
-            // Remove it from workouts first
-            var links = await db.Table<WorkoutExercise>()
-                .Where(we => we.ExerciseId == exerciseId)
-                .ToListAsync();
+            ApiResult<MessageResponse> result = await _apiClient.DeleteAsync<MessageResponse>($"api/exercises/{exerciseId}");
 
-            foreach (var link in links)
-            {
-                await db.DeleteAsync(link);
-            }
-
-            await db.DeleteAsync(exercise);
-
-            return (true, "Exercise deleted.");
+            return ToTuple(result);
         }
 
         // Helpers
-        private async Task<string?> NormaliseAndValidateAsync(Exercise exercise, int? existingId)
+        // Trim and validate exercise details
+        private static string? NormaliseAndValidate(Exercise exercise)
         {
-            exercise.Title = (exercise.Title ?? string.Empty).Trim();
-            exercise.Description = (exercise.Description ?? string.Empty).Trim();
+            exercise.Title = Clean(exercise.Title);
+            exercise.Description = Clean(exercise.Description);
 
             if (exercise.Title.Length < 2 || exercise.Title.Length > 100)
             {
@@ -156,28 +170,52 @@
                 return "Please choose a difficulty.";
             }
 
-            var db = await _databaseService.GetConnectionAsync();
-
-            var categoryExists = await db.Table<Category>()
-                .Where(c => c.Id == exercise.CategoryId)
-                .CountAsync() > 0;
-
-            if (!categoryExists)
+            if (exercise.CategoryId <= 0)
             {
                 return "Please choose a category for this exercise.";
             }
 
-            var exercises = await db.Table<Exercise>().ToListAsync();
+            return null;
+        }
 
-            bool titleTaken = exercises.Any(e => e.Id != existingId
-                && string.Equals(e.Title, exercise.Title, StringComparison.OrdinalIgnoreCase));
-
-            if (titleTaken)
+        // Create exercise object for request
+        private static ExerciseRequest ToRequest(Exercise exercise)
+        {
+            return new ExerciseRequest
             {
-                return $"An exercise called \"{exercise.Title}\" already exists.";
+                Title = exercise.Title,
+                Description = exercise.Description,
+                IsTimed = exercise.IsTimed,
+                Difficulty = exercise.Difficulty,
+                CategoryId = exercise.CategoryId
+            };
+        }
+
+        // Clean input
+        private static string Clean(string? value)
+        {
+            if (value is null)
+            {
+                return string.Empty;
             }
 
-            return null;
+            return value.Trim();
+        }
+
+        // Turns an api reply into the response the view models expect
+        private static (bool Success, string Message) ToTuple(ApiResult<MessageResponse> result)
+        {
+            if (!result.Success)
+            {
+                return (false, result.Message);
+            }
+
+            if (result.Data is null)
+            {
+                return (true, string.Empty);
+            }
+
+            return (true, result.Data.Message);
         }
     }
 }

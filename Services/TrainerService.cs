@@ -2,192 +2,188 @@
 {
     public class TrainerService
     {
-        private readonly CategoryService _categoryService;
-        private readonly DatabaseService _databaseService;
+        private readonly ApiClient _apiClient;
+        private readonly UserService _userService;
 
-        public TrainerService(CategoryService categoryService, DatabaseService databaseService)
+        public TrainerService(ApiClient apiClient, UserService userService)
         {
-            _categoryService = categoryService;
-            _databaseService = databaseService;
+            _apiClient = apiClient;
+            _userService = userService;
         }
 
         // Get trainer count
         public async Task<int> GetTrainerCountAsync()
         {
-            var db = await _databaseService.GetConnectionAsync();
+            ApiResult<int> result = await _apiClient.GetAsync<int>("api/trainers/count");
 
-            return await db.Table<Trainer>().CountAsync();
+            if (result.Success)
+            {
+                return result.Data;
+            }
+
+            return 0;
         }
 
         // Get available trainer count
         public async Task<int> GetAvailableTrainerCountAsync()
         {
-            var db = await _databaseService.GetConnectionAsync();
+            ApiResult<int> result = await _apiClient.GetAsync<int>("api/trainers/available-count");
 
-            return await db.Table<Trainer>().Where(t => t.Available).CountAsync();
+            if (result.Success)
+            {
+                return result.Data;
+            }
+
+            return 0;
         }
 
         // Get all trainers
         public async Task<List<Trainer>> GetTrainersAsync()
         {
-            var db = await _databaseService.GetConnectionAsync();
+            ApiResult<List<Trainer>> result = await _apiClient.GetAsync<List<Trainer>>("api/trainers");
 
-            var trainers = await db.Table<Trainer>()
-                .OrderBy(t => t.LastName)
-                .ThenBy(t => t.FirstName)
-                .ToListAsync();
+            if (result.Success && result.Data != null)
+            {
+                return result.Data;
+            }
 
-            await FillGymAndCategoryAsync(trainers);
-
-            return trainers;
+            return new List<Trainer>();
         }
 
         // Get trainer by Id
         public async Task<Trainer?> GetTrainerByIdAsync(int trainerId)
         {
-            var db = await _databaseService.GetConnectionAsync();
+            ApiResult<Trainer> result = await _apiClient.GetAsync<Trainer>($"api/trainers/{trainerId}");
 
-            var trainer = await db.Table<Trainer>()
-                .Where(t => t.Id == trainerId)
-                .FirstOrDefaultAsync();
-
-            if (trainer is null)
+            if (result.Success)
             {
-                return null;
+                return result.Data;
             }
 
-            await FillGymAndCategoryAsync(new List<Trainer> { trainer });
-
-            return trainer;
+            return null;
         }
 
-        // Get all trainers, with trainers at the favourite gym first
+        // Get all trainers -- at favourite gym first
         public async Task<List<Trainer>> GetTrainersFavouriteGymFirstAsync(int? favouriteGymId)
         {
-            var trainers = await GetTrainersAsync();
+            ApiResult<List<Trainer>> result = await _apiClient.GetAsync<List<Trainer>>("api/trainers/favourite-first");
 
-            foreach (var trainer in trainers)
+            if (result.Success && result.Data != null)
             {
-                if (favouriteGymId is not null && trainer.GymId == favouriteGymId.Value)
-                {
-                    trainer.IsAtFavouriteGym = true;
-                }
-                else
-                {
-                    trainer.IsAtFavouriteGym = false;
-                }
+                return result.Data;
             }
 
-            return trainers.OrderByDescending(t => t.IsAtFavouriteGym).ToList();
+            return new List<Trainer>();
         }
 
         // Add trainer
         public async Task<(bool Success, string Message)> AddTrainerAsync(Trainer trainer)
         {
-            var error = await NormaliseAndValidateAsync(trainer, null);
+            if (!_userService.IsCurrentUserAdmin())
+            {
+                return (false, "Only admins can add trainers.");
+            }
+
+            // App-side validation
+            string? error = NormaliseAndValidate(trainer);
 
             if (error is not null)
             {
                 return (false, error);
             }
 
-            var db = await _databaseService.GetConnectionAsync();
+            ApiResult<CreatedResponse> result = await _apiClient.PostAsync<CreatedResponse>("api/trainers", ToRequest(trainer));
 
-            await db.InsertAsync(trainer);
+            if (!result.Success)
+            {
+                return (false, result.Message);
+            }
 
-            return (true, $"{trainer.FullName} was added.");
+            if (result.Data is null)
+            {
+                return (false, "Something went wrong. Please try again.");
+            }
+
+            trainer.Id = result.Data.Id;
+
+            // Upload the photo once the trainer exists
+            if (ImageService.IsAppImage(trainer.ProfileImage))
+            {
+                string? imageError = await ImageUpload.ApplyAsync(_apiClient, $"api/images/trainers/{trainer.Id}", trainer.ProfileImage);
+
+                if (imageError is not null)
+                {
+                    return (true, result.Data.Message + " The photo couldn't be saved: " + imageError);
+                }
+            }
+
+            return (true, result.Data.Message);
         }
 
         // Update trainer details
         public async Task<(bool Success, string Message)> UpdateTrainerAsync(Trainer trainer)
         {
-            var db = await _databaseService.GetConnectionAsync();
-
-            var existing = await db.Table<Trainer>().Where(t => t.Id == trainer.Id).FirstOrDefaultAsync();
-
-            if (existing is null)
+            if (!_userService.IsCurrentUserAdmin())
             {
-                return (false, "Trainer could not be found.");
+                return (false, "Only admins can edit trainers.");
             }
 
-            var error = await NormaliseAndValidateAsync(trainer, trainer.Id);
+            // App-side validation
+            string? error = NormaliseAndValidate(trainer);
 
             if (error is not null)
             {
                 return (false, error);
             }
 
-            existing.FirstName = trainer.FirstName;
-            existing.LastName = trainer.LastName;
-            existing.Email = trainer.Email;
-            existing.PhoneNumber = trainer.PhoneNumber;
-            existing.Description = trainer.Description;
-            existing.Available = trainer.Available;
-            existing.CategoryId = trainer.CategoryId;
-            existing.GymId = trainer.GymId;
+            ApiResult<MessageResponse> result = await _apiClient.PutAsync<MessageResponse>($"api/trainers/{trainer.Id}", ToRequest(trainer));
 
-            await db.UpdateAsync(existing);
+            if (!result.Success)
+            {
+                return (false, result.Message);
+            }
 
-            return (true, $"{existing.FullName} was updated.");
+            string message = string.Empty;
+
+            if (result.Data is not null)
+            {
+                message = result.Data.Message;
+            }
+
+            // New photo, removed photo, or unchanged
+            string? imageError = await ImageUpload.ApplyAsync(_apiClient, $"api/images/trainers/{trainer.Id}", trainer.ProfileImage);
+
+            if (imageError is not null)
+            {
+                return (true, message + " The photo couldn't be saved: " + imageError);
+            }
+
+            return (true, message);
         }
 
         // Delete trainer
         public async Task<(bool Success, string Message)> DeleteTrainerAsync(int trainerId)
         {
-            var db = await _databaseService.GetConnectionAsync();
-
-            var trainer = await db.Table<Trainer>().Where(t => t.Id == trainerId).FirstOrDefaultAsync();
-
-            if (trainer is null)
+            if (!_userService.IsCurrentUserAdmin())
             {
-                return (false, "Trainer could not be found.");
+                return (false, "Only admins can delete trainers.");
             }
 
-            await db.DeleteAsync(trainer);
+            ApiResult<MessageResponse> result = await _apiClient.DeleteAsync<MessageResponse>($"api/trainers/{trainerId}");
 
-            return (true, $"{trainer.FullName} was deleted.");
+            return ToTuple(result);
         }
 
         // Helpers
-        // Fill in each trainer's gym and category details
-        private async Task FillGymAndCategoryAsync(List<Trainer> trainers)
-        {
-            var db = await _databaseService.GetConnectionAsync();
-
-            var gyms = await db.Table<Gym>().ToListAsync();
-            var gymLookup = gyms.ToDictionary(g => g.Id);
-
-            var categoryTitles = await _categoryService.GetCategoryTitlesAsync();
-
-            foreach (var trainer in trainers)
-            {
-                if (gymLookup.TryGetValue(trainer.GymId, out var gym))
-                {
-                    trainer.GymName = gym.Name;
-                    trainer.GymAddress = gym.Address;
-                    trainer.GymCity = gym.City;
-                }
-                else
-                {
-                    trainer.GymName = "Unknown Gym";
-                    trainer.GymAddress = string.Empty;
-                    trainer.GymCity = string.Empty;
-                }
-
-                trainer.CategoryTitle = categoryTitles.GetValueOrDefault(trainer.CategoryId, "Uncategorised");
-            }
-        }
-
         // Trim and validate trainer details
-        private async Task<string?> NormaliseAndValidateAsync(Trainer trainer, int? existingTrainerId)
+        private static string? NormaliseAndValidate(Trainer trainer)
         {
-            trainer.FirstName = (trainer.FirstName ?? string.Empty).Trim();
-            trainer.LastName = (trainer.LastName ?? string.Empty).Trim();
-            trainer.Email = (trainer.Email ?? string.Empty).Trim().ToLowerInvariant();
-            trainer.PhoneNumber = (trainer.PhoneNumber ?? string.Empty).Trim();
-            trainer.Description = (trainer.Description ?? string.Empty).Trim();
+            trainer.FirstName = Clean(trainer.FirstName);
+            trainer.LastName = Clean(trainer.LastName);
+            trainer.Email = Clean(trainer.Email).ToLowerInvariant();
+            trainer.PhoneNumber = Clean(trainer.PhoneNumber);
+            trainer.Description = Clean(trainer.Description);
 
-            // Validation
             if (trainer.FirstName.Length == 0 || trainer.FirstName.Length > 60)
             {
                 return "First name is required (60 characters max).";
@@ -219,42 +215,36 @@
                 return "Description must be 1000 characters or fewer.";
             }
 
-            // Database checks
-            var db = await _databaseService.GetConnectionAsync();
-
-            var category = await _categoryService.GetCategoryByIdAsync(trainer.CategoryId);
-
-            if (category is null)
+            if (trainer.CategoryId <= 0)
             {
                 return "Category could not be found.";
             }
 
-            var gym = await db.Table<Gym>().Where(g => g.Id == trainer.GymId).FirstOrDefaultAsync();
-
-            if (gym is null)
+            if (trainer.GymId <= 0)
             {
                 return "Gym could not be found.";
-            }
-
-            if (trainer.Email.Length > 0)
-            {
-                // Ids start at 1, so 0 means "no trainer to ignore"
-                var ignoreId = existingTrainerId ?? 0;
-
-                var emailTaken = await db.Table<Trainer>()
-                    .Where(t => t.Email == trainer.Email && t.Id != ignoreId)
-                    .FirstOrDefaultAsync();
-
-                if (emailTaken is not null)
-                {
-                    return "A trainer with that email already exists.";
-                }
             }
 
             return null;
         }
 
-        // Validate email format
+        // Creates trainer object for requests
+        private static TrainerRequest ToRequest(Trainer trainer)
+        {
+            return new TrainerRequest
+            {
+                FirstName = trainer.FirstName,
+                LastName = trainer.LastName,
+                Email = trainer.Email,
+                PhoneNumber = trainer.PhoneNumber,
+                Description = trainer.Description,
+                Available = trainer.Available,
+                CategoryId = trainer.CategoryId,
+                GymId = trainer.GymId
+            };
+        }
+
+        // Validate email input
         private static bool IsValidEmail(string email)
         {
             if (email.Length > 250)
@@ -264,13 +254,40 @@
 
             try
             {
-                var address = new MailAddress(email);
+                MailAddress address = new MailAddress(email);
                 return address.Address == email;
             }
             catch (FormatException)
             {
                 return false;
             }
+        }
+
+        // Clean input
+        private static string Clean(string? value)
+        {
+            if (value is null)
+            {
+                return string.Empty;
+            }
+
+            return value.Trim();
+        }
+
+        // Turns an api reply into the response the view models expect
+        private static (bool Success, string Message) ToTuple(ApiResult<MessageResponse> result)
+        {
+            if (!result.Success)
+            {
+                return (false, result.Message);
+            }
+
+            if (result.Data is null)
+            {
+                return (true, string.Empty);
+            }
+
+            return (true, result.Data.Message);
         }
     }
 }

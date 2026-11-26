@@ -8,30 +8,46 @@
 
     <Grid
         MaximumWidthRequest="500"
-        Padding="30,15"
+        Padding="30,20,30,20"
         RowDefinitions="Auto,Auto,*,Auto"
         RowSpacing="20">
 
-        <!-- Search bar -->
-        <SearchBar
-            Grid.Row="0"
-            Placeholder="Search by title or category..."
-            Text="{Binding SearchText}"/>
-
         <!-- Search -->
         <VerticalStackLayout
-            Grid.Row="1"
-            Spacing="15">
-
-            <!-- Status message -->
-            <Label
-                Text="{Binding StatusMessage}"/>
+            Grid.Row="0"
+            Spacing="20">
 
             <!-- Error message -->
             <Label
                 IsVisible="{Binding HasErrorMessage}"
-                Text="{Binding ErrorMessage}"
-                TextColor="Red"/>
+                Style="{StaticResource ErrorLabel}"
+                Text="{Binding ErrorMessage}"/>
+
+            <!-- Search bar -->
+            <Border
+                Style="{StaticResource InputFrame}">
+
+                <SearchBar
+                    Placeholder="Search by title or category..."
+                    SemanticProperties.Hint="Search exercises"
+                    Text="{Binding SearchText}"/>
+
+            </Border>
+
+        </VerticalStackLayout>
+
+        <VerticalStackLayout
+            Grid.Row="1"
+            Spacing="5">
+
+            <!-- Status message -->
+            <Label
+                Style="{StaticResource StatusLabel}"
+                Text="{Binding StatusMessage}"/>
+
+            <Label
+                Style="{StaticResource HintLabel}"
+                Text="Tap an exercise to add or remove it."/>
 
         </VerticalStackLayout>
 
@@ -44,19 +60,23 @@
             <!-- Empty view -->
             <CollectionView.EmptyView>
 
-                <Label
-                    FontAttributes="Italic"
-                    HorizontalTextAlignment="Center"
-                    Text="No exercises found."
-                    VerticalTextAlignment="Center"/>
+                <Grid>
+
+                    <Label
+                        HorizontalTextAlignment="Center"
+                        Style="{StaticResource EmptyLabel}"
+                        Text="No exercises found."
+                        VerticalTextAlignment="Center"/>
+
+                </Grid>
 
             </CollectionView.EmptyView>
 
-            <!-- Item layout -->
+            <!-- Items layout -->
             <CollectionView.ItemsLayout>
 
                 <LinearItemsLayout
-                    ItemSpacing="10"
+                    ItemSpacing="15"
                     Orientation="Vertical"/>
 
             </CollectionView.ItemsLayout>
@@ -69,7 +89,23 @@
 
                     <!-- Card -->
                     <Border
+                        Stroke="{StaticResource Accent}"
                         Style="{StaticResource Card}">
+
+                        <Border.Triggers>
+
+                            <DataTrigger
+                                Binding="{Binding IsSelected}"
+                                TargetType="Border"
+                                Value="True">
+
+                                <Setter
+                                    Property="StrokeThickness"
+                                    Value="1"/>
+
+                            </DataTrigger>
+
+                        </Border.Triggers>
 
                         <Grid
                             ColumnDefinitions="*,Auto"
@@ -79,49 +115,53 @@
                                 Grid.Column="0"
                                 Spacing="10">
 
+                                <!-- Title and category pill -->
                                 <Grid
                                     ColumnDefinitions="*,Auto"
                                     ColumnSpacing="10">
 
-                                    <!-- Title -->
                                     <Label
-                                        FontAttributes="Bold"
-                                        FontSize="16"
                                         Grid.Column="0"
                                         LineBreakMode="TailTruncation"
+                                        MaxLines="2"
+                                        Style="{StaticResource CardTitle}"
                                         Text="{Binding Exercise.Title}"
                                         VerticalOptions="Center"/>
 
-                                    <!-- Category -->
                                     <Border
                                         Grid.Column="1"
-                                        Style="{StaticResource Pill}">
+                                        Style="{StaticResource Pill}"
+                                        VerticalOptions="Start">
 
                                         <Label
-                                            FontSize="12"
-                                            LineBreakMode="TailTruncation"
+                                            Style="{StaticResource PillLabel}"
                                             Text="{Binding Exercise.CategoryTitle}"/>
 
                                     </Border>
 
                                 </Grid>
 
-                                <!-- Description -->
+                                <!-- Description preview -->
                                 <Label
+                                    AutomationProperties.IsInAccessibleTree="False"
                                     LineBreakMode="TailTruncation"
                                     MaxLines="2"
+                                    Style="{StaticResource CardBody}"
                                     Text="{Binding Exercise.Description}"/>
 
-                                <!-- Info -->
+                                <!-- Difficulty -->
                                 <Label
-                                    Text="{Binding Exercise.DifficultyLabel, StringFormat='• Difficulty: {0}'}"/>
+                                    Style="{StaticResource CardCredit}"
+                                    Text="{Binding Exercise.DifficultyLabel, StringFormat='Difficulty: {0}'}"/>
                                 
                             </VerticalStackLayout>
 
+                            <!-- Checkbox -->
                             <CheckBox
                                 Grid.Column="1"
                                 InputTransparent="True"
                                 IsChecked="{Binding IsSelected, Mode=OneWay}"
+                                SemanticProperties.Description="Selected"
                                 VerticalOptions="Center"/>
 
                         </Grid>
@@ -137,6 +177,7 @@
         <Button
             Command="{Binding DoneCommand}"
             Grid.Row="3"
+            SemanticProperties.Description="{Binding SelectedCount, StringFormat='Done, {0} selected'}"
             Text="{Binding SelectedCount, StringFormat='Done ({0})'}"/>
 
     </Grid>

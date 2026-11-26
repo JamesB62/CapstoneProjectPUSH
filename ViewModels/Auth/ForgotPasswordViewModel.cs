@@ -3,8 +3,6 @@ namespace CapstoneProjectPUSH.ViewModels.Auth
     public partial class ForgotPasswordViewModel : BaseViewModel
     {
         private readonly PasswordResetService _passwordResetService;
-
-        private readonly NotificationService _notifications;
     
         [ObservableProperty]
         public partial string Email { get; set; }
@@ -24,21 +22,23 @@ namespace CapstoneProjectPUSH.ViewModels.Auth
 
         public bool IsEmailStep => !IsCodeStep;
 
-        public ForgotPasswordViewModel(PasswordResetService passwordResetService, UserService userService, NotificationService notificationService) : base(userService)
+        public ForgotPasswordViewModel(PasswordResetService passwordResetService, UserService userService) : base(userService)
         {
             _passwordResetService = passwordResetService;
-            _notifications = notificationService;
             Email = string.Empty;
             Code = string.Empty;
             NewPassword = string.Empty;
             ConfirmPassword = string.Empty;
         }
 
-        //setp one sending the email 
+        // Step one - sending the email 
         [RelayCommand]
         private async Task SendCodeAsync()
         {
-            if(IsBusy) return;
+            if (IsBusy)
+            {
+                return;
+            }
 
             if(string.IsNullOrWhiteSpace(Email))
             {
@@ -50,21 +50,16 @@ namespace CapstoneProjectPUSH.ViewModels.Auth
             {
                 IsBusy = true;
                 ErrorMessage = string.Empty;
-                
-                bool emailExists = await _passwordResetService.IsEmailRegisteredAsync(Email);
-                if (!emailExists)
-                {
-                    ErrorMessage = "This email address is not registered.";
-                    return; 
-                }
 
                 await _passwordResetService.RequestResetAsync(Email);
 
                 IsCodeStep = true;
+
+                SemanticScreenReader.Default.Announce("Reset code sent. Enter the code and your new password.");
             }
             catch(Exception ex)
             {
-                ErrorMessage = "Somthing went worng, please try again. (errorn 667)";
+                ErrorMessage = "Something went wrong, please try again.";
                 System.Diagnostics.Debug.WriteLine(ex);
             }
             finally
@@ -73,11 +68,14 @@ namespace CapstoneProjectPUSH.ViewModels.Auth
             }
         }
 
-        //step two vaild code and reset password 
+        // Step two - vaild code and reset password 
         [RelayCommand]
         private async Task ResetPasswordAsync()
         {
-            if(IsBusy) return;
+            if (IsBusy)
+            {
+                return;
+            }
 
             try
             {
@@ -96,13 +94,12 @@ namespace CapstoneProjectPUSH.ViewModels.Auth
                 NewPassword = string.Empty;
                 ConfirmPassword = string.Empty;
 
-                _=_notifications.SendWelcomeAsync(result.User!);
                 await Shell.Current.DisplayAlertAsync("Done", result.Message, "OK");
-                await Shell.Current.GoToAsync("..");
+                await NavigateAsync("..");
             }
             catch(Exception ex)
             {
-                ErrorMessage = "Something when worng, please try again. (error 668)";
+                ErrorMessage = "Something went wrong, please try again.";
                 System.Diagnostics.Debug.WriteLine(ex);
             }
             finally
@@ -118,6 +115,5 @@ namespace CapstoneProjectPUSH.ViewModels.Auth
             Code = string.Empty;
             IsCodeStep = false;
         }
-        
     }
 }

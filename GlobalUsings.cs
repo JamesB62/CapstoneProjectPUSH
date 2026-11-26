@@ -2,14 +2,16 @@
 global using CommunityToolkit.Mvvm.ComponentModel;
 global using CommunityToolkit.Mvvm.Input;
 global using Microsoft.Extensions.Logging;
-global using SQLite;
 global using System.Collections.ObjectModel;
 global using System.ComponentModel;
-global using System.Globalization;
+global using System.Net.Http.Headers;
+global using System.Net.Http.Json;
 global using System.Net.Mail;
-global using System.Security.Cryptography;
+global using System.Text.Json;
+global using System.Text.Json.Serialization;
 
 // Local references
+global using CapstoneProjectPUSH.Dtos;
 global using CapstoneProjectPUSH.Models;
 global using CapstoneProjectPUSH.Models.Charts;
 global using CapstoneProjectPUSH.Services;

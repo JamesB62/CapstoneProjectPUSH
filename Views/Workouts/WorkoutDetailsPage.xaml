@@ -10,6 +10,18 @@
     <ContentPage.ToolbarItems>
 
         <ToolbarItem
+            x:Name="EditToolbarItem"
+            Command="{Binding EditWorkoutCommand}"
+            Order="Secondary"
+            Text="Edit Workout"/>
+
+        <ToolbarItem
+            x:Name="DeleteToolbarItem"
+            Command="{Binding DeleteWorkoutCommand}"
+            Order="Secondary"
+            Text="Delete Workout"/>
+
+        <ToolbarItem
             x:Name="ReportToolbarItem"
             Command="{Binding ReportWorkoutCommand}"
             Order="Secondary"
@@ -20,26 +32,24 @@
     <Grid
         RowDefinitions="*,Auto">
 
+        <!-- Scrolling content -->
         <ScrollView
             Grid.Row="0">
 
             <VerticalStackLayout
                 MaximumWidthRequest="500"
-                Padding="30,30,30,0"
+                Padding="30,20,30,20"
                 Spacing="20">
 
-                <!-- Title and category -->
+                <!-- Title, category and favourite -->
                 <Grid
-                    ColumnDefinitions="*,Auto,Auto,Auto"
+                    ColumnDefinitions="*,Auto,Auto"
                     ColumnSpacing="10">
 
                     <Label
-                        FontAttributes="Bold"
-                        FontSize="18"
                         Grid.Column="0"
-                        LineBreakMode="WordWrap"
-                        Text="{Binding Workout.Title}"
-                        VerticalOptions="Center"/>
+                        Style="{StaticResource DetailTitle}"
+                        Text="{Binding Workout.Title}"/>
 
                     <Border
                         Grid.Column="1"
@@ -47,68 +57,97 @@
                         VerticalOptions="Start">
 
                         <Label
-                            FontSize="12"
+                            Style="{StaticResource PillLabel}"
                             Text="{Binding Workout.CategoryTitle}"/>
-
-                    </Border>
-
-                    <!-- Owner only -->
-                    <Border
-                        Grid.Column="2"
-                        IsVisible="{Binding IsOwner}"
-                        Style="{StaticResource Pill}"
-                        VerticalOptions="Start">
-
-                        <Label
-                            FontSize="12"
-                            Text="{Binding PrivacyText}"/>
 
                     </Border>
 
                     <!-- Favourite star (registered accounts only) -->
                     <Button
                         Command="{Binding ToggleFavouriteCommand}"
-                        Grid.Column="3"
+                        Grid.Column="2"
                         IsVisible="{Binding IsLoggedIn}"
+                        SemanticProperties.Description="Add to favourites"
                         Style="{StaticResource FavouriteStar}"
-                        Text="{Binding FavouriteIcon}"/>
+                        Text="{Binding FavouriteIcon}"
+                        VerticalOptions="Start">
+
+                        <Button.Triggers>
+
+                            <DataTrigger
+                                Binding="{Binding FavouriteIcon}"
+                                TargetType="Button"
+                                Value="★">
+
+                                <Setter
+                                    Property="SemanticProperties.Description"
+                                    Value="Remove from favourites"/>
+
+                            </DataTrigger>
+
+                        </Button.Triggers>
+
+                    </Button>
 
                 </Grid>
 
-                <!-- Credit -->
-                <Label
-                    FontAttributes="Italic"
-                    FontSize="12"
-                    IsVisible="{Binding IsNotOwner}"
-                    Margin="0,-3,0,0"
-                    Text="{Binding Workout.UserDisplayName, StringFormat='Created by {0}'}"/>
+                <!-- Credit and privacy -->
+                <VerticalStackLayout
+                    Spacing="5">
+
+                    <Label
+                        IsVisible="{Binding IsNotOwner}"
+                        Style="{StaticResource CardCredit}">
+
+                        <Label.Text>
+
+                            <MultiBinding
+                                StringFormat="Created by {0} on {1:d MMM yyyy}">
+
+                                <Binding
+                                    Path="Workout.UserDisplayName"/>
+
+                                <Binding
+                                    Path="Workout.DateTimeCreated"/>
+
+                            </MultiBinding>
+
+                        </Label.Text>
+
+                    </Label>
+
+                    <Label
+                        IsVisible="{Binding IsOwner}"
+                        Style="{StaticResource CardCredit}"
+                        Text="{Binding Workout.DateTimeCreated, StringFormat='Created on {0:d MMM yyyy}'}"/>
+
+                    <Label
+                        IsVisible="{Binding IsOwner}"
+                        Style="{StaticResource CardCredit}"
+                        Text="{Binding PrivacyText, StringFormat='Visibility: {0}'}"/>
+
+                </VerticalStackLayout>
 
                 <!-- Exercises -->
                 <Label
-                    FontAttributes="Bold"
-                    FontSize="16"
+                    Style="{StaticResource SectionHeader}"
                     Text="Exercises"/>
 
                 <VerticalStackLayout
                     BindableLayout.ItemsSource="{Binding Exercises}"
-                    Spacing="10">
+                    Spacing="15">
 
                     <!-- Empty view -->
                     <BindableLayout.EmptyView>
 
                         <Grid
-                            HeightRequest="150">
+                            HeightRequest="100">
 
-                            <VerticalStackLayout
+                            <Label
                                 HorizontalOptions="Center"
-                                VerticalOptions="Center">
-
-                                <Label
-                                    FontAttributes="Italic"
-                                    HorizontalTextAlignment="Center"
-                                    Text="This workout has no exercises yet."/>
-
-                            </VerticalStackLayout>
+                                Style="{StaticResource EmptyLabel}"
+                                Text="This workout has no exercises yet."
+                                VerticalOptions="Center"/>
 
                         </Grid>
 
@@ -127,26 +166,28 @@
                                     ColumnDefinitions="Auto,*"
                                     ColumnSpacing="15">
 
+                                    <!-- Exercise order number -->
                                     <Label
                                         FontAttributes="Bold"
                                         FontSize="18"
                                         Grid.Column="0"
                                         Text="{Binding DisplayNumber}"
+                                        TextColor="{StaticResource Accent}"
                                         VerticalOptions="Center"/>
 
+                                    <!-- Title and target -->
                                     <VerticalStackLayout
                                         Grid.Column="1"
-                                        Spacing="3">
+                                        Spacing="5">
 
-                                        <!-- Header -->
                                         <Label
-                                            FontAttributes="Bold"
-                                            FontSize="16"
                                             LineBreakMode="TailTruncation"
+                                            MaxLines="2"
+                                            Style="{StaticResource CardTitle}"
                                             Text="{Binding ExerciseTitle}"/>
 
-                                        <!-- Info -->
                                         <Label
+                                            Style="{StaticResource CardBody}"
                                             Text="{Binding TargetText}"/>
 
                                     </VerticalStackLayout>
@@ -161,50 +202,59 @@
 
                 </VerticalStackLayout>
 
-                <!-- Notes -->
-                <Grid
-                    ColumnDefinitions="*,Auto"
-                    ColumnSpacing="10">
+                <!-- Notes header, add button and swipe hint -->
+                <VerticalStackLayout
+                    Spacing="5">
+
+                    <Grid
+                        ColumnDefinitions="*,Auto"
+                        ColumnSpacing="10">
+
+                        <Label
+                            Grid.Column="0"
+                            Style="{StaticResource SectionHeader}"
+                            Text="My Notes"
+                            VerticalOptions="Center"/>
+
+                        <Button
+                            Grid.Column="1"
+                            Command="{Binding AddNoteCommand}"
+                            IsVisible="{Binding IsLoggedIn}"
+                            Style="{StaticResource SecondaryButton}"
+                            Text="Add Note"/>
+
+                    </Grid>
 
                     <Label
-                        Grid.Column="0"
-                        FontAttributes="Bold"
-                        FontSize="16"
-                        Text="My Notes"
-                        VerticalOptions="Center"/>
+                        IsVisible="{Binding IsLoggedIn}"
+                        Style="{StaticResource HintLabel}"
+                        Text="Swipe right to edit or left to delete."/>
 
-                    <Button
-                        Grid.Column="1"
-                        Command="{Binding AddNoteCommand}"
-                        HeightRequest="35"
-                        Padding="15,0"
-                        Text="+ Add"/>
-
-                </Grid>
+                </VerticalStackLayout>
 
                 <VerticalStackLayout
                     BindableLayout.ItemsSource="{Binding Notes}"
-                    Spacing="10">
+                    Spacing="15">
 
                     <!-- Empty view -->
                     <BindableLayout.EmptyView>
 
                         <Grid
-                            HeightRequest="150">
+                            HeightRequest="100">
 
                             <VerticalStackLayout
                                 HorizontalOptions="Center"
+                                Spacing="5"
                                 VerticalOptions="Center">
 
                                 <Label
-                                    FontAttributes="Italic"
-                                    HorizontalTextAlignment="Center"
+                                    Style="{StaticResource EmptyLabel}"
                                     Text="No notes for this workout yet."/>
 
                                 <Label
-                                    FontAttributes="Italic"
-                                    HorizontalTextAlignment="Center"
-                                    Text="Tap + Add to create one."/>
+                                    IsVisible="{Binding IsLoggedIn}"
+                                    Style="{StaticResource EmptyLabel}"
+                                    Text="Tap Add Note to create one."/>
 
                             </VerticalStackLayout>
 
@@ -218,68 +268,70 @@
                         <DataTemplate
                             x:DataType="models:Note">
 
-                            <SwipeView>
+                            <Border
+                                Style="{StaticResource SwipeClip}">
 
-                                <!-- Swipe actions (registered accounts only) -->
-                                <SwipeView.LeftItems>
+                                <SwipeView>
 
-                                    <SwipeItems>
+                                    <!-- Swipe actions (registered accounts only) -->
+                                    <SwipeView.LeftItems>
 
-                                        <SwipeItem
-                                            BackgroundColor="#6B7280"
-                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:WorkoutDetailsViewModel}}, Path=EditNoteCommand}"
-                                            CommandParameter="{Binding .}"
-                                            IsVisible="{Binding Source={RelativeSource AncestorType={x:Type vm:WorkoutDetailsViewModel}}, Path=IsLoggedIn}"
-                                            Text="Edit"/>
+                                        <SwipeItems>
 
-                                    </SwipeItems>
+                                            <SwipeItem
+                                                BackgroundColor="{StaticResource SwipeEdit}"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:WorkoutDetailsViewModel}}, Path=EditNoteCommand}"
+                                                CommandParameter="{Binding .}"
+                                                IsVisible="{Binding Source={RelativeSource AncestorType={x:Type vm:WorkoutDetailsViewModel}}, Path=IsLoggedIn}"
+                                                Text="Edit"/>
 
-                                </SwipeView.LeftItems>
+                                        </SwipeItems>
 
-                                <SwipeView.RightItems>
+                                    </SwipeView.LeftItems>
 
-                                    <SwipeItems>
+                                    <SwipeView.RightItems>
 
-                                        <SwipeItem
-                                            BackgroundColor="Red"
-                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:WorkoutDetailsViewModel}}, Path=DeleteNoteCommand}"
-                                            CommandParameter="{Binding .}"
-                                            IsVisible="{Binding Source={RelativeSource AncestorType={x:Type vm:WorkoutDetailsViewModel}}, Path=IsLoggedIn}"
-                                            Text="Delete"/>
+                                        <SwipeItems>
 
-                                    </SwipeItems>
+                                            <SwipeItem
+                                                BackgroundColor="{StaticResource SwipeDelete}"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:WorkoutDetailsViewModel}}, Path=DeleteNoteCommand}"
+                                                CommandParameter="{Binding .}"
+                                                IsVisible="{Binding Source={RelativeSource AncestorType={x:Type vm:WorkoutDetailsViewModel}}, Path=IsLoggedIn}"
+                                                Text="Delete"/>
 
-                                </SwipeView.RightItems>
+                                        </SwipeItems>
 
-                                <!-- Card -->
-                                <Border
-                                    Style="{StaticResource Card}">
+                                    </SwipeView.RightItems>
 
-                                    <VerticalStackLayout
-                                        Spacing="10">
+                                    <!-- Card -->
+                                    <Border
+                                        Style="{StaticResource SwipeCard}">
 
-                                        <!-- Header -->
-                                        <Label
-                                            FontAttributes="Bold"
-                                            FontSize="16"
-                                            LineBreakMode="TailTruncation"
-                                            Text="{Binding Title}"/>
+                                        <VerticalStackLayout
+                                            Spacing="10">
 
-                                        <!-- Info -->
-                                        <Label
-                                            Text="{Binding Content}"/>
+                                            <Label
+                                                LineBreakMode="TailTruncation"
+                                                MaxLines="2"
+                                                Style="{StaticResource CardTitle}"
+                                                Text="{Binding Title}"/>
 
-                                        <!-- Date time created -->
-                                        <Label
-                                            FontAttributes="Italic"
-                                            FontSize="12"
-                                            Text="{Binding DateTimeCreated, StringFormat='Created on {0:d MMM yyyy}'}"/>
+                                            <Label
+                                                Style="{StaticResource CardBody}"
+                                                Text="{Binding Content}"/>
 
-                                    </VerticalStackLayout>
+                                            <Label
+                                                Style="{StaticResource CardCredit}"
+                                                Text="{Binding DateTimeCreated, StringFormat='Created on {0:d MMM yyyy}'}"/>
 
-                                </Border>
+                                        </VerticalStackLayout>
 
-                            </SwipeView>
+                                    </Border>
+
+                                </SwipeView>
+
+                            </Border>
 
                         </DataTemplate>
 
@@ -287,21 +339,21 @@
 
                 </VerticalStackLayout>
 
-                <!-- Error message -->
-                <Label
-                    IsVisible="{Binding HasErrorMessage}"
-                    Text="{Binding ErrorMessage}"
-                    TextColor="Red"/>
-
             </VerticalStackLayout>
 
         </ScrollView>
 
         <VerticalStackLayout
             Grid.Row="1"
-            Margin="30,0,30,15"
-            Spacing="10"
-            MaximumWidthRequest="500">
+            MaximumWidthRequest="500"
+            Padding="30,10,30,20"
+            Spacing="10">
+
+            <!-- Error message -->
+            <Label
+                IsVisible="{Binding HasErrorMessage}"
+                Style="{StaticResource ErrorLabel}"
+                Text="{Binding ErrorMessage}"/>
 
             <Button
                 Command="{Binding StartWorkoutCommand}"
