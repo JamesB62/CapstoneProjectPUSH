@@ -20,15 +20,12 @@
                 HorizontalOptions="Center"
                 Spacing="10">
 
-                <!-- Logo placeholder -->
-                <Border
-                    Style="{StaticResource LogoFrame}">
-
-                    <Label
-                        Style="{StaticResource LogoPlaceholderLabel}"
-                        Text="Logo"/>
-
-                </Border>
+                <!-- Logo -->
+                <Image
+                    AutomationProperties.IsInAccessibleTree="False"
+                    HeightRequest="50"
+                    Source="push.svg"
+                    WidthRequest="50"/>
 
                 <Label
                     Style="{StaticResource BrandTitle}"

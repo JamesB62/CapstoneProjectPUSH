@@ -180,6 +180,15 @@
         <Setter Property="HorizontalTextAlignment" Value="Center"/>
     </Style>
 
+    <!-- Timer label -->
+    <Style x:Key="TimerLabel" TargetType="Label">
+        <Setter Property="TextColor" Value="{StaticResource Accent}"/>
+        <Setter Property="FontFamily" Value="OpenSansRegular"/>
+        <Setter Property="FontAttributes" Value="Bold"/>
+        <Setter Property="FontSize" Value="40"/>
+        <Setter Property="HorizontalTextAlignment" Value="Center"/>
+    </Style>
+
     <!-- ==================== Borders, cards and pills ==================== -->
 
     <!-- Default border -->
@@ -285,8 +294,8 @@
     <Style x:Key="FavouriteStar" TargetType="Button">
         <Setter Property="BackgroundColor" Value="Transparent"/>
         <Setter Property="BorderWidth" Value="0"/>
-        <Setter Property="FontSize" Value="21"/>
-        <Setter Property="Margin" Value="0,-4,0,0"/>
+        <Setter Property="FontSize" Value="22"/>
+        <Setter Property="Margin" Value="0,-3,0,0"/>
         <Setter Property="MinimumHeightRequest" Value="0"/>
         <Setter Property="MinimumWidthRequest" Value="0"/>
         <Setter Property="Padding" Value="0"/>
@@ -306,6 +315,18 @@
                 </VisualStateGroup>
             </VisualStateGroupList>
         </Setter>
+    </Style>
+
+    <!-- Small symbol button -->
+    <Style x:Key="IconButton" TargetType="Button">
+        <Setter Property="BackgroundColor" Value="Transparent"/>
+        <Setter Property="BorderWidth" Value="0"/>
+        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="FontSize" Value="16"/>
+        <Setter Property="MinimumHeightRequest" Value="44"/>
+        <Setter Property="MinimumWidthRequest" Value="44"/>
+        <Setter Property="Padding" Value="0"/>
+        <Setter Property="TextColor" Value="{StaticResource TextPrimary}"/>
     </Style>
 
     <!-- ==================== Text inputs ==================== -->

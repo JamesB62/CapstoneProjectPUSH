@@ -168,11 +168,8 @@
 
                                         </Grid>
 
-                                        <!-- Content preview -->
+                                        <!-- Content -->
                                         <Label
-                                            AutomationProperties.IsInAccessibleTree="False"
-                                            LineBreakMode="TailTruncation"
-                                            MaxLines="2"
                                             Style="{StaticResource CardBody}"
                                             Text="{Binding Content}"/>
 

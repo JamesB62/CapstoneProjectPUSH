@@ -52,7 +52,7 @@
                 Spacing="10">
 
                 <Label
-                    HorizontalOptions="Center"
+                    HorizontalTextAlignment="Center"
                     Style="{StaticResource DetailTitle}"
                     Text="{Binding Trainer.FullName}"/>
 
@@ -98,42 +98,49 @@
 
             </VerticalStackLayout>
 
-            <Label
-                IsVisible="{Binding HasContactDetails}"
-                Style="{StaticResource SectionHeader}"
-                Text="Contact Me"/>
-
-            <!-- Error message -->
-            <Label
-                IsVisible="{Binding HasErrorMessage}"
-                Style="{StaticResource ErrorLabel}"
-                Text="{Binding ErrorMessage}"/>
-
             <!-- Contact -->
             <VerticalStackLayout
-                IsVisible="{Binding HasContactDetails}"
                 Spacing="10">
 
                 <Label
-                    IsVisible="{Binding IsTrainerUnavailable}"
-                    Style="{StaticResource HintLabel}"
-                    Text="This trainer isn't taking on new clients right now."/>
+                    IsVisible="{Binding HasContactDetails}"
+                    Style="{StaticResource SectionHeader}"
+                    Text="Contact Me"/>
 
-                <Button
-                    Command="{Binding CallTrainerCommand}"
-                    IsEnabled="{Binding IsTrainerAvailable}"
-                    IsVisible="{Binding HasPhone}"
-                    SemanticProperties.Hint="Opens your phone app to call this trainer"
-                    Style="{StaticResource SecondaryButton}"
-                    Text="Call"/>
+                <!-- Error message -->
+                <Label
+                    IsVisible="{Binding HasErrorMessage}"
+                    Style="{StaticResource ErrorLabel}"
+                    Text="{Binding ErrorMessage}"/>
 
-                <Button
-                    Command="{Binding EmailTrainerCommand}"
-                    IsEnabled="{Binding IsTrainerAvailable}"
-                    IsVisible="{Binding HasEmail}"
-                    SemanticProperties.Hint="Opens your email app to email this trainer"
-                    Style="{StaticResource SecondaryButton}"
-                    Text="Email"/>
+                <!-- Buttons -->
+                <VerticalStackLayout
+                    IsVisible="{Binding HasContactDetails}"
+                    Margin="0,5,0,0"
+                    Spacing="10">
+
+                    <Label
+                        IsVisible="{Binding IsTrainerUnavailable}"
+                        Style="{StaticResource HintLabel}"
+                        Text="This trainer isn't taking on new clients right now."/>
+
+                    <Button
+                        Command="{Binding CallTrainerCommand}"
+                        IsEnabled="{Binding IsTrainerAvailable}"
+                        IsVisible="{Binding HasPhone}"
+                        SemanticProperties.Hint="Opens your phone app to call this trainer"
+                        Style="{StaticResource SecondaryButton}"
+                        Text="Call"/>
+
+                    <Button
+                        Command="{Binding EmailTrainerCommand}"
+                        IsEnabled="{Binding IsTrainerAvailable}"
+                        IsVisible="{Binding HasEmail}"
+                        SemanticProperties.Hint="Opens your email app to email this trainer"
+                        Style="{StaticResource SecondaryButton}"
+                        Text="Email"/>
+
+                </VerticalStackLayout>
 
             </VerticalStackLayout>
 

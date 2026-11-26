@@ -35,8 +35,6 @@
 
         public bool IsPrivate { get; set; } = true;
 
-        public string VisibilityText => IsPrivate ? "Private" : "Public";
-
         // Set per user by WorkoutService (not stored on the workout)
         public bool IsFavourite { get; set; }
 

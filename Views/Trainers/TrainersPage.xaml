@@ -46,7 +46,7 @@
 
         </VerticalStackLayout>
 
-        <!-- Count, active filter and swipe hint -->
+        <!-- Count, available filter and swipe hint -->
         <VerticalStackLayout
             Grid.Row="1"
             Spacing="5">

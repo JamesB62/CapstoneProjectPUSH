@@ -229,7 +229,7 @@
                 <Label
                     AutomationProperties.IsInAccessibleTree="False"
                     Style="{StaticResource HintLabel}"
-                    Text="Turn on if the trainer is available for new clients"/>
+                    Text="Turn on if the trainer is available for new clients."/>
 
             </VerticalStackLayout>
 

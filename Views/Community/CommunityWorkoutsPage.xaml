@@ -110,18 +110,8 @@
                                         Style="{StaticResource CardTitle}"
                                         VerticalOptions="Center"/>
 
-                                    <!-- Favourite star (registered accounts only) -->
-                                    <Label
-                                        FontSize="16"
-                                        Grid.Column="1"
-                                        IsVisible="{Binding IsFavourite}"
-                                        SemanticProperties.Description="Favourite"
-                                        Text="★"
-                                        TextColor="{StaticResource Favourite}"
-                                        VerticalOptions="Start"/>
-
                                     <Border
-                                        Grid.Column="2"
+                                        Grid.Column="1"
                                         Style="{StaticResource Pill}"
                                         VerticalOptions="Start">
 
@@ -130,6 +120,16 @@
                                             Text="{Binding CategoryTitle}"/>
 
                                     </Border>
+
+                                    <!-- Favourite star (registered accounts only) -->
+                                    <Label
+                                        FontSize="16"
+                                        Grid.Column="2"
+                                        IsVisible="{Binding IsFavourite}"
+                                        SemanticProperties.Description="Favourite"
+                                        Text="★"
+                                        TextColor="{StaticResource Favourite}"
+                                        VerticalOptions="Start"/>
 
                                 </Grid>
 

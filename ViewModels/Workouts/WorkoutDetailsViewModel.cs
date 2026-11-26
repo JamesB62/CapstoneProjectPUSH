@@ -128,7 +128,7 @@ namespace CapstoneProjectPUSH.ViewModels.Workouts
                     }
                     else
                     {
-                        PrivacyText = "Shared";
+                        PrivacyText = "Public";
                     }
 
                     var exercises = await _workoutService.GetExercisesForWorkoutAsync(WorkoutId);
