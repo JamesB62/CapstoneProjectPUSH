@@ -5,7 +5,7 @@
     public class UserService
     {
         // Matches DbSeeder.SeedAdminEmail in the api
-        public const string SeedAdminEmail = "admin@push.local";
+        public const string SeedAdminEmail = "admin@push.app";
 
         private const int MinDisplayNameLength = 5;
         private const int MaxDisplayNameLength = 60;
